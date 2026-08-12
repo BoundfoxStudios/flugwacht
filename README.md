@@ -1,17 +1,53 @@
-# flugwacht
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo/logo-dark.svg">
+    <img src="assets/logo/logo-light.svg" alt="Flugwacht logo: a stylized radar eye" width="96">
+  </picture>
+</p>
 
-A new Flutter project.
+<h1 align="center">Flugwacht</h1>
 
-## Getting Started
+A deliberately minimal flight tracker for individual, manually added flights —
+a Flutter app for iOS and Android. The app's user interface is in German.
 
-This project is a starting point for a Flutter application.
+Flugwacht answers exactly one question: **Where are they right now, and when
+will they arrive?** Enter a flight number and departure date (optionally with a
+note like "Anna & Ben"), and on the day of the flight the app tracks it
+automatically and shows it live on a map. No airspace overview, no account, no
+backend — everything stays local on your device.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Live map with flight trail and an arrival estimate, shown in both destination
+  local time and your own time
+- States instead of error screens: planned · waiting · live · no signal ·
+  ended · missed — coverage gaps over oceans are normal and are shown as
+  exactly that
+- Three switchable community data sources: adsb.lol, adsb.fi, airplanes.live
+- Local notifications: departed · arriving soon · landed
+- Light and dark theme
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Status
+
+Under active development. Planning and progress are tracked through GitHub
+issues and milestones.
+
+## Development
+
+The Flutter version is pinned via [fvm](https://fvm.app) (`.fvmrc`).
+
+```
+flutter pub get
+flutter analyze
+flutter test
+flutter run
+```
+
+## Data and licenses
+
+Flight data comes from the community networks [adsb.lol](https://adsb.lol)
+(ODbL), [adsb.fi](https://adsb.fi) and [airplanes.live](https://airplanes.live) —
+free for private use, with no guarantees about availability or freshness.
+Route lookup via
+[vradarserver/standing-data](https://github.com/vradarserver/standing-data).
+Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.

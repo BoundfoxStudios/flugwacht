@@ -45,3 +45,5 @@ app.*.map.json
 /android/app/release
 
 .fvm/
+# Design reference, intentionally untracked
+design_handoff_flugwacht/

@@ -1,85 +1,88 @@
 # Spec: Flugwacht
 
-Verbindliche Grundlage: `design_handoff_flugwacht/flugwacht-fachkonzept.md` (Fachkonzept)
-und `design_handoff_flugwacht/README.md` (Design-Handoff). Diese Spec fasst zusammen,
-ergänzt Technikentscheidungen und zerlegt die Arbeit in Häppchen — bei Widerspruch gilt
-das Handoff.
+Binding foundation: `design_handoff_flugwacht/flugwacht-fachkonzept.md` (domain
+concept) and `design_handoff_flugwacht/README.md` (design handoff) — both German,
+kept locally outside the repo. This spec summarizes them, adds technical
+decisions, and slices the work into small increments — if they conflict, the
+handoff wins.
 
 ## Objective
 
-Flugwacht ist ein bewusst minimaler Flugtracker (Flutter, iOS + Android) für einzelne,
-selbst eingetragene Flüge: Flugnummer + Startdatum (+ optionale Notiz) eintragen, am
-Flugtag wird der Flug automatisch live verfolgt und auf einer Karte gezeigt. Die eine
-Frage, die zählt: *Wo sind sie gerade, und wann sind sie da?* Typisch 1–3 Flüge
-gleichzeitig; jede Funktion, die nicht auf diese Frage einzahlt, gehört nicht hinein.
+Flugwacht is a deliberately minimal flight tracker (Flutter, iOS + Android) for
+individual, manually added flights: enter a flight number and departure date
+(plus an optional note), and on the day of the flight the app tracks it
+automatically and shows it live on a map. The one question that matters:
+*Where are they right now, and when will they arrive?* Typically 1–3 flights at
+a time; any feature that does not serve this question does not belong in the app.
+The app's UI copy is German (informal "Du" form, no emoji).
 
-**Vorgehen in zwei Stufen:**
+**Two-stage approach:**
 
-1. **Phase 0 — Spike (Wegwerf-Code):** Machbarkeitsprüfung, ob Live-Daten eines
-   Providers abgerufen und auf einer Karte dargestellt werden können. Wird nach dem
-   Nachweis vollständig gelöscht.
-2. **App-Umsetzung in kleinen Häppchen** (Meilensteine unten), jedes Häppchen einzeln
-   planbar, umsetzbar und verifizierbar.
+1. **Phase 0 — spike (throwaway code):** feasibility check that live data from
+   a provider can be fetched and shown on a map. Deleted completely after the
+   proof. *(Done: feasibility confirmed, spike removed.)*
+2. **App implementation in small increments** (milestones below), each one
+   individually plannable, implementable, and verifiable.
 
-**Planung & Tracking auf GitHub:** Je Häppchen ein GitHub-Milestone, je Task ein Issue;
-Reviews und Feedback laufen über Issue-Kommentare. Umsetzung PR-basiert: `main` ist
-geschützt, Arbeit läuft auf `feature/`-/`fix/`-Branches, Merge erst nach Manuels
-Freigabe (Details: `.claude/CLAUDE.md`). Im Repo liegt nur diese Spec als
-Arbeitskopie — sie, der Design-Handoff-Ordner und alle sonstigen Planungsdateien werden
-nach Fertigstellung gelöscht (M16; die Git-Historie behält sie).
+**Planning & tracking on GitHub:** one GitHub milestone per increment, one issue
+per task; reviews and feedback happen in issue comments. Implementation is
+PR-based: `main` is protected, work happens on `feature/`/`fix/` branches,
+merging only after Manuel's approval (details: `.claude/CLAUDE.md`). The repo
+holds only this spec as a working copy — it and all other planning files are
+deleted once the app is finished (M16; git history keeps them).
 
 ## Tech Stack
 
-| Bereich | Entscheidung |
+| Area | Decision |
 |---|---|
-| Framework | Flutter 3.44.9 (fvm-Pin in `.fvmrc`), Dart SDK ^3.12.2 |
-| State-Management | `signals` (Repo enthält die zugehörigen Skills) |
-| Persistenz | `drift` (SQLite) für Flüge + Spur-Punkte |
-| Routing | `go_router` (Tab-Shell Karte · Liste · Mehr + modaler „Neuer Flug“-Screen) |
-| Karte (OSM-Raster) | `flutter_map` mit OSM-Tiles |
-| Karte (reduzierter Stil) | offen — Entscheidung im zugehörigen Häppchen (maplibre_gl / eigenes Style-Set) |
-| HTTP | `http`, ein Quellen-Adapter hinter einem Interface (Quellen sind feldidentisch) |
+| Framework | Flutter 3.44.9 (fvm pin in `.fvmrc`), Dart SDK ^3.12.2 |
+| State management | `signals` |
+| Persistence | `drift` (SQLite) for flights + trail points |
+| Routing | `go_router` (tab shell map · list · more + modal "new flight" screen) |
+| Map (OSM raster) | `flutter_map` with OSM tiles |
+| Map (reduced style) | open — decided in its milestone (maplibre_gl / custom style set) |
+| HTTP | `http`, one source adapter behind an interface (sources are field-identical) |
 | Fonts | `google_fonts` (Bebas Neue, Barlow) |
-| Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + Kit 85fa8e3a78; `fa-regular-icons.json` als SVG-Fallback |
-| Notifications | `flutter_local_notifications`, nur lokal, kein Backend |
-| Datum | nativer System-Datepicker (`showDatePicker` / `CupertinoDatePicker`) |
+| Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
+| Notifications | `flutter_local_notifications`, local only, no backend |
+| Date | native system date picker (`showDatePicker` / `CupertinoDatePicker`) |
 
-Dependency-Versionen werden beim Hinzufügen aktuell ermittelt (pub.dev), nie geraten.
+Dependency versions are always looked up at add time (pub.dev), never guessed.
 
-**Datenquellen** (genau eine aktiv, kein Merge, kein Failover; Rate-Limit 1 req/s je
-Quelle): adsb.lol (Default) · adsb.fi · airplanes.live. Route separat über
-`vradarserver/standing-data` (lokal bevorzugt), einmal pro Flug, gecacht.
-Explizit verworfen: OpenSky, eigener Empfänger, Historie, Bezahlquellen.
+**Data sources** (exactly one active, no merging, no failover; rate limit
+1 request/s per source): adsb.lol (default) · adsb.fi · airplanes.live. Route
+resolved separately via `vradarserver/standing-data` (local copy preferred),
+once per flight, cached. Explicitly rejected: OpenSky, own receiver, history,
+paid sources.
 
 ## Commands
 
 ```
 Setup:    flutter pub get
-Analyse:  flutter analyze
+Analyze:  flutter analyze
 Format:   dart format .
 Tests:    flutter test
-App:      flutter run                        (auf dem Host: iOS-Simulator/Gerät)
-Spike:    flutter run -t lib/spike/main.dart (auf dem Host)
-Sandbox:  flutter run -d web-server          (nur Notbehelf; kein iOS/Android-Build möglich)
+App:      flutter run                 (on the host: iOS simulator/device)
+Sandbox:  flutter run -d web-server   (fallback only; no iOS/Android builds in the sandbox)
 ```
 
 ## Project Structure
 
 ```
 lib/
-  spike/            → Phase 0, Wegwerf-Code — wird nach der Machbarkeit gelöscht
-  data/             → Quellen-Adapter (readsb-API), Fix-Normalisierung, Route-Lookup, drift-DB
-  domain/           → Modelle (Flight, Fix, Route), Zustandsmaschine, Ankunftsschätzung
-  ui/               → Screens (Karte, Liste, Neuer Flug, Einstellungen), Widgets, Theme/Tokens
-test/               → spiegelt lib/ (data/, domain/, ui/)
-design_handoff_flugwacht/ → Design-Referenz, wird nicht verändert; Löschung in M16
+  data/    → source adapters (readsb API), fix normalization, route lookup, drift DB
+  domain/  → models (Flight, Fix, Route), state machine, arrival estimate
+  ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
+test/      → mirrors lib/ (data/, domain/, ui/)
+assets/    → logo and other bundled assets
+design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M16
 ```
 
 ## Code Style
 
-Englischer Code, null Kommentare als Standard, keine Abkürzungen in Bezeichnern,
-`flutter_lints`, kleine komponierte Widgets mit `const`-Konstruktoren, private
-Widget-Klassen statt Helper-Methoden. Beispiel für den angestrebten Stil:
+English code, zero comments by default, no abbreviations in identifiers,
+`flutter_lints`, small composed widgets with `const` constructors, private
+widget classes instead of helper methods. Example of the intended style:
 
 ```dart
 class FixTimestamp {
@@ -90,112 +93,97 @@ class FixTimestamp {
 }
 ```
 
-UI-Texte deutsch, Du-Form, kein Emoji. Design-Tokens exakt aus dem Handoff-README
-(Gelb-Trio `#ffeb3b`/`#ffc107`/`#ffa726` nie substituieren, Bebas Neue + Barlow,
-4px-Raster, Hit-Targets ≥ 44px, Motion 150–200ms ease-in-out).
+UI copy is German, informal "Du" form, no emoji. Design tokens exactly as in the
+handoff README (yellow trio `#ffeb3b`/`#ffc107`/`#ffa726` never substituted,
+Bebas Neue + Barlow, 4px grid, hit targets ≥ 44px, motion 150–200ms
+ease-in-out).
 
 ## Testing Strategy
 
-`flutter_test`; Tests laufen headless in der Sandbox. Getestet wird ausschließlich
-eigenes Anwendungsverhalten — Schwerpunkt auf der Domäne, in der die bekannten
-Fallstricke stecken:
+`flutter_test`; tests run headless in the sandbox. Only the app's own behavior
+is tested — focused on the domain, where the known pitfalls live:
 
-- Fix-Normalisierung: `alt_baro == "ground"`, `track` statt `heading`,
-  `seen_pos` + Server-`now` → absoluter UTC-Zeitstempel, Callsign-Trimming (8 Zeichen)
-- Zustandsmaschine: geplant → wartet → live ⇄ kein Signal → beendet | verpasst,
-  großzügige Schwelle (10–15 min), Zeitfenster über Mitternacht
-- Hex-Absicherung: Callsign-Gegenprüfung bei Hex-Abfragen, Rückfall auf Callsign-Suche
-- IATA→ICAO-Mapping inkl. Ryanair/Wizz/easyJet-Erkennung
-- Ankunftsschätzung: Restdistanz/Bodengeschwindigkeit, keine Schätzung ohne Route
+- Fix normalization: `alt_baro == "ground"`, `track` instead of `heading`,
+  `seen_pos` + server `now` → absolute UTC timestamp, callsign trimming
+  (8 characters, space-padded)
+- State machine: planned → waiting → live ⇄ no signal → ended | missed,
+  generous threshold (10–15 min), time window crossing midnight
+- Hex safeguard: callsign cross-check on hex queries, fall back to callsign
+  search on mismatch
+- IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
+- Arrival estimate: remaining distance / ground speed, no estimate without a
+  route
 
-Widget-Tests nur für eigenes Verhalten (z. B. Zustands-Zeitleiste rendert den richtigen
-aktiven Zustand), keine Framework-Tests. Der Spike bekommt keine Tests — er ist Wegwerf-Code.
+Widget tests only for own behavior (e.g. the state timeline renders the correct
+active state), no framework tests.
 
 ## Boundaries
 
-**Immer:**
-- Rate-Limit 1 req/s je Quelle einhalten; genau eine aktive Quelle, nie mergen
-- Fix-Normalisierung wie im Fachkonzept (verbindlich), Spur-Punkte tragen ihre Quellen-ID
-- Empfangslücke als regulären Zustand behandeln, nie als Error-UI
-- Attribution sichtbar (aktive Quelle + © OpenStreetMap)
-- `flutter analyze` + `flutter test` vor jedem Commit; Conventional Commits, nur Titelzeile
-- Design-Tokens und Maße aus dem Handoff-README pixelgenau übernehmen
+**Always:**
+- Respect the 1 request/s rate limit per source; exactly one active source,
+  never merge
+- Fix normalization as defined in the domain concept (binding), trail points
+  carry their source ID
+- Treat coverage gaps as a regular state, never as an error UI
+- Attribution visible (active source + © OpenStreetMap)
+- `flutter analyze` + `flutter test` before every commit; conventional commits,
+  title line only
+- Take design tokens and measurements pixel-perfect from the handoff README
 
-**Erst fragen:**
-- Neue Dependencies jenseits der oben festgelegten
-- Abweichungen vom HiFi-Design oder vom Fachkonzept
-- Hintergrund-Polling-Ansatz (iOS-BGTaskScheduler-Grenzen — laut Handoff explizit mit dem Nutzer zu klären)
-- drift-Schema-Änderungen nach dem ersten Release des Schemas
+**Ask first:**
+- New dependencies beyond the ones defined above
+- Deviations from the hi-fi design or the domain concept
+- Background polling approach (iOS BGTaskScheduler limits — per the handoff,
+  explicitly to be decided with the user)
+- drift schema changes after the schema's first release
 
-**Nie:**
-- OpenSky, eigener Empfänger, Historie, Bezahlquellen wieder einführen
-- Backend/Server/Konten einbauen (alles lokal auf dem Gerät)
-- Demo-Flug im Leerzustand
-- Brand-Farben substituieren
-- Direkt auf `main` committen oder pushen (PR-Workflow); PRs ohne Freigabe mergen
-- Credentials, Tokens oder Lizenzschlüssel committen — das Repo wird öffentlich
-- Design-Handoff-Ordner verändern (Ausnahme: Löschung in M16)
-- Features ergänzen, die nicht im Handoff stehen
+**Never:**
+- Reintroduce OpenSky, an own receiver, history, or paid sources
+- Add a backend/server/accounts (everything stays local on the device)
+- Demo flight in the empty state
+- Substitute brand colors
+- Commit or push directly to `main` (PR workflow); merge PRs without approval
+- Commit credentials, tokens, or license keys — the repo will become public
+- Modify the design handoff folder (exception: deletion in M16)
+- Add features that are not in the handoff
 
-## Phase 0 — Spike (Wegwerf-Code)
+## Increments (milestones of the app implementation)
 
-**Ziel:** Beweis, dass Live-Daten von adsb.lol abrufbar und auf einer Karte darstellbar
-sind. Reine Machbarkeit — kein Produktionsanspruch, keine Tests, wird danach gelöscht
-(`lib/spike/` entfernen; `flutter_map` und `http` bleiben, die App braucht sie ohnehin).
+Ordered by dependency; each increment is broken into GitHub issues before
+implementation (one milestone per increment), implemented, tested, and committed
+(commits reference their issue). Detailed design and measurements per screen:
+handoff README.
 
-**Umfang:**
-- Eigener Entrypoint `lib/spike/main.dart`, Start via `flutter run -t lib/spike/main.dart`
-  im iOS-Simulator auf dem Host
-- `GET /v2/point/{lat}/{lon}/{radius}` um Frankfurt (liefert zu jeder Tageszeit Verkehr),
-  Polling ≥ 1 s Abstand
-- `flutter_map` mit OSM-Raster-Tiles, Flugzeuge als Marker, Rotation nach `track`
-- Tap auf Marker zeigt Callsign, Höhe, Geschwindigkeit, Alter des Fixes — live aktualisiert
-
-**Erfolgskriterien (Spike bestanden, wenn alle erfüllt):**
-- [ ] Karte mit OSM-Tiles rendert im iOS-Simulator
-- [ ] Live-Flugzeuge um Frankfurt erscheinen als Marker und bewegen sich über Polling-Zyklen
-- [ ] Daten eines ausgewählten Fliegers aktualisieren sich sichtbar
-- [ ] Rate-Limit eingehalten (max. 1 req/s)
-
-Scheitert der Spike (API nicht erreichbar, Karte unbrauchbar), wird die Ursache
-dokumentiert und die Technikwahl neu bewertet, bevor App-Häppchen starten.
-
-## Häppchen (Meilensteine der App-Umsetzung)
-
-Reihenfolge nach Abhängigkeit; jedes Häppchen wird vor Umsetzung in GitHub-Issues
-zerlegt (Milestone je Häppchen), umgesetzt, getestet und committet (Commits referenzieren
-ihr Issue). Detail-Design und Maße je Screen: Handoff-README.
-
-| # | Häppchen | Kern |
+| # | Increment | Core |
 |---|---|---|
-| M1 | Fundament | Theme/Tokens, Fonts, FA-Pro-Setup, Tab-Gerüst mit go_router (Karte · Liste · Mehr), Hell/Dunkel |
-| M2 | Domain-Kern | Fix-Modell + Normalisierung, Quellen-Adapter (readsb-Interface, 3 Quellen), Tests |
-| M3 | Flug-Modell | Flight + Zustandsmaschine (6 Zustände, Mitternachts-Fenster), Tests |
-| M4 | Persistenz | drift-Schema: Flüge + Spur-Punkte (mit Quellen-ID), Auto-Cleanup nach 24 h |
-| M5 | Neuer Flug | Modal-Formular, Segmented (Flugnummer/Kennzeichen/Hex), IATA→ICAO, Route-Lookup (standing-data), „GEFUNDEN“-Card, nativer Datepicker |
-| M6 | Liste | Hero-Zelle mit Mini-Karte, Zustands-Zeitleiste, normale/geplante Zeilen, Leerzustand, FAB, „Vorbei“-Sektion |
-| M7 | Karte | Vollbild-`flutter_map`, Marker + Ping, Spur (geflogen/geplant), Bottom-Sheet (Peek/offen), Flugwechsel per Wisch/Tap |
-| M8 | Polling | Vordergrund-Polling-Engine, Zustandsübergänge live ⇄ kein Signal, Hex↔Callsign-Absicherung, Frische-Anzeige |
-| M9 | Ankunft | Schätzung (Restdistanz/Groundspeed), Ziel-Ortszeit + Nutzerzeit, „~“-Darstellung bei veraltetem Stand |
-| M10 | Quellen | Umschalter, Spur-Segmente je Quelle gefärbt, Legenden-Card, „Andere Quelle probieren“ |
-| M11 | Kartenstil | Reduzierter Stil + Umschalt-Button, Wahl persistieren (Technikentscheidung hier) |
-| M12 | Einstellungen | Quelle, Einheiten (metrisch/Luftfahrt), Mitteilungs-Switches, Fußnoten |
-| M13 | Notifications | Lokal: Gestartet · Ankunft bald (~30 min) · Gelandet |
-| M14 | Hintergrund | Machbarkeit Hintergrund-Polling (iOS-Limits) — Untersuchung, Entscheidung mit Nutzer |
-| M15 | Feinschliff | Über-/Lizenzseite, App-Icon-Export, „beendet/verpasst“-Detailzustände |
-| M16 | Aufräumen | `design_handoff_flugwacht/`, `SPEC.md` und verbliebene Planungsdateien löschen; Check auf Spike-Reste |
+| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark |
+| M2 | Domain core | Fix model + normalization, source adapter (readsb interface, 3 sources), tests |
+| M3 | Flight model | Flight + state machine (6 states, midnight-crossing window), tests |
+| M4 | Persistence | drift schema: flights + trail points (with source ID), auto cleanup after 24 h |
+| M5 | New flight | Modal form, segmented control (flight number/registration/hex), IATA→ICAO, route lookup (standing-data), "found" preview card, native date picker |
+| M6 | List | Hero cell with mini map, state timeline, regular/planned rows, empty state, FAB, "past" section |
+| M7 | Map | Full-screen `flutter_map`, markers + ping, trail (flown/planned), bottom sheet (peek/open), flight switching via swipe/tap |
+| M8 | Polling | Foreground polling engine, live ⇄ no-signal transitions, hex↔callsign safeguard, freshness display |
+| M9 | Arrival | Estimate (remaining distance / ground speed), destination local time + user time, "~" display for stale data |
+| M10 | Sources | Switcher, trail segments colored per source, legend card, "try another source" |
+| M11 | Map style | Reduced style + toggle button, persist the choice (technology decision here) |
+| M12 | Settings | Source, units (metric/aviation), notification switches, footnotes |
+| M13 | Notifications | Local: departed · arriving soon (~30 min) · landed |
+| M14 | Background | Feasibility of background polling (iOS limits) — investigation, decision with the user |
+| M15 | Polish | About/licenses page, app icon export, "ended/missed" detail states |
+| M16 | Cleanup | Delete `SPEC.md`, the local design handoff folder, and any remaining planning files; check for spike leftovers |
 
-## Success Criteria (App gesamt)
+## Success Criteria (app overall)
 
-- Alle Screens entsprechen pixelgenau dem HiFi-Board (hell + dunkel)
-- Ein eingetragener Flug durchläuft die Zustandssequenz korrekt und überlebt App-Neustarts
-- Empfangslücken und „Route unbekannt“ erscheinen als reguläre Zustände
-- `flutter analyze` sauber, alle Tests grün
+- All screens match the hi-fi board pixel-perfect (light + dark)
+- An added flight runs through the state sequence correctly and survives app
+  restarts
+- Coverage gaps and "route unknown" appear as regular states
+- `flutter analyze` clean, all tests green
 
 ## Open Questions
 
-- Technik für den reduzierten Kartenstil (Entscheidung in M11)
-- Hintergrund-Polling auf iOS (M14, mit Nutzer)
-- FA-Pro-Kit-Einrichtung braucht ggf. Lizenz-Zugang des Nutzers auf dem Host
-- Inhalt der Über-/Lizenzseite (M15)
-- GitHub-Remote existiert noch nicht — Repo anlegen und pushen macht der Nutzer
+- Technology for the reduced map style (decided in M11)
+- Background polling on iOS (M14, with the user)
+- FA Pro kit setup may need the user's license access on the host
+- Content of the about/licenses page (M15)

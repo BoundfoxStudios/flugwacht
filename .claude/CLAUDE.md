@@ -1,21 +1,29 @@
-# Flugwacht — Projektregeln
+# Flugwacht — Project Rules
+
+## Language
+
+- Everything in the repository and on GitHub is written in English: docs, spec,
+  README, issues, milestones, PRs, code, commits. German is used only in the
+  chat with Manuel. The app's own UI copy is German (product decision from the
+  design handoff).
 
 ## Git & GitHub
 
-- Abweichend von der globalen Regel darf Claude in diesem Projekt selbst pushen.
-- PR-basierter Workflow: `main` ist geschützt, keine direkten Commits oder Pushes
-  auf `main`. Jede Arbeit läuft auf einem `feature/`- oder `fix/`-Branch und geht
-  per Pull Request gegen `main`.
-- PRs werden erst nach Manuels Freigabe gemerged (Approval oder Kommentar im PR);
-  ohne Freigabe niemals mergen. Merge-Methode: Rebase, damit die
-  Conventional-Commit-Titel auf `main` erhalten bleiben.
-- Planung und Tracking laufen über GitHub-Issues und -Milestones; Commits
-  referenzieren ihr Issue. Die Spec liegt in `SPEC.md` (Feedback-Kanal: Issue #1).
+- Unlike the global rule, Claude may push in this project.
+- PR-based workflow: `main` is protected, no direct commits or pushes to
+  `main`. All work happens on a `feature/` or `fix/` branch and goes through a
+  pull request against `main`.
+- PRs are merged only after Manuel's approval (PR approval or comment); never
+  merge without it. Merge method: rebase, so the conventional commit titles are
+  preserved on `main`.
+- Planning and tracking happen through GitHub issues and milestones; commits
+  reference their issue. The spec lives in `SPEC.md` (feedback channel:
+  issue #1).
 
 ## Credentials
 
-- Das Repo wird öffentlich. Niemals Credentials, Tokens oder Lizenzschlüssel
-  committen — auch nicht in Konfigurationsdateien oder der Historie. Alles, was
-  Zugangsdaten braucht (z. B. das Font-Awesome-Pro-Setup), wird außerhalb des
-  Repos konfiguriert (Umgebungsvariablen, Host-Konfiguration) und im Repo nur
-  als Platzhalter/Anleitung dokumentiert.
+- The repo will become public. Never commit credentials, tokens, or license
+  keys — not in config files and not in the history. Anything that needs
+  credentials (e.g. the Font Awesome Pro setup) is configured outside the repo
+  (environment variables, host configuration) and only documented in the repo
+  as placeholders/instructions.

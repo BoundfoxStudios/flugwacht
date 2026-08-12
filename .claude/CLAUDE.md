@@ -11,3 +11,11 @@
   Conventional-Commit-Titel auf `main` erhalten bleiben.
 - Planung und Tracking laufen über GitHub-Issues und -Milestones; Commits
   referenzieren ihr Issue. Die Spec liegt in `SPEC.md` (Feedback-Kanal: Issue #1).
+
+## Credentials
+
+- Das Repo wird öffentlich. Niemals Credentials, Tokens oder Lizenzschlüssel
+  committen — auch nicht in Konfigurationsdateien oder der Historie. Alles, was
+  Zugangsdaten braucht (z. B. das Font-Awesome-Pro-Setup), wird außerhalb des
+  Repos konfiguriert (Umgebungsvariablen, Host-Konfiguration) und im Repo nur
+  als Platzhalter/Anleitung dokumentiert.

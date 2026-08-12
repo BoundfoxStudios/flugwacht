@@ -1,19 +1,15 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
-#
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
-
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - '**/*.g.dart'
 
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
   # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
+  # and their documentation is published at
+  # https://dart.dev/lints.
   #
   # Instead of disabling a lint rule for the entire project in the
   # section below, it can also be suppressed for a single line of code
@@ -21,8 +17,96 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    - prefer_relative_imports
+    - prefer_single_quotes
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - avoid_types_as_parameter_names
+    - cancel_subscriptions
+    - close_sinks
+    - collection_methods_unrelated_type
+    - comment_references
+    - control_flow_in_finally
+    - deprecated_member_use_from_same_package
+    - empty_statements
+    - invalid_case_patterns
+    - no_adjacent_strings_in_list
+    - no_duplicate_case_values
+    - prefer_void_to_null
+    - throw_in_finally
+    - unnecessary_statements
+    - unrelated_type_equality_checks
+    - always_declare_return_types
+    - always_put_control_body_on_new_line
+    - avoid_bool_literals_in_conditional_expressions
+    - avoid_catches_without_on_clauses
+    - avoid_catching_errors
+    - avoid_classes_with_only_static_members
+    - avoid_double_and_int_checks
+    - avoid_multiple_declarations_per_line
+    - avoid_positional_boolean_parameters
+    - avoid_private_typedef_functions
+    - avoid_returning_this
+    - avoid_types_on_closure_parameters
+    - avoid_unused_constructor_parameters
+    - avoid_void_async
+    - cascade_invocations
+    - cast_nullable_to_non_nullable
+    - combinators_ordering
+    - conditional_uri_does_not_exist
+    - dangling_library_doc_comments
+    - deprecated_consistency
+    - directives_ordering
+    - do_not_use_environment
+    - eol_at_end_of_file
+    - join_return_with_assignment
+    - leading_newlines_in_multiline_strings
+    - library_annotations
+    - matching_super_parameters
+    - missing_whitespace_between_adjacent_strings
+    - no_default_cases
+    - no_literal_bool_comparisons
+    - no_runtimeType_toString
+    - noop_primitive_operations
+    - one_member_abstracts
+    - only_throw_errors
+    - prefer_asserts_in_initializer_lists
+    - prefer_constructors_over_static_methods
+    - prefer_expression_function_bodies
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_final_parameters
+    - prefer_if_elements_to_conditional_expressions
+    - prefer_int_literals
+    - prefer_mixin
+    - prefer_null_aware_method_calls
+    - require_trailing_commas
+    - sized_box_shrink_expand
+    - sort_unnamed_constructors_first
+    - unawaited_futures
+    - unnecessary_await_in_return
+    - unnecessary_breaks
+    - unnecessary_lambdas
+    - unnecessary_null_checks
+    - unnecessary_parenthesis
+    - unnecessary_raw_strings
+    - unnecessary_to_list_in_spreads
+    - unreachable_from_main
+    - use_colored_box
+    - use_decorated_box
+    - use_enums
+    - use_if_null_to_convert_nulls_to_bools
+    - use_is_even_rather_than_modulo
+    - use_late_for_private_fields_and_variables
+    - use_named_constants
+    - use_setters_to_change_properties
+    - use_string_in_part_of_directives
+    - use_super_parameters
+    - use_test_throws_matchers
+    - use_to_and_as_if_applicable
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
+    - prefer_const_declarations
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

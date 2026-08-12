@@ -21,6 +21,11 @@ gleichzeitig; jede Funktion, die nicht auf diese Frage einzahlt, gehört nicht h
 2. **App-Umsetzung in kleinen Häppchen** (Meilensteine unten), jedes Häppchen einzeln
    planbar, umsetzbar und verifizierbar.
 
+**Planung & Tracking auf GitHub:** Je Häppchen ein GitHub-Milestone, je Task ein Issue;
+Reviews und Feedback laufen über Issue-Kommentare. Im Repo liegt nur diese Spec als
+Arbeitskopie — sie, der Design-Handoff-Ordner und alle sonstigen Planungsdateien werden
+nach Fertigstellung gelöscht (M16; die Git-Historie behält sie).
+
 ## Tech Stack
 
 | Bereich | Entscheidung |
@@ -64,8 +69,7 @@ lib/
   domain/           → Modelle (Flight, Fix, Route), Zustandsmaschine, Ankunftsschätzung
   ui/               → Screens (Karte, Liste, Neuer Flug, Einstellungen), Widgets, Theme/Tokens
 test/               → spiegelt lib/ (data/, domain/, ui/)
-design_handoff_flugwacht/ → Design-Referenz, wird nicht verändert
-tasks/              → plan.md + todo.md je Häppchen (entsteht in der Planungsphase)
+design_handoff_flugwacht/ → Design-Referenz, wird nicht verändert; Löschung in M16
 ```
 
 ## Code Style
@@ -125,7 +129,7 @@ aktiven Zustand), keine Framework-Tests. Der Spike bekommt keine Tests — er is
 - Backend/Server/Konten einbauen (alles lokal auf dem Gerät)
 - Demo-Flug im Leerzustand
 - Brand-Farben substituieren
-- Pushen (macht der Nutzer selbst); Design-Handoff-Ordner verändern
+- Pushen (macht der Nutzer selbst); Design-Handoff-Ordner verändern (Ausnahme: Löschung in M16)
 - Features ergänzen, die nicht im Handoff stehen
 
 ## Phase 0 — Spike (Wegwerf-Code)
@@ -153,9 +157,9 @@ dokumentiert und die Technikwahl neu bewertet, bevor App-Häppchen starten.
 
 ## Häppchen (Meilensteine der App-Umsetzung)
 
-Reihenfolge nach Abhängigkeit; jedes Häppchen wird vor Umsetzung einzeln in Tasks
-zerlegt (`tasks/`), umgesetzt, getestet und committet. Detail-Design und Maße je Screen:
-Handoff-README.
+Reihenfolge nach Abhängigkeit; jedes Häppchen wird vor Umsetzung in GitHub-Issues
+zerlegt (Milestone je Häppchen), umgesetzt, getestet und committet (Commits referenzieren
+ihr Issue). Detail-Design und Maße je Screen: Handoff-README.
 
 | # | Häppchen | Kern |
 |---|---|---|
@@ -174,6 +178,7 @@ Handoff-README.
 | M13 | Notifications | Lokal: Gestartet · Ankunft bald (~30 min) · Gelandet |
 | M14 | Hintergrund | Machbarkeit Hintergrund-Polling (iOS-Limits) — Untersuchung, Entscheidung mit Nutzer |
 | M15 | Feinschliff | Über-/Lizenzseite, App-Icon-Export, „beendet/verpasst“-Detailzustände |
+| M16 | Aufräumen | `design_handoff_flugwacht/`, `SPEC.md` und verbliebene Planungsdateien löschen; Check auf Spike-Reste |
 
 ## Success Criteria (App gesamt)
 
@@ -188,3 +193,4 @@ Handoff-README.
 - Hintergrund-Polling auf iOS (M14, mit Nutzer)
 - FA-Pro-Kit-Einrichtung braucht ggf. Lizenz-Zugang des Nutzers auf dem Host
 - Inhalt der Über-/Lizenzseite (M15)
+- GitHub-Remote existiert noch nicht — Repo anlegen und pushen macht der Nutzer

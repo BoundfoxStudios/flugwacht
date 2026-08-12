@@ -34,9 +34,12 @@ issues and milestones.
 
 ## Development
 
-The Flutter version is pinned via [fvm](https://fvm.app) (`.fvmrc`).
+The repository is a monorepo: the Flutter app lives in `app/`; a website and
+possibly a backend will join later. The Flutter version is pinned via
+[fvm](https://fvm.app) (`app/.fvmrc`).
 
 ```
+cd app
 flutter pub get
 flutter analyze
 flutter test

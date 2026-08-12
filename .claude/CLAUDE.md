@@ -17,8 +17,15 @@
   merge without it. Merge method: rebase, so the conventional commit titles are
   preserved on `main`.
 - Planning and tracking happen through GitHub issues and milestones; commits
-  reference their issue. The spec lives in `SPEC.md` (feedback channel:
-  issue #1).
+  reference their issue. The spec lives in `SPEC.md`; spec discussions happen
+  directly in the chat.
+
+## Repository Layout
+
+- Monorepo: the Flutter app lives in `app/` — run all Flutter/Dart commands
+  there. `website/` (planned) and possibly `backend/` (later expansion stage)
+  will join next to it.
+- Repo-level branding assets (logo) live in `assets/`.
 
 ## Credentials
 

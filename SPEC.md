@@ -61,6 +61,8 @@ paid sources.
 ## Commands
 
 ```
+cd app
+
 Setup:    flutter pub get
 Analyze:  flutter analyze
 Format:   dart format .
@@ -72,12 +74,14 @@ Sandbox:  flutter run -d web-server   (fallback only; no iOS/Android builds in t
 ## Project Structure
 
 ```
-lib/
-  data/    → source adapters (readsb API), fix normalization, route lookup, drift DB
-  domain/  → models (Flight, Fix, Route), state machine, arrival estimate
-  ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
-test/      → mirrors lib/ (data/, domain/, ui/)
-assets/    → logo and other bundled assets
+app/       → Flutter app (iOS + Android)
+  lib/data/    → source adapters (readsb API), fix normalization, route lookup, drift DB
+  lib/domain/  → models (Flight, Fix, Route), state machine, arrival estimate
+  lib/ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
+  test/        → mirrors lib/ (data/, domain/, ui/)
+assets/    → logo and other repo-level branding assets
+website/   → project website (planned, does not exist yet)
+backend/   → possible later expansion stage (only if unavoidable — Manuel's call)
 design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M16
 ```
 
@@ -143,7 +147,9 @@ active state), no framework tests.
 
 **Never:**
 - Reintroduce OpenSky, an own receiver, history, or paid sources
-- Add a backend/server/accounts (everything stays local on the device)
+- Add a backend/server/accounts to the core tracking (per the handoff,
+  everything stays local on the device); a backend as a later expansion stage is
+  Manuel's explicit call
 - Demo flight in the empty state
 - Substitute brand colors
 - Commit or push directly to `main` (PR workflow); merge PRs without approval

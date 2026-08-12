@@ -133,6 +133,7 @@ aktiven Zustand), keine Framework-Tests. Der Spike bekommt keine Tests — er is
 - Demo-Flug im Leerzustand
 - Brand-Farben substituieren
 - Direkt auf `main` committen oder pushen (PR-Workflow); PRs ohne Freigabe mergen
+- Credentials, Tokens oder Lizenzschlüssel committen — das Repo wird öffentlich
 - Design-Handoff-Ordner verändern (Ausnahme: Löschung in M16)
 - Features ergänzen, die nicht im Handoff stehen
 

@@ -33,6 +33,7 @@ nach Fertigstellung gelöscht (M16; die Git-Historie behält sie).
 | Framework | Flutter 3.44.9 (fvm-Pin in `.fvmrc`), Dart SDK ^3.12.2 |
 | State-Management | `signals` (Repo enthält die zugehörigen Skills) |
 | Persistenz | `drift` (SQLite) für Flüge + Spur-Punkte |
+| Routing | `go_router` (Tab-Shell Karte · Liste · Mehr + modaler „Neuer Flug“-Screen) |
 | Karte (OSM-Raster) | `flutter_map` mit OSM-Tiles |
 | Karte (reduzierter Stil) | offen — Entscheidung im zugehörigen Häppchen (maplibre_gl / eigenes Style-Set) |
 | HTTP | `http`, ein Quellen-Adapter hinter einem Interface (Quellen sind feldidentisch) |
@@ -163,7 +164,7 @@ ihr Issue). Detail-Design und Maße je Screen: Handoff-README.
 
 | # | Häppchen | Kern |
 |---|---|---|
-| M1 | Fundament | Theme/Tokens, Fonts, FA-Pro-Setup, Tab-Gerüst (Karte · Liste · Mehr), Hell/Dunkel |
+| M1 | Fundament | Theme/Tokens, Fonts, FA-Pro-Setup, Tab-Gerüst mit go_router (Karte · Liste · Mehr), Hell/Dunkel |
 | M2 | Domain-Kern | Fix-Modell + Normalisierung, Quellen-Adapter (readsb-Interface, 3 Quellen), Tests |
 | M3 | Flug-Modell | Flight + Zustandsmaschine (6 Zustände, Mitternachts-Fenster), Tests |
 | M4 | Persistenz | drift-Schema: Flüge + Spur-Punkte (mit Quellen-ID), Auto-Cleanup nach 24 h |

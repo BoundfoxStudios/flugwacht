@@ -22,7 +22,9 @@ gleichzeitig; jede Funktion, die nicht auf diese Frage einzahlt, gehört nicht h
    planbar, umsetzbar und verifizierbar.
 
 **Planung & Tracking auf GitHub:** Je Häppchen ein GitHub-Milestone, je Task ein Issue;
-Reviews und Feedback laufen über Issue-Kommentare. Im Repo liegt nur diese Spec als
+Reviews und Feedback laufen über Issue-Kommentare. Umsetzung PR-basiert: `main` ist
+geschützt, Arbeit läuft auf `feature/`-/`fix/`-Branches, Merge erst nach Manuels
+Freigabe (Details: `.claude/CLAUDE.md`). Im Repo liegt nur diese Spec als
 Arbeitskopie — sie, der Design-Handoff-Ordner und alle sonstigen Planungsdateien werden
 nach Fertigstellung gelöscht (M16; die Git-Historie behält sie).
 
@@ -130,7 +132,8 @@ aktiven Zustand), keine Framework-Tests. Der Spike bekommt keine Tests — er is
 - Backend/Server/Konten einbauen (alles lokal auf dem Gerät)
 - Demo-Flug im Leerzustand
 - Brand-Farben substituieren
-- Pushen (macht der Nutzer selbst); Design-Handoff-Ordner verändern (Ausnahme: Löschung in M16)
+- Direkt auf `main` committen oder pushen (PR-Workflow); PRs ohne Freigabe mergen
+- Design-Handoff-Ordner verändern (Ausnahme: Löschung in M16)
 - Features ergänzen, die nicht im Handoff stehen
 
 ## Phase 0 — Spike (Wegwerf-Code)

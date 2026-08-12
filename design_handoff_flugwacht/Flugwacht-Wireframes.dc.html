@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_ds/boundfox-studios-design-system-91fd9447-967e-4603-ad46-762dfeed48b4/tokens/fonts.css">
+<script src="_ds/boundfox-studios-design-system-91fd9447-967e-4603-ad46-762dfeed48b4/_ds_bundle.js"></script>
+<style>body{margin:0;background:#f0eee9;font-family:system-ui,sans-serif}a{color:#a16207}a:hover{color:#854d0e}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}.grp{flex-basis:100%;font:600 11px/1 system-ui,sans-serif;color:rgba(0,0,0,.45);letter-spacing:.08em;text-transform:uppercase;margin:10px 0 -14px}</style>
+</helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Wireframes Runde 1 — Basis: konzept.md (Karte + Sheet, Tab-Bar, Wizard, Zeitleiste)</span></div>
+<div class="dv-opts">
+
+<div class="grp">Hauptscreen Karte</div>
+
+<div class="dv-opt" id="1a" data-screen-label="1a Karte, Peek-Sheet">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Peek-Sheet: nur die eine Zahl</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="position:absolute;top:22px;left:0;right:0;bottom:186px;background:#f4f2ee;overflow:hidden">
+<svg width="260" height="360" viewBox="0 0 260 360"><path d="M-10 80C40 60 70 110 120 90S220 40 270 70L270 -10L-10 -10Z" fill="#eae7e0"></path><path d="M-10 370C30 300 90 330 140 300S240 280 270 300L270 370Z" fill="#eae7e0"></path><circle cx="228" cy="60" r="4" fill="#666"></circle><text x="214" y="48" font-size="11" fill="#666" font-family="Patrick Hand">FRA</text><path d="M228 60C190 120 150 150 118 178" stroke="#555" stroke-width="2" fill="none"></path><path d="M118 178C80 210 40 240 14 300" stroke="#bbb" stroke-width="2" stroke-dasharray="5 5" fill="none"></path><circle cx="14" cy="300" r="4" fill="#666"></circle><text x="24" y="308" font-size="11" fill="#666" font-family="Patrick Hand">JFK</text><g transform="rotate(222 118 178)"><polygon points="118,166 126,186 118,181 110,186" fill="#ffc107" stroke="#333" stroke-width="1.5"></polygon></g><path d="M60 60C90 80 120 70 150 95" stroke="#999" stroke-width="1.8" fill="none" opacity="0.7"></path><g transform="rotate(130 150 95)" opacity="0.7"><polygon points="150,86 156,101 150,97 144,101" fill="#fff" stroke="#555" stroke-width="1.5"></polygon></g></svg>
+<div style="position:absolute;top:10px;right:10px;width:30px;height:30px;border:1.5px solid #888;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666">stil</div>
+<div style="position:absolute;bottom:8px;left:8px;font-size:9px;color:#999;background:rgba(255,255,255,.75);padding:1px 5px;border-radius:3px">© OSM · adsb.lol</div>
+</div>
+<div style="position:absolute;bottom:54px;left:0;right:0;height:132px;background:#fff;border:1.5px solid #ccc;border-bottom:none;border-radius:16px 16px 0 0;padding:7px 14px 8px;display:flex;flex-direction:column;gap:3px">
+<div style="width:36px;height:4px;border-radius:2px;background:#ddd;margin:0 auto"></div>
+<div style="display:flex;justify-content:center;gap:5px;font-size:11px;color:#bbb"><span style="color:#444">●</span><span>○</span></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:14px"><span>LH400 · Anna &amp; Ben</span><span style="border:1.5px solid #333;border-radius:99px;padding:0 8px;font-size:12px;background:#ffeb3b">● live</span></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:34px;line-height:1.05">14:32</span><span style="font-size:13px;color:#777">Ankunft ca. · noch 2:10</span></div>
+<div style="font-size:12px;color:#999">Ortszeit JFK · bei dir 20:32</div>
+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Karte</div><div>Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b" data-screen-label="1b Karte, Sheet mit Zeitleiste">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Halb offen: + Zeitleiste + Positionsdaten</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="position:absolute;top:22px;left:0;right:0;bottom:266px;background:#f4f2ee;overflow:hidden">
+<svg width="260" height="280" viewBox="0 0 260 280"><path d="M-10 60C40 40 80 90 130 70S220 30 270 60L270 -10L-10 -10Z" fill="#eae7e0"></path><circle cx="225" cy="45" r="4" fill="#666"></circle><text x="211" y="34" font-size="11" fill="#666" font-family="Patrick Hand">FRA</text><path d="M225 45C180 100 140 130 105 155" stroke="#555" stroke-width="2" fill="none"></path><path d="M105 155C70 180 35 210 12 250" stroke="#bbb" stroke-width="2" stroke-dasharray="5 5" fill="none"></path><circle cx="12" cy="250" r="4" fill="#666"></circle><text x="22" y="258" font-size="11" fill="#666" font-family="Patrick Hand">JFK</text><g transform="rotate(222 105 155)"><polygon points="105,143 113,163 105,158 97,163" fill="#ffc107" stroke="#333" stroke-width="1.5"></polygon></g></svg>
+<div style="position:absolute;top:10px;right:10px;width:30px;height:30px;border:1.5px solid #888;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666">stil</div>
+<div style="position:absolute;bottom:8px;left:8px;font-size:9px;color:#999;background:rgba(255,255,255,.75);padding:1px 5px;border-radius:3px">© OSM · adsb.lol</div>
+</div>
+<div style="position:absolute;bottom:54px;left:0;right:0;height:212px;background:#fff;border:1.5px solid #ccc;border-bottom:none;border-radius:16px 16px 0 0;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">
+<div style="width:36px;height:4px;border-radius:2px;background:#ddd;margin:0 auto"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:14px"><span>LH400 · Anna &amp; Ben</span><span style="font-size:12px;color:#888">FRA → JFK</span></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:34px;line-height:1.05">14:32</span><span style="font-size:13px;color:#777">Ankunft ca. · noch 2:10</span></div>
+<div style="font-size:12px;color:#999;margin-top:-4px">Ortszeit JFK · bei dir 20:32</div>
+<div style="display:flex;align-items:center;margin-top:4px">
+<div style="width:10px;height:10px;border-radius:50%;background:#444"></div><div style="flex:1;height:2px;background:#444"></div><div style="width:10px;height:10px;border-radius:50%;background:#444"></div><div style="flex:1;height:2px;background:#444"></div><div style="width:14px;height:14px;border-radius:50%;background:#ffc107;border:2px solid #333"></div><div style="flex:1;height:2px;background:#ddd"></div><div style="width:10px;height:10px;border-radius:50%;border:2px solid #ccc;background:#fff"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:10px;color:#999;margin-top:-3px"><span>geplant</span><span>wartet</span><span style="color:#333">live</span><span>beendet</span></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:#777;border-top:1.5px dashed #ddd;padding-top:5px"><span>Höhe 11 278 m</span><span>876 km/h</span><span>vor 3 s</span></div>
+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Karte</div><div>Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c" data-screen-label="1c Karte mit Flug-Chips">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Chips oben: Flugwechsel ohne Wischen</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="position:absolute;top:22px;left:0;right:0;bottom:140px;background:#f4f2ee;overflow:hidden">
+<svg width="260" height="400" viewBox="0 0 260 400"><path d="M-10 90C40 70 80 120 130 100S220 60 270 90L270 -10L-10 -10Z" fill="#eae7e0"></path><path d="M-10 410C30 340 90 370 150 340S240 320 270 340L270 410Z" fill="#eae7e0"></path><circle cx="225" cy="75" r="4" fill="#666"></circle><text x="211" y="64" font-size="11" fill="#666" font-family="Patrick Hand">FRA</text><path d="M225 75C185 140 150 170 115 200" stroke="#555" stroke-width="2" fill="none"></path><path d="M115 200C80 230 40 265 14 330" stroke="#bbb" stroke-width="2" stroke-dasharray="5 5" fill="none"></path><circle cx="14" cy="330" r="4" fill="#666"></circle><text x="24" y="338" font-size="11" fill="#666" font-family="Patrick Hand">JFK</text><g transform="rotate(222 115 200)"><polygon points="115,188 123,208 115,203 107,208" fill="#ffc107" stroke="#333" stroke-width="1.5"></polygon></g><path d="M50 80C85 105 115 95 150 120" stroke="#999" stroke-width="1.8" fill="none" opacity="0.7"></path><g transform="rotate(128 150 120)" opacity="0.7"><polygon points="150,111 156,126 150,122 144,126" fill="#fff" stroke="#555" stroke-width="1.5"></polygon></g></svg>
+<div style="position:absolute;top:8px;left:8px;right:8px;display:flex;gap:6px">
+<div style="border:2px solid #333;background:#fff;border-radius:99px;padding:2px 10px;font-size:12px;display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;border-radius:50%;background:#ffc107;border:1px solid #333"></span>LH400</div>
+<div style="border:1.5px solid #bbb;background:#fff;border-radius:99px;padding:2px 10px;font-size:12px;color:#888">EW594</div>
+<div style="border:1.5px dashed #bbb;background:#fff;border-radius:99px;padding:2px 9px;font-size:12px;color:#888">+</div>
+</div>
+<div style="position:absolute;top:44px;right:10px;width:30px;height:30px;border:1.5px solid #888;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666">stil</div>
+<div style="position:absolute;bottom:8px;left:8px;font-size:9px;color:#999;background:rgba(255,255,255,.75);padding:1px 5px;border-radius:3px">© OSM · adsb.lol</div>
+</div>
+<div style="position:absolute;bottom:54px;left:0;right:0;height:86px;background:#fff;border:1.5px solid #ccc;border-bottom:none;border-radius:16px 16px 0 0;padding:7px 14px;display:flex;flex-direction:column;gap:2px">
+<div style="width:36px;height:4px;border-radius:2px;background:#ddd;margin:0 auto"></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:30px;line-height:1.05">14:32</span><span style="font-size:13px;color:#777">Ankunft ca. · noch 2:10</span></div>
+<div style="font-size:12px;color:#999">Anna &amp; Ben · FRA → JFK · ● live</div>
+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Karte</div><div>Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="grp">Heute-Liste</div>
+
+<div class="dv-opt" id="1d" data-screen-label="1d Liste Kartenzellen">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Karten-Zellen mit Zeitleiste</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333;background:#fafafa">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="padding:6px 12px;font-size:22px">Flüge</div>
+<div style="padding:0 12px;display:flex;flex-direction:column;gap:10px">
+<div style="border:2px solid #333;border-radius:12px;background:#fff;padding:9px 12px;display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;font-size:14px"><span>LH400 · FRA → JFK</span><span style="border:1.5px solid #333;border-radius:99px;padding:0 7px;font-size:11px;background:#ffeb3b">● live</span></div>
+<div style="font-size:12px;color:#888">Anna &amp; Ben · heute</div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:24px">14:32</span><span style="font-size:12px;color:#777">Ankunft ca. · noch 2:10</span></div>
+<div style="display:flex;align-items:center"><div style="width:8px;height:8px;border-radius:50%;background:#444"></div><div style="flex:1;height:2px;background:#444"></div><div style="width:8px;height:8px;border-radius:50%;background:#444"></div><div style="flex:1;height:2px;background:#444"></div><div style="width:11px;height:11px;border-radius:50%;background:#ffc107;border:2px solid #333"></div><div style="flex:1;height:2px;background:#ddd"></div><div style="width:8px;height:8px;border-radius:50%;border:2px solid #ccc;background:#fff"></div></div>
+</div>
+<div style="border:1.5px solid #ccc;border-radius:12px;background:#fff;padding:9px 12px;display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;font-size:14px"><span>EW594 · STR → PMI</span><span style="border:1.5px solid #bbb;border-radius:99px;padding:0 7px;font-size:11px;color:#888">wartet</span></div>
+<div style="font-size:12px;color:#888">Mama · heute · Abflug 16:10</div>
+<div style="display:flex;align-items:center"><div style="width:8px;height:8px;border-radius:50%;background:#444"></div><div style="flex:1;height:2px;background:#444"></div><div style="width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid #333"></div><div style="flex:1;height:2px;background:#ddd"></div><div style="width:8px;height:8px;border-radius:50%;border:2px solid #ccc;background:#fff"></div><div style="flex:1;height:2px;background:#ddd"></div><div style="width:8px;height:8px;border-radius:50%;border:2px solid #ccc;background:#fff"></div></div>
+</div>
+<div style="border:1.5px dashed #ccc;border-radius:12px;padding:9px 12px;display:flex;flex-direction:column;gap:3px;color:#999">
+<div style="display:flex;justify-content:space-between;font-size:14px"><span>UA961 · EWR → MUC</span><span style="font-size:11px">geplant</span></div>
+<div style="font-size:12px">Anna &amp; Ben zurück · Fr, 15. Aug</div>
+</div>
+</div>
+<div style="position:absolute;bottom:70px;right:14px;width:44px;height:44px;border-radius:50%;background:#ffc107;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:24px">+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div>Karte</div><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1e" data-screen-label="1e Liste kompakt gruppiert">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Kompakt, gruppiert Heute / Später / Vorbei</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333;background:#fff">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="padding:6px 12px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:22px">Flüge</span><span style="border:1.5px solid #333;border-radius:8px;padding:1px 9px;font-size:15px">+ Neu</span></div>
+<div style="padding:2px 12px;font-size:10px;letter-spacing:.1em;color:#999">HEUTE</div>
+<div style="border-top:1.5px solid #eee;border-bottom:1.5px solid #eee;padding:8px 12px;display:flex;justify-content:space-between;align-items:center">
+<div><div style="font-size:14px">● LH400 <span style="color:#888">FRA→JFK</span></div><div style="font-size:11px;color:#888">Anna &amp; Ben · live</div><div style="width:120px;height:3px;background:#ddd;border-radius:2px;margin-top:3px"><div style="width:70%;height:3px;background:#ffc107;border-radius:2px"></div></div></div>
+<div style="text-align:right"><div style="font-size:20px">14:32</div><div style="font-size:10px;color:#888">noch 2:10</div></div>
+</div>
+<div style="border-bottom:1.5px solid #eee;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;color:#666">
+<div><div style="font-size:14px">○ EW594 <span style="color:#999">STR→PMI</span></div><div style="font-size:11px;color:#999">Mama · wartet</div></div>
+<div style="text-align:right"><div style="font-size:14px;color:#999">ab 16:10</div></div>
+</div>
+<div style="padding:8px 12px 2px;font-size:10px;letter-spacing:.1em;color:#999">SPÄTER</div>
+<div style="border-top:1.5px solid #eee;border-bottom:1.5px solid #eee;padding:8px 12px;display:flex;justify-content:space-between;color:#999">
+<div style="font-size:14px">UA961 <span>EWR→MUC</span> · Fr 15.8.</div>
+</div>
+<div style="padding:8px 12px 2px;font-size:10px;letter-spacing:.1em;color:#bbb">VORBEI · WEG IN 24 H</div>
+<div style="border-top:1.5px solid #f3f3f3;padding:8px 12px;display:flex;justify-content:space-between;color:#bbb">
+<div style="font-size:14px">LH710 <span>HND→FRA</span> · gestern</div><div style="font-size:12px">gelandet ✓</div>
+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div>Karte</div><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1f" data-screen-label="1f Liste mit Hero-Zelle">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Hero-Zelle für den Live-Flug + Mini-Karte</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333;background:#fafafa">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="padding:6px 12px;font-size:22px">Flüge</div>
+<div style="margin:0 12px;border:2px solid #333;border-radius:12px;background:#fff;overflow:hidden">
+<div style="height:110px;background:#f4f2ee;position:relative">
+<svg width="234" height="110" viewBox="0 0 234 110"><path d="M-10 30C40 15 90 45 140 30S210 10 244 25L244 -10L-10 -10Z" fill="#eae7e0"></path><circle cx="205" cy="22" r="3" fill="#666"></circle><path d="M205 22C170 55 140 70 112 82" stroke="#555" stroke-width="2" fill="none"></path><path d="M112 82C85 93 45 100 20 104" stroke="#bbb" stroke-width="2" stroke-dasharray="4 4" fill="none"></path><circle cx="20" cy="104" r="3" fill="#666"></circle><g transform="rotate(245 112 82)"><polygon points="112,72 119,90 112,85 105,90" fill="#ffc107" stroke="#333" stroke-width="1.5"></polygon></g></svg>
+<div style="position:absolute;top:6px;left:8px;font-size:12px;background:#fff;border:1.5px solid #333;border-radius:99px;padding:0 8px">● live</div>
+</div>
+<div style="padding:8px 12px;display:flex;flex-direction:column;gap:3px">
+<div style="display:flex;justify-content:space-between;font-size:14px"><span>LH400 · Anna &amp; Ben</span><span style="color:#888;font-size:12px">FRA → JFK</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:26px">14:32</span><span style="font-size:12px;color:#777">Ankunft ca. · noch 2:10</span></div>
+</div>
+</div>
+<div style="margin:10px 12px 0;display:flex;flex-direction:column;gap:8px">
+<div style="border:1.5px solid #ddd;border-radius:10px;background:#fff;padding:7px 12px;display:flex;justify-content:space-between;font-size:13px;color:#666"><span>EW594 · Mama</span><span>wartet · ab 16:10</span></div>
+<div style="border:1.5px dashed #ddd;border-radius:10px;padding:7px 12px;display:flex;justify-content:space-between;font-size:13px;color:#999"><span>UA961 · zurück</span><span>Fr 15.8.</span></div>
+</div>
+<div style="position:absolute;bottom:70px;right:14px;width:44px;height:44px;border-radius:50%;background:#ffc107;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:24px">+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div>Karte</div><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="grp">Flug hinzufügen (Wizard)</div>
+
+<div class="dv-opt" id="1g" data-screen-label="1g Wizard 3 Schritte">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>3 Schritte: Flug → Datum → Vorschau</div>
+<div class="dv-card" style="display:flex;font-family:'Patrick Hand',cursive;color:#333">
+<div style="width:218px;height:490px;border-right:1.5px dashed #ddd;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:#999"><span>Abbrechen</span><span><b style="color:#333">1</b> · 2 · 3</span></div>
+<div style="font-size:19px">Welcher Flug?</div>
+<div style="display:flex;gap:4px;font-size:11px"><span style="border:1.5px solid #333;border-radius:99px;padding:1px 8px;background:#ffeb3b">Flugnummer</span><span style="border:1.5px solid #ccc;border-radius:99px;padding:1px 8px;color:#888">Kennzeichen</span><span style="border:1.5px solid #ccc;border-radius:99px;padding:1px 8px;color:#888">Hex</span></div>
+<div style="border:1.5px solid #333;border-radius:8px;padding:7px 10px;font-size:17px">LH 400<span style="color:#bbb">|</span></div>
+<div style="border:1.5px dashed #ccc;border-radius:8px;padding:6px 10px;font-size:12px;color:#888">Notiz (optional) — „Anna &amp; Ben"</div>
+<div style="border:1.5px solid #ddd;border-radius:8px;background:#fafafa;padding:6px 10px;font-size:11px;color:#777">ⓘ Bei Ryanair, Wizz &amp; easyJet passt die Flugnummer oft nicht zum Funk-Rufzeichen — nutze dann Kennzeichen oder Hex.</div>
+<div style="margin-top:auto;border:2px solid #333;border-radius:10px;background:#ffc107;text-align:center;padding:7px;font-size:16px">Weiter</div>
+</div>
+<div style="width:218px;height:490px;border-right:1.5px dashed #ddd;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:#999"><span>← Zurück</span><span>1 · <b style="color:#333">2</b> · 3</span></div>
+<div style="font-size:19px">An welchem Tag?</div>
+<div style="border:1.5px solid #ccc;border-radius:10px;padding:8px">
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:0 4px 6px"><span>←</span><span>August 2026</span><span>→</span></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:11px;text-align:center;color:#888">
+<span>M</span><span>D</span><span>M</span><span>D</span><span>F</span><span>S</span><span>S</span>
+<span style="color:#ccc">27</span><span style="color:#ccc">28</span><span style="color:#ccc">29</span><span style="color:#ccc">30</span><span style="color:#ccc">31</span><span>1</span><span>2</span>
+<span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+<span>10</span><span>11</span><span style="background:#ffc107;border-radius:50%;color:#333;border:1.5px solid #333">12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+<span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
+</div>
+</div>
+<div style="font-size:11px;color:#888">Nachtflug? Das Zeitfenster reicht über Mitternacht hinaus.</div>
+<div style="margin-top:auto;border:2px solid #333;border-radius:10px;background:#ffc107;text-align:center;padding:7px;font-size:16px">Weiter</div>
+</div>
+<div style="width:218px;height:490px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:#999"><span>← Zurück</span><span>1 · 2 · <b style="color:#333">3</b></span></div>
+<div style="font-size:19px">Passt das?</div>
+<div style="border:1.5px solid #ccc;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="display:flex;justify-content:space-between;font-size:15px"><span>LH400</span><span style="font-size:11px;color:#888">Funk: DLH400</span></div>
+<svg width="170" height="46" viewBox="0 0 170 46"><circle cx="12" cy="36" r="4" fill="#333"></circle><path d="M12 36C50 6 120 6 158 36" stroke="#555" stroke-width="1.8" stroke-dasharray="5 4" fill="none"></path><circle cx="158" cy="36" r="4" fill="#333"></circle><text x="4" y="24" font-size="12" fill="#333" font-family="Patrick Hand">FRA</text><text x="142" y="24" font-size="12" fill="#333" font-family="Patrick Hand">JFK</text></svg>
+<div style="font-size:12px;color:#888">Frankfurt → New York · Mi, 12. Aug</div>
+<div style="font-size:12px;color:#888">Notiz: Anna &amp; Ben</div>
+</div>
+<div style="border:1.5px dashed #ccc;border-radius:8px;padding:6px 10px;font-size:11px;color:#888">Route unbekannt? Kommt vor — der Flug wird trotzdem verfolgt.</div>
+<div style="margin-top:auto;border:2px solid #333;border-radius:10px;background:#ffc107;text-align:center;padding:7px;font-size:16px">Flug eintragen</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1h" data-screen-label="1h Ein-Screen-Formular">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>Alternativ: alles auf einem Screen</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333;background:#fff">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="padding:6px 14px;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:20px">Neuer Flug</span><span style="font-size:13px;color:#999">Abbrechen</span></div>
+<div style="padding:0 14px;display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;gap:4px;font-size:11px"><span style="border:1.5px solid #333;border-radius:99px;padding:1px 8px;background:#ffeb3b">Flugnummer</span><span style="border:1.5px solid #ccc;border-radius:99px;padding:1px 8px;color:#888">Kennzeichen</span><span style="border:1.5px solid #ccc;border-radius:99px;padding:1px 8px;color:#888">Hex</span></div>
+<div style="border:1.5px solid #333;border-radius:8px;padding:6px 10px;font-size:16px">LH 400</div>
+<div style="border:1.5px solid #ccc;border-radius:10px;padding:7px">
+<div style="display:flex;justify-content:space-between;font-size:12px;padding:0 4px 4px"><span>←</span><span>August 2026</span><span>→</span></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:10px;text-align:center;color:#888">
+<span>M</span><span>D</span><span>M</span><span>D</span><span>F</span><span>S</span><span>S</span>
+<span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+<span>10</span><span>11</span><span style="background:#ffc107;border-radius:50%;border:1.5px solid #333">12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+</div>
+</div>
+<div style="border:1.5px dashed #ccc;border-radius:8px;padding:6px 10px;font-size:12px;color:#888">Notiz — „Anna &amp; Ben"</div>
+<div style="border:1.5px solid #ddd;background:#fafafa;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:3px">
+<div style="font-size:11px;color:#999;letter-spacing:.06em">GEFUNDEN</div>
+<div style="display:flex;justify-content:space-between;font-size:14px"><span>FRA → JFK</span><span style="font-size:11px;color:#888">DLH400</span></div>
+<div style="font-size:11px;color:#888">Frankfurt → New York</div>
+</div>
+</div>
+<div style="position:absolute;bottom:16px;left:14px;right:14px;border:2px solid #333;border-radius:10px;background:#ffc107;text-align:center;padding:8px;font-size:16px">Flug eintragen</div>
+</div>
+</div>
+
+<div class="grp">Leerzustand</div>
+
+<div class="dv-opt" id="1i" data-screen-label="1i Leerzustand zentriert">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Zentriert: Erklärung + zwei Wege</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333;background:#fff">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="position:absolute;top:110px;left:24px;right:24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+<svg width="64" height="64" viewBox="0 0 48 48"><path d="M4 24Q24 6 44 24Q24 42 4 24Z" fill="none" stroke="#262626" stroke-width="2.6" stroke-linejoin="round"></path><circle cx="24" cy="24" r="8.8" fill="#262626"></circle><path d="M24 24L24 15.6A8.4 8.4 0 0 1 30.9 20.3Z" fill="#ffc107"></path><circle cx="24" cy="24" r="1.5" fill="#ffeb3b"></circle></svg>
+<div style="font-size:22px;line-height:1.2">Noch kein Flug<br>auf der Liste</div>
+<div style="font-size:13px;color:#888;line-height:1.4">Trag einen Flug ein — am Flugtag verfolgt Flugwacht ihn automatisch und zeigt dir, wann er ankommt.</div>
+<div style="width:100%;border:2px solid #333;border-radius:10px;background:#ffc107;text-align:center;padding:8px;font-size:16px">Flug eintragen</div>
+<div style="font-size:13px;color:#888;text-decoration:underline">Erstmal den Demo-Flug ansehen</div>
+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div>Karte</div><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1j" data-screen-label="1j Leerzustand auf Karte">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Auf der Karte: Demo-Flug läuft schon</div>
+<div class="dv-card" style="width:260px;height:560px;position:relative;font-family:'Patrick Hand',cursive;color:#333">
+<div style="height:22px;display:flex;justify-content:space-between;padding:5px 12px 0;font-size:11px;color:#aaa"><span>9:41</span><span>▮▮▯</span></div>
+<div style="position:absolute;top:22px;left:0;right:0;bottom:54px;background:#f4f2ee;overflow:hidden">
+<svg width="260" height="484" viewBox="0 0 260 484" opacity="0.55"><path d="M-10 100C40 80 80 130 130 110S220 70 270 100L270 -10L-10 -10Z" fill="#eae7e0"></path><circle cx="220" cy="85" r="4" fill="#666"></circle><path d="M220 85C180 160 150 200 115 240" stroke="#555" stroke-width="2" fill="none"></path><path d="M115 240C80 280 40 330 16 400" stroke="#bbb" stroke-width="2" stroke-dasharray="5 5" fill="none"></path><circle cx="16" cy="400" r="4" fill="#666"></circle><g transform="rotate(215 115 240)"><polygon points="115,228 123,248 115,243 107,248" fill="#ffc107" stroke="#333" stroke-width="1.5"></polygon></g></svg>
+<div style="position:absolute;top:150px;left:26px;right:26px;background:#fff;border:2px solid #333;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:7px;text-align:center">
+<div style="font-size:12px;border:1.5px dashed #999;border-radius:99px;padding:1px 8px;color:#777;align-self:center">DEMO</div>
+<div style="font-size:17px;line-height:1.25">So sieht ein verfolgter Flug aus.</div>
+<div style="font-size:12px;color:#888">Dein erster echter: Flugnummer + Datum, den Rest macht Flugwacht.</div>
+<div style="border:2px solid #333;border-radius:10px;background:#ffc107;padding:6px;font-size:15px">Eigenen Flug eintragen</div>
+<div style="font-size:12px;color:#999;text-decoration:underline">Demo behalten</div>
+</div>
+<div style="position:absolute;bottom:8px;left:8px;font-size:9px;color:#999;background:rgba(255,255,255,.75);padding:1px 5px;border-radius:3px">© OSM · adsb.lol</div>
+</div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:54px;border-top:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:space-around;font-size:12px;color:#999"><div style="color:#222;border-bottom:3px solid #ffc107;padding:2px 4px">Karte</div><div>Liste</div><div>Mehr</div></div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Als Nächstes: „<a class="dv-oid" href="#1b">1b</a> mit Chips aus <a class="dv-oid" href="#1c">1c</a>" · „Liste <a class="dv-oid" href="#1e">1e</a>, aber Hero aus <a class="dv-oid" href="#1f">1f</a>" · „Wizard <a class="dv-oid" href="#1g">1g</a> übernehmen und Hi-Fi starten"</p>
+</section>
+</x-dc>
+</body>
+</html>

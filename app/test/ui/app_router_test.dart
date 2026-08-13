@@ -1,3 +1,4 @@
+import 'package:flugwacht/main.dart';
 import 'package:flugwacht/ui/app_router.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
@@ -9,7 +10,7 @@ import 'package:go_router/go_router.dart';
 
 Future<GoRouter> pumpApp(WidgetTester tester) async {
   final router = createAppRouter();
-  await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+  await tester.pumpWidget(FlugwachtApp(router: router));
   await tester.pumpAndSettle();
   return router;
 }

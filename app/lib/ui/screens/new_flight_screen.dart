@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+
 class NewFlightScreen extends StatelessWidget {
   const NewFlightScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('New flight')),
-    body: const Center(child: Text('New flight')),
-  );
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(localizations.newFlightTitle)),
+      body: Center(child: Text(localizations.newFlightTitle)),
+    );
+  }
 }

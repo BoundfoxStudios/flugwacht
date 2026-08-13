@@ -34,6 +34,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  # Private companion repo bundling the licensed Font Awesome Pro icons;
+  # building requires read access to it (see README)
+  font_awesome_flutter:
+    git:
+      url: https://github.com/BoundfoxStudios/font-awesome-flutter-pro.git
+      ref: v1.0.0
   flutter_map: ^8.3.1
   http: ^1.6.0
   latlong2: ^0.10.1

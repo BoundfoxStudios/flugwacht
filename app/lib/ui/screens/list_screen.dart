@@ -3,13 +3,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app_icons.dart';
+import '../../l10n/app_localizations.dart';
 
 class ListScreen extends StatelessWidget {
   const ListScreen({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: const Center(child: Text('List')),
+    body: Center(child: Text(AppLocalizations.of(context).tabList)),
     floatingActionButton: FloatingActionButton(
       onPressed: () => context.push('/new-flight'),
       child: const FaIcon(AppIcons.plus),

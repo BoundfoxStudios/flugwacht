@@ -147,6 +147,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "v1.0.0"
+      resolved-ref: "1652bf5917cf9b2ff645eedd5dc53280bb8e5437"
+      url: "https://github.com/BoundfoxStudios/font-awesome-flutter-pro.git"
+    source: git
+    version: "11.0.0"
   hooks:
     dependency: transitive
     description:

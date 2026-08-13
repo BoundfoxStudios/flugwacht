@@ -22,6 +22,17 @@ jobs:
         working-directory: app
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/create-github-app-token@v3
+        id: fa-pro-token
+        with:
+          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
+          owner: BoundfoxStudios
+          repositories: font-awesome-flutter-pro
+          permission-contents: read
+      - run: git config --global url."https://x-access-token:${FA_PRO_TOKEN}@github.com/BoundfoxStudios/font-awesome-flutter-pro".insteadOf "https://github.com/BoundfoxStudios/font-awesome-flutter-pro"
+        env:
+          FA_PRO_TOKEN: ${{ steps.fa-pro-token.outputs.token }}
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
@@ -44,6 +55,17 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - uses: actions/create-github-app-token@v3
+        id: fa-pro-token
+        with:
+          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
+          owner: BoundfoxStudios
+          repositories: font-awesome-flutter-pro
+          permission-contents: read
+      - run: git config --global url."https://x-access-token:${FA_PRO_TOKEN}@github.com/BoundfoxStudios/font-awesome-flutter-pro".insteadOf "https://github.com/BoundfoxStudios/font-awesome-flutter-pro"
+        env:
+          FA_PRO_TOKEN: ${{ steps.fa-pro-token.outputs.token }}
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
@@ -66,6 +88,17 @@ jobs:
         working-directory: app
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/create-github-app-token@v3
+        id: fa-pro-token
+        with:
+          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
+          owner: BoundfoxStudios
+          repositories: font-awesome-flutter-pro
+          permission-contents: read
+      - run: git config --global url."https://x-access-token:${FA_PRO_TOKEN}@github.com/BoundfoxStudios/font-awesome-flutter-pro".insteadOf "https://github.com/BoundfoxStudios/font-awesome-flutter-pro"
+        env:
+          FA_PRO_TOKEN: ${{ steps.fa-pro-token.outputs.token }}
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable

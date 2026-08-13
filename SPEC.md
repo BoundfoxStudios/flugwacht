@@ -44,7 +44,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Map (OSM raster) | `flutter_map` with OSM tiles |
 | Map (reduced style) | open — decided in its milestone (maplibre_gl / custom style set) |
 | HTTP | `http`, one source adapter behind an interface (sources are field-identical) |
-| Fonts | `google_fonts` (Bebas Neue, Barlow) |
+| Fonts | Bebas Neue + Barlow, bundled at build time — never downloaded at runtime; shipped as assets (plain pubspec `fonts:` or `google_fonts` with local files, decided in M1.3), OFL licenses included |
 | Localization | multilingual UI, German as base language; approach (e.g. `flutter_localizations` + `intl`/gen-l10n) decided at implementation start, set up early so no string is ever hard-coded |
 | Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
 | Notifications | `flutter_local_notifications`, local only, no backend |

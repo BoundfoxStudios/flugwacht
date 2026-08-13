@@ -1,5 +1,3 @@
-default_platform(:ios)
-
 platform :ios do
   desc "Build a signed IPA and upload it to TestFlight"
   lane :release do
@@ -24,7 +22,7 @@ platform :ios do
     )
 
     build_app(
-      workspace: "Runner.xcworkspace",
+      workspace: "ios/Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
       export_team_id: team_id,
@@ -40,6 +38,21 @@ platform :ios do
     upload_to_testflight(
       api_key: api_key,
       skip_waiting_for_build_processing: true
+    )
+  end
+end
+
+platform :android do
+  desc "Upload the signed app bundle to the Play internal testing track"
+  lane :release do
+    upload_to_play_store(
+      package_name: "com.boundfoxstudios.apps.flugwacht",
+      track: "internal",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
+      json_key_data: ENV.fetch("PLAY_STORE_CREDENTIALS"),
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
     )
   end
 end

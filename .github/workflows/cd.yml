@@ -42,7 +42,7 @@ jobs:
         with:
           ruby-version: "3.3"
           bundler-cache: true
-          working-directory: app/android
+          working-directory: app
       # key.properties is parsed as Java properties: backslashes, leading
       # whitespace, and non-ISO-8859-1 characters in the passwords would be
       # silently mangled — keep the secrets plain ASCII without backslashes
@@ -62,7 +62,6 @@ jobs:
       - run: flutter pub get
       - run: flutter build appbundle --release --build-number=${{ github.run_number }}
       - run: bundle exec fastlane android release
-        working-directory: app/android
         env:
           PLAY_STORE_CREDENTIALS: ${{ secrets.PLAY_STORE_CREDENTIALS }}
 
@@ -88,7 +87,7 @@ jobs:
         with:
           ruby-version: "3.3"
           bundler-cache: true
-          working-directory: app/ios
+          working-directory: app
       - name: Write signing inputs
         run: |
           printf '%s' "$APPLE_CERTIFICATE_DATA" | base64 -d > "$RUNNER_TEMP/distribution.p12"
@@ -99,7 +98,6 @@ jobs:
       - run: flutter pub get
       - run: flutter build ios --release --config-only --build-number=${{ github.run_number }}
       - run: bundle exec fastlane ios release
-        working-directory: app/ios
         env:
           APPLE_APP_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID }}
           APPLE_APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_ISSUER_ID }}

@@ -1,0 +1,50 @@
+name: iOS
+
+on:
+  workflow_call:
+    inputs:
+      deliver:
+        description: Upload the signed IPA to TestFlight
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/fa-pro-access
+        with:
+          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version-file: app/.fvmrc
+          cache: true
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: app
+      - name: Write signing inputs
+        run: |
+          printf '%s' "$APPLE_CERTIFICATE_DATA" | base64 -d > "$RUNNER_TEMP/distribution.p12"
+          printf '%s' "$APPLE_APP_STORE_CONNECT_KEY" | base64 -d > "$RUNNER_TEMP/AuthKey.p8"
+        env:
+          APPLE_CERTIFICATE_DATA: ${{ secrets.APPLE_CERTIFICATE_DATA }}
+          APPLE_APP_STORE_CONNECT_KEY: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY }}
+      - run: flutter pub get
+      # --no-codesign: this step only generates the xcconfig; the certificate
+      # is imported later inside the fastlane lane, and gym does the signing
+      - run: flutter build ios --release --config-only --no-codesign --build-number=${{ github.run_number }}
+      - run: bundle exec fastlane ios ${{ inputs.deliver && 'release' || 'build' }}
+        env:
+          APPLE_APP_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID }}
+          APPLE_APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CERTIFICATE_PASSPHRASE: ${{ secrets.APPLE_CERTIFICATE_PASSPHRASE }}

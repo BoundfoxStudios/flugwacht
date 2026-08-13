@@ -1,6 +1,25 @@
 platform :ios do
+  desc "Build a signed IPA without uploading it"
+  lane :build do
+    build_signed_ipa
+  end
+
   desc "Build a signed IPA and upload it to TestFlight"
   lane :release do
+    build_signed_ipa
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  # Automatic signing would mint a fresh development certificate on every
+  # ephemeral runner and eventually exhaust the account's certificate quota,
+  # so the archive signs manually with the imported distribution identity
+  private_lane :build_signed_ipa do
+    app_identifier = "com.boundfoxstudios.apps.flugwacht"
+    profile_name = "Flugwacht App Store"
+
     setup_ci
 
     key_id = ENV.fetch("APPLE_APP_STORE_CONNECT_KEY_ID")
@@ -21,25 +40,37 @@ platform :ios do
       keychain_password: ""
     )
 
+    get_provisioning_profile(
+      api_key: api_key,
+      app_identifier: app_identifier,
+      team_id: team_id,
+      provisioning_name: profile_name,
+      ignore_profiles_with_different_name: true,
+      # Without this, an unusable same-named portal profile (e.g. after a
+      # certificate rotation) makes sigh silently create a timestamp-suffixed
+      # profile that no longer matches the pinned name below
+      fail_on_name_taken: true
+    )
+
+    update_code_signing_settings(
+      path: "ios/Runner.xcodeproj",
+      use_automatic_signing: false,
+      team_id: team_id,
+      targets: ["Runner"],
+      code_sign_identity: "Apple Distribution",
+      profile_name: profile_name
+    )
+
     build_app(
       workspace: "ios/Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
       export_team_id: team_id,
-      # gym appends xcargs to the exportArchive call as well, so the
-      # authentication reaches both the archive and the export step
-      xcargs: [
-        "-allowProvisioningUpdates",
-        "-authenticationKeyPath #{key_path}",
-        "-authenticationKeyID #{key_id}",
-        "-authenticationKeyIssuerID #{issuer_id}",
-        "DEVELOPMENT_TEAM=#{team_id}"
-      ].join(" ")
-    )
-
-    upload_to_testflight(
-      api_key: api_key,
-      skip_waiting_for_build_processing: true
+      export_options: {
+        provisioningProfiles: {
+          app_identifier => profile_name
+        }
+      }
     )
   end
 end

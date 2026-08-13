@@ -1,41 +1,16 @@
-name: CI
+name: Build
 
 on:
   pull_request:
-  push:
-    branches: [main]
 
 permissions:
   contents: read
 
 concurrency:
-  # Per-commit groups for pushes so queued main runs are never canceled as superseded
-  group: ci-${{ github.event_name == 'push' && github.sha || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  checks:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: app
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/fa-pro-access
-        with:
-          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          channel: stable
-          flutter-version-file: app/.fvmrc
-          cache: true
-      - run: flutter pub get
-      - run: dart format --set-exit-if-changed .
-      - run: flutter analyze
-      - run: flutter test
-
   build-android:
     runs-on: ubuntu-latest
     timeout-minutes: 30

@@ -14,9 +14,8 @@ individual, manually added flights: enter a flight number and departure date
 automatically and shows it live on a map. The one question that matters:
 *Where are they right now, and when will they arrive?* Typically 1–3 flights at
 a time; any feature that does not serve this question does not belong in the app.
-The app's UI is multilingual with German as the base language (informal "Du"
-form, no emoji); the concrete localization approach is agreed with Manuel when
-implementation starts.
+The app's UI is multilingual via Flutter's gen-l10n: English is the base
+language, German is the second language (informal "Du" form, no emoji).
 
 **Two-stage approach:**
 
@@ -45,7 +44,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Map (reduced style) | open — decided in its milestone (maplibre_gl / custom style set) |
 | HTTP | `http`, one source adapter behind an interface (sources are field-identical) |
 | Fonts | Bebas Neue + Barlow, bundled at build time — never downloaded at runtime; shipped as assets (plain pubspec `fonts:` or `google_fonts` with local files, decided in M1.3), OFL licenses included |
-| Localization | multilingual UI, German as base language; approach (e.g. `flutter_localizations` + `intl`/gen-l10n) decided at implementation start, set up early so no string is ever hard-coded |
+| Localization | `flutter_localizations` + `intl` via gen-l10n (`l10n.yaml`, ARB files); English is the base/template language (`app_en.arb`), German the second language; device language selects the locale, English is the fallback; set up early (M1.6) so no string is ever hard-coded |
 | Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
 | Notifications | `flutter_local_notifications`, local only, no backend |
 | Date | native system date picker (`showDatePicker` / `CupertinoDatePicker`) |
@@ -100,8 +99,9 @@ class FixTimestamp {
 }
 ```
 
-UI copy is localized from the start — no hard-coded strings in widgets; German
-is the base language (informal "Du" form, no emoji). Design tokens exactly as in the
+UI copy is localized from the start — no hard-coded strings in widgets; English
+is the base language, German copy uses the informal "Du" form, no emoji in
+either language. Design tokens exactly as in the
 handoff README (yellow trio `#ffeb3b`/`#ffc107`/`#ffa726` never substituted,
 Bebas Neue + Barlow, 4px grid, hit targets ≥ 44px, motion 150–200ms
 ease-in-out).
@@ -193,8 +193,6 @@ handoff README.
 
 ## Open Questions
 
-- Localization details: framework approach and target languages (German is the
-  base; agreed with Manuel before the UI increments build on it)
 - Technology for the reduced map style (decided in M11)
 - Background polling on iOS (M14, with the user)
 - FA Pro kit setup may need the user's license access on the host

@@ -14,11 +14,20 @@
   `main`. All work happens on a `feature/` or `fix/` branch and goes through a
   pull request against `main`.
 - PRs are merged only after Manuel's approval (PR approval or comment); never
-  merge without it. Merge method: rebase, so the conventional commit titles are
-  preserved on `main`.
+  merge without it. Merge method: plain merge commit — no rebase, no squash.
+  The merge commit is the only commit that does not follow conventional
+  commits; every regular commit does (keeps a later release-please adoption
+  possible).
 - Planning and tracking happen through GitHub issues and milestones; commits
-  reference their issue. The spec lives in `SPEC.md` (feedback channel:
-  issue #1).
+  reference their issue. The spec lives in `SPEC.md`; spec discussions happen
+  directly in the chat.
+
+## Repository Layout
+
+- Monorepo: the Flutter app lives in `app/` — run all Flutter/Dart commands
+  there. `website/` (planned) and possibly `backend/` (later expansion stage)
+  will join next to it.
+- Repo-level branding assets (logo) live in `assets/`.
 
 ## Credentials
 

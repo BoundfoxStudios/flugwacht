@@ -14,7 +14,9 @@ individual, manually added flights: enter a flight number and departure date
 automatically and shows it live on a map. The one question that matters:
 *Where are they right now, and when will they arrive?* Typically 1–3 flights at
 a time; any feature that does not serve this question does not belong in the app.
-The app's UI copy is German (informal "Du" form, no emoji).
+The app's UI is multilingual with German as the base language (informal "Du"
+form, no emoji); the concrete localization approach is agreed with Manuel when
+implementation starts.
 
 **Two-stage approach:**
 
@@ -42,7 +44,8 @@ deleted once the app is finished (M16; git history keeps them).
 | Map (OSM raster) | `flutter_map` with OSM tiles |
 | Map (reduced style) | open — decided in its milestone (maplibre_gl / custom style set) |
 | HTTP | `http`, one source adapter behind an interface (sources are field-identical) |
-| Fonts | `google_fonts` (Bebas Neue, Barlow) |
+| Fonts | Bebas Neue + Barlow, bundled at build time — never downloaded at runtime; shipped as assets (plain pubspec `fonts:` or `google_fonts` with local files, decided in M1.3), OFL licenses included |
+| Localization | multilingual UI, German as base language; approach (e.g. `flutter_localizations` + `intl`/gen-l10n) decided at implementation start, set up early so no string is ever hard-coded |
 | Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
 | Notifications | `flutter_local_notifications`, local only, no backend |
 | Date | native system date picker (`showDatePicker` / `CupertinoDatePicker`) |
@@ -58,6 +61,8 @@ paid sources.
 ## Commands
 
 ```
+cd app
+
 Setup:    flutter pub get
 Analyze:  flutter analyze
 Format:   dart format .
@@ -69,12 +74,14 @@ Sandbox:  flutter run -d web-server   (fallback only; no iOS/Android builds in t
 ## Project Structure
 
 ```
-lib/
-  data/    → source adapters (readsb API), fix normalization, route lookup, drift DB
-  domain/  → models (Flight, Fix, Route), state machine, arrival estimate
-  ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
-test/      → mirrors lib/ (data/, domain/, ui/)
-assets/    → logo and other bundled assets
+app/       → Flutter app (iOS + Android)
+  lib/data/    → source adapters (readsb API), fix normalization, route lookup, drift DB
+  lib/domain/  → models (Flight, Fix, Route), state machine, arrival estimate
+  lib/ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
+  test/        → mirrors lib/ (data/, domain/, ui/)
+assets/    → logo and other repo-level branding assets
+website/   → project website (planned, does not exist yet)
+backend/   → possible later expansion stage (only if unavoidable — Manuel's call)
 design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M16
 ```
 
@@ -93,7 +100,8 @@ class FixTimestamp {
 }
 ```
 
-UI copy is German, informal "Du" form, no emoji. Design tokens exactly as in the
+UI copy is localized from the start — no hard-coded strings in widgets; German
+is the base language (informal "Du" form, no emoji). Design tokens exactly as in the
 handoff README (yellow trio `#ffeb3b`/`#ffc107`/`#ffa726` never substituted,
 Bebas Neue + Barlow, 4px grid, hit targets ≥ 44px, motion 150–200ms
 ease-in-out).
@@ -139,7 +147,9 @@ active state), no framework tests.
 
 **Never:**
 - Reintroduce OpenSky, an own receiver, history, or paid sources
-- Add a backend/server/accounts (everything stays local on the device)
+- Add a backend/server/accounts to the core tracking (per the handoff,
+  everything stays local on the device); a backend as a later expansion stage is
+  Manuel's explicit call
 - Demo flight in the empty state
 - Substitute brand colors
 - Commit or push directly to `main` (PR workflow); merge PRs without approval
@@ -156,7 +166,7 @@ handoff README.
 
 | # | Increment | Core |
 |---|---|---|
-| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark |
+| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark, localization scaffold |
 | M2 | Domain core | Fix model + normalization, source adapter (readsb interface, 3 sources), tests |
 | M3 | Flight model | Flight + state machine (6 states, midnight-crossing window), tests |
 | M4 | Persistence | drift schema: flights + trail points (with source ID), auto cleanup after 24 h |
@@ -183,6 +193,8 @@ handoff README.
 
 ## Open Questions
 
+- Localization details: framework approach and target languages (German is the
+  base; agreed with Manuel before the UI increments build on it)
 - Technology for the reduced map style (decided in M11)
 - Background polling on iOS (M14, with the user)
 - FA Pro kit setup may need the user's license access on the host

@@ -1,7 +1,18 @@
 version: 2
+registries:
+  # The org-level "grant Dependabot access to private repositories" setting
+  # does not reach pub's git clones, so the token is injected explicitly
+  font-awesome-flutter-pro:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: ${{ secrets.FONT_AWESOME_PRO_REPO_GIT_TOKEN }}
+
 updates:
   - package-ecosystem: pub
     directory: /app
+    registries:
+      - font-awesome-flutter-pro
     schedule:
       interval: weekly
     groups:

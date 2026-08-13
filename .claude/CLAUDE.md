@@ -32,6 +32,13 @@
   will join next to it.
 - Repo-level branding assets (logo) live in `assets/`.
 
+## Dart Formatting
+
+- Write Dart code token-efficiently without reproducing `dart format` line
+  breaking by hand — manual formatting wastes tokens; the tool owns it. When
+  the change is complete, run `dart format .` once in `app/` so the committed
+  code is properly formatted (CI checks it).
+
 ## Credentials
 
 - The repo will become public. Never commit credentials, tokens, or license

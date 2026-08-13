@@ -61,14 +61,6 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - run: flutter pub get
       - run: flutter build appbundle --release --build-number=${{ github.run_number }}
-      # Uploaded before the store step so a failed Play upload (e.g. during the
-      # manual first-release bootstrap) still yields the signed bundle
-      - uses: actions/upload-artifact@v7
-        with:
-          name: android-aab
-          path: app/build/app/outputs/bundle/release/app-release.aab
-          if-no-files-found: error
-          retention-days: 7
       - run: bundle exec fastlane android release
         env:
           PLAY_STORE_CREDENTIALS: ${{ secrets.PLAY_STORE_CREDENTIALS }}

@@ -46,6 +46,15 @@ flutter test
 flutter run
 ```
 
+### Font Awesome Pro
+
+The app depends on the private package repository
+`BoundfoxStudios/font-awesome-flutter-pro`, which bundles licensed Font Awesome
+Pro icons that must not appear in a public repository. Building the app
+therefore requires read access to that repository — without it,
+`flutter pub get` fails. CI authenticates through a GitHub App installation
+token.
+
 ## Data and licenses
 
 Flight data comes from the community networks [adsb.lol](https://adsb.lol)

@@ -166,7 +166,7 @@ handoff README.
 
 | # | Increment | Core |
 |---|---|---|
-| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark, localization scaffold |
+| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark, localization scaffold, CI/CD (format/analyze/test, Android + iOS builds, automated delivery to TestFlight and the Play internal test track) |
 | M2 | Domain core | Fix model + normalization, source adapter (readsb interface, 3 sources), tests |
 | M3 | Flight model | Flight + state machine (6 states, midnight-crossing window), tests |
 | M4 | Persistence | drift schema: flights + trail points (with source ID), auto cleanup after 24 h |

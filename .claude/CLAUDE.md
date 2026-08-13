@@ -21,6 +21,9 @@
 - Planning and tracking happen through GitHub issues and milestones; commits
   reference their issue. The spec lives in `SPEC.md`; spec discussions happen
   directly in the chat.
+- Never append commits to a PR that is already under review — Manuel merges
+  quickly, and late pushes get orphaned by the branch auto-delete. New changes
+  get their own small PR.
 
 ## Repository Layout
 

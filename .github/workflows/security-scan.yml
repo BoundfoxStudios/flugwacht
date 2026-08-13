@@ -1,0 +1,18 @@
+name: Security Scan
+
+on:
+  schedule:
+    # Weekly full scan so new CVEs surface without a push
+    - cron: '30 5 * * 1'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  osv-scanner:
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@8deb546fdb875b9996d27d4950be7312dac076a1 # v2.5.0

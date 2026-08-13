@@ -58,11 +58,11 @@ jobs:
           flutter-version-file: app/.fvmrc
           cache: true
       - run: flutter pub get
-      - run: flutter build apk --release
+      - run: flutter build appbundle --release
       - uses: actions/upload-artifact@v7
         with:
-          name: android-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk
+          name: android-aab
+          path: app/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 7
 

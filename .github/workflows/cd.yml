@@ -104,7 +104,9 @@ jobs:
           APPLE_CERTIFICATE_DATA: ${{ secrets.APPLE_CERTIFICATE_DATA }}
           APPLE_APP_STORE_CONNECT_KEY: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY }}
       - run: flutter pub get
-      - run: flutter build ios --release --config-only --build-number=${{ github.run_number }}
+      # --no-codesign: this step only generates the xcconfig; the certificate
+      # is imported later inside the fastlane lane, and gym does the signing
+      - run: flutter build ios --release --config-only --no-codesign --build-number=${{ github.run_number }}
       - run: bundle exec fastlane ios release
         env:
           APPLE_APP_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID }}

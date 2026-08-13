@@ -1,0 +1,45 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build a signed IPA and upload it to TestFlight"
+  lane :release do
+    setup_ci
+
+    key_id = ENV.fetch("APPLE_APP_STORE_CONNECT_KEY_ID")
+    issuer_id = ENV.fetch("APPLE_APP_STORE_CONNECT_ISSUER_ID")
+    key_path = File.join(ENV.fetch("RUNNER_TEMP"), "AuthKey.p8")
+    team_id = ENV.fetch("APPLE_TEAM_ID")
+
+    api_key = app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_filepath: key_path
+    )
+
+    import_certificate(
+      certificate_path: File.join(ENV.fetch("RUNNER_TEMP"), "distribution.p12"),
+      certificate_password: ENV.fetch("APPLE_CERTIFICATE_PASSPHRASE"),
+      keychain_name: "fastlane_tmp_keychain",
+      keychain_password: ""
+    )
+
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store",
+      export_team_id: team_id,
+      xcargs: [
+        "-allowProvisioningUpdates",
+        "-authenticationKeyPath #{key_path}",
+        "-authenticationKeyID #{key_id}",
+        "-authenticationKeyIssuerID #{issuer_id}",
+        "DEVELOPMENT_TEAM=#{team_id}"
+      ].join(" ")
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
+  end
+end

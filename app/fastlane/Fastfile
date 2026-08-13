@@ -24,7 +24,7 @@ platform :ios do
     build_app(
       workspace: "ios/Runner.xcworkspace",
       scheme: "Runner",
-      export_method: "app-store-connect",
+      export_method: "app-store",
       export_team_id: team_id,
       # gym appends xcargs to the exportArchive call as well, so the
       # authentication reaches both the archive and the export step

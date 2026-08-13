@@ -21,18 +21,22 @@ platform :ios do
       keychain_password: ""
     )
 
+    authentication_xcargs = [
+      "-allowProvisioningUpdates",
+      "-authenticationKeyPath #{key_path}",
+      "-authenticationKeyID #{key_id}",
+      "-authenticationKeyIssuerID #{issuer_id}"
+    ].join(" ")
+
     build_app(
       workspace: "ios/Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
       export_team_id: team_id,
-      xcargs: [
-        "-allowProvisioningUpdates",
-        "-authenticationKeyPath #{key_path}",
-        "-authenticationKeyID #{key_id}",
-        "-authenticationKeyIssuerID #{issuer_id}",
-        "DEVELOPMENT_TEAM=#{team_id}"
-      ].join(" ")
+      xcargs: "#{authentication_xcargs} DEVELOPMENT_TEAM=#{team_id}",
+      # exportArchive resigns with the App Store profile and needs the same
+      # cloud-signing authentication; gym forwards xcargs only to the build
+      export_xcargs: authentication_xcargs
     )
 
     upload_to_testflight(

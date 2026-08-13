@@ -28,3 +28,6 @@ Condensed from the official Flutter AI rules:
 - English code, zero comments by default, no abbreviations in identifiers
 - Tests cover only the app's own behavior (domain logic, edge cases, error
   paths) — never framework behavior
+- Write Dart code token-efficiently without reproducing `dart format` line
+  breaking by hand — the tool owns formatting. When the change is complete,
+  run `dart format .` once in `app/` (CI checks it)

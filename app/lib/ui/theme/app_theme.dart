@@ -7,11 +7,11 @@ ThemeData buildLightTheme() => _themeFrom(
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
     primary: AppColors.amber,
-    onPrimary: AppColors.neutral800,
+    onPrimary: AppColors.neutral900,
     secondary: AppColors.yellow,
-    onSecondary: AppColors.neutral800,
+    onSecondary: AppColors.neutral900,
     tertiary: AppColors.orange,
-    onTertiary: AppColors.neutral800,
+    onTertiary: AppColors.neutral900,
     error: AppColors.errorLight,
     onError: AppColors.white,
     surface: AppColors.white,
@@ -43,11 +43,11 @@ ThemeData buildDarkTheme() => _themeFrom(
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
     primary: AppColors.amber,
-    onPrimary: AppColors.neutral800,
+    onPrimary: AppColors.neutral900,
     secondary: AppColors.yellow,
-    onSecondary: AppColors.neutral800,
+    onSecondary: AppColors.neutral900,
     tertiary: AppColors.orange,
-    onTertiary: AppColors.neutral800,
+    onTertiary: AppColors.neutral900,
     error: AppColors.errorDark,
     onError: AppColors.neutral900,
     surface: AppColors.neutral800,
@@ -113,6 +113,6 @@ ThemeData _themeFrom({
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: AppColors.amber,
-    foregroundColor: AppColors.neutral800,
+    foregroundColor: AppColors.neutral900,
   ),
 );

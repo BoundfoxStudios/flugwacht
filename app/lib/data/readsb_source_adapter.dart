@@ -6,6 +6,7 @@ import '../domain/fix.dart';
 import '../domain/source_id.dart';
 import 'fix_normalizer.dart';
 import 'lookup_result.dart';
+import 'rate_limiter.dart';
 import 'source_adapter.dart';
 
 class ReadsbSourceAdapter implements SourceAdapter {
@@ -18,6 +19,9 @@ class ReadsbSourceAdapter implements SourceAdapter {
   final SourceId _sourceId;
   final http.Client _client;
   final Duration _timeout;
+  final RateLimiter _rateLimiter = RateLimiter(
+    minimumInterval: const Duration(seconds: 1),
+  );
 
   @override
   Future<LookupResult> lookupByHexAddress(String hexAddress) =>
@@ -31,7 +35,10 @@ class ReadsbSourceAdapter implements SourceAdapter {
   Future<LookupResult> lookupByRegistration(String registration) =>
       _lookup(_registrationPath, registration);
 
-  Future<LookupResult> _lookup(String path, String value) async {
+  Future<LookupResult> _lookup(String path, String value) =>
+      _rateLimiter.schedule(() => _fetch(path, value));
+
+  Future<LookupResult> _fetch(String path, String value) async {
     final http.Response response;
     try {
       response = await _client

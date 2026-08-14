@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/readsb_source_adapter.dart';
 import 'package:flugwacht/domain/source_id.dart';
@@ -284,5 +285,89 @@ void main() {
         expect(result, isA<LookupMalformedPayload>());
       });
     }
+  });
+
+  group('rate limiting', () {
+    test('spaces same-source lookups one second apart', () {
+      fakeAsync((async) {
+        var requestCount = 0;
+        ReadsbSourceAdapter(
+            sourceId: SourceId.adsblol,
+            client: MockClient((request) async {
+              requestCount++;
+              return http.Response(emptyEnvelope, 200);
+            }),
+          )
+          ..lookupByHexAddress('3c64c6')
+          ..lookupByHexAddress('3c64c6')
+          ..lookupByHexAddress('3c64c6');
+
+        async.flushMicrotasks();
+        expect(requestCount, 1);
+
+        async.elapse(const Duration(milliseconds: 999));
+        expect(requestCount, 1);
+        async.elapse(const Duration(milliseconds: 1));
+        expect(requestCount, 2);
+
+        async.elapse(const Duration(milliseconds: 999));
+        expect(requestCount, 2);
+        async.elapse(const Duration(milliseconds: 1));
+        expect(requestCount, 3);
+      });
+    });
+
+    test('does not delay lookups across different sources', () {
+      fakeAsync((async) {
+        var requestCount = 0;
+        MockClient countingClient() => MockClient((request) async {
+          requestCount++;
+          return http.Response(emptyEnvelope, 200);
+        });
+        final adsblol = ReadsbSourceAdapter(
+          sourceId: SourceId.adsblol,
+          client: countingClient(),
+        );
+        final adsbfi = ReadsbSourceAdapter(
+          sourceId: SourceId.adsbfi,
+          client: countingClient(),
+        );
+
+        adsblol.lookupByHexAddress('3c64c6');
+        adsbfi.lookupByHexAddress('3c64c6');
+        async.flushMicrotasks();
+
+        expect(requestCount, 2);
+      });
+    });
+
+    test('does not count queue wait toward the timeout', () {
+      fakeAsync((async) {
+        var requestCount = 0;
+        final adapter = ReadsbSourceAdapter(
+          sourceId: SourceId.adsblol,
+          client: MockClient((request) async {
+            requestCount++;
+            if (requestCount == 1) {
+              await Future<void>.delayed(const Duration(seconds: 2));
+            }
+            return http.Response(emptyEnvelope, 200);
+          }),
+          timeout: const Duration(milliseconds: 500),
+        );
+        LookupResult? first;
+        LookupResult? second;
+        adapter
+          ..lookupByHexAddress('3c64c6').then((result) => first = result)
+          ..lookupByHexAddress('3c64c6').then((result) => second = result);
+
+        async.elapse(const Duration(milliseconds: 500));
+        expect(first, isA<LookupNetworkFailure>());
+        expect(second, isNull);
+
+        async.elapse(const Duration(milliseconds: 500));
+        expect(second, isA<LookupSuccess>());
+      });
+    });
   });
 }

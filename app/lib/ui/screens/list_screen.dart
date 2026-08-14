@@ -10,7 +10,12 @@ class ListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: Center(child: Text(AppLocalizations.of(context).tabList)),
+    body: Center(
+      child: Text(
+        AppLocalizations.of(context).tabList,
+        style: Theme.of(context).textTheme.headlineLarge,
+      ),
+    ),
     floatingActionButton: FloatingActionButton(
       onPressed: () => context.push('/new-flight'),
       child: const FaIcon(AppIcons.plus),

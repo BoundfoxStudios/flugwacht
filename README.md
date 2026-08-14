@@ -49,9 +49,11 @@ flutter run
 ### App icons
 
 Launcher icons, launch screens, and the Play Store listing icon are rendered
-from the SVG masters in `assets/icon/` by `tool/generate-icons.sh`. The script
-only requires Docker: it renders inside a pinned Alpine container
-(`tool/icons.dockerfile`), which keeps the host clean and the PNG output
+from the SVG masters in `assets/icon/` by
+`tools/icon-generator/generate-icons.sh`. The script only requires Docker: it
+renders inside a pinned Alpine container
+(`tools/icon-generator/icons.dockerfile`), which keeps the host clean and the
+PNG output
 reproducible across machines. It writes every export to
 `assets/icon/generated/` and copies the app images into `app/ios/` and
 `app/android/`. The Play listing icon

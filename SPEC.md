@@ -70,10 +70,10 @@ App:      flutter run                 (on the host: iOS simulator/device)
 Sandbox:  flutter run -d web-server   (fallback only; no iOS/Android builds in the sandbox)
 ```
 
-Icon exports are regenerated with `tool/generate-icons.sh` from the repo root
-(requires Docker; renders via a pinned librsvg container); the script is
-idempotent, writes the staging exports to `assets/icon/generated/`, and copies
-them into `app/ios/` and `app/android/`.
+Icon exports are regenerated with `tools/icon-generator/generate-icons.sh`
+from the repo root (requires Docker; renders via a pinned librsvg container);
+the script is idempotent, writes the staging exports to
+`assets/icon/generated/`, and copies them into `app/ios/` and `app/android/`.
 
 ## Project Structure
 
@@ -84,7 +84,7 @@ app/       → Flutter app (iOS + Android)
   lib/ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
   test/        → mirrors lib/ (data/, domain/, ui/)
 assets/    → repo-level branding: logo/ (mark + lockup SVGs), icon/ (SVG masters + generated/ platform exports)
-tool/      → repo-level scripts (generate-icons.sh renders all launcher/store images from the SVG masters)
+tools/     → repo-level tooling; icon-generator/ renders all launcher/store images from the SVG masters
 website/   → project website (planned, does not exist yet)
 backend/   → possible later expansion stage (only if unavoidable — Manuel's call)
 design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M16

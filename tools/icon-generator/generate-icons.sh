@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 if [ -z "${FLUGWACHT_ICONS_CONTAINER:-}" ]; then
   if ! command -v docker >/dev/null; then
     echo "docker is required" >&2
     exit 1
   fi
-  docker build --quiet --file "$repository_root/tool/icons.dockerfile" \
-    --tag flugwacht-icons "$repository_root/tool" >/dev/null
+  docker build --quiet --file "$repository_root/tools/icon-generator/icons.dockerfile" \
+    --tag flugwacht-icons "$repository_root/tools/icon-generator" >/dev/null
   exec docker run --rm --user "$(id -u):$(id -g)" \
     --env FLUGWACHT_ICONS_CONTAINER=1 \
     --volume "$repository_root:/workspace" \
     --workdir /workspace \
-    flugwacht-icons tool/generate-icons.sh
+    flugwacht-icons tools/icon-generator/generate-icons.sh
 fi
 
 masters="$repository_root/assets/icon"
@@ -31,7 +31,7 @@ render() {
 render tile.svg 1024 "$staging/ios/app-icon-1024.png"
 render ios-dark.svg 1024 "$staging/ios/app-icon-1024-dark.png"
 render ios-tinted.svg 1024 "$staging/ios/app-icon-1024-tinted.png"
-python3 "$repository_root/tool/strip_png_alpha.py" \
+python3 "$repository_root/tools/icon-generator/strip_png_alpha.py" \
   "$staging/ios/app-icon-1024.png" \
   "$staging/ios/app-icon-1024-tinted.png"
 

@@ -28,6 +28,7 @@ void main() {
 
   test('starts a flight with empty tracking', () {
     const flight = Flight(
+      id: 1,
       lookupKind: FlightLookupKind.flightNumber,
       lookupValue: 'LH433',
       departureDate: CalendarDate(2026, 3, 17),
@@ -93,6 +94,7 @@ void main() {
 
   test('copies a flight with new tracking and keeps every other field', () {
     const flight = Flight(
+      id: 1,
       lookupKind: FlightLookupKind.registration,
       lookupValue: 'D-AIFF',
       departureDate: CalendarDate(2026, 3, 17),
@@ -108,6 +110,7 @@ void main() {
     final updated = flight.copyWith(tracking: tracking);
 
     expect(updated.tracking, same(tracking));
+    expect(updated.id, 1);
     expect(updated.lookupKind, FlightLookupKind.registration);
     expect(updated.lookupValue, 'D-AIFF');
     expect(updated.departureDate, const CalendarDate(2026, 3, 17));
@@ -118,6 +121,7 @@ void main() {
 
   test('copies a flight with every passed field replaced', () {
     const flight = Flight(
+      id: 1,
       lookupKind: FlightLookupKind.flightNumber,
       lookupValue: 'LH433',
       departureDate: CalendarDate(2026, 3, 17),
@@ -131,6 +135,7 @@ void main() {
     );
 
     final updated = flight.copyWith(
+      id: 2,
       lookupKind: FlightLookupKind.hexAddress,
       lookupValue: '3C64C7',
       departureDate: const CalendarDate(2026, 4, 1),
@@ -140,6 +145,7 @@ void main() {
       tracking: tracking,
     );
 
+    expect(updated.id, 2);
     expect(updated.lookupKind, FlightLookupKind.hexAddress);
     expect(updated.lookupValue, '3C64C7');
     expect(updated.departureDate, const CalendarDate(2026, 4, 1));
@@ -155,6 +161,7 @@ void main() {
       window,
     );
     final flight = const Flight(
+      id: 1,
       lookupKind: FlightLookupKind.flightNumber,
       lookupValue: 'LH433',
       departureDate: CalendarDate(2026, 3, 17),

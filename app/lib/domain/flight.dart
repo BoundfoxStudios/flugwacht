@@ -6,6 +6,7 @@ enum FlightLookupKind { flightNumber, registration, hexAddress }
 
 class Flight {
   const Flight({
+    required this.id,
     required this.lookupKind,
     required this.lookupValue,
     required this.departureDate,
@@ -15,6 +16,7 @@ class Flight {
     this.tracking = const FlightTracking(),
   });
 
+  final int id;
   final FlightLookupKind lookupKind;
   final String lookupValue;
   final CalendarDate departureDate;
@@ -24,6 +26,7 @@ class Flight {
   final FlightTracking tracking;
 
   Flight copyWith({
+    int? id,
     FlightLookupKind? lookupKind,
     String? lookupValue,
     CalendarDate? departureDate,
@@ -32,6 +35,7 @@ class Flight {
     String? expectedCallsign,
     FlightTracking? tracking,
   }) => Flight(
+    id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
     lookupValue: lookupValue ?? this.lookupValue,
     departureDate: departureDate ?? this.departureDate,

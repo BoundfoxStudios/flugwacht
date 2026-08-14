@@ -27,6 +27,7 @@ void main() {
   );
 
   Flight flightWith(FlightTracking tracking) => Flight(
+    id: 1,
     lookupKind: FlightLookupKind.flightNumber,
     lookupValue: 'LH433',
     departureDate: departureDate,

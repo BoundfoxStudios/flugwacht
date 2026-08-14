@@ -100,6 +100,18 @@ void main() {
         'https://api.adsb.lol/v2/callsign/A%2FB%20C',
       );
     });
+
+    test('sends GET requests', () async {
+      late String method;
+      final adapter = adapterReturning(
+        emptyEnvelope,
+        onRequest: (request) => method = request.method,
+      );
+
+      await adapter.lookupByHexAddress('3c64c6');
+
+      expect(method, 'GET');
+    });
   });
 
   group('success', () {
@@ -156,10 +168,19 @@ void main() {
       expect(result, isA<LookupSuccess>());
       expect((result as LookupSuccess).fixes, isEmpty);
     });
+
+    test('treats any 2xx status as a success', () async {
+      final result = await adapterReturning(
+        emptyEnvelope,
+        statusCode: 299,
+      ).lookupByHexAddress('3c64c6');
+
+      expect(result, isA<LookupSuccess>());
+    });
   });
 
   group('status failures', () {
-    for (final statusCode in [404, 500]) {
+    for (final statusCode in [199, 301, 404, 500]) {
       test(
         'maps a $statusCode response to a status failure carrying the code',
         () async {

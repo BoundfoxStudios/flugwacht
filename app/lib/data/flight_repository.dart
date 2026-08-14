@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../domain/calendar_date.dart';
 import '../domain/fix.dart';
 import '../domain/flight.dart';
+import '../domain/flight_state.dart';
 import '../domain/source_id.dart';
 import '../domain/trail_point.dart';
 import 'database.dart';
@@ -94,6 +95,21 @@ class FlightRepository {
       ..where((row) => row.flightId.equals(flightId))
       ..orderBy([(row) => OrderingTerm(expression: row.timestamp)]);
     return query.watch().map((rows) => rows.map(_toTrailPoint).toList());
+  }
+
+  Future<void> deleteExpiredFlights(DateTime now) async {
+    final rows = await _database.select(_database.flights).get();
+    final expiredIds = rows
+        .map(_toFlight)
+        .where((flight) => hasFlightExpired(flight, now))
+        .map((flight) => flight.id)
+        .toList();
+    if (expiredIds.isEmpty) {
+      return;
+    }
+    await (_database.delete(
+      _database.flights,
+    )..where((row) => row.id.isIn(expiredIds))).go();
   }
 
   Future<void> deleteFlight(int flightId) async {

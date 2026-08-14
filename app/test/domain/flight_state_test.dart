@@ -26,6 +26,9 @@ void main() {
     (tracking, fix) => tracking.withFix(fix, window),
   );
 
+  DateTime afterWindowStart(Duration offset) =>
+      window.start.add(offset).toUtc();
+
   Flight flightWith(FlightTracking tracking) => Flight(
     id: 1,
     lookupKind: FlightLookupKind.flightNumber,
@@ -177,5 +180,134 @@ void main() {
       resolveFlightState(flightWith(tracking), window.end),
       FlightState.missed,
     );
+  });
+
+  test('keeps a missed flight until 24 h after the window end', () {
+    final flight = flightWith(const FlightTracking());
+    final expiry = window.end.add(const Duration(hours: 24));
+
+    expect(
+      hasFlightExpired(flight, expiry.subtract(const Duration(minutes: 1))),
+      isFalse,
+    );
+    expect(hasFlightExpired(flight, expiry), isTrue);
+  });
+
+  test('expires a flight that ran to the window end 24 h later', () {
+    final flight = flightWith(
+      trackingFrom([
+        positionFix(
+          afterWindowStart(const Duration(hours: 2)),
+          onGround: false,
+        ),
+      ]),
+    );
+    final expiry = window.end.add(pastFlightRetention);
+
+    expect(
+      hasFlightExpired(flight, expiry.subtract(const Duration(minutes: 1))),
+      isFalse,
+    );
+    expect(hasFlightExpired(flight, expiry), isTrue);
+  });
+
+  test('expires an early landed flight while its window is still open', () {
+    final landing = afterWindowStart(const Duration(hours: 2));
+    final flight = flightWith(
+      trackingFrom([
+        positionFix(
+          afterWindowStart(const Duration(hours: 1)),
+          onGround: false,
+        ),
+        positionFix(landing, onGround: true),
+      ]),
+    );
+    final expiry = landing.add(pastFlightRetention);
+
+    expect(window.contains(expiry), isTrue);
+    expect(
+      hasFlightExpired(flight, expiry.subtract(const Duration(minutes: 1))),
+      isFalse,
+    );
+    expect(hasFlightExpired(flight, expiry), isTrue);
+  });
+
+  test('never expires a flight whose window is still running', () {
+    final flight = flightWith(
+      trackingFrom([
+        positionFix(
+          afterWindowStart(const Duration(hours: 1)),
+          onGround: false,
+        ),
+      ]),
+    );
+
+    expect(
+      hasFlightExpired(flight, window.end.subtract(const Duration(minutes: 1))),
+      isFalse,
+    );
+  });
+
+  test('stops expiring early once the flight takes off again', () {
+    final landing = afterWindowStart(const Duration(hours: 2));
+    final flight = flightWith(
+      trackingFrom([
+        positionFix(
+          afterWindowStart(const Duration(hours: 1)),
+          onGround: false,
+        ),
+        positionFix(landing, onGround: true),
+        positionFix(
+          afterWindowStart(const Duration(hours: 3)),
+          onGround: false,
+        ),
+      ]),
+    );
+
+    expect(hasFlightExpired(flight, landing.add(pastFlightRetention)), isFalse);
+  });
+
+  test('never expires a flight that has only been seen on the ground', () {
+    final parked = afterWindowStart(const Duration(hours: 1));
+    final flight = flightWith(
+      trackingFrom([positionFix(parked, onGround: true)]),
+    );
+
+    expect(flight.tracking.hasBeenAirborne, isFalse);
+    expect(window.contains(parked.add(pastFlightRetention)), isTrue);
+    expect(hasFlightExpired(flight, parked.add(pastFlightRetention)), isFalse);
+  });
+
+  test('falls back to the window end for a landing after the window', () {
+    final landing = window.end.add(const Duration(hours: 3)).toUtc();
+    final flight = flightWith(
+      trackingFrom([
+        positionFix(
+          afterWindowStart(const Duration(hours: 1)),
+          onGround: false,
+        ),
+        positionFix(landing, onGround: true),
+      ]),
+    );
+
+    expect(
+      hasFlightExpired(flight, window.end.add(pastFlightRetention)),
+      isTrue,
+    );
+  });
+
+  test('falls back to the window end for a landing before the window', () {
+    final flight = flightWith(
+      FlightTracking(
+        latestPosition: positionFix(
+          window.start.subtract(const Duration(hours: 1)).toUtc(),
+          onGround: true,
+        ).position,
+        hasBeenAirborne: true,
+        lastKnownOnGround: true,
+      ),
+    );
+
+    expect(hasFlightExpired(flight, window.start), isFalse);
   });
 }

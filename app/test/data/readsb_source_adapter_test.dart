@@ -291,13 +291,7 @@ void main() {
     test('spaces same-source lookups one second apart', () {
       fakeAsync((async) {
         var requestCount = 0;
-        ReadsbSourceAdapter(
-            sourceId: SourceId.adsblol,
-            client: MockClient((request) async {
-              requestCount++;
-              return http.Response(emptyEnvelope, 200);
-            }),
-          )
+        adapterReturning(emptyEnvelope, onRequest: (_) => requestCount++)
           ..lookupByHexAddress('3c64c6')
           ..lookupByHexAddress('3c64c6')
           ..lookupByHexAddress('3c64c6');
@@ -320,21 +314,15 @@ void main() {
     test('does not delay lookups across different sources', () {
       fakeAsync((async) {
         var requestCount = 0;
-        MockClient countingClient() => MockClient((request) async {
-          requestCount++;
-          return http.Response(emptyEnvelope, 200);
-        });
-        final adsblol = ReadsbSourceAdapter(
-          sourceId: SourceId.adsblol,
-          client: countingClient(),
-        );
-        final adsbfi = ReadsbSourceAdapter(
+        adapterReturning(
+          emptyEnvelope,
+          onRequest: (_) => requestCount++,
+        ).lookupByHexAddress('3c64c6');
+        adapterReturning(
+          emptyEnvelope,
           sourceId: SourceId.adsbfi,
-          client: countingClient(),
-        );
-
-        adsblol.lookupByHexAddress('3c64c6');
-        adsbfi.lookupByHexAddress('3c64c6');
+          onRequest: (_) => requestCount++,
+        ).lookupByHexAddress('3c64c6');
         async.flushMicrotasks();
 
         expect(requestCount, 2);

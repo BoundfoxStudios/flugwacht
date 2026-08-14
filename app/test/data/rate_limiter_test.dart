@@ -157,6 +157,7 @@ void main() {
 
       async.flushMicrotasks();
       expect(errorCaught, isTrue);
+      expect(secondRan, isFalse);
 
       async.elapse(const Duration(seconds: 1));
       expect(secondRan, isTrue);

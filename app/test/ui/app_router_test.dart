@@ -4,6 +4,7 @@ import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
+import 'package:flugwacht/ui/widgets/app_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -50,12 +51,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(NewFlightScreen), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(AppTabBar), findsNothing);
 
     await tester.tap(find.byType(CloseButton));
     await tester.pumpAndSettle();
 
     expect(find.byType(ListScreen), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(AppTabBar), findsOneWidget);
   });
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'l10n/app_localizations.dart';
 import 'ui/app_router.dart';
+import 'ui/theme/app_theme.dart';
 
 void main() {
   runApp(FlugwachtApp(router: createAppRouter()));
@@ -18,7 +19,8 @@ class FlugwachtApp extends StatelessWidget {
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+    theme: buildLightTheme(),
+    darkTheme: buildDarkTheme(),
     routerConfig: router,
   );
 }

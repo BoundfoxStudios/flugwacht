@@ -90,4 +90,83 @@ void main() {
     );
     expect(withoutGroundState.lastKnownOnGround, isTrue);
   });
+
+  test('copies a flight with new tracking and keeps every other field', () {
+    const flight = Flight(
+      lookupKind: FlightLookupKind.registration,
+      lookupValue: 'D-AIFF',
+      departureDate: CalendarDate(2026, 3, 17),
+      note: 'Window seat',
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+    final tracking = const FlightTracking().withFix(
+      positionFix(afterWindowStart(const Duration(hours: 1)), onGround: true),
+      window,
+    );
+
+    final updated = flight.copyWith(tracking: tracking);
+
+    expect(updated.tracking, same(tracking));
+    expect(updated.lookupKind, FlightLookupKind.registration);
+    expect(updated.lookupValue, 'D-AIFF');
+    expect(updated.departureDate, const CalendarDate(2026, 3, 17));
+    expect(updated.note, 'Window seat');
+    expect(updated.hexAddress, '3c64c6');
+    expect(updated.expectedCallsign, 'DLH433');
+  });
+
+  test('copies a flight with every passed field replaced', () {
+    const flight = Flight(
+      lookupKind: FlightLookupKind.flightNumber,
+      lookupValue: 'LH433',
+      departureDate: CalendarDate(2026, 3, 17),
+      note: 'Window seat',
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+    final tracking = const FlightTracking().withFix(
+      positionFix(afterWindowStart(const Duration(hours: 1)), onGround: false),
+      window,
+    );
+
+    final updated = flight.copyWith(
+      lookupKind: FlightLookupKind.hexAddress,
+      lookupValue: '3C64C7',
+      departureDate: const CalendarDate(2026, 4, 1),
+      note: 'Aisle seat',
+      hexAddress: '3c64c8',
+      expectedCallsign: 'DLH434',
+      tracking: tracking,
+    );
+
+    expect(updated.lookupKind, FlightLookupKind.hexAddress);
+    expect(updated.lookupValue, '3C64C7');
+    expect(updated.departureDate, const CalendarDate(2026, 4, 1));
+    expect(updated.note, 'Aisle seat');
+    expect(updated.hexAddress, '3c64c8');
+    expect(updated.expectedCallsign, 'DLH434');
+    expect(updated.tracking, same(tracking));
+  });
+
+  test('keeps the accumulated tracking when a copy does not mention it', () {
+    final tracking = const FlightTracking().withFix(
+      positionFix(afterWindowStart(const Duration(hours: 1)), onGround: false),
+      window,
+    );
+    final flight = const Flight(
+      lookupKind: FlightLookupKind.flightNumber,
+      lookupValue: 'LH433',
+      departureDate: CalendarDate(2026, 3, 17),
+    ).copyWith(tracking: tracking);
+
+    final updated = flight.copyWith(
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+
+    expect(updated.tracking, same(tracking));
+    expect(updated.hexAddress, '3c64c6');
+    expect(updated.expectedCallsign, 'DLH433');
+  });
 }

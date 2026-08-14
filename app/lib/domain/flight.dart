@@ -22,6 +22,24 @@ class Flight {
   final String? hexAddress;
   final String? expectedCallsign;
   final FlightTracking tracking;
+
+  Flight copyWith({
+    FlightLookupKind? lookupKind,
+    String? lookupValue,
+    CalendarDate? departureDate,
+    String? note,
+    String? hexAddress,
+    String? expectedCallsign,
+    FlightTracking? tracking,
+  }) => Flight(
+    lookupKind: lookupKind ?? this.lookupKind,
+    lookupValue: lookupValue ?? this.lookupValue,
+    departureDate: departureDate ?? this.departureDate,
+    note: note ?? this.note,
+    hexAddress: hexAddress ?? this.hexAddress,
+    expectedCallsign: expectedCallsign ?? this.expectedCallsign,
+    tracking: tracking ?? this.tracking,
+  );
 }
 
 class FlightTracking {

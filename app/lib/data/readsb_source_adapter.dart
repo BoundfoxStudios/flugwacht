@@ -44,14 +44,15 @@ class ReadsbSourceAdapter implements SourceAdapter {
       return LookupStatusFailure(response.statusCode);
     }
     try {
-      return LookupSuccess(_parseFixes(response.body));
+      return LookupSuccess(_parseFixes(response.bodyBytes));
     } on Object catch (_) {
       return const LookupMalformedPayload();
     }
   }
 
-  List<Fix> _parseFixes(String body) {
-    final envelope = json.decode(body) as Map<String, dynamic>;
+  List<Fix> _parseFixes(List<int> bodyBytes) {
+    final envelope =
+        json.decode(utf8.decode(bodyBytes)) as Map<String, dynamic>;
     final serverNowMilliseconds = envelope['now'] as num;
     final aircraftEntries = (envelope['ac'] as List)
         .cast<Map<String, dynamic>>();

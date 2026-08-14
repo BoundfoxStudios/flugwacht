@@ -177,6 +177,24 @@ void main() {
 
       expect(result, isA<LookupSuccess>());
     });
+
+    test('decodes the body as UTF-8 regardless of the content type', () async {
+      final adapter = ReadsbSourceAdapter(
+        sourceId: SourceId.adsblol,
+        client: MockClient(
+          (request) async => http.Response.bytes(
+            utf8.encode(
+              '{"ac": [{"hex": "3c64c6", "r": "D-AÜFF"}], "now": 1786712583001}',
+            ),
+            200,
+          ),
+        ),
+      );
+
+      final result = await adapter.lookupByHexAddress('3c64c6');
+
+      expect((result as LookupSuccess).fixes.single.registration, 'D-AÜFF');
+    });
   });
 
   group('status failures', () {

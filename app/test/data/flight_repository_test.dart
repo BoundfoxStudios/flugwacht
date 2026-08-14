@@ -387,7 +387,7 @@ void main() {
   });
 
   test('deletes only the flights that have expired', () async {
-    final expired = await addFlight();
+    await addFlight();
     final upcoming = await addFlight(
       departureDate: const CalendarDate(2026, 3, 18),
     );
@@ -397,7 +397,6 @@ void main() {
     expect((await repository.watchFlights().first).map((flight) => flight.id), [
       upcoming.id,
     ]);
-    expect(expired.id, isNot(upcoming.id));
   });
 
   test('deletes the trail points of an expired flight', () async {

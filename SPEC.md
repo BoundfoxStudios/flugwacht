@@ -70,6 +70,11 @@ App:      flutter run                 (on the host: iOS simulator/device)
 Sandbox:  flutter run -d web-server   (fallback only; no iOS/Android builds in the sandbox)
 ```
 
+Icon exports are regenerated with `tools/icon-generator/generate-icons.sh`
+from the repo root (requires Docker; renders via a pinned librsvg container);
+the script is idempotent, writes the staging exports to
+`assets/icon/generated/`, and copies them into `app/ios/` and `app/android/`.
+
 ## Project Structure
 
 ```
@@ -78,7 +83,8 @@ app/       → Flutter app (iOS + Android)
   lib/domain/  → models (Flight, Fix, Route), state machine, arrival estimate
   lib/ui/      → screens (map, list, new flight, settings), widgets, theme/tokens
   test/        → mirrors lib/ (data/, domain/, ui/)
-assets/    → logo and other repo-level branding assets
+assets/    → repo-level branding: logo/ (mark + lockup SVGs), icon/ (SVG masters + generated/ platform exports)
+tools/     → repo-level tooling; icon-generator/ renders all launcher/store images from the SVG masters
 website/   → project website (planned, does not exist yet)
 backend/   → possible later expansion stage (only if unavoidable — Manuel's call)
 design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M16
@@ -166,7 +172,7 @@ handoff README.
 
 | # | Increment | Core |
 |---|---|---|
-| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark, localization scaffold, CI/CD (format/analyze/test, Android + iOS builds, automated delivery to TestFlight and the Play internal test track) |
+| M1 | Foundation | Theme/tokens, fonts, FA Pro setup, tab scaffold with go_router (map · list · more), light/dark, localization scaffold, CI/CD (format/analyze/test, Android + iOS builds, automated delivery to TestFlight and the Play internal test track), app icons + app name + launch screens |
 | M2 | Domain core | Fix model + normalization, source adapter (readsb interface, 3 sources), tests |
 | M3 | Flight model | Flight + state machine (6 states, midnight-crossing window), tests |
 | M4 | Persistence | drift schema: flights + trail points (with source ID), auto cleanup after 24 h |
@@ -180,7 +186,7 @@ handoff README.
 | M12 | Settings | Source, units (metric/aviation), notification switches, footnotes |
 | M13 | Notifications | Local: departed · arriving soon (~30 min) · landed |
 | M14 | Background | Feasibility of background polling (iOS limits) — investigation, decision with the user |
-| M15 | Polish | About/licenses page, app icon export, "ended/missed" detail states |
+| M15 | Polish | About/licenses page, "ended/missed" detail states |
 | M16 | Cleanup | Delete `SPEC.md`, the local design handoff folder, and any remaining planning files; check for spike leftovers |
 
 ## Success Criteria (app overall)

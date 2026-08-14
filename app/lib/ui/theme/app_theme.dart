@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_text_styles.dart';
 import 'app_tokens.dart';
 
 ThemeData buildLightTheme() => _themeFrom(
@@ -27,6 +28,15 @@ ThemeData buildLightTheme() => _themeFrom(
     onInverseSurface: AppColors.neutral50,
   ),
   scaffoldBackground: AppColors.neutral50,
+  textTheme: _textThemeFrom(
+    display: AppColors.neutral900,
+    title: AppColors.neutral900,
+    fieldLabel: AppColors.neutral700,
+    sectionLabel: AppColors.neutral400,
+    bodyLarge: AppColors.neutral800,
+    body: AppColors.neutral700,
+    secondary: AppColors.neutral500,
+  ),
 );
 
 ThemeData buildDarkTheme() => _themeFrom(
@@ -54,18 +64,52 @@ ThemeData buildDarkTheme() => _themeFrom(
     onInverseSurface: AppColors.neutral800,
   ),
   scaffoldBackground: AppColors.neutral900,
+  textTheme: _textThemeFrom(
+    display: AppColors.white,
+    title: AppColors.neutral50,
+    fieldLabel: AppColors.neutral400,
+    sectionLabel: AppColors.neutral500,
+    bodyLarge: AppColors.neutral50,
+    body: AppColors.neutral300,
+    secondary: AppColors.neutral400,
+  ),
+);
+
+TextTheme _textThemeFrom({
+  required Color display,
+  required Color title,
+  required Color fieldLabel,
+  required Color sectionLabel,
+  required Color bodyLarge,
+  required Color body,
+  required Color secondary,
+}) => TextTheme(
+  displayLarge: AppTextStyles.timeLarge.copyWith(color: display),
+  displayMedium: AppTextStyles.timeMedium.copyWith(color: display),
+  headlineLarge: AppTextStyles.screenTitle.copyWith(color: display),
+  titleLarge: AppTextStyles.navigationTitle.copyWith(color: title),
+  labelLarge: AppTextStyles.fieldLabel.copyWith(color: fieldLabel),
+  labelMedium: AppTextStyles.tabLabel.copyWith(color: fieldLabel),
+  labelSmall: AppTextStyles.sectionLabelSmall.copyWith(color: sectionLabel),
+  bodyLarge: AppTextStyles.bodyLarge.copyWith(color: bodyLarge),
+  bodyMedium: AppTextStyles.body.copyWith(color: body),
+  bodySmall: AppTextStyles.secondary.copyWith(color: secondary),
 );
 
 ThemeData _themeFrom({
   required ColorScheme colorScheme,
   required Color scaffoldBackground,
+  required TextTheme textTheme,
 }) => ThemeData(
   colorScheme: colorScheme,
   scaffoldBackgroundColor: scaffoldBackground,
+  fontFamily: AppFontFamilies.barlow,
+  textTheme: textTheme,
   appBarTheme: AppBarTheme(
     backgroundColor: scaffoldBackground,
     foregroundColor: colorScheme.onSurface,
     centerTitle: true,
+    titleTextStyle: textTheme.titleLarge,
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: AppColors.amber,

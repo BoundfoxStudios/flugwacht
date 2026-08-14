@@ -6,6 +6,12 @@ class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      Scaffold(body: Center(child: Text(AppLocalizations.of(context).tabMap)));
+  Widget build(BuildContext context) => Scaffold(
+    body: Center(
+      child: Text(
+        AppLocalizations.of(context).tabMap,
+        style: Theme.of(context).textTheme.headlineLarge,
+      ),
+    ),
+  );
 }

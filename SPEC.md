@@ -71,8 +71,9 @@ Sandbox:  flutter run -d web-server   (fallback only; no iOS/Android builds in t
 ```
 
 Icon exports are regenerated with `tool/generate-icons.sh` from the repo root
-(requires rsvg-convert); the script is idempotent, writes the staging exports to
-`assets/icon/generated/`, and copies them into `app/ios/` and `app/android/`.
+(requires Docker; renders via a pinned librsvg container); the script is
+idempotent, writes the staging exports to `assets/icon/generated/`, and copies
+them into `app/ios/` and `app/android/`.
 
 ## Project Structure
 

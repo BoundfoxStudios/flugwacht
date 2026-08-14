@@ -5,6 +5,8 @@ enum FlightState { planned, waiting, live, noSignal, ended, missed }
 
 const maximumLivePositionAge = Duration(minutes: 15);
 
+const pastFlightRetention = Duration(hours: 24);
+
 FlightState resolveFlightState(Flight flight, DateTime now) {
   final window = FlightDayWindow.forDepartureDate(flight.departureDate);
   if (now.isBefore(window.start)) {
@@ -30,4 +32,20 @@ FlightState resolveFlightState(Flight flight, DateTime now) {
   return now.difference(seenPosition.timestamp) <= maximumLivePositionAge
       ? FlightState.live
       : FlightState.noSignal;
+}
+
+bool hasFlightExpired(Flight flight, DateTime now) =>
+    !now.isBefore(_expiryReference(flight).add(pastFlightRetention));
+
+DateTime _expiryReference(Flight flight) {
+  final window = FlightDayWindow.forDepartureDate(flight.departureDate);
+  final tracking = flight.tracking;
+  final latestPosition = tracking.latestPosition;
+  if (latestPosition != null &&
+      tracking.hasBeenAirborne &&
+      tracking.lastKnownOnGround == true &&
+      window.contains(latestPosition.timestamp)) {
+    return latestPosition.timestamp;
+  }
+  return window.end;
 }

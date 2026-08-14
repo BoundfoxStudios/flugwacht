@@ -5,6 +5,8 @@ import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/domain/flight_day_window.dart';
+import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,6 +35,10 @@ void main() {
     lookupValue: 'LH433',
     departureDate: departureDate,
     note: note,
+  );
+
+  final window = FlightDayWindow.forDepartureDate(
+    const CalendarDate(2026, 3, 17),
   );
 
   FixPosition position(DateTime timestamp, {bool? onGround}) => FixPosition(
@@ -378,5 +384,72 @@ void main() {
     expect((await repository.watchFlights().first).map((f) => f.id), [
       survivor.id,
     ]);
+  });
+
+  test('deletes only the flights that have expired', () async {
+    await addFlight();
+    final upcoming = await addFlight(
+      departureDate: const CalendarDate(2026, 3, 18),
+    );
+
+    await repository.deleteExpiredFlights(window.end.add(pastFlightRetention));
+
+    expect((await repository.watchFlights().first).map((flight) => flight.id), [
+      upcoming.id,
+    ]);
+  });
+
+  test('deletes the trail points of an expired flight', () async {
+    final expired = await addFlight();
+    final upcoming = await addFlight(
+      departureDate: const CalendarDate(2026, 3, 18),
+    );
+    for (final flight in [expired, upcoming]) {
+      await repository.appendTrailPoint(
+        flight.id,
+        position(window.start.add(const Duration(hours: 2)).toUtc()),
+        SourceId.adsblol,
+      );
+    }
+
+    await repository.deleteExpiredFlights(window.end.add(pastFlightRetention));
+
+    expect(await repository.watchTrail(expired.id).first, isEmpty);
+    expect(await repository.watchTrail(upcoming.id).first, hasLength(1));
+  });
+
+  test('deletes an early landed flight while its window is open', () async {
+    final landed = await addFlight();
+    final stillRunning = await addFlight();
+    final landing = window.start.add(const Duration(hours: 2)).toUtc();
+    await repository.updateTracking(
+      landed.id,
+      FlightTracking(
+        latestPosition: position(landing, onGround: true),
+        hasBeenAirborne: true,
+        lastKnownOnGround: true,
+      ),
+    );
+
+    final now = landing.add(pastFlightRetention);
+    expect(window.contains(now), isTrue);
+    await repository.deleteExpiredFlights(now);
+
+    expect((await repository.watchFlights().first).map((flight) => flight.id), [
+      stillRunning.id,
+    ]);
+  });
+
+  test('emits the shortened list once flights expire', () async {
+    await addFlight();
+    final emissions = <List<Flight>>[];
+    final subscription = repository.watchFlights().listen(emissions.add);
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+
+    await repository.deleteExpiredFlights(window.end.add(pastFlightRetention));
+    await pumpEventQueue();
+
+    expect(emissions.map((flights) => flights.length), [1, 0]);
   });
 }

@@ -127,6 +127,10 @@ is tested — focused on the domain, where the known pitfalls live:
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
 - Arrival estimate: remaining distance / ground speed, no estimate without a
   route
+- Source adapter: request URLs per source and lookup kind (registration path
+  differs on airplanes.live), empty `ac` array as successful empty result,
+  network errors / non-2xx / malformed payloads mapped onto the sealed result —
+  via `MockClient`, no live HTTP in tests
 
 Widget tests only for own behavior (e.g. the state timeline renders the correct
 active state), no framework tests.

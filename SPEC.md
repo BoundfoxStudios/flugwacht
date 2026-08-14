@@ -131,6 +131,10 @@ is tested — focused on the domain, where the known pitfalls live:
   differs on airplanes.live), empty `ac` array as successful empty result,
   network errors / non-2xx / malformed payloads mapped onto the sealed result —
   via `MockClient`, no live HTTP in tests
+- Rate limiting: ≥ 1 s start-to-start spacing per source, serialization, FIFO
+  order, per-source independence — driven by `fake_async`, the suite never
+  really waits; the limit applies per adapter instance, so the app constructs
+  exactly one adapter per source
 
 Widget tests only for own behavior (e.g. the state timeline renders the correct
 active state), no framework tests.

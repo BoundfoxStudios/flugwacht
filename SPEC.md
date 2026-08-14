@@ -120,8 +120,15 @@ is tested — focused on the domain, where the known pitfalls live:
 - Fix normalization: `alt_baro == "ground"`, `track` instead of `heading`,
   `seen_pos` + server `now` → absolute UTC timestamp, callsign trimming
   (8 characters, space-padded)
-- State machine: planned → waiting → live ⇄ no signal → ended | missed,
-  generous threshold (10–15 min), time window crossing midnight
+- State machine: planned → waiting → live ⇄ no signal → ended | missed —
+  derived from the flight's facts and the clock, never stored. Flight-day
+  window: 00:00 local on the departure day until 24:00 local on the following
+  day (nominal 48 h), half-open, recomputed from the calendar components at
+  every evaluation so it crosses midnight and DST by construction. Freshness
+  threshold `maximumLivePositionAge` (15 min, also used by the M8 freshness
+  display); a position timestamped in the future counts as fresh. Landing ends
+  a flight early (ever airborne + last known on ground → ended), an approved
+  deviation from the domain concept, which binds ended to the window end
 - Hex safeguard: callsign cross-check on hex queries, fall back to callsign
   search on mismatch
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection

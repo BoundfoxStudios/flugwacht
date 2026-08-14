@@ -98,8 +98,8 @@ widget classes instead of helper methods. Example of the intended style:
 
 ```dart
 class FixTimestamp {
-  static DateTime fromSeenPos({required double seenPosSeconds, required double serverNowSeconds}) {
-    final milliseconds = ((serverNowSeconds - seenPosSeconds) * 1000).round();
+  static DateTime fromSeenPos({required double seenPosSeconds, required num serverNowMilliseconds}) {
+    final milliseconds = (serverNowMilliseconds - seenPosSeconds * 1000).round();
     return DateTime.fromMillisecondsSinceEpoch(milliseconds, isUtc: true);
   }
 }

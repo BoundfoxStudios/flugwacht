@@ -87,6 +87,7 @@ TextTheme _textThemeFrom({
   displayLarge: AppTextStyles.timeLarge.copyWith(color: display),
   displayMedium: AppTextStyles.timeMedium.copyWith(color: display),
   headlineLarge: AppTextStyles.screenTitle.copyWith(color: display),
+  headlineMedium: AppTextStyles.screenTitleSmall.copyWith(color: display),
   titleLarge: AppTextStyles.navigationTitle.copyWith(color: title),
   labelLarge: AppTextStyles.fieldLabel.copyWith(color: fieldLabel),
   labelMedium: AppTextStyles.tabLabel.copyWith(color: fieldLabel),

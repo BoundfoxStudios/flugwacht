@@ -2,6 +2,7 @@ import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/l10n/app_localizations.dart';
+import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/app_fab.dart';
@@ -79,7 +80,7 @@ void main() {
     expect(find.byType(AppFab), findsNothing);
   });
 
-  testWidgets('keeps the add button reachable while the list is empty', (
+  testWidgets('hands the whole screen to the empty state without a flight', (
     tester,
   ) async {
     final repository = await pumpListScreen(tester);
@@ -87,8 +88,22 @@ void main() {
     repository.emit(const []);
     await tester.pump();
 
-    expect(find.byType(AppFab), findsOneWidget);
+    expect(find.byType(ListEmptyState), findsOneWidget);
+    expect(find.byType(AppFab), findsNothing);
     expect(find.text('Flights'), findsNothing);
+  });
+
+  testWidgets('opens the new flight screen from the empty state', (
+    tester,
+  ) async {
+    final repository = await pumpListScreen(tester);
+    repository.emit(const []);
+    await tester.pump();
+
+    await tester.tap(find.text('Add flight'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('new flight screen'), findsOneWidget);
   });
 
   testWidgets('heads the list with the title and today in English', (
@@ -165,7 +180,7 @@ void main() {
     tester,
   ) async {
     final repository = await pumpListScreen(tester);
-    repository.emit(const []);
+    repository.emit([_flight()]);
     await tester.pump();
 
     await tester.tap(find.byType(AppFab));

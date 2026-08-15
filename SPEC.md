@@ -136,8 +136,10 @@ is tested — focused on the domain, where the known pitfalls live:
   previous day's rotation of a daily callsign is not adopted at midnight;
   without a stored time the search starts with the window
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
-- Arrival estimate: remaining distance / ground speed, no estimate without a
-  route
+- Arrival estimate: remaining great-circle distance / ground speed, anchored
+  on the fix timestamp so a position that stops coming in freezes its
+  estimate; no estimate without a route, without a position, on the ground,
+  or below a ground speed of 50 kn
 - Source adapter: request URLs per source and lookup kind (registration path
   differs on airplanes.live), empty `ac` array as successful empty result,
   network errors / non-2xx / malformed payloads mapped onto the sealed result —

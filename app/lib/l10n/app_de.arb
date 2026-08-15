@@ -38,6 +38,7 @@
   "flightBadgeLive": "Live",
   "flightBadgeNoSignal": "Kein Signal",
   "mapAttributionOpenStreetMap": "© OpenStreetMap",
+  "mapAttributionWithSource": "© OpenStreetMap · Daten: {source}",
   "flightRowWaitingForSignal": "wartet auf Signal",
   "flightRowToday": "heute",
   "flightRowLanded": "gelandet ✓",

@@ -3,17 +3,14 @@ import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
-import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
-import 'package:flugwacht/ui/widgets/mini_map.dart';
 import 'package:flugwacht/ui/widgets/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';
@@ -242,33 +239,5 @@ void main() {
 
     expect(find.text('KEIN SIGNAL'), findsOneWidget);
     expect(find.text('© OpenStreetMap'), findsOneWidget);
-  });
-
-  test('keeps route, trail and position in view', () {
-    final trail = [
-      TrailPoint(
-        timestamp: DateTime.utc(2026, 8, 12, 11),
-        latitude: 49,
-        longitude: 2,
-        sourceId: SourceId.adsblol,
-      ),
-    ];
-
-    expect(
-      miniMapFocusPoints(position: _position, route: _route, trail: trail),
-      [
-        const LatLng(50.026402, 8.543130),
-        const LatLng(40.639447, -73.779317),
-        const LatLng(49, 2),
-        const LatLng(48.5, -20),
-      ],
-    );
-  });
-
-  test('falls back to the position alone without a route', () {
-    expect(
-      miniMapFocusPoints(position: _position, route: null, trail: const []),
-      [const LatLng(48.5, -20)],
-    );
   });
 }

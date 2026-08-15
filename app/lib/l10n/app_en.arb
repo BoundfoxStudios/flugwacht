@@ -110,6 +110,14 @@
   "flightBadgeLive": "Live",
   "flightBadgeNoSignal": "No signal",
   "mapAttributionOpenStreetMap": "© OpenStreetMap",
+  "mapAttributionWithSource": "© OpenStreetMap · Data: {source}",
+  "@mapAttributionWithSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
   "flightRowLanded": "landed ✓",

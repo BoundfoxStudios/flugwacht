@@ -30,7 +30,10 @@ GoRouter createAppRouter({
             routes: [
               GoRoute(
                 path: '/map',
-                builder: (context, state) => const MapScreen(),
+                builder: (context, state) => MapScreen(
+                  flightRepository: flightRepository,
+                  tileProvider: tileProvider,
+                ),
               ),
             ],
           ),

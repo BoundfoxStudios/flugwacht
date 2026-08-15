@@ -330,6 +330,12 @@ abstract class AppLocalizations {
   /// **'© OpenStreetMap'**
   String get mapAttributionOpenStreetMap;
 
+  /// No description provided for @mapAttributionWithSource.
+  ///
+  /// In en, this message translates to:
+  /// **'© OpenStreetMap · Data: {source}'**
+  String mapAttributionWithSource(String source);
+
   /// No description provided for @flightRowWaitingForSignal.
   ///
   /// In en, this message translates to:

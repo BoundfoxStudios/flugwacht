@@ -146,6 +146,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapAttributionOpenStreetMap => '© OpenStreetMap';
 
   @override
+  String mapAttributionWithSource(String source) {
+    return '© OpenStreetMap · Data: $source';
+  }
+
+  @override
   String get flightRowWaitingForSignal => 'waiting for signal';
 
   @override

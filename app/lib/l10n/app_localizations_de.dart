@@ -97,4 +97,19 @@ class AppLocalizationsDe extends AppLocalizations {
   ) {
     return '$origin → $destination · $airline';
   }
+
+  @override
+  String get flightStatePlanned => 'geplant';
+
+  @override
+  String get flightStateWaiting => 'wartet';
+
+  @override
+  String get flightStateLive => 'live';
+
+  @override
+  String get flightStateNoSignal => 'kein Signal';
+
+  @override
+  String get flightStateEnded => 'beendet';
 }

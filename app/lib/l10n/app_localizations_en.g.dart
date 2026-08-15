@@ -167,6 +167,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get mapLegendTitle => 'TRAIL BY SOURCE';
+
+  @override
+  String get mapLegendActive => 'active';
+
+  @override
   String get mapSheetArrivalPlaceholder => '–:–';
 
   @override
@@ -220,6 +226,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String mapSheetSource(String source) {
     return 'Source: $source · © OpenStreetMap';
   }
+
+  @override
+  String get mapSheetSourceComparison =>
+      'The trail survives switching — every point knows its source.';
 
   @override
   String get flightArrivalLabel => 'Approx. arrival';

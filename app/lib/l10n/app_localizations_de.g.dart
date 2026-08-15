@@ -166,6 +166,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mapLegendTitle => 'SPUR JE QUELLE';
+
+  @override
+  String get mapLegendActive => 'aktiv';
+
+  @override
   String get mapSheetArrivalPlaceholder => '–:–';
 
   @override
@@ -219,6 +225,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String mapSheetSource(String source) {
     return 'Quelle: $source · © OpenStreetMap';
   }
+
+  @override
+  String get mapSheetSourceComparison =>
+      'Die Spur bleibt beim Umschalten erhalten — jeder Punkt kennt seine Quelle.';
 
   @override
   String get flightArrivalLabel => 'Ankunft ca.';

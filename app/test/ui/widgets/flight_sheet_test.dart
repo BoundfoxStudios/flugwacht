@@ -103,6 +103,7 @@ Future<List<int>> pumpFlightSheet(
   Brightness brightness = Brightness.light,
   DateTime Function()? clock,
   SourceSetting? sourceSetting,
+  bool showsSourceComparison = false,
 }) async {
   final setting = sourceSetting ?? await createTestSourceSetting();
   final selections = <int>[];
@@ -123,6 +124,7 @@ Future<List<int>> pumpFlightSheet(
             selectedIndex: selectedIndex,
             onSelected: selections.add,
             sourceSetting: setting,
+            showsSourceComparison: showsSourceComparison,
             clock: clock ?? () => _now,
           ),
         ),
@@ -403,6 +405,29 @@ void main() {
 
     await openSheet(tester);
 
+    expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+  });
+
+  testWidgets('explains the compared trail instead of the local time', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, showsSourceComparison: true);
+
+    expect(
+      find.text('The trail survives switching — every point knows its source.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Local time'), findsNothing);
+  });
+
+  testWidgets('keeps the rest of the open sheet unchanged while comparing', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, showsSourceComparison: true);
+
+    await openSheet(tester);
+
+    expect(find.text('11,278 m'), findsOneWidget);
     expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
   });
 

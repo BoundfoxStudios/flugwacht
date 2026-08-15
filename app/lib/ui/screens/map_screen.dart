@@ -16,6 +16,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/flight_sheet.dart';
 import '../widgets/map_visuals.dart';
+import '../widgets/source_legend_card.dart';
 import 'list_sections.dart';
 import 'map_flights.dart';
 
@@ -57,6 +58,7 @@ class MapScreen extends StatefulWidget {
   static const _silhouetteScale = 0.62;
   static const _airportDotRadius = 5.0;
   static const _trailWidth = 2.5;
+  static const _comparedTrailWidth = 3.0;
   static const _plannedLegWidth = 2.0;
   static const _plannedLegDash = [7.0, 6.0];
 
@@ -139,6 +141,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           final trail = _mapFlights.trail.value;
           final route = selected?.flight.route;
           final position = selected?.flight.tracking.latestPosition;
+          final showsSourceComparison = comparesSources(trail);
           return Stack(
             children: [
               FlutterMap(
@@ -161,7 +164,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         route: route,
                         trail: trail,
                         aircraft: LatLng(position.latitude, position.longitude),
-                        trailWidth: MapScreen._trailWidth,
+                        trailWidth: showsSourceComparison
+                            ? MapScreen._comparedTrailWidth
+                            : MapScreen._trailWidth,
                         plannedLegWidth: MapScreen._plannedLegWidth,
                         plannedLegDash: MapScreen._plannedLegDash,
                       ),
@@ -194,6 +199,19 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
+              if (showsSourceComparison && !_isSheetOpen)
+                Positioned(
+                  left: AppSpacing.cardPadding,
+                  top: AppSpacing.cardPadding,
+                  child: SafeArea(
+                    child: SignalBuilder(
+                      builder: (context) => SourceLegendCard(
+                        trailSourceIds: trailSourceIds(trail),
+                        activeId: widget.sourceSetting.activeId.value,
+                      ),
+                    ),
+                  ),
+                ),
               Positioned(
                 left: 0,
                 right: 0,
@@ -222,6 +240,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         onSelected: (index) => _mapFlights.selectedId.value =
                             entries[index].flight.id,
                         sourceSetting: widget.sourceSetting,
+                        showsSourceComparison: showsSourceComparison,
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
                         clock: widget.clock,

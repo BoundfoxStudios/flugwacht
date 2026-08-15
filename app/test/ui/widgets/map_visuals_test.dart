@@ -1,7 +1,9 @@
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight_route.dart';
+import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
+import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -76,6 +78,76 @@ void main() {
       ], padding: EdgeInsets.zero),
       isNull,
     );
+  });
+
+  group('trail rendering', () {
+    TrailPoint pointAt(double latitude, {required SourceId sourceId}) =>
+        TrailPoint(
+          timestamp: DateTime.utc(2026, 8, 12, 11),
+          latitude: latitude,
+          longitude: 2,
+          sourceId: sourceId,
+        );
+
+    List<Polyline<Object>> trailPolylines(List<TrailPoint> trail) =>
+        flightPolylines(
+          colors: MapColors.light,
+          state: FlightState.live,
+          route: null,
+          trail: trail,
+          aircraft: const LatLng(48.5, -20),
+          trailWidth: 2.5,
+          plannedLegWidth: 2,
+          plannedLegDash: const [7, 6],
+        );
+
+    test('draws one line up to the aircraft while one source delivers', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.8, sourceId: SourceId.adsblol),
+      ]);
+
+      expect(polylines.single.points, const [
+        LatLng(49, 2),
+        LatLng(48.8, 2),
+        LatLng(48.5, -20),
+      ]);
+      expect(polylines.single.color, MapColors.light.trail);
+    });
+
+    test('splits the trail into one segment per source run', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.9, sourceId: SourceId.adsbfi),
+        pointAt(48.8, sourceId: SourceId.adsbfi),
+        pointAt(48.7, sourceId: SourceId.adsblol),
+      ]);
+
+      expect(polylines.map((polyline) => polyline.color), [
+        AppColors.amber,
+        AppColors.orange,
+        AppColors.amber,
+      ]);
+      expect(polylines[1].points, const [
+        LatLng(49, 2),
+        LatLng(48.9, 2),
+        LatLng(48.8, 2),
+      ]);
+    });
+
+    test('extends the last segment to the aircraft', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.8, sourceId: SourceId.adsbfi),
+      ]);
+
+      expect(polylines.last.points.last, const LatLng(48.5, -20));
+    });
+
+    test('colors airplanes.live for the theme it draws on', () {
+      expect(MapColors.light.trailOf(SourceId.airplanes), AppColors.neutral500);
+      expect(MapColors.dark.trailOf(SourceId.airplanes), AppColors.neutral300);
+    });
   });
 
   test('fits the bounds of points that span a distance', () {

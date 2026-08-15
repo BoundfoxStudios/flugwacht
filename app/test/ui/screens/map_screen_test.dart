@@ -405,6 +405,73 @@ void main() {
     expect(find.text('© OpenStreetMap · Daten: adsb.lol'), findsOneWidget);
   });
 
+  group('source comparison', () {
+    List<TrailPoint> trailFrom(List<SourceId> sourceIds) => [
+      for (final (index, sourceId) in sourceIds.indexed)
+        TrailPoint(
+          timestamp: _now.subtract(Duration(minutes: 20 - index)),
+          latitude: 49 - index * 0.1,
+          longitude: 2,
+          sourceId: sourceId,
+        ),
+    ];
+
+    testWidgets('legends the trail once a second source delivered', (
+      tester,
+    ) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      expect(find.text('TRAIL BY SOURCE'), findsOneWidget);
+    });
+
+    testWidgets('leaves a single-source trail as it was', (tester) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsblol]),
+      );
+
+      expect(find.text('TRAIL BY SOURCE'), findsNothing);
+      expect(
+        polylines(tester).single,
+        isA<Polyline<Object>>()
+            .having((line) => line.color, 'color', MapColors.light.trail)
+            .having((line) => line.strokeWidth, 'strokeWidth', 2.5),
+      );
+    });
+
+    testWidgets('thickens the compared trail', (tester) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      expect(polylines(tester), hasLength(2));
+      expect(
+        polylines(tester).map((line) => line.strokeWidth),
+        everyElement(3.0),
+      );
+    });
+
+    testWidgets('hides the legend behind the open sheet', (tester) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      await tester.drag(find.byType(FlightSheet), const Offset(0, -160));
+      await tester.pump();
+
+      expect(find.text('TRAIL BY SOURCE'), findsNothing);
+    });
+  });
+
   testWidgets('attributes the source it was switched to', (tester) async {
     final sourceSetting = await createTestSourceSetting();
     await pumpMapScreen(

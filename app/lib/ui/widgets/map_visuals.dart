@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart' show LatLng;
 import '../../domain/fix.dart';
 import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/source_id.dart';
 import '../../domain/trail_point.dart';
 import '../theme/app_tokens.dart';
 
@@ -59,6 +60,16 @@ Widget mapTiles({required MapColors colors, TileProvider? tileProvider}) {
       : ColorFiltered(colorFilter: colors.tileFilter!, child: tiles);
 }
 
+/// The sources that stitched the trail together.
+Set<SourceId> trailSourceIds(List<TrailPoint> trail) => {
+  for (final point in trail) point.sourceId,
+};
+
+/// Whether the trail holds points of several sources and therefore becomes the
+/// source comparison: colored per source, legended, explained in the peek.
+bool comparesSources(List<TrailPoint> trail) =>
+    trailSourceIds(trail).length > 1;
+
 /// The flown trail up to the aircraft and the dashed leg towards the
 /// destination.
 List<Polyline<Object>> flightPolylines({
@@ -72,14 +83,22 @@ List<Polyline<Object>> flightPolylines({
   required List<double> plannedLegDash,
 }) => [
   if (trail.isNotEmpty)
-    Polyline(
-      points: [
-        for (final point in trail) LatLng(point.latitude, point.longitude),
-        aircraft,
-      ],
-      color: colors.trail,
-      strokeWidth: trailWidth,
-    ),
+    if (comparesSources(trail))
+      ..._sourceSegments(
+        colors: colors,
+        trail: trail,
+        aircraft: aircraft,
+        width: trailWidth,
+      )
+    else
+      Polyline(
+        points: [
+          for (final point in trail) LatLng(point.latitude, point.longitude),
+          aircraft,
+        ],
+        color: colors.trail,
+        strokeWidth: trailWidth,
+      ),
   if (route != null)
     Polyline(
       points: [
@@ -93,6 +112,43 @@ List<Polyline<Object>> flightPolylines({
       pattern: StrokePattern.dashed(segments: plannedLegDash),
     ),
 ];
+
+/// One line per run of points from the same source; neighbours share their
+/// boundary point so the trail stays gapless, and the aircraft extends the
+/// last run.
+List<Polyline<Object>> _sourceSegments({
+  required MapColors colors,
+  required List<TrailPoint> trail,
+  required LatLng aircraft,
+  required double width,
+}) {
+  final segments = <Polyline<Object>>[];
+  var sourceId = trail.first.sourceId;
+  var points = <LatLng>[];
+  for (final point in trail) {
+    if (point.sourceId != sourceId) {
+      segments.add(
+        Polyline(
+          points: points,
+          color: colors.trailOf(sourceId),
+          strokeWidth: width,
+        ),
+      );
+      points = [points.last];
+      sourceId = point.sourceId;
+    }
+    points.add(LatLng(point.latitude, point.longitude));
+  }
+  points.add(aircraft);
+  return [
+    ...segments,
+    Polyline(
+      points: points,
+      color: colors.trailOf(sourceId),
+      strokeWidth: width,
+    ),
+  ];
+}
 
 Marker airportMarker({
   required MapColors colors,
@@ -149,6 +205,7 @@ enum MapColors {
   light(
     mapBackground: AppColors.white,
     trail: AppColors.neutral700,
+    airplanesTrail: AppColors.neutral500,
     plannedLeg: AppColors.neutral400,
     plannedLegNoSignal: AppColors.neutral300,
     airportDot: AppColors.neutral700,
@@ -162,6 +219,7 @@ enum MapColors {
   dark(
     mapBackground: AppColors.neutral800,
     trail: AppColors.neutral300,
+    airplanesTrail: AppColors.neutral300,
     plannedLeg: AppColors.neutral500,
     plannedLegNoSignal: AppColors.neutral600,
     airportDot: AppColors.neutral300,
@@ -177,6 +235,7 @@ enum MapColors {
   const MapColors({
     required this.mapBackground,
     required this.trail,
+    required this.airplanesTrail,
     required this.plannedLeg,
     required this.plannedLegNoSignal,
     required this.airportDot,
@@ -195,8 +254,17 @@ enum MapColors {
         Brightness.dark => MapColors.dark,
       };
 
+  /// The trail color of a source, telling the segments of a comparison apart;
+  /// only airplanes.live needs a color of its own per theme.
+  Color trailOf(SourceId sourceId) => switch (sourceId) {
+    SourceId.adsblol => AppColors.amber,
+    SourceId.adsbfi => AppColors.orange,
+    SourceId.airplanes => airplanesTrail,
+  };
+
   final Color mapBackground;
   final Color trail;
+  final Color airplanesTrail;
   final Color plannedLeg;
   final Color plannedLegNoSignal;
   final Color airportDot;

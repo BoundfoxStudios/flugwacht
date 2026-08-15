@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/trail_point.dart';
-import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';

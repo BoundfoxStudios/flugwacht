@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/flight_state.dart';
-import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 

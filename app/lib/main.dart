@@ -8,7 +8,7 @@ import 'data/airline_directory.dart';
 import 'data/database.dart';
 import 'data/flight_repository.dart';
 import 'data/route_lookup.dart';
-import 'l10n/app_localizations.dart';
+import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
 

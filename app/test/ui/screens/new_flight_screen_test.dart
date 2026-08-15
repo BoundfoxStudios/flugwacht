@@ -5,7 +5,7 @@ import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
-import 'package:flugwacht/l10n/app_localizations.dart';
+import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/new_flight_preview_card.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';

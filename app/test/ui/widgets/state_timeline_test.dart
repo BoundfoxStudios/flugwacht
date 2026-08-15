@@ -1,5 +1,5 @@
 import 'package:flugwacht/domain/flight_state.dart';
-import 'package:flugwacht/l10n/app_localizations.dart';
+import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/state_timeline.dart';

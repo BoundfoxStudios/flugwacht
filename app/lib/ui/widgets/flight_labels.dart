@@ -1,6 +1,6 @@
 import '../../domain/flight.dart';
 import '../../domain/flight_route.dart';
-import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.g.dart';
 
 /// The lookup value with the note appended, the way both the list rows and the
 /// hero cell head a flight.

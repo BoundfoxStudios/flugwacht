@@ -9,7 +9,7 @@ import '../../domain/fix.dart';
 import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/trail_point.dart';
-import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 

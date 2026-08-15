@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations.g.dart';
 import 'widgets/app_tab_bar.dart';
 
 class AppShell extends StatelessWidget {

@@ -1,6 +1,7 @@
 import 'package:signals/signals.dart';
 
 import '../../data/airline_directory.dart';
+import '../../domain/day_time.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_number.dart';
 import '../../domain/lookup_input.dart';
@@ -15,6 +16,7 @@ class NewFlightForm {
 
   final lookupKind = signal(FlightLookupKind.flightNumber);
   final note = signal('');
+  final departureTime = signal<DayTime?>(null);
   late final Signal<DateTime> departureDate;
 
   final _inputs = {
@@ -58,6 +60,7 @@ class NewFlightForm {
     lookupKind.dispose();
     note.dispose();
     departureDate.dispose();
+    departureTime.dispose();
     isValid.dispose();
     showsLowCostCarrierHint.dispose();
   }

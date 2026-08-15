@@ -77,6 +77,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newFlightDepartureDateFormat => 'ccc, d. MMMM y';
 
   @override
+  String get newFlightDepartureTimeLabel => 'Abflugzeit (optional)';
+
+  @override
+  String get newFlightDepartureTimeHint =>
+      'Geplanter Abflug · die Suche startet zwei Stunden davor';
+
+  @override
+  String get newFlightDepartureTimePlaceholder => 'Keine Angabe';
+
+  @override
+  String get newFlightDepartureTimeClear => 'Abflugzeit löschen';
+
+  @override
+  String get newFlightDepartureTimeFormat => 'HH:mm';
+
+  @override
   String get newFlightNoteLabel => 'Notiz (optional)';
 
   @override
@@ -184,6 +200,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get flightRowToday => 'heute';
+
+  @override
+  String flightRowDepartureTime(String time) {
+    return 'ab $time';
+  }
+
+  @override
+  String get flightRowDepartureTimeFormat => 'HH:mm';
 
   @override
   String get flightRowLanded => 'gelandet ✓';

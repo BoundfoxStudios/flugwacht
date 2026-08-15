@@ -30,6 +30,14 @@
   "@newFlightDepartureDateFormat": {
     "description": "DateFormat pattern for the departure date field, localized per language."
   },
+  "newFlightDepartureTimeLabel": "Departure time (optional)",
+  "newFlightDepartureTimeHint": "Scheduled departure · the search starts two hours before it",
+  "newFlightDepartureTimePlaceholder": "Not set",
+  "newFlightDepartureTimeClear": "Clear the departure time",
+  "newFlightDepartureTimeFormat": "h:mm a",
+  "@newFlightDepartureTimeFormat": {
+    "description": "DateFormat pattern for the departure time field, localized per language."
+  },
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",
@@ -155,6 +163,18 @@
   },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
+  "flightRowDepartureTime": "from {time}",
+  "@flightRowDepartureTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "flightRowDepartureTimeFormat": "h:mm a",
+  "@flightRowDepartureTimeFormat": {
+    "description": "DateFormat pattern for the departure time on a waiting row, localized per language."
+  },
   "flightRowLanded": "landed ✓",
   "flightRowMissed": "missed",
   "flightStatePlanned": "planned",

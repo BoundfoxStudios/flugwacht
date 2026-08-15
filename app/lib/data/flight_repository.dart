@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../domain/calendar_date.dart';
+import '../domain/day_time.dart';
 import '../domain/fix.dart';
 import '../domain/flight.dart';
 import '../domain/flight_route.dart';
@@ -27,6 +28,7 @@ class FlightRepository {
     required FlightLookupKind lookupKind,
     required String lookupValue,
     required CalendarDate departureDate,
+    DayTime? departureTime,
     String? note,
     String? hexAddress,
     String? expectedCallsign,
@@ -39,6 +41,9 @@ class FlightRepository {
             lookupKind: lookupKind,
             lookupValue: lookupValue,
             departureDate: _toIsoDate(departureDate),
+            departureMinutesSinceMidnight: Value(
+              departureTime?.minutesSinceMidnight,
+            ),
             note: Value(note),
             hexAddress: Value(hexAddress),
             expectedCallsign: Value(expectedCallsign),
@@ -138,6 +143,7 @@ Flight _toFlight(FlightRow row) => Flight(
   lookupKind: row.lookupKind,
   lookupValue: row.lookupValue,
   departureDate: _toCalendarDate(row.departureDate),
+  departureTime: _toDayTime(row.departureMinutesSinceMidnight),
   note: row.note,
   hexAddress: row.hexAddress,
   expectedCallsign: row.expectedCallsign,
@@ -233,6 +239,10 @@ String _toIsoDate(CalendarDate date) =>
     '${date.year.toString().padLeft(4, '0')}-'
     '${date.month.toString().padLeft(2, '0')}-'
     '${date.day.toString().padLeft(2, '0')}';
+
+DayTime? _toDayTime(int? minutesSinceMidnight) => minutesSinceMidnight == null
+    ? null
+    : DayTime.fromMinutesSinceMidnight(minutesSinceMidnight);
 
 CalendarDate _toCalendarDate(String isoDate) => CalendarDate(
   int.parse(isoDate.substring(0, 4)),

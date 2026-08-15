@@ -47,7 +47,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Localization | `flutter_localizations` + `intl` via gen-l10n (`l10n.yaml`, ARB files); English is the base/template language (`app_en.arb`), German the second language; device language selects the locale, English is the fallback; set up early (M1.6) so no string is ever hard-coded |
 | Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
 | Notifications | `flutter_local_notifications`, local only, no backend |
-| Date | native system date picker (`showDatePicker` / `CupertinoDatePicker`) |
+| Date and time | native system pickers (`showDatePicker` / `showTimePicker`, `CupertinoDatePicker`); the departure time is optional |
 
 Dependency versions are always looked up at add time (pub.dev), never guessed.
 
@@ -131,6 +131,10 @@ is tested — focused on the domain, where the known pitfalls live:
   deviation from the domain concept, which binds ended to the window end
 - Hex safeguard: callsign cross-check on hex queries, fall back to callsign
   search on mismatch
+- Search anchor: a flight that has never been seen is only searched for from
+  its scheduled departure minus 2 h (clamped to the window start), so the
+  previous day's rotation of a daily callsign is not adopted at midnight;
+  without a stored time the search starts with the window
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
 - Arrival estimate: remaining distance / ground speed, no estimate without a
   route
@@ -191,7 +195,7 @@ handoff README.
 | M2 | Domain core | Fix model + normalization, source adapter (readsb interface, 3 sources), tests |
 | M3 | Flight model | Flight + state machine (6 states, midnight-crossing window), tests |
 | M4 | Persistence | drift schema: flights + trail points (with source ID), auto cleanup after 24 h |
-| M5 | New flight | Modal form, segmented control (flight number/registration/hex), IATA→ICAO, route lookup (standing-data), "found" preview card, native date picker |
+| M5 | New flight | Modal form, segmented control (flight number/registration/hex), IATA→ICAO, route lookup (standing-data), "found" preview card, native date picker plus an optional departure time |
 | M6 | List | Hero cell with mini map, state timeline, regular/planned rows, empty state, FAB, "past" section |
 | M7 | Map | Full-screen `flutter_map`, markers + ping, trail (flown/planned), bottom sheet (peek/open), flight switching via swipe/tap |
 | M8 | Polling | Foreground polling engine, live ⇄ no-signal transitions, hex↔callsign safeguard, freshness display |

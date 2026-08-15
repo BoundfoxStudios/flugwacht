@@ -1,4 +1,5 @@
 import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
@@ -35,11 +36,13 @@ Flight flight({
   String? note,
   FlightRoute? route = _route,
   CalendarDate date = const CalendarDate(2026, 8, 15),
+  DayTime? time,
 }) => Flight(
   id: 1,
   lookupKind: FlightLookupKind.flightNumber,
   lookupValue: lookupValue,
   departureDate: date,
+  departureTime: time,
   note: note,
   route: route,
 );
@@ -118,6 +121,31 @@ void main() {
       AppColors.neutral500,
     );
     expect(colorOf(tester, 'today'), AppColors.neutral500);
+  });
+
+  testWidgets('shows the scheduled departure time on a waiting row', (
+    tester,
+  ) async {
+    await pumpRow(
+      tester,
+      state: FlightState.waiting,
+      row: flight(time: const DayTime(16, 10)),
+    );
+
+    expect(find.text('from 4:10 PM'), findsOneWidget);
+    expect(find.text('today'), findsNothing);
+  });
+
+  testWidgets('keeps the plain date on a planned row with a time', (
+    tester,
+  ) async {
+    await pumpRow(
+      tester,
+      state: FlightState.planned,
+      row: flight(time: const DayTime(16, 10)),
+    );
+
+    expect(find.text('Sat, Aug 15'), findsOneWidget);
   });
 
   testWidgets('draws the waiting row on the card surface', (tester) async {
@@ -222,6 +250,13 @@ void main() {
     );
     expect(find.text('STR → PMI · wartet auf Signal'), findsOneWidget);
     expect(find.text('heute'), findsOneWidget);
+    await pumpRow(
+      tester,
+      state: FlightState.waiting,
+      row: flight(time: const DayTime(16, 10)),
+      locale: const Locale('de'),
+    );
+    expect(find.text('ab 16:10'), findsOneWidget);
 
     await pumpRow(
       tester,

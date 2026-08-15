@@ -1,4 +1,5 @@
 import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
@@ -15,6 +16,7 @@ void main() {
   Flight flightWith({
     FlightLookupKind lookupKind = FlightLookupKind.flightNumber,
     String lookupValue = 'LH400',
+    DayTime? departureTime,
     String? hexAddress,
     String? expectedCallsign,
     FixPosition? latestPosition,
@@ -23,6 +25,7 @@ void main() {
     lookupKind: lookupKind,
     lookupValue: lookupValue,
     departureDate: departureDate,
+    departureTime: departureTime,
     hexAddress: hexAddress,
     expectedCallsign: expectedCallsign,
     tracking: FlightTracking(latestPosition: latestPosition),
@@ -69,6 +72,41 @@ void main() {
     test('polls a searching flight every minute', () {
       expect(pollInterval(FlightState.waiting), const Duration(seconds: 60));
       expect(pollInterval(FlightState.noSignal), const Duration(seconds: 60));
+    });
+  });
+
+  group('search anchor', () {
+    test('starts the search when the flight day window opens', () {
+      expect(searchStartsAt(flightWith()), window.start);
+    });
+
+    test('starts the search two hours before a scheduled departure', () {
+      expect(
+        searchStartsAt(flightWith(departureTime: const DayTime(16, 10))),
+        DateTime(2026, 3, 17, 14, 10),
+      );
+    });
+
+    test('anchors an evening departure on its own departure day', () {
+      expect(
+        searchStartsAt(flightWith(departureTime: const DayTime(23, 55))),
+        DateTime(2026, 3, 17, 21, 55),
+      );
+    });
+
+    test('never starts the search before the window opens', () {
+      expect(
+        searchStartsAt(flightWith(departureTime: const DayTime(0, 30))),
+        window.start,
+      );
+      expect(
+        searchStartsAt(flightWith(departureTime: const DayTime(1, 0))),
+        window.start,
+      );
+      expect(
+        searchStartsAt(flightWith(departureTime: const DayTime(2, 0))),
+        window.start,
+      );
     });
   });
 

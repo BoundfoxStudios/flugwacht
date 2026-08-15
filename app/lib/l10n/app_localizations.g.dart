@@ -224,6 +224,36 @@ abstract class AppLocalizations {
   /// **'EEE, MMMM d, y'**
   String get newFlightDepartureDateFormat;
 
+  /// No description provided for @newFlightDepartureTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure time (optional)'**
+  String get newFlightDepartureTimeLabel;
+
+  /// No description provided for @newFlightDepartureTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled departure · the search starts two hours before it'**
+  String get newFlightDepartureTimeHint;
+
+  /// No description provided for @newFlightDepartureTimePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get newFlightDepartureTimePlaceholder;
+
+  /// No description provided for @newFlightDepartureTimeClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the departure time'**
+  String get newFlightDepartureTimeClear;
+
+  /// DateFormat pattern for the departure time field, localized per language.
+  ///
+  /// In en, this message translates to:
+  /// **'h:mm a'**
+  String get newFlightDepartureTimeFormat;
+
   /// No description provided for @newFlightNoteLabel.
   ///
   /// In en, this message translates to:
@@ -395,6 +425,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'today'**
   String get flightRowToday;
+
+  /// No description provided for @flightRowDepartureTime.
+  ///
+  /// In en, this message translates to:
+  /// **'from {time}'**
+  String flightRowDepartureTime(String time);
+
+  /// DateFormat pattern for the departure time on a waiting row, localized per language.
+  ///
+  /// In en, this message translates to:
+  /// **'h:mm a'**
+  String get flightRowDepartureTimeFormat;
 
   /// No description provided for @flightRowLanded.
   ///

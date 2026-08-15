@@ -16,6 +16,27 @@ bool isPollable(FlightState state) => switch (state) {
 Duration pollInterval(FlightState state) =>
     state == FlightState.live ? livePollInterval : searchPollInterval;
 
+const searchLeadTime = Duration(hours: 2);
+
+/// The instant a flight that has never been seen may first be searched for,
+/// so a daily rotation of the same callsign is not adopted at midnight.
+DateTime searchStartsAt(Flight flight) {
+  final window = FlightDayWindow.forDepartureDate(flight.departureDate);
+  final departureTime = flight.departureTime;
+  if (departureTime == null) {
+    return window.start;
+  }
+  final departureDate = flight.departureDate;
+  final anchor = DateTime(
+    departureDate.year,
+    departureDate.month,
+    departureDate.day,
+    departureTime.hour,
+    departureTime.minute,
+  ).subtract(searchLeadTime);
+  return anchor.isBefore(window.start) ? window.start : anchor;
+}
+
 sealed class PollQuery {
   const PollQuery();
 }

@@ -26,5 +26,10 @@
   "newFlightPreviewRouteUnknown": "Route unbekannt",
   "newFlightPreviewCallsign": "Funk: {callsign}",
   "newFlightPreviewRoute": "{origin} → {destination}",
-  "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}"
+  "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}",
+  "flightStatePlanned": "geplant",
+  "flightStateWaiting": "wartet",
+  "flightStateLive": "live",
+  "flightStateNoSignal": "kein Signal",
+  "flightStateEnded": "beendet"
 }

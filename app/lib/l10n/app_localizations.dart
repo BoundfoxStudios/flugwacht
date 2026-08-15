@@ -263,6 +263,36 @@ abstract class AppLocalizations {
     String destination,
     String airline,
   );
+
+  /// No description provided for @flightStatePlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'planned'**
+  String get flightStatePlanned;
+
+  /// No description provided for @flightStateWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'waiting'**
+  String get flightStateWaiting;
+
+  /// No description provided for @flightStateLive.
+  ///
+  /// In en, this message translates to:
+  /// **'live'**
+  String get flightStateLive;
+
+  /// No description provided for @flightStateNoSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'no signal'**
+  String get flightStateNoSignal;
+
+  /// No description provided for @flightStateEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'ended'**
+  String get flightStateEnded;
 }
 
 class _AppLocalizationsDelegate

@@ -62,5 +62,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "flightStatePlanned": "planned",
+  "flightStateWaiting": "waiting",
+  "flightStateLive": "live",
+  "flightStateNoSignal": "no signal",
+  "flightStateEnded": "ended"
 }

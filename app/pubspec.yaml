@@ -52,6 +52,8 @@ dependencies:
   drift_flutter: ^0.3.1
   signals: ^7.1.0
   flutter_svg: ^2.3.0
+  timezone: ^0.11.1
+  lat_lng_to_timezone: ^0.2.0
 
 dev_dependencies:
   flutter_test:

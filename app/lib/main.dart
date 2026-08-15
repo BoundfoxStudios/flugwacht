@@ -10,6 +10,7 @@ import 'data/flight_repository.dart';
 import 'data/polling_engine.dart';
 import 'data/readsb_source_adapter.dart';
 import 'data/route_lookup.dart';
+import 'domain/airport_timezone.dart';
 import 'domain/source_id.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
@@ -18,6 +19,7 @@ import 'ui/theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LicenseRegistry.addLicense(_fontLicenses);
+  initializeAirportTimezones();
   final client = http.Client();
   final flightRepository = FlightRepository(AppDatabase());
   final airlineDirectory = await AirlineDirectory.loadFromAssets();

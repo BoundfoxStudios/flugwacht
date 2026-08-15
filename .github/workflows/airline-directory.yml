@@ -45,7 +45,7 @@ jobs:
             --retry 3 --retry-delay 2 --retry-max-time 60 \
             --connect-timeout 10 --max-time 60 \
             --output "$RUNNER_TEMP/airlines.csv" \
-            "https://raw.githubusercontent.com/vradarserver/standing-data/main/$UPSTREAM_PATH"
+            "https://raw.githubusercontent.com/vradarserver/standing-data/ae9e846528646d80474feb2d81bdc082260f885f/$UPSTREAM_PATH"
       # An error page or a truncated response must never land as a refresh
       - name: Check the download for plausibility
         run: |

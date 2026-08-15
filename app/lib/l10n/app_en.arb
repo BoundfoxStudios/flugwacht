@@ -4,5 +4,23 @@
   "tabMap": "Map",
   "tabList": "List",
   "tabMore": "More",
-  "newFlightTitle": "New flight"
+  "newFlightTitle": "New flight",
+  "newFlightCancel": "Cancel",
+  "newFlightKindFlightNumber": "Flight number",
+  "newFlightKindRegistration": "Registration",
+  "newFlightKindHexAddress": "Hex",
+  "newFlightFlightNumberHint": "As printed on your ticket, e.g. LH 400",
+  "newFlightRegistrationHint": "The registration of the aircraft, e.g. D-AIMA",
+  "newFlightHexAddressHint": "The six digit ICAO address, e.g. 3C6444",
+  "newFlightLowCostCarrierHint": "Ryanair, easyJet and Wizz Air often fly under a callsign that does not match the flight number. If your flight stays unfound, add it by registration or hex address.",
+  "newFlightDepartureDateLabel": "Departure date",
+  "newFlightDepartureDateHint": "Day of departure · opens the system picker · night flights count into the next day",
+  "newFlightDepartureDateFormat": "EEE, MMMM d, y",
+  "@newFlightDepartureDateFormat": {
+    "description": "DateFormat pattern for the departure date field, localized per language."
+  },
+  "newFlightNoteLabel": "Note (optional)",
+  "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
+  "newFlightSubmit": "Add flight",
+  "newFlightDatePickerConfirm": "Done"
 }

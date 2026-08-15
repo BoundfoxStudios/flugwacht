@@ -228,6 +228,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get mapSheetTryAnotherSource => 'Try another source';
+
+  @override
   String get mapSheetSourceComparison =>
       'The trail survives switching — every point knows its source.';
 

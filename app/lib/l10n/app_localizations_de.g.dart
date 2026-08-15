@@ -227,6 +227,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mapSheetTryAnotherSource => 'Andere Quelle probieren';
+
+  @override
   String get mapSheetSourceComparison =>
       'Die Spur bleibt beim Umschalten erhalten — jeder Punkt kennt seine Quelle.';
 

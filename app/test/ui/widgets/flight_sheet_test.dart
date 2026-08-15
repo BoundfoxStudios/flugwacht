@@ -431,6 +431,78 @@ void main() {
     expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
   });
 
+  group('try another source', () {
+    Finder linkTapTarget() => find.ancestor(
+      of: find.text('Try another source'),
+      matching: find.byType(GestureDetector),
+    );
+
+    testWidgets('offers another source to a flight without signal', (
+      tester,
+    ) async {
+      await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      await openSheet(tester);
+
+      expect(find.text('Try another source'), findsOneWidget);
+    });
+
+    testWidgets('offers no other source while the signal is there', (
+      tester,
+    ) async {
+      await pumpFlightSheet(tester);
+
+      await openSheet(tester);
+
+      expect(find.text('Try another source'), findsNothing);
+    });
+
+    testWidgets('keeps the link out of the peek', (tester) async {
+      await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      expect(find.text('Try another source'), findsNothing);
+    });
+
+    testWidgets('switches to the next source on a tap', (tester) async {
+      final sourceSetting = await createTestSourceSetting();
+      await pumpFlightSheet(
+        tester,
+        entry: _entry(state: FlightState.noSignal),
+        sourceSetting: sourceSetting,
+      );
+      await openSheet(tester);
+
+      await tester.tap(linkTapTarget().first);
+      await tester.pumpAndSettle();
+
+      expect(sourceSetting.activeId.value, SourceId.adsbfi);
+      expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
+    });
+
+    testWidgets('keeps the link tappable at 44 pixels', (tester) async {
+      await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      await openSheet(tester);
+
+      expect(
+        tester.getSize(linkTapTarget().first).height,
+        greaterThanOrEqualTo(44),
+      );
+    });
+
+    testWidgets('offers another source in German as well', (tester) async {
+      await pumpFlightSheet(
+        tester,
+        entry: _entry(state: FlightState.noSignal),
+        locale: const Locale('de'),
+      );
+
+      await openSheet(tester);
+
+      expect(find.text('Andere Quelle probieren'), findsOneWidget);
+    });
+  });
+
   testWidgets('names the source it was switched to', (tester) async {
     final sourceSetting = await createTestSourceSetting();
     await pumpFlightSheet(tester, sourceSetting: sourceSetting);

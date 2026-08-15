@@ -59,6 +59,7 @@
   "mapSheetAltitudeValue": "{value} m",
   "mapSheetSpeedValue": "{value} km/h",
   "mapSheetSource": "Quelle: {source} · © OpenStreetMap",
+  "mapSheetTryAnotherSource": "Andere Quelle probieren",
   "mapSheetSourceComparison": "Die Spur bleibt beim Umschalten erhalten — jeder Punkt kennt seine Quelle.",
   "flightArrivalLabel": "Ankunft ca.",
   "flightArrivalTimeFormat": "HH:mm",

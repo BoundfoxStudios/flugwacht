@@ -326,16 +326,65 @@ class _FlightPage extends StatelessWidget {
             NoSignalInfoBox(age: signalAge),
           ],
           SizedBox(height: gap),
-          SignalBuilder(
-            builder: (context) => Text(
-              localizations.mapSheetSource(sourceSetting.activeId.value.label),
-              style: AppTextStyles.caption.copyWith(color: colors.footer),
-            ),
-          ),
+          SignalBuilder(builder: (context) => _footer(localizations)),
         ],
       ],
     );
   }
+
+  Widget _footer(AppLocalizations localizations) {
+    final activeId = sourceSetting.activeId.value;
+    final attribution = Text(
+      localizations.mapSheetSource(activeId.label),
+      style: AppTextStyles.caption.copyWith(color: colors.footer),
+    );
+    if (entry.state != FlightState.noSignal) {
+      return attribution;
+    }
+    return Row(
+      children: [
+        Expanded(child: attribution),
+        _AnotherSourceLink(
+          onTap: () =>
+              unawaited(sourceSetting.select(nextSelectableSourceId(activeId))),
+        ),
+      ],
+    );
+  }
+}
+
+/// Switches a flight the active source cannot see to the next one; until the
+/// settings of M12 arrive this is the only switch the app offers.
+class _AnotherSourceLink extends StatelessWidget {
+  const _AnotherSourceLink({required this.onTap});
+
+  static const _minimumTapTarget = 44.0;
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: onTap,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: _minimumTapTarget),
+      child: Padding(
+        padding: const EdgeInsets.only(left: AppSpacing.cardPadding),
+        child: Center(
+          widthFactor: 1,
+          child: Text(
+            AppLocalizations.of(context).mapSheetTryAnotherSource,
+            style: AppTextStyles.secondary.copyWith(
+              color: switch (Theme.of(context).brightness) {
+                Brightness.light => AppColors.linkLight,
+                Brightness.dark => AppColors.linkDark,
+              },
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _ArrivalRow extends StatelessWidget {

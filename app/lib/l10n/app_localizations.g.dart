@@ -456,6 +456,12 @@ abstract class AppLocalizations {
   /// **'Source: {source} · © OpenStreetMap'**
   String mapSheetSource(String source);
 
+  /// Link in the sheet of a flight without signal that switches to the next source.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another source'**
+  String get mapSheetTryAnotherSource;
+
   /// Explains the multi-colored trail while points of several sources are on the map.
   ///
   /// In en, this message translates to:

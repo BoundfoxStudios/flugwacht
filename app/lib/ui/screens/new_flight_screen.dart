@@ -9,6 +9,7 @@ import '../../data/airline_directory.dart';
 import '../../data/flight_repository.dart';
 import '../../data/route_lookup.dart';
 import '../../domain/calendar_date.dart';
+import '../../domain/day_time.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_number.dart';
 import '../../domain/lookup_input.dart';
@@ -18,9 +19,13 @@ import '../theme/app_tokens.dart';
 import '../widgets/app_primary_button.dart';
 import '../widgets/app_segmented_control.dart';
 import '../widgets/departure_date_picker.dart';
+import '../widgets/departure_time_picker.dart';
+import '../widgets/flight_labels.dart';
 import 'new_flight_form.dart';
 import 'new_flight_preview.dart';
 import 'new_flight_preview_card.dart';
+
+const _defaultDepartureTime = DayTime(12, 0);
 
 class NewFlightScreen extends StatefulWidget {
   const NewFlightScreen({
@@ -115,6 +120,10 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                     builder: (context) => _departureDateField(localizations),
                   ),
                   const SizedBox(height: AppSpacing.cardPaddingLarge),
+                  SignalBuilder(
+                    builder: (context) => _departureTimeField(localizations),
+                  ),
+                  const SizedBox(height: AppSpacing.cardPaddingLarge),
                   _LabeledField(
                     label: localizations.newFlightNoteLabel,
                     child: _FieldBox(
@@ -207,6 +216,61 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     );
   }
 
+  Widget _departureTimeField(AppLocalizations localizations) {
+    final departureTime = _form.departureTime.value;
+    return _LabeledField(
+      label: localizations.newFlightDepartureTimeLabel,
+      hint: localizations.newFlightDepartureTimeHint,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _pickDepartureTime,
+        child: _FieldBox(
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  departureTime == null
+                      ? localizations.newFlightDepartureTimePlaceholder
+                      : formatDayTime(
+                          context,
+                          localizations.newFlightDepartureTimeFormat,
+                          departureTime,
+                        ),
+                  style: departureTime == null
+                      ? AppTextStyles.bodyLarge.copyWith(
+                          color: AppColors.neutral400,
+                        )
+                      : Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+              if (departureTime == null)
+                const FaIcon(
+                  AppIcons.clock,
+                  size: 18,
+                  color: AppColors.neutral400,
+                )
+              else
+                IconButton(
+                  onPressed: () => _form.departureTime.value = null,
+                  tooltip: localizations.newFlightDepartureTimeClear,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints.tightFor(
+                    width: 44,
+                    height: 44,
+                  ),
+                  icon: const FaIcon(
+                    AppIcons.xmark,
+                    size: 18,
+                    color: AppColors.neutral400,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _previewCard() {
     final state = _preview.state.value;
     return AnimatedSwitcher(
@@ -262,6 +326,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
           departureDate.month,
           departureDate.day,
         ),
+        departureTime: _form.departureTime.value,
         note: note.isEmpty ? null : note,
         expectedCallsign: switch (previewState) {
           FlightPreviewFound(:final callsign) => callsign,
@@ -274,6 +339,16 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     }
     if (mounted) {
       context.pop();
+    }
+  }
+
+  Future<void> _pickDepartureTime() async {
+    final pickedTime = await showDepartureTimePicker(
+      context: context,
+      initialTime: _form.departureTime.value ?? _defaultDepartureTime,
+    );
+    if (pickedTime != null) {
+      _form.departureTime.value = pickedTime;
     }
   }
 

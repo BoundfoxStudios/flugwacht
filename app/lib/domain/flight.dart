@@ -1,4 +1,5 @@
 import 'calendar_date.dart';
+import 'day_time.dart';
 import 'fix.dart';
 import 'flight_day_window.dart';
 import 'flight_route.dart';
@@ -11,6 +12,7 @@ class Flight {
     required this.lookupKind,
     required this.lookupValue,
     required this.departureDate,
+    this.departureTime,
     this.note,
     this.hexAddress,
     this.expectedCallsign,
@@ -22,6 +24,7 @@ class Flight {
   final FlightLookupKind lookupKind;
   final String lookupValue;
   final CalendarDate departureDate;
+  final DayTime? departureTime;
   final String? note;
   final String? hexAddress;
   final String? expectedCallsign;
@@ -33,6 +36,7 @@ class Flight {
     FlightLookupKind? lookupKind,
     String? lookupValue,
     CalendarDate? departureDate,
+    DayTime? departureTime,
     String? note,
     String? hexAddress,
     String? expectedCallsign,
@@ -43,6 +47,7 @@ class Flight {
     lookupKind: lookupKind ?? this.lookupKind,
     lookupValue: lookupValue ?? this.lookupValue,
     departureDate: departureDate ?? this.departureDate,
+    departureTime: departureTime ?? this.departureTime,
     note: note ?? this.note,
     hexAddress: hexAddress ?? this.hexAddress,
     expectedCallsign: expectedCallsign ?? this.expectedCallsign,

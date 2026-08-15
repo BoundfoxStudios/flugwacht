@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/flight_state.dart';
+import '../../domain/signal_age.dart';
 import '../../domain/source_id.dart';
 import '../../domain/unit_conversion.dart';
 import '../../l10n/app_localizations.g.dart';
@@ -12,6 +13,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'no_signal_info_box.dart';
 import 'pager_dots.dart';
 import 'state_timeline.dart';
 
@@ -24,6 +26,7 @@ class FlightSheet extends StatefulWidget {
     required this.onSelected,
     super.key,
     this.onOpenChanged,
+    this.clock = DateTime.now,
   });
 
   static const _snapDuration = Duration(milliseconds: 180);
@@ -40,6 +43,7 @@ class FlightSheet extends StatefulWidget {
   static const _dataRowGap = 8.0;
   static const _dataRowPadding = 10.0;
   static const _dataLabelGap = 1.0;
+  static const _signalTickInterval = Duration(seconds: 1);
 
   final List<FlightListEntry> entries;
   final int selectedIndex;
@@ -50,6 +54,9 @@ class FlightSheet extends StatefulWidget {
   /// Lets the map hide what the open sheet would cover.
   final ValueChanged<bool>? onOpenChanged;
 
+  /// Reads the current time; injectable so the signal age stays testable.
+  final DateTime Function() clock;
+
   @override
   State<FlightSheet> createState() => _FlightSheetState();
 }
@@ -59,11 +66,17 @@ class _FlightSheetState extends State<FlightSheet> {
   var _isOpen = false;
   var _isSwiping = false;
   var _dragTravel = 0.0;
+  late var _now = widget.clock();
+  late final Timer _signalTicker;
 
   @override
   void initState() {
     super.initState();
     _showPage(widget.selectedIndex, animate: false);
+    _signalTicker = Timer.periodic(
+      FlightSheet._signalTickInterval,
+      (_) => setState(() => _now = widget.clock()),
+    );
   }
 
   @override
@@ -78,6 +91,7 @@ class _FlightSheetState extends State<FlightSheet> {
 
   @override
   void dispose() {
+    _signalTicker.cancel();
     _pages.dispose();
     super.dispose();
   }
@@ -147,6 +161,7 @@ class _FlightSheetState extends State<FlightSheet> {
                                     colors: colors,
                                     isOpen: _isOpen,
                                     gap: gap,
+                                    now: _now,
                                   ),
                                 ),
                             ],
@@ -232,16 +247,22 @@ class _FlightPage extends StatelessWidget {
     required this.colors,
     required this.isOpen,
     required this.gap,
+    required this.now,
   });
 
   final FlightListEntry entry;
   final _SheetColors colors;
   final bool isOpen;
   final double gap;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final position = entry.flight.tracking.latestPosition;
+    final signalAge = position == null
+        ? null
+        : signalAgeOf(now.difference(position.timestamp));
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -262,7 +283,11 @@ class _FlightPage extends StatelessWidget {
             variant: StateTimelineVariant.labeled,
           ),
           SizedBox(height: gap),
-          _DataRow(entry: entry, colors: colors),
+          _DataRow(entry: entry, colors: colors, signalAge: signalAge),
+          if (entry.state == FlightState.noSignal && signalAge != null) ...[
+            SizedBox(height: gap),
+            NoSignalInfoBox(age: signalAge),
+          ],
           SizedBox(height: gap),
           Text(
             localizations.mapSheetSource(activeSourceId.label),
@@ -344,10 +369,15 @@ class _TitleRow extends StatelessWidget {
 }
 
 class _DataRow extends StatelessWidget {
-  const _DataRow({required this.entry, required this.colors});
+  const _DataRow({
+    required this.entry,
+    required this.colors,
+    required this.signalAge,
+  });
 
   final FlightListEntry entry;
   final _SheetColors colors;
+  final SignalAge? signalAge;
 
   @override
   Widget build(BuildContext context) {
@@ -381,10 +411,12 @@ class _DataRow extends StatelessWidget {
                 : localizations.mapSheetSpeedValue(numbers.format(speed)),
             colors: colors,
           ),
-          // Freshness is M8; the column holds its place until then.
           _DataColumn(
             label: localizations.mapSheetSignalLabel,
-            value: null,
+            value: switch (signalAge) {
+              final SignalAge age => signalAgeLabel(localizations, age),
+              null => null,
+            },
             colors: colors,
           ),
         ],

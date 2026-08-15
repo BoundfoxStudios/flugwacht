@@ -78,6 +78,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newFlightDepartureDateFormat => 'EEE, MMMM d, y';
 
   @override
+  String get newFlightDepartureTimeLabel => 'Departure time (optional)';
+
+  @override
+  String get newFlightDepartureTimeHint =>
+      'Scheduled departure · the search starts two hours before it';
+
+  @override
+  String get newFlightDepartureTimePlaceholder => 'Not set';
+
+  @override
+  String get newFlightDepartureTimeClear => 'Clear the departure time';
+
+  @override
+  String get newFlightDepartureTimeFormat => 'h:mm a';
+
+  @override
   String get newFlightNoteLabel => 'Note (optional)';
 
   @override
@@ -166,6 +182,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapSheetSignalLabel => 'Signal';
 
   @override
+  String mapSheetSignalSeconds(String seconds) {
+    return '$seconds s ago';
+  }
+
+  @override
+  String mapSheetSignalMinutes(String minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String mapSheetSignalHours(String hours) {
+    return '$hours h ago';
+  }
+
+  @override
+  String mapSheetSignalHoursMinutes(String hours, String minutes) {
+    return '$hours h $minutes min ago';
+  }
+
+  @override
+  String mapSheetNoSignalInfo(String age) {
+    return 'Last signal $age. Over oceans there are often no receivers for 1–2 hours — the trail will come back.';
+  }
+
+  @override
   String mapSheetAltitudeValue(String value) {
     return '$value m';
   }
@@ -185,6 +226,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flightRowToday => 'today';
+
+  @override
+  String flightRowDepartureTime(String time) {
+    return 'from $time';
+  }
+
+  @override
+  String get flightRowDepartureTimeFormat => 'h:mm a';
 
   @override
   String get flightRowLanded => 'landed ✓';

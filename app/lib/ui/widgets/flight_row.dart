@@ -128,10 +128,27 @@ class FlightRow extends StatelessWidget {
           ),
         FlightState.ended => localizations.flightRowLanded,
         FlightState.missed => localizations.flightRowMissed,
-        FlightState.waiting ||
+        FlightState.waiting => _waitingAccessory(localizations, context),
         FlightState.live ||
         FlightState.noSignal => localizations.flightRowToday,
       };
+
+  String _waitingAccessory(
+    AppLocalizations localizations,
+    BuildContext context,
+  ) {
+    final departureTime = flight.departureTime;
+    if (departureTime == null) {
+      return localizations.flightRowToday;
+    }
+    return localizations.flightRowDepartureTime(
+      formatDayTime(
+        context,
+        localizations.flightRowDepartureTimeFormat,
+        departureTime,
+      ),
+    );
+  }
 }
 
 enum _RowVariant {

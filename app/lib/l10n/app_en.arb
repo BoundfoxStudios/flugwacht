@@ -30,6 +30,14 @@
   "@newFlightDepartureDateFormat": {
     "description": "DateFormat pattern for the departure date field, localized per language."
   },
+  "newFlightDepartureTimeLabel": "Departure time (optional)",
+  "newFlightDepartureTimeHint": "Scheduled departure · the search starts two hours before it",
+  "newFlightDepartureTimePlaceholder": "Not set",
+  "newFlightDepartureTimeClear": "Clear the departure time",
+  "newFlightDepartureTimeFormat": "h:mm a",
+  "@newFlightDepartureTimeFormat": {
+    "description": "DateFormat pattern for the departure time field, localized per language."
+  },
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",
@@ -129,6 +137,50 @@
   "mapSheetAltitudeLabel": "Altitude",
   "mapSheetSpeedLabel": "Speed",
   "mapSheetSignalLabel": "Signal",
+  "mapSheetSignalSeconds": "{seconds} s ago",
+  "@mapSheetSignalSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSignalMinutes": "{minutes} min ago",
+  "@mapSheetSignalMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSignalHours": "{hours} h ago",
+  "@mapSheetSignalHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSignalHoursMinutes": "{hours} h {minutes} min ago",
+  "@mapSheetSignalHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetNoSignalInfo": "Last signal {age}. Over oceans there are often no receivers for 1\u20132 hours \u2014 the trail will come back.",
+  "@mapSheetNoSignalInfo": {
+    "description": "Explains a coverage gap; the age comes from the signal age copy.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
   "mapSheetAltitudeValue": "{value} m",
   "@mapSheetAltitudeValue": {
     "placeholders": {
@@ -155,6 +207,18 @@
   },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
+  "flightRowDepartureTime": "from {time}",
+  "@flightRowDepartureTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "flightRowDepartureTimeFormat": "h:mm a",
+  "@flightRowDepartureTimeFormat": {
+    "description": "DateFormat pattern for the departure time on a waiting row, localized per language."
+  },
   "flightRowLanded": "landed ✓",
   "flightRowMissed": "missed",
   "flightStatePlanned": "planned",

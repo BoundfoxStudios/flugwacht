@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
@@ -108,6 +109,28 @@ Future<Flight> savedFlight(
 
 VoidCallback? submitCallback(WidgetTester tester) =>
     tester.widget<AppPrimaryButton>(find.byType(AppPrimaryButton)).onPressed;
+
+Future<void> pickDepartureTime(
+  WidgetTester tester, {
+  required String hour,
+  required String minute,
+  String dayPeriod = 'PM',
+}) async {
+  await tester.tap(find.text('Not set'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byIcon(Icons.keyboard_outlined));
+  await tester.pumpAndSettle();
+  final fields = find.descendant(
+    of: find.byType(TimePickerDialog),
+    matching: find.byType(TextField),
+  );
+  await tester.enterText(fields.at(0), hour);
+  await tester.enterText(fields.at(1), minute);
+  await tester.tap(find.text(dayPeriod));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('OK'));
+  await tester.pumpAndSettle();
+}
 
 void main() {
   testWidgets('swaps hint and validation with the selected segment', (
@@ -243,12 +266,80 @@ void main() {
     expect(find.byType(DatePickerDialog), findsNothing);
   });
 
+  testWidgets('offers the departure time as an empty optional field', (
+    tester,
+  ) async {
+    await pumpNewFlightScreen(tester);
+
+    expect(find.text('Departure time (optional)'), findsOneWidget);
+    expect(find.text('Not set'), findsOneWidget);
+  });
+
+  testWidgets('shows the picked time in the departure time field', (
+    tester,
+  ) async {
+    await pumpNewFlightScreen(tester);
+
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+
+    expect(find.text('4:10 PM'), findsOneWidget);
+    expect(find.text('Not set'), findsNothing);
+  });
+
+  testWidgets('saves the picked departure time', (tester) async {
+    final repository = await pumpNewFlightScreen(tester);
+
+    await enterLookupValue(tester, 'LH 400');
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(flight.departureTime, const DayTime(16, 10));
+  });
+
+  testWidgets('saves no departure time while the field stays empty', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(tester);
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+
+    expect((await savedFlight(tester, repository)).departureTime, isNull);
+  });
+
+  testWidgets('clears a picked departure time again', (tester) async {
+    final repository = await pumpNewFlightScreen(tester);
+
+    await enterLookupValue(tester, 'LH 400');
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+    await tester.tap(find.byTooltip('Clear the departure time'));
+    await tester.pumpAndSettle();
+    expect(find.text('Not set'), findsOneWidget);
+
+    await submit(tester);
+
+    expect((await savedFlight(tester, repository)).departureTime, isNull);
+  });
+
+  testWidgets('opens the cupertino time picker on ios', (tester) async {
+    await pumpNewFlightScreen(tester, platform: TargetPlatform.iOS);
+
+    await tester.tap(find.text('Not set'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CupertinoDatePicker), findsOneWidget);
+    expect(find.byType(TimePickerDialog), findsNothing);
+  });
+
   testWidgets('renders the german copy for a german locale', (tester) async {
     await pumpNewFlightScreen(tester, locale: const Locale('de'));
 
     expect(find.text('Abbrechen'), findsOneWidget);
     expect(find.text('Wie auf dem Ticket, z. B. LH 400'), findsOneWidget);
     expect(find.text('Mi, 12. August 2026'), findsOneWidget);
+    expect(find.text('Abflugzeit (optional)'), findsOneWidget);
+    expect(find.text('Keine Angabe'), findsOneWidget);
     expect(find.text('Flug eintragen'), findsOneWidget);
   });
 

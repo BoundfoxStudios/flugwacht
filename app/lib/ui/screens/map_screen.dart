@@ -218,6 +218,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                             entries[index].flight.id,
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
+                        clock: widget.clock,
                       ),
                   ],
                 ),

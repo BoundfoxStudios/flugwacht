@@ -3,6 +3,7 @@ import 'package:drift/native.dart';
 import 'package:flugwacht/data/database.dart';
 import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
@@ -96,6 +97,106 @@ void main() {
 
     final stored = (await repository.watchFlights().first).single;
     expect(stored.departureDate, const CalendarDate(2026, 1, 5));
+  });
+
+  group('scheduled departure time', () {
+    Future<Flight> addFlightAt(DayTime? departureTime) => repository.addFlight(
+      lookupKind: FlightLookupKind.flightNumber,
+      lookupValue: 'LH433',
+      departureDate: const CalendarDate(2026, 3, 17),
+      departureTime: departureTime,
+    );
+
+    test('round-trips a scheduled departure time', () async {
+      await addFlightAt(const DayTime(16, 10));
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.departureTime, const DayTime(16, 10));
+    });
+
+    test('round-trips a departure time at midnight', () async {
+      await addFlightAt(const DayTime(0, 0));
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.departureTime, const DayTime(0, 0));
+    });
+
+    test('reads back no time for a flight added without one', () async {
+      await addFlightAt(null);
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.departureTime, isNull);
+    });
+
+    test('reads a flight stored before departure times existed', () async {
+      final legacyDatabase = AppDatabase(
+        DatabaseConnection(
+          NativeDatabase.memory(
+            setup: (rawDatabase) {
+              rawDatabase
+                ..execute(_flightsTableBeforeDepartureTimes)
+                ..execute(_trailPointsTableBeforeDepartureTimes)
+                ..execute(
+                  'INSERT INTO flights (lookup_kind, lookup_value, '
+                  'departure_date) VALUES (\'flightNumber\', \'LH433\', '
+                  '\'2026-03-17\')',
+                )
+                ..execute('PRAGMA user_version = 1');
+            },
+          ),
+          closeStreamsSynchronously: true,
+        ),
+      );
+      addTearDown(legacyDatabase.close);
+
+      final migrated = await FlightRepository(
+        legacyDatabase,
+      ).watchFlights().first;
+
+      expect(migrated.single.lookupValue, 'LH433');
+      expect(migrated.single.departureTime, isNull);
+    });
+  });
+
+  test('writes and clears the identity of a flight', () async {
+    final flight = await addFlight();
+
+    await repository.updateIdentity(
+      flight.id,
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+
+    final found = (await repository.watchFlights().first).single;
+    expect(found.hexAddress, '3c64c6');
+    expect(found.expectedCallsign, 'DLH433');
+
+    await repository.updateIdentity(
+      flight.id,
+      hexAddress: null,
+      expectedCallsign: null,
+    );
+
+    final cleared = (await repository.watchFlights().first).single;
+    expect(cleared.hexAddress, isNull);
+    expect(cleared.expectedCallsign, isNull);
+  });
+
+  test('updates the identity of only the addressed flight', () async {
+    final first = await addFlight();
+    final second = await addFlight();
+
+    await repository.updateIdentity(
+      first.id,
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+
+    final stored = await repository.watchFlights().first;
+    expect(
+      stored.firstWhere((flight) => flight.id == second.id).hexAddress,
+      isNull,
+    );
   });
 
   test('persists the latched tracking facts and the full position', () async {
@@ -514,3 +615,9 @@ void main() {
     });
   });
 }
+
+const _flightsTableBeforeDepartureTimes =
+    'CREATE TABLE "flights" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "lookup_kind" TEXT NOT NULL, "lookup_value" TEXT NOT NULL, "departure_date" TEXT NOT NULL, "note" TEXT NULL, "hex_address" TEXT NULL, "expected_callsign" TEXT NULL, "origin_icao_code" TEXT NULL, "origin_iata_code" TEXT NULL, "origin_name" TEXT NULL, "origin_location" TEXT NULL, "origin_latitude" REAL NULL, "origin_longitude" REAL NULL, "destination_icao_code" TEXT NULL, "destination_iata_code" TEXT NULL, "destination_name" TEXT NULL, "destination_location" TEXT NULL, "destination_latitude" REAL NULL, "destination_longitude" REAL NULL, "has_been_airborne" INTEGER NOT NULL DEFAULT 0 CHECK ("has_been_airborne" IN (0, 1)), "last_known_on_ground" INTEGER NULL CHECK ("last_known_on_ground" IN (0, 1)), "latest_latitude" REAL NULL, "latest_longitude" REAL NULL, "latest_timestamp" INTEGER NULL, "latest_barometric_altitude_feet" REAL NULL, "latest_on_ground" INTEGER NULL CHECK ("latest_on_ground" IN (0, 1)), "latest_geometric_altitude_feet" REAL NULL, "latest_track_degrees" REAL NULL, "latest_true_heading_degrees" REAL NULL, "latest_ground_speed_knots" REAL NULL, "latest_indicated_airspeed_knots" REAL NULL, "latest_mach" REAL NULL, "latest_vertical_rate_feet_per_minute" REAL NULL)';
+
+const _trailPointsTableBeforeDepartureTimes =
+    'CREATE TABLE "trail_points" ("flight_id" INTEGER NOT NULL REFERENCES flights (id) ON DELETE CASCADE, "timestamp" INTEGER NOT NULL, "latitude" REAL NOT NULL, "longitude" REAL NOT NULL, "source_id" TEXT NOT NULL, PRIMARY KEY ("flight_id", "timestamp"))';

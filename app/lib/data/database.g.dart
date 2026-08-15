@@ -52,6 +52,17 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _departureMinutesSinceMidnightMeta =
+      const VerificationMeta('departureMinutesSinceMidnight');
+  @override
+  late final GeneratedColumn<int> departureMinutesSinceMidnight =
+      GeneratedColumn<int>(
+        'departure_minutes_since_midnight',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
@@ -385,6 +396,7 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     lookupKind,
     lookupValue,
     departureDate,
+    departureMinutesSinceMidnight,
     note,
     hexAddress,
     expectedCallsign,
@@ -451,6 +463,15 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
       );
     } else if (isInserting) {
       context.missing(_departureDateMeta);
+    }
+    if (data.containsKey('departure_minutes_since_midnight')) {
+      context.handle(
+        _departureMinutesSinceMidnightMeta,
+        departureMinutesSinceMidnight.isAcceptableOrUnknown(
+          data['departure_minutes_since_midnight']!,
+          _departureMinutesSinceMidnightMeta,
+        ),
+      );
     }
     if (data.containsKey('note')) {
       context.handle(
@@ -728,6 +749,10 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.string,
         data['${effectivePrefix}departure_date'],
       )!,
+      departureMinutesSinceMidnight: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}departure_minutes_since_midnight'],
+      ),
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note'],
@@ -863,6 +888,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final FlightLookupKind lookupKind;
   final String lookupValue;
   final String departureDate;
+  final int? departureMinutesSinceMidnight;
   final String? note;
   final String? hexAddress;
   final String? expectedCallsign;
@@ -897,6 +923,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     required this.lookupKind,
     required this.lookupValue,
     required this.departureDate,
+    this.departureMinutesSinceMidnight,
     this.note,
     this.hexAddress,
     this.expectedCallsign,
@@ -938,6 +965,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     }
     map['lookup_value'] = Variable<String>(lookupValue);
     map['departure_date'] = Variable<String>(departureDate);
+    if (!nullToAbsent || departureMinutesSinceMidnight != null) {
+      map['departure_minutes_since_midnight'] = Variable<int>(
+        departureMinutesSinceMidnight,
+      );
+    }
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
@@ -1044,6 +1076,10 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       lookupKind: Value(lookupKind),
       lookupValue: Value(lookupValue),
       departureDate: Value(departureDate),
+      departureMinutesSinceMidnight:
+          departureMinutesSinceMidnight == null && nullToAbsent
+          ? const Value.absent()
+          : Value(departureMinutesSinceMidnight),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       hexAddress: hexAddress == null && nullToAbsent
           ? const Value.absent()
@@ -1146,6 +1182,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       ),
       lookupValue: serializer.fromJson<String>(json['lookupValue']),
       departureDate: serializer.fromJson<String>(json['departureDate']),
+      departureMinutesSinceMidnight: serializer.fromJson<int?>(
+        json['departureMinutesSinceMidnight'],
+      ),
       note: serializer.fromJson<String?>(json['note']),
       hexAddress: serializer.fromJson<String?>(json['hexAddress']),
       expectedCallsign: serializer.fromJson<String?>(json['expectedCallsign']),
@@ -1211,6 +1250,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       ),
       'lookupValue': serializer.toJson<String>(lookupValue),
       'departureDate': serializer.toJson<String>(departureDate),
+      'departureMinutesSinceMidnight': serializer.toJson<int?>(
+        departureMinutesSinceMidnight,
+      ),
       'note': serializer.toJson<String?>(note),
       'hexAddress': serializer.toJson<String?>(hexAddress),
       'expectedCallsign': serializer.toJson<String?>(expectedCallsign),
@@ -1260,6 +1302,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     FlightLookupKind? lookupKind,
     String? lookupValue,
     String? departureDate,
+    Value<int?> departureMinutesSinceMidnight = const Value.absent(),
     Value<String?> note = const Value.absent(),
     Value<String?> hexAddress = const Value.absent(),
     Value<String?> expectedCallsign = const Value.absent(),
@@ -1294,6 +1337,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     lookupKind: lookupKind ?? this.lookupKind,
     lookupValue: lookupValue ?? this.lookupValue,
     departureDate: departureDate ?? this.departureDate,
+    departureMinutesSinceMidnight: departureMinutesSinceMidnight.present
+        ? departureMinutesSinceMidnight.value
+        : this.departureMinutesSinceMidnight,
     note: note.present ? note.value : this.note,
     hexAddress: hexAddress.present ? hexAddress.value : this.hexAddress,
     expectedCallsign: expectedCallsign.present
@@ -1384,6 +1430,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       departureDate: data.departureDate.present
           ? data.departureDate.value
           : this.departureDate,
+      departureMinutesSinceMidnight: data.departureMinutesSinceMidnight.present
+          ? data.departureMinutesSinceMidnight.value
+          : this.departureMinutesSinceMidnight,
       note: data.note.present ? data.note.value : this.note,
       hexAddress: data.hexAddress.present
           ? data.hexAddress.value
@@ -1480,6 +1529,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write('lookupKind: $lookupKind, ')
           ..write('lookupValue: $lookupValue, ')
           ..write('departureDate: $departureDate, ')
+          ..write(
+            'departureMinutesSinceMidnight: $departureMinutesSinceMidnight, ',
+          )
           ..write('note: $note, ')
           ..write('hexAddress: $hexAddress, ')
           ..write('expectedCallsign: $expectedCallsign, ')
@@ -1525,6 +1577,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     lookupKind,
     lookupValue,
     departureDate,
+    departureMinutesSinceMidnight,
     note,
     hexAddress,
     expectedCallsign,
@@ -1563,6 +1616,8 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.lookupKind == this.lookupKind &&
           other.lookupValue == this.lookupValue &&
           other.departureDate == this.departureDate &&
+          other.departureMinutesSinceMidnight ==
+              this.departureMinutesSinceMidnight &&
           other.note == this.note &&
           other.hexAddress == this.hexAddress &&
           other.expectedCallsign == this.expectedCallsign &&
@@ -1603,6 +1658,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<FlightLookupKind> lookupKind;
   final Value<String> lookupValue;
   final Value<String> departureDate;
+  final Value<int?> departureMinutesSinceMidnight;
   final Value<String?> note;
   final Value<String?> hexAddress;
   final Value<String?> expectedCallsign;
@@ -1637,6 +1693,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.lookupKind = const Value.absent(),
     this.lookupValue = const Value.absent(),
     this.departureDate = const Value.absent(),
+    this.departureMinutesSinceMidnight = const Value.absent(),
     this.note = const Value.absent(),
     this.hexAddress = const Value.absent(),
     this.expectedCallsign = const Value.absent(),
@@ -1672,6 +1729,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     required FlightLookupKind lookupKind,
     required String lookupValue,
     required String departureDate,
+    this.departureMinutesSinceMidnight = const Value.absent(),
     this.note = const Value.absent(),
     this.hexAddress = const Value.absent(),
     this.expectedCallsign = const Value.absent(),
@@ -1709,6 +1767,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<String>? lookupKind,
     Expression<String>? lookupValue,
     Expression<String>? departureDate,
+    Expression<int>? departureMinutesSinceMidnight,
     Expression<String>? note,
     Expression<String>? hexAddress,
     Expression<String>? expectedCallsign,
@@ -1744,6 +1803,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (lookupKind != null) 'lookup_kind': lookupKind,
       if (lookupValue != null) 'lookup_value': lookupValue,
       if (departureDate != null) 'departure_date': departureDate,
+      if (departureMinutesSinceMidnight != null)
+        'departure_minutes_since_midnight': departureMinutesSinceMidnight,
       if (note != null) 'note': note,
       if (hexAddress != null) 'hex_address': hexAddress,
       if (expectedCallsign != null) 'expected_callsign': expectedCallsign,
@@ -1793,6 +1854,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<FlightLookupKind>? lookupKind,
     Value<String>? lookupValue,
     Value<String>? departureDate,
+    Value<int?>? departureMinutesSinceMidnight,
     Value<String?>? note,
     Value<String?>? hexAddress,
     Value<String?>? expectedCallsign,
@@ -1828,6 +1890,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       lookupKind: lookupKind ?? this.lookupKind,
       lookupValue: lookupValue ?? this.lookupValue,
       departureDate: departureDate ?? this.departureDate,
+      departureMinutesSinceMidnight:
+          departureMinutesSinceMidnight ?? this.departureMinutesSinceMidnight,
       note: note ?? this.note,
       hexAddress: hexAddress ?? this.hexAddress,
       expectedCallsign: expectedCallsign ?? this.expectedCallsign,
@@ -1883,6 +1947,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     }
     if (departureDate.present) {
       map['departure_date'] = Variable<String>(departureDate.value);
+    }
+    if (departureMinutesSinceMidnight.present) {
+      map['departure_minutes_since_midnight'] = Variable<int>(
+        departureMinutesSinceMidnight.value,
+      );
     }
     if (note.present) {
       map['note'] = Variable<String>(note.value);
@@ -1999,6 +2068,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write('lookupKind: $lookupKind, ')
           ..write('lookupValue: $lookupValue, ')
           ..write('departureDate: $departureDate, ')
+          ..write(
+            'departureMinutesSinceMidnight: $departureMinutesSinceMidnight, ',
+          )
           ..write('note: $note, ')
           ..write('hexAddress: $hexAddress, ')
           ..write('expectedCallsign: $expectedCallsign, ')
@@ -2443,6 +2515,7 @@ typedef $$FlightsTableCreateCompanionBuilder =
       required FlightLookupKind lookupKind,
       required String lookupValue,
       required String departureDate,
+      Value<int?> departureMinutesSinceMidnight,
       Value<String?> note,
       Value<String?> hexAddress,
       Value<String?> expectedCallsign,
@@ -2479,6 +2552,7 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<FlightLookupKind> lookupKind,
       Value<String> lookupValue,
       Value<String> departureDate,
+      Value<int?> departureMinutesSinceMidnight,
       Value<String?> note,
       Value<String?> hexAddress,
       Value<String?> expectedCallsign,
@@ -2560,6 +2634,11 @@ class $$FlightsTableFilterComposer
 
   ColumnFilters<String> get departureDate => $composableBuilder(
     column: $table.departureDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get departureMinutesSinceMidnight => $composableBuilder(
+    column: $table.departureMinutesSinceMidnight,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2764,6 +2843,11 @@ class $$FlightsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get departureMinutesSinceMidnight => $composableBuilder(
+    column: $table.departureMinutesSinceMidnight,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get note => $composableBuilder(
     column: $table.note,
     builder: (column) => ColumnOrderings(column),
@@ -2938,6 +3022,11 @@ class $$FlightsTableAnnotationComposer
 
   GeneratedColumn<String> get departureDate => $composableBuilder(
     column: $table.departureDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get departureMinutesSinceMidnight => $composableBuilder(
+    column: $table.departureMinutesSinceMidnight,
     builder: (column) => column,
   );
 
@@ -3145,6 +3234,8 @@ class $$FlightsTableTableManager
                 Value<FlightLookupKind> lookupKind = const Value.absent(),
                 Value<String> lookupValue = const Value.absent(),
                 Value<String> departureDate = const Value.absent(),
+                Value<int?> departureMinutesSinceMidnight =
+                    const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> hexAddress = const Value.absent(),
                 Value<String?> expectedCallsign = const Value.absent(),
@@ -3183,6 +3274,7 @@ class $$FlightsTableTableManager
                 lookupKind: lookupKind,
                 lookupValue: lookupValue,
                 departureDate: departureDate,
+                departureMinutesSinceMidnight: departureMinutesSinceMidnight,
                 note: note,
                 hexAddress: hexAddress,
                 expectedCallsign: expectedCallsign,
@@ -3220,6 +3312,8 @@ class $$FlightsTableTableManager
                 required FlightLookupKind lookupKind,
                 required String lookupValue,
                 required String departureDate,
+                Value<int?> departureMinutesSinceMidnight =
+                    const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> hexAddress = const Value.absent(),
                 Value<String?> expectedCallsign = const Value.absent(),
@@ -3258,6 +3352,7 @@ class $$FlightsTableTableManager
                 lookupKind: lookupKind,
                 lookupValue: lookupValue,
                 departureDate: departureDate,
+                departureMinutesSinceMidnight: departureMinutesSinceMidnight,
                 note: note,
                 hexAddress: hexAddress,
                 expectedCallsign: expectedCallsign,

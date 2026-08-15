@@ -130,6 +130,18 @@ abstract final class AppTextStyles {
     fontSize: 11,
   );
 
+  static const badgeLabel = TextStyle(
+    fontFamily: AppFontFamilies.barlow,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 11 * 0.04,
+  );
+
+  static const attribution = TextStyle(
+    fontFamily: AppFontFamilies.barlow,
+    fontSize: 10,
+  );
+
   static const captionEmphasis = TextStyle(
     fontFamily: AppFontFamilies.barlow,
     fontSize: 11,

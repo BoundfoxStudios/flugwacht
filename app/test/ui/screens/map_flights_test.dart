@@ -5,6 +5,7 @@ import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
+import 'package:flugwacht/ui/map_selection.dart';
 import 'package:flugwacht/ui/screens/map_flights.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -42,9 +43,15 @@ void _withMapFlights(
   body,
 ) => fakeAsync((async) {
   final repository = FakeFlightRepository();
-  final mapFlights = MapFlights(repository: repository, clock: () => _now);
+  final selection = MapSelection();
+  final mapFlights = MapFlights(
+    repository: repository,
+    selection: selection,
+    clock: () => _now,
+  );
   body(async, repository, mapFlights);
   mapFlights.dispose();
+  selection.dispose();
   repository.dispose();
 });
 

@@ -5,6 +5,7 @@ import 'package:signals/signals.dart';
 
 import '../../data/flight_repository.dart';
 import '../../domain/trail_point.dart';
+import '../map_selection.dart';
 import 'flight_list.dart';
 import 'list_sections.dart';
 
@@ -13,12 +14,16 @@ import 'list_sections.dart';
 class MapFlights {
   MapFlights({
     required FlightRepository repository,
+    required this.selection,
     DateTime Function() clock = DateTime.now,
   }) : _repository = repository,
        _flightList = FlightList(repository: repository, clock: clock) {
     _stopReconcilingSelection = effect(_reconcileSelection);
     _stopWatchingTrail = effect(_watchTrail);
   }
+
+  /// Owned by the router, so the list can select a flight for the map.
+  final MapSelection selection;
 
   final FlightRepository _repository;
   final FlightList _flightList;
@@ -27,7 +32,7 @@ class MapFlights {
     () => _flightList.sections.value?.active ?? const [],
   );
 
-  final selectedId = signal<int?>(null);
+  Signal<int?> get selectedId => selection.flightId;
 
   late final selected = computed<FlightListEntry?>(() {
     final id = selectedId.value;
@@ -48,7 +53,6 @@ class MapFlights {
     unawaited(_trailSubscription?.cancel());
     trail.dispose();
     selected.dispose();
-    selectedId.dispose();
     flights.dispose();
     _flightList.dispose();
   }

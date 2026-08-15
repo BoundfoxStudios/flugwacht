@@ -9,8 +9,10 @@ import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/main.dart';
 import 'package:flugwacht/ui/app_router.dart';
+import 'package:flugwacht/ui/map_selection.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
+import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight_sheet.dart';
 import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
@@ -90,11 +92,14 @@ Future<FakeFlightRepository> pumpMapScreen(
   WidgetTester tester, {
   List<Flight> flights = const [],
   List<TrailPoint> trail = const [],
+  MapSelection? selection,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
+  final mapSelection = selection ?? MapSelection();
+  addTearDown(mapSelection.dispose);
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -106,6 +111,7 @@ Future<FakeFlightRepository> pumpMapScreen(
       },
       home: MapScreen(
         flightRepository: repository,
+        selection: mapSelection,
         clock: () => _now,
         tileProvider: StubTileProvider(),
       ),
@@ -119,6 +125,48 @@ Future<FakeFlightRepository> pumpMapScreen(
   }
   // Lets the camera settle on the selected flight; markers outside the
   // viewport are not built.
+  await tester.pump(const Duration(milliseconds: 300));
+  return repository;
+}
+
+/// Two flights airborne right now, so the app's own clock keeps them on the
+/// map.
+List<Flight> flightsAirborneNow() {
+  final today = DateTime.now();
+  return [
+    for (final (id, latitude) in [(1, 48.5), (2, 51.5)])
+      Flight(
+        id: id,
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH40$id',
+        departureDate: CalendarDate(today.year, today.month, today.day),
+        tracking: FlightTracking(
+          latestPosition: FixPosition(
+            latitude: latitude,
+            longitude: -20,
+            timestamp: today.toUtc(),
+          ),
+          hasBeenAirborne: true,
+        ),
+      ),
+  ];
+}
+
+Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
+  final repository = FakeFlightRepository();
+  addTearDown(repository.dispose);
+  await tester.pumpWidget(
+    FlugwachtApp(
+      router: createAppRouter(
+        flightRepository: repository,
+        airlineDirectory: createTestAirlineDirectory(),
+        routeLookup: FakeRouteLookup(),
+        tileProvider: StubTileProvider(),
+      ),
+    ),
+  );
+  repository.emit(flightsAirborneNow());
+  await tester.pump();
   await tester.pump(const Duration(milliseconds: 300));
   return repository;
 }
@@ -304,42 +352,30 @@ void main() {
   testWidgets('keeps its selection while another tab was in front', (
     tester,
   ) async {
-    final today = DateTime.now();
-    Flight flightNow(int id, double latitude) => Flight(
-      id: id,
-      lookupKind: FlightLookupKind.flightNumber,
-      lookupValue: 'LH40$id',
-      departureDate: CalendarDate(today.year, today.month, today.day),
-      tracking: FlightTracking(
-        latestPosition: FixPosition(
-          latitude: latitude,
-          longitude: -20,
-          timestamp: today.toUtc(),
-        ),
-        hasBeenAirborne: true,
-      ),
-    );
-    final repository = FakeFlightRepository();
-    addTearDown(repository.dispose);
-    await tester.pumpWidget(
-      FlugwachtApp(
-        router: createAppRouter(
-          flightRepository: repository,
-          airlineDirectory: createTestAirlineDirectory(),
-          routeLookup: FakeRouteLookup(),
-          tileProvider: StubTileProvider(),
-        ),
-      ),
-    );
-    repository.emit([flightNow(1, 48.5), flightNow(2, 51.5)]);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    await pumpApp(tester);
     await tester.tap(aircraftMarkerAt(1));
     await tester.pump(const Duration(milliseconds: 300));
 
     await tester.tap(find.text('List'));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Map'));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
+  testWidgets('frames the flight the list handed over', (tester) async {
+    final repository = await pumpApp(tester);
+    await tester.tap(find.text('List'));
+    await tester.pump(const Duration(milliseconds: 300));
+    repository.emit(flightsAirborneNow());
+    await tester.pump();
+
+    await tester.tap(find.byType(FlightHeroCell).last);
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(

@@ -61,6 +61,7 @@ Future<void> pumpHeroCell(
   FlightState state = FlightState.live,
   Flight? cell,
   List<TrailPoint> trail = const [],
+  VoidCallback? onTap,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
 }) async {
@@ -83,6 +84,7 @@ Future<void> pumpHeroCell(
                 flight: cell ?? flight(),
                 state: state,
                 trail: trail,
+                onTap: onTap,
                 tileProvider: StubTileProvider(),
               ),
             ),
@@ -106,6 +108,19 @@ BoxDecoration badgeDecoration(WidgetTester tester, String label) =>
             )
             .decoration!
         as BoxDecoration;
+
+double pressDip(WidgetTester tester) => tester
+    .widget<Transform>(
+      find
+          .descendant(
+            of: find.byType(FlightHeroCell),
+            matching: find.byType(Transform),
+          )
+          .first,
+    )
+    .transform
+    .getTranslation()
+    .y;
 
 void main() {
   testWidgets('heads the cell with the lookup value, note and route', (
@@ -228,6 +243,25 @@ void main() {
     await pumpHeroCell(tester);
 
     expect(find.text('© OpenStreetMap'), findsOneWidget);
+  });
+
+  testWidgets('dips while pressed and opens the flight on release', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpHeroCell(tester, onTap: () => taps++);
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(FlightHeroCell)),
+    );
+    await tester.pump();
+    expect(pressDip(tester), 1);
+
+    await gesture.up();
+    await tester.pump();
+
+    expect(taps, 1);
+    expect(pressDip(tester), 0);
   });
 
   testWidgets('renders the german copy', (tester) async {

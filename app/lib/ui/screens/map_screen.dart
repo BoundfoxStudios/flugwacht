@@ -10,6 +10,7 @@ import '../../data/flight_repository.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
+import '../map_selection.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/flight_sheet.dart';
@@ -27,6 +28,7 @@ const mapSheetPeekHeight = 176.0;
 class MapScreen extends StatefulWidget {
   const MapScreen({
     required this.flightRepository,
+    required this.selection,
     super.key,
     this.clock = DateTime.now,
     this.tileProvider,
@@ -57,6 +59,7 @@ class MapScreen extends StatefulWidget {
   static const _plannedLegDash = [7.0, 6.0];
 
   final FlightRepository flightRepository;
+  final MapSelection selection;
 
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
@@ -71,6 +74,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   late final _mapFlights = MapFlights(
     repository: widget.flightRepository,
+    selection: widget.selection,
     clock: widget.clock,
   );
   final _mapController = MapController();

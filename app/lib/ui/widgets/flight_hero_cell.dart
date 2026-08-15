@@ -14,12 +14,13 @@ import 'state_timeline.dart';
 
 /// The cell of an airborne flight: mini map with its state badge, the title
 /// line and the compact state timeline. The arrival block is M9.
-class FlightHeroCell extends StatelessWidget {
+class FlightHeroCell extends StatefulWidget {
   const FlightHeroCell({
     required this.flight,
     required this.state,
     required this.trail,
     super.key,
+    this.onTap,
     this.tileProvider,
   });
 
@@ -32,11 +33,44 @@ class FlightHeroCell extends StatelessWidget {
   final FlightState state;
   final List<TrailPoint> trail;
 
+  /// Opens the flight on the map; without it the cell is not interactive.
+  final VoidCallback? onTap;
+
   /// Handed to the mini map so tests render without loading tiles.
   final TileProvider? tileProvider;
 
   @override
+  State<FlightHeroCell> createState() => _FlightHeroCellState();
+}
+
+class _FlightHeroCellState extends State<FlightHeroCell> {
+  var _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final card = _buildCard(context);
+    final onTap = widget.onTap;
+    if (onTap == null) {
+      return card;
+    }
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: onTap,
+      child: Semantics(
+        button: true,
+        child: Transform.translate(
+          offset: _isPressed ? const Offset(0, 1) : Offset.zero,
+          child: card,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext context) {
+    final flight = widget.flight;
+    final state = widget.state;
     final localizations = AppLocalizations.of(context);
     final colors = switch (Theme.of(context).brightness) {
       Brightness.light => _HeroColors.light,
@@ -48,34 +82,39 @@ class FlightHeroCell extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: colors.border, width: _borderWidth),
+        border: Border.all(
+          color: colors.border,
+          width: FlightHeroCell._borderWidth,
+        ),
         boxShadow: colors.shadow,
       ),
       // Insets the clipped content so the opaque mini map stops at the border
       // instead of painting over it.
       child: Padding(
-        padding: const EdgeInsets.all(_borderWidth),
+        padding: const EdgeInsets.all(FlightHeroCell._borderWidth),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.card - _borderWidth),
+          borderRadius: BorderRadius.circular(
+            AppRadius.card - FlightHeroCell._borderWidth,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (position != null)
                 SizedBox(
-                  height: _mapHeight,
+                  height: FlightHeroCell._mapHeight,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
                       MiniMap(
                         position: position,
                         route: route,
-                        trail: trail,
+                        trail: widget.trail,
                         state: state,
-                        tileProvider: tileProvider,
+                        tileProvider: widget.tileProvider,
                       ),
                       Positioned(
-                        top: _badgeInset,
-                        left: _badgeInset,
+                        top: FlightHeroCell._badgeInset,
+                        left: FlightHeroCell._badgeInset,
                         child: FlightStateBadge(state: state),
                       ),
                     ],
@@ -116,7 +155,7 @@ class FlightHeroCell extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: _blockGap),
+                    const SizedBox(height: FlightHeroCell._blockGap),
                     StateTimeline(
                       state: state,
                       variant: StateTimelineVariant.compact,

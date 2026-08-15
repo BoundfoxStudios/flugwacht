@@ -2,6 +2,7 @@ import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
+import 'package:flugwacht/ui/map_selection.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -43,16 +44,20 @@ FlightTracking _seenAt(DateTime timestamp, {bool? onGround}) => FlightTracking(
 
 Future<FakeFlightRepository> pumpListScreen(
   WidgetTester tester, {
+  MapSelection? selection,
   Locale locale = const Locale('en'),
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
+  final mapSelection = selection ?? MapSelection();
+  addTearDown(mapSelection.dispose);
   final router = GoRouter(
     routes: [
       GoRoute(
         path: '/',
         builder: (context, state) => ListScreen(
           flightRepository: repository,
+          mapSelection: mapSelection,
           clock: () => _today,
           tileProvider: StubTileProvider(),
         ),
@@ -61,6 +66,10 @@ Future<FakeFlightRepository> pumpListScreen(
         path: '/new-flight',
         builder: (context, state) =>
             const Scaffold(body: Text('new flight screen')),
+      ),
+      GoRoute(
+        path: '/map',
+        builder: (context, state) => const Scaffold(body: Text('map screen')),
       ),
     ],
   );
@@ -197,6 +206,36 @@ void main() {
     expect(find.byType(FlightHeroCell), findsOneWidget);
     expect(find.byType(FlightRow), findsNothing);
     expect(repository.watchedTrails, [1]);
+  });
+
+  testWidgets('opens the tapped hero flight on the map', (tester) async {
+    final selection = MapSelection();
+    addTearDown(selection.dispose);
+    final repository = await pumpListScreen(tester, selection: selection);
+    repository.emit([
+      _flight(id: 7, tracking: _seenAt(DateTime(2026, 8, 12, 9, 25))),
+    ]);
+    await tester.pump();
+
+    await tester.tap(find.byType(FlightHeroCell));
+    await tester.pumpAndSettle();
+
+    expect(selection.flightId.value, 7);
+    expect(find.text('map screen'), findsOneWidget);
+  });
+
+  testWidgets('leaves the rows of the other sections alone', (tester) async {
+    final selection = MapSelection();
+    addTearDown(selection.dispose);
+    final repository = await pumpListScreen(tester, selection: selection);
+    repository.emit([_flight(id: 7)]);
+    await tester.pump();
+
+    await tester.tap(find.byType(FlightRow));
+    await tester.pumpAndSettle();
+
+    expect(selection.flightId.value, isNull);
+    expect(find.text('map screen'), findsNothing);
   });
 
   testWidgets('labels the past section above its rows', (tester) async {

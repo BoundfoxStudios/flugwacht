@@ -366,7 +366,7 @@ abstract class AppLocalizations {
   /// **'© OpenStreetMap · Data: {source}'**
   String mapAttributionWithSource(String source);
 
-  /// Stands in for the arrival time until the estimate of M9 exists.
+  /// Stands in for the arrival time of a flight without an estimate.
   ///
   /// In en, this message translates to:
   /// **'–:–'**

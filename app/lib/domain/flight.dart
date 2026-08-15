@@ -1,6 +1,7 @@
 import 'calendar_date.dart';
 import 'fix.dart';
 import 'flight_day_window.dart';
+import 'flight_route.dart';
 
 enum FlightLookupKind { flightNumber, registration, hexAddress }
 
@@ -13,6 +14,7 @@ class Flight {
     this.note,
     this.hexAddress,
     this.expectedCallsign,
+    this.route,
     this.tracking = const FlightTracking(),
   });
 
@@ -23,6 +25,7 @@ class Flight {
   final String? note;
   final String? hexAddress;
   final String? expectedCallsign;
+  final FlightRoute? route;
   final FlightTracking tracking;
 
   Flight copyWith({
@@ -33,6 +36,7 @@ class Flight {
     String? note,
     String? hexAddress,
     String? expectedCallsign,
+    FlightRoute? route,
     FlightTracking? tracking,
   }) => Flight(
     id: id ?? this.id,
@@ -42,6 +46,7 @@ class Flight {
     note: note ?? this.note,
     hexAddress: hexAddress ?? this.hexAddress,
     expectedCallsign: expectedCallsign ?? this.expectedCallsign,
+    route: route ?? this.route,
     tracking: tracking ?? this.tracking,
   );
 }

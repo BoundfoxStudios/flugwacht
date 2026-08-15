@@ -107,6 +107,9 @@
       }
     }
   },
+  "flightBadgeLive": "Live",
+  "flightBadgeNoSignal": "No signal",
+  "mapAttributionOpenStreetMap": "© OpenStreetMap",
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
   "flightRowLanded": "landed ✓",

@@ -312,6 +312,24 @@ abstract class AppLocalizations {
   /// **'{route} · {state}'**
   String flightRowSubtitle(String route, String state);
 
+  /// No description provided for @flightBadgeLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get flightBadgeLive;
+
+  /// No description provided for @flightBadgeNoSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'No signal'**
+  String get flightBadgeNoSignal;
+
+  /// No description provided for @mapAttributionOpenStreetMap.
+  ///
+  /// In en, this message translates to:
+  /// **'© OpenStreetMap'**
+  String get mapAttributionOpenStreetMap;
+
   /// No description provided for @flightRowWaitingForSignal.
   ///
   /// In en, this message translates to:

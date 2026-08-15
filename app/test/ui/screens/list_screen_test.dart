@@ -6,6 +6,8 @@ import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/app_fab.dart';
+import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
+import 'package:flugwacht/ui/widgets/flight_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -49,8 +51,11 @@ Future<FakeFlightRepository> pumpListScreen(
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) =>
-            ListScreen(flightRepository: repository, clock: () => _today),
+        builder: (context, state) => ListScreen(
+          flightRepository: repository,
+          clock: () => _today,
+          tileProvider: StubTileProvider(),
+        ),
       ),
       GoRoute(
         path: '/new-flight',
@@ -174,6 +179,24 @@ void main() {
     expect(topOf('LH400'), lessThan(topOf('EW594')));
     expect(topOf('EW594'), lessThan(topOf('UA961')));
     expect(topOf('UA961'), lessThan(topOf('BA915')));
+  });
+
+  testWidgets('gives an airborne flight its hero cell and trail', (
+    tester,
+  ) async {
+    final repository = await pumpListScreen(tester);
+
+    repository.emit([
+      _flight(
+        lookupValue: 'LH400',
+        tracking: _seenAt(DateTime(2026, 8, 12, 9, 25)),
+      ),
+    ]);
+    await tester.pump();
+
+    expect(find.byType(FlightHeroCell), findsOneWidget);
+    expect(find.byType(FlightRow), findsNothing);
+    expect(repository.watchedTrails, [1]);
   });
 
   testWidgets('labels the past section above its rows', (tester) async {

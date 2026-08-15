@@ -39,6 +39,7 @@ GoRouter createTestAppRouter() => createAppRouter(
   flightRepository: createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
   routeLookup: FakeRouteLookup(),
+  tileProvider: StubTileProvider(),
 );
 
 class FakeFlightRepository implements FlightRepository {

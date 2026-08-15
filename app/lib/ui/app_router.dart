@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/airline_directory.dart';
@@ -14,6 +15,7 @@ GoRouter createAppRouter({
   required FlightRepository flightRepository,
   required AirlineDirectory airlineDirectory,
   required RouteLookup routeLookup,
+  TileProvider? tileProvider,
 }) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
   return GoRouter(
@@ -36,8 +38,10 @@ GoRouter createAppRouter({
             routes: [
               GoRoute(
                 path: '/list',
-                builder: (context, state) =>
-                    ListScreen(flightRepository: flightRepository),
+                builder: (context, state) => ListScreen(
+                  flightRepository: flightRepository,
+                  tileProvider: tileProvider,
+                ),
               ),
             ],
           ),

@@ -208,7 +208,10 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                       ),
                     if (selected != null)
                       FlightSheet(
-                        entry: selected,
+                        entries: entries,
+                        selectedIndex: entries.indexOf(selected),
+                        onSelected: (index) => _mapFlights.selectedId.value =
+                            entries[index].flight.id,
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
                       ),
@@ -233,15 +236,19 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           point: LatLng(position.latitude, position.longitude),
           width: MapScreen._markerSize,
           height: MapScreen._markerSize,
-          child: CustomPaint(
-            painter: AircraftMarkerPainter(
-              colors: colors,
-              state: entry.state,
-              trackDegrees: position.trackDegrees ?? 0,
-              silhouetteScale: MapScreen._silhouetteScale,
-              rings: entry.flight.id == selectedId
-                  ? _selectionRings(entry.state)
-                  : const [],
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _mapFlights.selectedId.value = entry.flight.id,
+            child: CustomPaint(
+              painter: AircraftMarkerPainter(
+                colors: colors,
+                state: entry.state,
+                trackDegrees: position.trackDegrees ?? 0,
+                silhouetteScale: MapScreen._silhouetteScale,
+                rings: entry.flight.id == selectedId
+                    ? _selectionRings(entry.state)
+                    : const [],
+              ),
             ),
           ),
         ),

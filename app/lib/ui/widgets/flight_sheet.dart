@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,14 +12,22 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'pager_dots.dart';
 import 'state_timeline.dart';
 
 /// The sheet over the map: peeking it names the flight and its arrival, opened
 /// it adds the timeline, the flight's numbers and the source.
 class FlightSheet extends StatefulWidget {
-  const FlightSheet({required this.entry, super.key, this.onOpenChanged});
+  const FlightSheet({
+    required this.entries,
+    required this.selectedIndex,
+    required this.onSelected,
+    super.key,
+    this.onOpenChanged,
+  });
 
   static const _snapDuration = Duration(milliseconds: 180);
+  static const _pageDuration = Duration(milliseconds: 200);
 
   /// Travel of a drag that counts as a pull to the other snap position.
   static const _snapThreshold = 24.0;
@@ -31,7 +41,11 @@ class FlightSheet extends StatefulWidget {
   static const _dataRowPadding = 10.0;
   static const _dataLabelGap = 1.0;
 
-  final FlightListEntry entry;
+  final List<FlightListEntry> entries;
+  final int selectedIndex;
+
+  /// Reports the page the sheet settled on, so the selection follows a swipe.
+  final ValueChanged<int> onSelected;
 
   /// Lets the map hide what the open sheet would cover.
   final ValueChanged<bool>? onOpenChanged;
@@ -41,8 +55,32 @@ class FlightSheet extends StatefulWidget {
 }
 
 class _FlightSheetState extends State<FlightSheet> {
+  final _pages = ScrollController();
   var _isOpen = false;
+  var _isSwiping = false;
   var _dragTravel = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _showPage(widget.selectedIndex, animate: false);
+  }
+
+  @override
+  void didUpdateWidget(covariant FlightSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.entries.length != oldWidget.entries.length) {
+      _showPage(widget.selectedIndex, animate: false);
+    } else if (widget.selectedIndex != oldWidget.selectedIndex) {
+      _showPage(widget.selectedIndex, animate: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pages.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,32 +120,40 @@ class _FlightSheetState extends State<FlightSheet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _Grabber(color: colors.grabber, onTap: _toggle),
-                SizedBox(height: gap),
-                _TitleRow(entry: widget.entry, colors: colors, isOpen: _isOpen),
-                SizedBox(height: gap),
-                Text(
-                  AppLocalizations.of(context).mapSheetArrivalPlaceholder,
-                  style: AppTextStyles.timeLarge.copyWith(
-                    color: colors.time,
-                    height: FlightSheet._timeHeight,
-                  ),
-                ),
-                if (_isOpen) ...[
+                if (widget.entries.length > 1) ...[
                   SizedBox(height: gap),
-                  StateTimeline(
-                    state: widget.entry.state,
-                    variant: StateTimelineVariant.labeled,
-                  ),
-                  SizedBox(height: gap),
-                  _DataRow(entry: widget.entry, colors: colors),
-                  SizedBox(height: gap),
-                  Text(
-                    AppLocalizations.of(
-                      context,
-                    ).mapSheetSource(activeSourceId.label),
-                    style: AppTextStyles.caption.copyWith(color: colors.footer),
+                  PagerDots(
+                    count: widget.entries.length,
+                    activeIndex: widget.selectedIndex,
                   ),
                 ],
+                SizedBox(height: gap),
+                LayoutBuilder(
+                  builder: (context, constraints) =>
+                      NotificationListener<ScrollNotification>(
+                        onNotification: _onPageScroll,
+                        child: SingleChildScrollView(
+                          controller: _pages,
+                          scrollDirection: Axis.horizontal,
+                          physics: const PageScrollPhysics(),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (final entry in widget.entries)
+                                SizedBox(
+                                  width: constraints.maxWidth,
+                                  child: _FlightPage(
+                                    entry: entry,
+                                    colors: colors,
+                                    isOpen: _isOpen,
+                                    gap: gap,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                ),
               ],
             ),
           ),
@@ -115,6 +161,52 @@ class _FlightSheetState extends State<FlightSheet> {
       ),
     );
   }
+
+  /// Only a swipe changes the selection: a set of flights that changed size
+  /// settles the pages too, and that must not page the selection away.
+  bool _onPageScroll(ScrollNotification notification) {
+    if (notification is ScrollStartNotification) {
+      _isSwiping = notification.dragDetails != null;
+      return false;
+    }
+    final width = notification.metrics.viewportDimension;
+    if (notification is! ScrollEndNotification || !_isSwiping || width == 0) {
+      return false;
+    }
+    _isSwiping = false;
+    final index = (notification.metrics.pixels / width).round().clamp(
+      0,
+      widget.entries.length - 1,
+    );
+    if (index != widget.selectedIndex) {
+      widget.onSelected(index);
+    }
+    return false;
+  }
+
+  /// Runs after the frame so the pages exist and their extent already matches
+  /// a set of flights that just changed.
+  void _showPage(int index, {required bool animate}) =>
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_pages.hasClients) {
+          return;
+        }
+        final offset = index * _pages.position.viewportDimension;
+        if (offset == _pages.offset) {
+          return;
+        }
+        if (animate) {
+          unawaited(
+            _pages.animateTo(
+              offset,
+              duration: FlightSheet._pageDuration,
+              curve: Curves.easeInOut,
+            ),
+          );
+        } else {
+          _pages.jumpTo(offset);
+        }
+      });
 
   void _toggle() => _setOpen(!_isOpen);
 
@@ -131,6 +223,54 @@ class _FlightSheetState extends State<FlightSheet> {
     }
     setState(() => _isOpen = isOpen);
     widget.onOpenChanged?.call(isOpen);
+  }
+}
+
+class _FlightPage extends StatelessWidget {
+  const _FlightPage({
+    required this.entry,
+    required this.colors,
+    required this.isOpen,
+    required this.gap,
+  });
+
+  final FlightListEntry entry;
+  final _SheetColors colors;
+  final bool isOpen;
+  final double gap;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _TitleRow(entry: entry, colors: colors, isOpen: isOpen),
+        SizedBox(height: gap),
+        Text(
+          localizations.mapSheetArrivalPlaceholder,
+          style: AppTextStyles.timeLarge.copyWith(
+            color: colors.time,
+            height: FlightSheet._timeHeight,
+          ),
+        ),
+        if (isOpen) ...[
+          SizedBox(height: gap),
+          StateTimeline(
+            state: entry.state,
+            variant: StateTimelineVariant.labeled,
+          ),
+          SizedBox(height: gap),
+          _DataRow(entry: entry, colors: colors),
+          SizedBox(height: gap),
+          Text(
+            localizations.mapSheetSource(activeSourceId.label),
+            style: AppTextStyles.caption.copyWith(color: colors.footer),
+          ),
+        ],
+      ],
+    );
   }
 }
 

@@ -8,6 +8,7 @@ import 'package:flugwacht/ui/screens/list_sections.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/flight_sheet.dart';
 import 'package:flugwacht/ui/widgets/flight_state_badge.dart';
+import 'package:flugwacht/ui/widgets/pager_dots.dart';
 import 'package:flugwacht/ui/widgets/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,15 +31,16 @@ const _route = FlightRoute(
 );
 
 FlightListEntry _entry({
+  int id = 1,
   FlightState state = FlightState.live,
   FlightRoute? route = _route,
   double? altitudeFeet = 37000,
   double? speedKnots = 473,
 }) => FlightListEntry(
   flight: Flight(
-    id: 1,
+    id: id,
     lookupKind: FlightLookupKind.flightNumber,
-    lookupValue: 'LH400',
+    lookupValue: 'LH40$id',
     departureDate: const CalendarDate(2026, 8, 12),
     note: 'Anna & Ben',
     route: route,
@@ -56,12 +58,15 @@ FlightListEntry _entry({
   state: state,
 );
 
-Future<void> pumpFlightSheet(
+Future<List<int>> pumpFlightSheet(
   WidgetTester tester, {
   FlightListEntry? entry,
+  List<FlightListEntry>? entries,
+  int selectedIndex = 0,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
 }) async {
+  final selections = <int>[];
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -74,12 +79,17 @@ Future<void> pumpFlightSheet(
       home: Scaffold(
         body: Align(
           alignment: Alignment.bottomCenter,
-          child: FlightSheet(entry: entry ?? _entry()),
+          child: FlightSheet(
+            entries: entries ?? [entry ?? _entry()],
+            selectedIndex: selectedIndex,
+            onSelected: selections.add,
+          ),
         ),
       ),
     ),
   );
   await tester.pumpAndSettle();
+  return selections;
 }
 
 Future<void> openSheet(WidgetTester tester) async {
@@ -93,7 +103,7 @@ void main() {
   ) async {
     await pumpFlightSheet(tester);
 
-    expect(find.text('LH400 · Anna & Ben'), findsOneWidget);
+    expect(find.text('LH401 · Anna & Ben'), findsOneWidget);
     expect(find.byType(FlightStateBadge), findsOneWidget);
     expect(find.text('–:–'), findsOneWidget);
     expect(find.byType(StateTimeline), findsNothing);
@@ -201,5 +211,46 @@ void main() {
     await openSheet(tester);
 
     expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+  });
+
+  testWidgets('reports the flight it was swiped to', (tester) async {
+    final selections = await pumpFlightSheet(
+      tester,
+      entries: [_entry(), _entry(id: 2)],
+    );
+
+    await tester.drag(find.byType(FlightSheet), const Offset(-400, 0));
+    await tester.pumpAndSettle();
+
+    expect(selections, [1]);
+  });
+
+  testWidgets('pages to a flight that was selected elsewhere', (tester) async {
+    await pumpFlightSheet(tester, entries: [_entry(), _entry(id: 2)]);
+    final pages = tester.widget<SingleChildScrollView>(
+      find.byType(SingleChildScrollView),
+    );
+    expect(pages.controller!.offset, 0);
+
+    await pumpFlightSheet(
+      tester,
+      entries: [_entry(), _entry(id: 2)],
+      selectedIndex: 1,
+    );
+
+    expect(pages.controller!.offset, greaterThan(0));
+  });
+
+  testWidgets('dots the pages only from two flights on', (tester) async {
+    await pumpFlightSheet(tester);
+    expect(find.byType(PagerDots), findsNothing);
+
+    await pumpFlightSheet(
+      tester,
+      entries: [_entry(), _entry(id: 2)],
+      selectedIndex: 1,
+    );
+
+    expect(tester.widget<PagerDots>(find.byType(PagerDots)).activeIndex, 1);
   });
 }

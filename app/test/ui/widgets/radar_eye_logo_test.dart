@@ -14,7 +14,7 @@ const _logoSize = 76.0;
 const _irisPixel = Offset(30, 46);
 
 /// The left tip of the eye outline, where the stroke is at its thickest.
-const _outlinePixel = Offset(7, 38);
+const _outlinePixel = Offset(6, 38);
 
 /// Inside the radar wedge, clear of the ring and the iris edge.
 const _wedgePixel = Offset(43, 28);

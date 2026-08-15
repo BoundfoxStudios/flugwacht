@@ -90,6 +90,21 @@ class FlightRepository {
     );
   }
 
+  Future<void> updateIdentity(
+    int flightId, {
+    required String? hexAddress,
+    required String? expectedCallsign,
+  }) async {
+    await (_database.update(
+      _database.flights,
+    )..where((row) => row.id.equals(flightId))).write(
+      FlightsCompanion(
+        hexAddress: Value(hexAddress),
+        expectedCallsign: Value(expectedCallsign),
+      ),
+    );
+  }
+
   Future<void> appendTrailPoint(
     int flightId,
     FixPosition position,

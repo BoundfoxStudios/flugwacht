@@ -7,7 +7,10 @@ import 'package:http/http.dart' as http;
 import 'data/airline_directory.dart';
 import 'data/database.dart';
 import 'data/flight_repository.dart';
+import 'data/polling_engine.dart';
+import 'data/readsb_source_adapter.dart';
 import 'data/route_lookup.dart';
+import 'domain/source_id.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
@@ -15,12 +18,20 @@ import 'ui/theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LicenseRegistry.addLicense(_fontLicenses);
+  final client = http.Client();
+  final flightRepository = FlightRepository(AppDatabase());
+  final airlineDirectory = await AirlineDirectory.loadFromAssets();
+  PollingEngine(
+    repository: flightRepository,
+    adapter: ReadsbSourceAdapter(sourceId: activeSourceId, client: client),
+    airlineDirectory: airlineDirectory,
+  ).start();
   runApp(
     FlugwachtApp(
       router: createAppRouter(
-        flightRepository: FlightRepository(AppDatabase()),
-        airlineDirectory: await AirlineDirectory.loadFromAssets(),
-        routeLookup: RouteLookup(client: http.Client()),
+        flightRepository: flightRepository,
+        airlineDirectory: airlineDirectory,
+        routeLookup: RouteLookup(client: client),
       ),
     ),
   );

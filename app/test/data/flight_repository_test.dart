@@ -158,6 +158,47 @@ void main() {
     });
   });
 
+  test('writes and clears the identity of a flight', () async {
+    final flight = await addFlight();
+
+    await repository.updateIdentity(
+      flight.id,
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+
+    final found = (await repository.watchFlights().first).single;
+    expect(found.hexAddress, '3c64c6');
+    expect(found.expectedCallsign, 'DLH433');
+
+    await repository.updateIdentity(
+      flight.id,
+      hexAddress: null,
+      expectedCallsign: null,
+    );
+
+    final cleared = (await repository.watchFlights().first).single;
+    expect(cleared.hexAddress, isNull);
+    expect(cleared.expectedCallsign, isNull);
+  });
+
+  test('updates the identity of only the addressed flight', () async {
+    final first = await addFlight();
+    final second = await addFlight();
+
+    await repository.updateIdentity(
+      first.id,
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH433',
+    );
+
+    final stored = await repository.watchFlights().first;
+    expect(
+      stored.firstWhere((flight) => flight.id == second.id).hexAddress,
+      isNull,
+    );
+  });
+
   test('persists the latched tracking facts and the full position', () async {
     final flight = await addFlight();
     final timestamp = DateTime.utc(2026, 3, 17, 9, 41, 12, 345);

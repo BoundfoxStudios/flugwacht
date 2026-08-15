@@ -1,0 +1,227 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
+
+import '../domain/fix.dart';
+import '../domain/flight.dart';
+import '../domain/flight_day_window.dart';
+import '../domain/flight_number.dart';
+import '../domain/flight_state.dart';
+import '../domain/poll_planning.dart';
+import '../domain/source_id.dart';
+import 'airline_directory.dart';
+import 'flight_repository.dart';
+import 'lookup_result.dart';
+import 'source_adapter.dart';
+
+/// Polls the stored flights while the app is in the foreground and writes what
+/// the source answers back into the repository.
+class PollingEngine with WidgetsBindingObserver {
+  PollingEngine({
+    required this._repository,
+    required this._adapter,
+    required this._airlineDirectory,
+    this.clock = DateTime.now,
+  });
+
+  static const _tickInterval = Duration(seconds: 1);
+
+  final FlightRepository _repository;
+  final SourceAdapter _adapter;
+  final AirlineDirectory _airlineDirectory;
+  final DateTime Function() clock;
+
+  final _lastPollStarts = <int, DateTime>{};
+  final _runningLookups = <int>{};
+  var _flights = const <Flight>[];
+  StreamSubscription<List<Flight>>? _subscription;
+  Timer? _scheduler;
+
+  void start() {
+    WidgetsBinding.instance.addObserver(this);
+    _subscription = _repository.watchFlights().listen(_onFlights);
+    _startScheduler();
+  }
+
+  void stop() {
+    WidgetsBinding.instance.removeObserver(this);
+    _stopScheduler();
+    unawaited(_subscription?.cancel());
+    _subscription = null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _startScheduler();
+    } else {
+      _stopScheduler();
+    }
+  }
+
+  void _startScheduler() {
+    _scheduler?.cancel();
+    _scheduler = Timer.periodic(_tickInterval, (_) => _pollDueFlights());
+    _pollDueFlights();
+  }
+
+  void _stopScheduler() {
+    _scheduler?.cancel();
+    _scheduler = null;
+  }
+
+  bool get _isPolling => _scheduler != null;
+
+  void _onFlights(List<Flight> flights) {
+    _flights = flights;
+    final storedIds = flights.map((flight) => flight.id).toSet();
+    _lastPollStarts.removeWhere((flightId, _) => !storedIds.contains(flightId));
+    if (_scheduler != null) {
+      _pollDueFlights();
+    }
+  }
+
+  void _pollDueFlights() {
+    final now = clock();
+    for (final flight in _flights) {
+      final state = resolveFlightState(flight, now);
+      if (!isPollable(state)) {
+        _lastPollStarts.remove(flight.id);
+        continue;
+      }
+      if (_runningLookups.contains(flight.id) ||
+          _awaitsAcquisition(flight, now)) {
+        continue;
+      }
+      final lastPollStart = _lastPollStarts[flight.id];
+      if (lastPollStart != null &&
+          now.difference(lastPollStart) < pollInterval(state)) {
+        continue;
+      }
+      _lastPollStarts[flight.id] = now;
+      unawaited(_pollFlight(flight));
+    }
+  }
+
+  bool _awaitsAcquisition(Flight flight, DateTime now) {
+    final acquired = flight.lookupKind == FlightLookupKind.flightNumber
+        ? flight.hexAddress != null
+        : flight.tracking.latestPosition != null;
+    return !acquired && now.isBefore(searchStartsAt(flight));
+  }
+
+  Future<void> _pollFlight(Flight flight) async {
+    _runningLookups.add(flight.id);
+    try {
+      final window = FlightDayWindow.forDepartureDate(flight.departureDate);
+      switch (planPollQuery(flight, _callsignCandidates(flight))) {
+        case HexAddressPollQuery(:final hexAddress):
+          await _applyOutcome(
+            flight,
+            _outcomeOf(
+              await _adapter.lookupByHexAddress(hexAddress),
+              flight,
+              HexAddressPollQuery(hexAddress),
+              window,
+            ),
+          );
+        case RegistrationPollQuery(:final registration):
+          await _applyOutcome(
+            flight,
+            _outcomeOf(
+              await _adapter.lookupByRegistration(registration),
+              flight,
+              RegistrationPollQuery(registration),
+              window,
+            ),
+          );
+        case CallsignSearchPollQuery(:final candidates):
+          for (final candidate in candidates) {
+            if (!_isPolling) {
+              return;
+            }
+            final outcome = _outcomeOf(
+              await _adapter.lookupByCallsign(candidate),
+              flight,
+              CallsignSearchPollQuery([candidate]),
+              window,
+            );
+            if (outcome is! PollNoData) {
+              await _applyOutcome(flight, outcome);
+              return;
+            }
+          }
+      }
+    } finally {
+      _runningLookups.remove(flight.id);
+    }
+  }
+
+  List<String> _callsignCandidates(Flight flight) {
+    if (flight.lookupKind != FlightLookupKind.flightNumber) {
+      return const [];
+    }
+    final flightNumber = FlightNumber.tryParse(flight.lookupValue);
+    return flightNumber == null
+        ? const []
+        : _airlineDirectory.callsignCandidates(flightNumber);
+  }
+
+  PollOutcome _outcomeOf(
+    LookupResult result,
+    Flight flight,
+    PollQuery query,
+    FlightDayWindow window,
+  ) => switch (result) {
+    LookupSuccess(:final fixes) => applyLookup(
+      flight: flight,
+      query: query,
+      fixes: fixes,
+      window: window,
+    ),
+    LookupNetworkFailure() ||
+    LookupStatusFailure() ||
+    LookupMalformedPayload() => const PollNoData(),
+  };
+
+  Future<void> _applyOutcome(Flight flight, PollOutcome outcome) async {
+    if (!_isPolling) {
+      return;
+    }
+    switch (outcome) {
+      case PollNoData():
+        return;
+      case PollIdentityRejected():
+        await _repository.updateIdentity(
+          flight.id,
+          hexAddress: null,
+          expectedCallsign: flight.expectedCallsign,
+        );
+      case PollFixApplied(
+        :final tracking,
+        :final sourceId,
+        :final trailPosition,
+        :final adoptedIdentity,
+      ):
+        await _repository.updateTracking(flight.id, tracking);
+        await _appendTrailPoint(flight, trailPosition, sourceId);
+        if (adoptedIdentity != null) {
+          await _repository.updateIdentity(
+            flight.id,
+            hexAddress: adoptedIdentity.hexAddress,
+            expectedCallsign: adoptedIdentity.callsign,
+          );
+        }
+    }
+  }
+
+  Future<void> _appendTrailPoint(
+    Flight flight,
+    FixPosition? trailPosition,
+    SourceId sourceId,
+  ) async {
+    if (trailPosition != null) {
+      await _repository.appendTrailPoint(flight.id, trailPosition, sourceId);
+    }
+  }
+}

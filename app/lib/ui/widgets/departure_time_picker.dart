@@ -73,6 +73,7 @@ class _CupertinoTimeSheetState extends State<_CupertinoTimeSheet> {
             Expanded(
               child: CupertinoDatePicker(
                 mode: CupertinoDatePickerMode.time,
+                use24hFormat: MediaQuery.alwaysUse24HourFormatOf(context),
                 initialDateTime: DateTime(
                   2026,
                   1,

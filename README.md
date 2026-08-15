@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo/logo-dark.svg">
-    <img src="assets/logo/logo-light.svg" alt="Flugwacht logo: a stylized radar eye" width="96">
+    <source media="(prefers-color-scheme: dark)" srcset="app/assets/logo/logo-dark.svg">
+    <img src="app/assets/logo/logo-light.svg" alt="Flugwacht logo: a stylized radar eye" width="96">
   </picture>
 </p>
 

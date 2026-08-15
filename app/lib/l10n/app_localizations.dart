@@ -134,6 +134,24 @@ abstract class AppLocalizations {
   /// **'EEE, MMMM d'**
   String get listHeaderDateFormat;
 
+  /// Empty state headline; the line break is part of the design.
+  ///
+  /// In en, this message translates to:
+  /// **'No flight\non the list yet'**
+  String get listEmptyHeadline;
+
+  /// No description provided for @listEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a flight — Flugwacht tracks it automatically on its flight day and shows you when it arrives.'**
+  String get listEmptyBody;
+
+  /// No description provided for @listEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Add flight'**
+  String get listEmptyCta;
+
   /// No description provided for @newFlightTitle.
   ///
   /// In en, this message translates to:

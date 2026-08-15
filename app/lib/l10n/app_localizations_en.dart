@@ -27,6 +27,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listHeaderDateFormat => 'EEE, MMMM d';
 
   @override
+  String get listEmptyHeadline => 'No flight\non the list yet';
+
+  @override
+  String get listEmptyBody =>
+      'Add a flight — Flugwacht tracks it automatically on its flight day and shows you when it arrives.';
+
+  @override
+  String get listEmptyCta => 'Add flight';
+
+  @override
   String get newFlightTitle => 'New flight';
 
   @override

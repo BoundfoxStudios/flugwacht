@@ -27,6 +27,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listHeaderDateFormat => 'ccc, d. MMMM';
 
   @override
+  String get listEmptyHeadline => 'Noch kein Flug\nauf der Liste';
+
+  @override
+  String get listEmptyBody =>
+      'Trag einen Flug ein — Flugwacht verfolgt ihn am Flugtag automatisch und zeigt dir, wann er ankommt.';
+
+  @override
+  String get listEmptyCta => 'Flug eintragen';
+
+  @override
   String get newFlightTitle => 'Neuer Flug';
 
   @override

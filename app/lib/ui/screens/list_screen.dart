@@ -15,6 +15,7 @@ import '../widgets/app_fab.dart';
 import '../widgets/flight_hero_cell.dart';
 import '../widgets/flight_row.dart';
 import 'flight_list.dart';
+import 'list_empty_state.dart';
 import 'list_sections.dart';
 
 class ListScreen extends StatefulWidget {
@@ -54,8 +55,11 @@ class _ListScreenState extends State<ListScreen> {
     body: SignalBuilder(
       builder: (context) {
         final sections = _flightList.sections.value;
-        return sections == null || sections.isEmpty
-            ? const SizedBox.shrink()
+        if (sections == null) {
+          return const SizedBox.shrink();
+        }
+        return sections.isEmpty
+            ? ListEmptyState(onAddFlight: () => _openNewFlight(context))
             : _FlightSections(
                 sections: sections,
                 today: _flightList.now.value,
@@ -65,11 +69,16 @@ class _ListScreenState extends State<ListScreen> {
       },
     ),
     floatingActionButton: SignalBuilder(
-      builder: (context) => _flightList.sections.value == null
-          ? const SizedBox.shrink()
-          : AppFab(onPressed: () => context.push('/new-flight')),
+      builder: (context) {
+        final sections = _flightList.sections.value;
+        return sections == null || sections.isEmpty
+            ? const SizedBox.shrink()
+            : AppFab(onPressed: () => _openNewFlight(context));
+      },
     ),
   );
+
+  void _openNewFlight(BuildContext context) => context.push('/new-flight');
 }
 
 class _FlightSections extends StatelessWidget {

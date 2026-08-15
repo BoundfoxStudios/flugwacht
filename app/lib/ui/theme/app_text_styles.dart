@@ -27,6 +27,13 @@ abstract final class AppTextStyles {
     letterSpacing: 36 * 0.025,
   );
 
+  static const screenTitleSmall = TextStyle(
+    fontFamily: AppFontFamilies.bebasNeue,
+    fontSize: 30,
+    height: 1,
+    letterSpacing: 30 * 0.025,
+  );
+
   static const navigationTitle = TextStyle(
     fontFamily: AppFontFamilies.bebasNeue,
     fontSize: 22,

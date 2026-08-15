@@ -105,6 +105,39 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get listPastSectionTitle => 'Vorbei';
+
+  @override
+  String get listPlannedDateFormat => 'EEE, d. MMM';
+
+  @override
+  String flightTitleWithNote(String lookupValue, String note) {
+    return '$lookupValue · $note';
+  }
+
+  @override
+  String flightRoute(String origin, String destination) {
+    return '$origin → $destination';
+  }
+
+  @override
+  String flightRowSubtitle(String route, String state) {
+    return '$route · $state';
+  }
+
+  @override
+  String get flightRowWaitingForSignal => 'wartet auf Signal';
+
+  @override
+  String get flightRowToday => 'heute';
+
+  @override
+  String get flightRowLanded => 'gelandet ✓';
+
+  @override
+  String get flightRowMissed => 'verpasst';
+
+  @override
   String get flightStatePlanned => 'geplant';
 
   @override

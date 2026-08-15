@@ -4,10 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/flight_repository.dart';
-import '../../domain/flight.dart';
 import '../../l10n/app_localizations.dart';
+import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/app_fab.dart';
+import '../widgets/flight_row.dart';
 import 'flight_list.dart';
 import 'list_empty_state.dart';
 import 'list_sections.dart';
@@ -75,11 +76,10 @@ class _FlightSections extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final entries = [
+    final upcoming = [
       ...sections.active,
       ...sections.waiting,
       ...sections.planned,
-      ...sections.past,
     ];
     return SafeArea(
       bottom: false,
@@ -97,16 +97,11 @@ class _FlightSections extends StatelessWidget {
                 Localizations.localeOf(context).toLanguageTag(),
               ).format(today),
             ),
-            for (final entry in entries)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.screenPadding,
-                  0,
-                  AppSpacing.screenPadding,
-                  AppSpacing.cardPadding,
-                ),
-                child: _FlightRow(flight: entry.flight),
-              ),
+            for (final entry in upcoming) _PaddedRow(entry: entry),
+            if (sections.past.isNotEmpty) ...[
+              const _PastSectionLabel(),
+              for (final entry in sections.past) _PaddedRow(entry: entry),
+            ],
           ],
         ),
       ),
@@ -142,32 +137,39 @@ class _ListHeader extends StatelessWidget {
   }
 }
 
-/// Placeholder row until the designed cells arrive; shows the title line only.
-class _FlightRow extends StatelessWidget {
-  const _FlightRow({required this.flight});
+class _PaddedRow extends StatelessWidget {
+  const _PaddedRow({required this.entry});
 
-  final Flight flight;
+  final FlightListEntry entry;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final note = flight.note;
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.cardPaddingLarge,
-        vertical: 14,
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      AppSpacing.screenPadding,
+      0,
+      AppSpacing.screenPadding,
+      AppSpacing.cardPadding,
+    ),
+    child: FlightRow(flight: entry.flight, state: entry.state),
+  );
+}
+
+class _PastSectionLabel extends StatelessWidget {
+  const _PastSectionLabel();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      AppSpacing.screenPadding,
+      AppSpacing.grid,
+      AppSpacing.screenPadding,
+      AppSpacing.grid * 2,
+    ),
+    child: Text(
+      AppLocalizations.of(context).listPastSectionTitle,
+      style: AppTextStyles.sectionLabelLarge.copyWith(
+        color: Theme.of(context).textTheme.labelSmall?.color,
       ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: theme.colorScheme.outline),
-      ),
-      child: Text(
-        note == null ? flight.lookupValue : '${flight.lookupValue} · $note',
-        style: theme.textTheme.bodyMedium,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
+    ),
+  );
 }

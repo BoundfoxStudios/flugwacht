@@ -69,6 +69,48 @@
       }
     }
   },
+  "listPastSectionTitle": "Past",
+  "listPlannedDateFormat": "EEE, MMM d",
+  "@listPlannedDateFormat": {
+    "description": "DateFormat pattern for the departure date on a planned row, localized per language."
+  },
+  "flightTitleWithNote": "{lookupValue} · {note}",
+  "@flightTitleWithNote": {
+    "placeholders": {
+      "lookupValue": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "flightRoute": "{origin} → {destination}",
+  "@flightRoute": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "flightRowSubtitle": "{route} · {state}",
+  "@flightRowSubtitle": {
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "flightRowWaitingForSignal": "waiting for signal",
+  "flightRowToday": "today",
+  "flightRowLanded": "landed ✓",
+  "flightRowMissed": "missed",
   "flightStatePlanned": "planned",
   "flightStateWaiting": "waiting",
   "flightStateLive": "live",

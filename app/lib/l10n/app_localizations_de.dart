@@ -24,7 +24,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listTitle => 'Flüge';
 
   @override
-  String get listHeaderDateFormat => 'EEE, d. MMMM';
+  String get listHeaderDateFormat => 'ccc, d. MMMM';
 
   @override
   String get listEmptyHeadline => 'Noch kein Flug\nauf der Liste';
@@ -74,7 +74,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Tag des Abflugs · öffnet die Systemauswahl · Nachtflüge zählen bis in den Folgetag';
 
   @override
-  String get newFlightDepartureDateFormat => 'EEE, d. MMMM y';
+  String get newFlightDepartureDateFormat => 'ccc, d. MMMM y';
 
   @override
   String get newFlightNoteLabel => 'Notiz (optional)';
@@ -113,6 +113,39 @@ class AppLocalizationsDe extends AppLocalizations {
   ) {
     return '$origin → $destination · $airline';
   }
+
+  @override
+  String get listPastSectionTitle => 'Vorbei';
+
+  @override
+  String get listPlannedDateFormat => 'ccc, d. LLL';
+
+  @override
+  String flightTitleWithNote(String lookupValue, String note) {
+    return '$lookupValue · $note';
+  }
+
+  @override
+  String flightRoute(String origin, String destination) {
+    return '$origin → $destination';
+  }
+
+  @override
+  String flightRowSubtitle(String route, String state) {
+    return '$route · $state';
+  }
+
+  @override
+  String get flightRowWaitingForSignal => 'wartet auf Signal';
+
+  @override
+  String get flightRowToday => 'heute';
+
+  @override
+  String get flightRowLanded => 'gelandet ✓';
+
+  @override
+  String get flightRowMissed => 'verpasst';
 
   @override
   String get flightStatePlanned => 'geplant';

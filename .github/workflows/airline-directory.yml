@@ -90,22 +90,31 @@ jobs:
           git commit --message 'chore: refresh the bundled airline directory'
           git push --force origin "$REFRESH_BRANCH"
 
-          summary="$added added, $removed removed lines · upstream $upstream"
-          echo "$summary" >> "$GITHUB_STEP_SUMMARY"
+          body=$(cat <<BODY
+          Upstream changed \`$UPSTREAM_PATH\`, so the vendored copy is out of date.
 
-          if [ -n "$(gh pr list --head "$REFRESH_BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
-            echo 'Updated the open refresh pull request.' >> "$GITHUB_STEP_SUMMARY"
+          - Upstream commit: $upstream
+          - Change: $added added, $removed removed lines
+          - Rewritten by the workflow on $(date -u '+%Y-%m-%d %H:%M UTC')
+
+          Opened by the \`Airline Directory\` workflow, which compares the vendored file with upstream once a day. While this pull request waits for review, a further upstream change force-pushes \`$REFRESH_BRANCH\` and rewrites this description instead of opening a second pull request — diff and numbers above always describe the current upstream state.
+
+          The verification is \`checks\`: the tests in \`app/test/data/airline_directory_test.dart\` read the bundled file itself, so a lost \`LH\` row, a reordered airline or a low-cost-carrier code without an airline turns the suite red instead of quietly degrading the callsign lookup.
+          BODY
+          )
+
+          echo "$added added, $removed removed lines · upstream $upstream" >> "$GITHUB_STEP_SUMMARY"
+
+          existing=$(gh pr list --head "$REFRESH_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --body "$body" \
+              --add-label automatic-data-update --add-label airlines
+            echo "Updated the waiting pull request #$existing." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
           gh pr create --base main --head "$REFRESH_BRANCH" \
             --title 'Refresh the bundled airline directory' \
-            --body "$(cat <<BODY
-          Upstream changed \`$UPSTREAM_PATH\`, so the vendored copy is out of date.
-
-          - Upstream commit: $upstream
-          - Change: $added added, $removed removed lines
-
-          Opened by the \`Airline Directory\` workflow. The verification is \`checks\`: the tests in \`app/test/data/airline_directory_test.dart\` read the bundled file itself, so a lost \`LH\` row, a reordered airline or a low-cost-carrier code without an airline turns the suite red instead of quietly degrading the callsign lookup.
-          BODY
-          )"
+            --label automatic-data-update \
+            --label airlines \
+            --body "$body"

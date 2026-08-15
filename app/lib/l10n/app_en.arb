@@ -137,6 +137,50 @@
   "mapSheetAltitudeLabel": "Altitude",
   "mapSheetSpeedLabel": "Speed",
   "mapSheetSignalLabel": "Signal",
+  "mapSheetSignalSeconds": "{seconds} s ago",
+  "@mapSheetSignalSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSignalMinutes": "{minutes} min ago",
+  "@mapSheetSignalMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSignalHours": "{hours} h ago",
+  "@mapSheetSignalHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSignalHoursMinutes": "{hours} h {minutes} min ago",
+  "@mapSheetSignalHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetNoSignalInfo": "Last signal {age}. Over oceans there are often no receivers for 1\u20132 hours \u2014 the trail will come back.",
+  "@mapSheetNoSignalInfo": {
+    "description": "Explains a coverage gap; the age comes from the signal age copy.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
   "mapSheetAltitudeValue": "{value} m",
   "@mapSheetAltitudeValue": {
     "placeholders": {

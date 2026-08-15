@@ -30,12 +30,17 @@ const _route = FlightRoute(
   ),
 );
 
+final _positionTime = DateTime.utc(2026, 8, 12, 12);
+final _now = _positionTime.add(const Duration(seconds: 3));
+
 FlightListEntry _entry({
   int id = 1,
   FlightState state = FlightState.live,
   FlightRoute? route = _route,
   double? altitudeFeet = 37000,
   double? speedKnots = 473,
+  DateTime? positionTime,
+  bool withoutPosition = false,
 }) => FlightListEntry(
   flight: Flight(
     id: id,
@@ -45,13 +50,15 @@ FlightListEntry _entry({
     note: 'Anna & Ben',
     route: route,
     tracking: FlightTracking(
-      latestPosition: FixPosition(
-        latitude: 48.5,
-        longitude: -20,
-        timestamp: DateTime.utc(2026, 8, 12, 12),
-        barometricAltitudeFeet: altitudeFeet,
-        groundSpeedKnots: speedKnots,
-      ),
+      latestPosition: withoutPosition
+          ? null
+          : FixPosition(
+              latitude: 48.5,
+              longitude: -20,
+              timestamp: positionTime ?? _positionTime,
+              barometricAltitudeFeet: altitudeFeet,
+              groundSpeedKnots: speedKnots,
+            ),
       hasBeenAirborne: true,
     ),
   ),
@@ -65,6 +72,7 @@ Future<List<int>> pumpFlightSheet(
   int selectedIndex = 0,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
+  DateTime Function()? clock,
 }) async {
   final selections = <int>[];
   await tester.pumpWidget(
@@ -83,6 +91,7 @@ Future<List<int>> pumpFlightSheet(
             entries: entries ?? [entry ?? _entry()],
             selectedIndex: selectedIndex,
             onSelected: selections.add,
+            clock: clock ?? () => _now,
           ),
         ),
       ),
@@ -169,7 +178,77 @@ void main() {
 
     expect(find.text('11,278 m'), findsOneWidget);
     expect(find.text('876 km/h'), findsOneWidget);
-    expect(find.text('–'), findsOneWidget);
+    expect(find.text('3 s ago'), findsOneWidget);
+  });
+
+  testWidgets('counts the signal age up every second', (tester) async {
+    var now = _now;
+    await pumpFlightSheet(tester, clock: () => now);
+
+    await openSheet(tester);
+    expect(find.text('3 s ago'), findsOneWidget);
+
+    now = now.add(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('4 s ago'), findsOneWidget);
+  });
+
+  testWidgets('explains a signal gap without dropping the last numbers', (
+    tester,
+  ) async {
+    await pumpFlightSheet(
+      tester,
+      entry: _entry(
+        state: FlightState.noSignal,
+        positionTime: _now.subtract(const Duration(minutes: 42)),
+      ),
+    );
+
+    await openSheet(tester);
+
+    expect(find.text('42 min ago'), findsOneWidget);
+    expect(find.textContaining('Last signal 42 min ago.'), findsOneWidget);
+    expect(find.textContaining('the trail will come back'), findsOneWidget);
+    expect(find.text('11,278 m'), findsOneWidget);
+    expect(find.text('876 km/h'), findsOneWidget);
+  });
+
+  testWidgets('explains a signal gap in german', (tester) async {
+    await pumpFlightSheet(
+      tester,
+      locale: const Locale('de'),
+      entry: _entry(
+        state: FlightState.noSignal,
+        positionTime: _now.subtract(const Duration(hours: 2, minutes: 5)),
+      ),
+    );
+
+    await openSheet(tester);
+
+    expect(find.text('vor 2 Std 5 Min'), findsOneWidget);
+    expect(
+      find.textContaining('Letztes Signal vor 2 Std 5 Min.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('explains nothing while the signal is live', (tester) async {
+    await pumpFlightSheet(tester);
+
+    await openSheet(tester);
+
+    expect(find.textContaining('the trail will come back'), findsNothing);
+  });
+
+  testWidgets('dashes the signal of a flight without a position', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, entry: _entry(withoutPosition: true));
+
+    await openSheet(tester);
+
+    expect(find.text('–'), findsNWidgets(3));
   });
 
   testWidgets('groups the numbers the German way', (tester) async {
@@ -191,7 +270,7 @@ void main() {
 
     await openSheet(tester);
 
-    expect(find.text('–'), findsNWidgets(3));
+    expect(find.text('–'), findsNWidgets(2));
   });
 
   testWidgets('times the flight on the timeline it is on', (tester) async {

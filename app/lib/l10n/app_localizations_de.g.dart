@@ -181,6 +181,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapSheetSignalLabel => 'Signal';
 
   @override
+  String mapSheetSignalSeconds(String seconds) {
+    return 'vor $seconds s';
+  }
+
+  @override
+  String mapSheetSignalMinutes(String minutes) {
+    return 'vor $minutes Min';
+  }
+
+  @override
+  String mapSheetSignalHours(String hours) {
+    return 'vor $hours Std';
+  }
+
+  @override
+  String mapSheetSignalHoursMinutes(String hours, String minutes) {
+    return 'vor $hours Std $minutes Min';
+  }
+
+  @override
+  String mapSheetNoSignalInfo(String age) {
+    return 'Letztes Signal $age. Über Ozeanen gibt es oft 1–2 Stunden keine Empfänger — die Spur kommt wieder.';
+  }
+
+  @override
   String mapSheetAltitudeValue(String value) {
     return '$value m';
   }

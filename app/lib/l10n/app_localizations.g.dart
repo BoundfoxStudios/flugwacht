@@ -396,6 +396,36 @@ abstract class AppLocalizations {
   /// **'Signal'**
   String get mapSheetSignalLabel;
 
+  /// No description provided for @mapSheetSignalSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} s ago'**
+  String mapSheetSignalSeconds(String seconds);
+
+  /// No description provided for @mapSheetSignalMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min ago'**
+  String mapSheetSignalMinutes(String minutes);
+
+  /// No description provided for @mapSheetSignalHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h ago'**
+  String mapSheetSignalHours(String hours);
+
+  /// No description provided for @mapSheetSignalHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min ago'**
+  String mapSheetSignalHoursMinutes(String hours, String minutes);
+
+  /// Explains a coverage gap; the age comes from the signal age copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Last signal {age}. Over oceans there are often no receivers for 1–2 hours — the trail will come back.'**
+  String mapSheetNoSignalInfo(String age);
+
   /// No description provided for @mapSheetAltitudeValue.
   ///
   /// In en, this message translates to:

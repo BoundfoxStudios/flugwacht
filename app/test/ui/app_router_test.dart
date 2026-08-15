@@ -53,7 +53,7 @@ void main() {
     expect(find.byType(NewFlightScreen), findsOneWidget);
     expect(find.byType(AppTabBar), findsNothing);
 
-    await tester.tap(find.byType(CloseButton));
+    await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
     expect(find.byType(ListScreen), findsOneWidget);

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/flight.dart';
-import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
+import 'flight_labels.dart';
 
 /// A non-hero list cell: the waiting row, the dashed planned row and the
 /// grayed row of the past section, told apart by the derived flight state.
@@ -49,7 +49,7 @@ class FlightRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _title(localizations),
+                  flightTitle(localizations, flight),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodyEmphasis.copyWith(
@@ -96,15 +96,8 @@ class FlightRow extends StatelessWidget {
     };
   }
 
-  String _title(AppLocalizations localizations) {
-    final note = flight.note;
-    return note == null
-        ? flight.lookupValue
-        : localizations.flightTitleWithNote(flight.lookupValue, note);
-  }
-
   String? _subtitle(AppLocalizations localizations, _RowVariant variant) {
-    final route = _routeText(localizations, flight.route);
+    final route = flightRouteLabel(localizations, flight.route);
     if (variant == _RowVariant.past) {
       return route;
     }
@@ -119,14 +112,6 @@ class FlightRow extends StatelessWidget {
         ? stateText
         : localizations.flightRowSubtitle(route, stateText);
   }
-
-  String? _routeText(AppLocalizations localizations, FlightRoute? route) =>
-      route == null
-      ? null
-      : localizations.flightRoute(
-          route.origin.iataCode ?? route.origin.icaoCode,
-          route.destination.iataCode ?? route.destination.icaoCode,
-        );
 
   String _accessory(AppLocalizations localizations, BuildContext context) =>
       switch (state) {

@@ -15,7 +15,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';
+
+const _cellKey = ValueKey('cell');
+const _cellWidth = 360.0;
 
 const _route = FlightRoute(
   origin: RouteAirport(
@@ -74,13 +78,16 @@ Future<void> pumpHeroCell(
       },
       home: Scaffold(
         body: Center(
-          child: SizedBox(
-            width: 360,
-            child: FlightHeroCell(
-              flight: cell ?? flight(),
-              state: state,
-              trail: trail,
-              tileProvider: StubTileProvider(),
+          child: RepaintBoundary(
+            key: _cellKey,
+            child: SizedBox(
+              width: _cellWidth,
+              child: FlightHeroCell(
+                flight: cell ?? flight(),
+                state: state,
+                trail: trail,
+                tileProvider: StubTileProvider(),
+              ),
             ),
           ),
         ),
@@ -89,6 +96,19 @@ Future<void> pumpHeroCell(
   );
   await tester.pump();
 }
+
+BoxDecoration badgeDecoration(WidgetTester tester, String label) =>
+    tester
+            .widget<Container>(
+              find
+                  .ancestor(
+                    of: find.text(label),
+                    matching: find.byType(Container),
+                  )
+                  .first,
+            )
+            .decoration!
+        as BoxDecoration;
 
 void main() {
   testWidgets('heads the cell with the lookup value, note and route', (
@@ -130,7 +150,7 @@ void main() {
     );
   });
 
-  testWidgets('outlines the no-signal badge in the dark theme', (tester) async {
+  testWidgets('lightens the no-signal label in the dark theme', (tester) async {
     await pumpHeroCell(
       tester,
       state: FlightState.noSignal,
@@ -157,10 +177,54 @@ void main() {
   testWidgets('renders no arrival estimate yet', (tester) async {
     await pumpHeroCell(tester);
 
-    final sizes = tester
-        .widgetList<Text>(find.byType(Text))
-        .map((text) => text.style?.fontSize ?? 0);
-    expect(sizes, everyElement(lessThan(20)));
+    expect(
+      tester.widgetList<Text>(find.byType(Text)).map((text) => text.data),
+      unorderedEquals([
+        'LH400 · Anna & Ben',
+        'FRA → JFK',
+        'LIVE',
+        'FRA',
+        'JFK',
+        '© OpenStreetMap',
+      ]),
+    );
+  });
+
+  testWidgets('fills the live badge and leaves it without a border', (
+    tester,
+  ) async {
+    await pumpHeroCell(tester);
+
+    final badge = badgeDecoration(tester, 'LIVE');
+    expect(badge.color, AppColors.yellow);
+    expect(badge.border, isNull);
+  });
+
+  testWidgets('fills the no-signal badge in the light theme', (tester) async {
+    await pumpHeroCell(tester, state: FlightState.noSignal);
+
+    final badge = badgeDecoration(tester, 'NO SIGNAL');
+    expect(badge.color, AppColors.neutral700);
+    expect(badge.border, isNull);
+  });
+
+  testWidgets('outlines the no-signal badge in the dark theme', (tester) async {
+    await pumpHeroCell(
+      tester,
+      state: FlightState.noSignal,
+      brightness: Brightness.dark,
+    );
+
+    final badge = badgeDecoration(tester, 'NO SIGNAL');
+    expect(badge.color, isNull);
+    expect(badge.border?.top.color, AppColors.neutral500);
+  });
+
+  testWidgets('keeps its border visible next to the mini map', (tester) async {
+    await pumpHeroCell(tester);
+
+    final pixels = await renderedPixels(tester, _cellKey);
+    expect(pixels.at(const Offset(0, 60)), AppColors.neutral200);
   });
 
   testWidgets('credits OpenStreetMap on the map', (tester) async {

@@ -7,6 +7,7 @@ import '../../domain/trail_point.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
+import 'flight_labels.dart';
 import 'mini_map.dart';
 import 'state_timeline.dart';
 
@@ -24,6 +25,7 @@ class FlightHeroCell extends StatelessWidget {
   static const _mapHeight = 150.0;
   static const _badgeInset = 10.0;
   static const _blockGap = 6.0;
+  static const _borderWidth = 1.0;
 
   final Flight flight;
   final FlightState state;
@@ -41,93 +43,88 @@ class FlightHeroCell extends StatelessWidget {
     };
     final position = flight.tracking.latestPosition;
     final route = flight.route;
-    final note = flight.note;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: colors.border),
+        border: Border.all(color: colors.border, width: _borderWidth),
         boxShadow: colors.shadow,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (position != null)
-              SizedBox(
-                height: _mapHeight,
-                child: Stack(
-                  fit: StackFit.expand,
+      // Insets the clipped content so the opaque mini map stops at the border
+      // instead of painting over it.
+      child: Padding(
+        padding: const EdgeInsets.all(_borderWidth),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.card - _borderWidth),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (position != null)
+                SizedBox(
+                  height: _mapHeight,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      MiniMap(
+                        position: position,
+                        route: route,
+                        trail: trail,
+                        state: state,
+                        tileProvider: tileProvider,
+                      ),
+                      Positioned(
+                        top: _badgeInset,
+                        left: _badgeInset,
+                        child: _StateBadge(state: state, colors: colors),
+                      ),
+                    ],
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.cardPaddingLarge,
+                  AppSpacing.cardPadding,
+                  AppSpacing.cardPaddingLarge,
+                  14,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    MiniMap(
-                      position: position,
-                      route: route,
-                      trail: trail,
-                      state: state,
-                      tileProvider: tileProvider,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            flightTitle(localizations, flight),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.bodyLargeEmphasis.copyWith(
+                              color: colors.title,
+                            ),
+                          ),
+                        ),
+                        if (route != null) ...[
+                          const SizedBox(width: AppSpacing.cardPadding),
+                          Text(
+                            flightRouteLabel(localizations, route)!,
+                            style: AppTextStyles.secondary.copyWith(
+                              color: colors.route,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    Positioned(
-                      top: _badgeInset,
-                      left: _badgeInset,
-                      child: _StateBadge(state: state, colors: colors),
+                    const SizedBox(height: _blockGap),
+                    StateTimeline(
+                      state: state,
+                      variant: StateTimelineVariant.compact,
                     ),
                   ],
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.cardPaddingLarge,
-                AppSpacing.cardPadding,
-                AppSpacing.cardPaddingLarge,
-                14,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          note == null
-                              ? flight.lookupValue
-                              : localizations.flightTitleWithNote(
-                                  flight.lookupValue,
-                                  note,
-                                ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.bodyLargeEmphasis.copyWith(
-                            color: colors.title,
-                          ),
-                        ),
-                      ),
-                      if (route != null) ...[
-                        const SizedBox(width: AppSpacing.cardPadding),
-                        Text(
-                          localizations.flightRoute(
-                            route.origin.iataCode ?? route.origin.icaoCode,
-                            route.destination.iataCode ??
-                                route.destination.icaoCode,
-                          ),
-                          style: AppTextStyles.secondary.copyWith(
-                            color: colors.route,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: _blockGap),
-                  StateTimeline(
-                    state: state,
-                    variant: StateTimelineVariant.compact,
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

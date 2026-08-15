@@ -9,6 +9,7 @@ import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
+import 'package:flugwacht/ui/widgets/flight_sheet.dart';
 import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -210,7 +211,20 @@ void main() {
 
     expect(aircraftMarkers(tester), isEmpty);
     expect(polylines(tester), isEmpty);
+    expect(find.byType(FlightSheet), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('sheets the selected flight', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1), _airborneFlight(2)],
+    );
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).entry.flight.id,
+      1,
+    );
   });
 
   testWidgets('attributes OpenStreetMap and the active source', (tester) async {

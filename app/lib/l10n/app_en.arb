@@ -118,6 +118,41 @@
       }
     }
   },
+  "mapSheetArrivalPlaceholder": "–:–",
+  "@mapSheetArrivalPlaceholder": {
+    "description": "Stands in for the arrival time until the estimate of M9 exists."
+  },
+  "mapSheetValuePlaceholder": "–",
+  "@mapSheetValuePlaceholder": {
+    "description": "Stands in for a measurement the flight has not reported."
+  },
+  "mapSheetAltitudeLabel": "Altitude",
+  "mapSheetSpeedLabel": "Speed",
+  "mapSheetSignalLabel": "Signal",
+  "mapSheetAltitudeValue": "{value} m",
+  "@mapSheetAltitudeValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSpeedValue": "{value} km/h",
+  "@mapSheetSpeedValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSource": "Source: {source} · © OpenStreetMap",
+  "@mapSheetSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
   "flightRowLanded": "landed ✓",

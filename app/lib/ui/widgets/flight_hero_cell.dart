@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
+import 'flight_state_badge.dart';
 import 'mini_map.dart';
 import 'state_timeline.dart';
 
@@ -75,7 +76,7 @@ class FlightHeroCell extends StatelessWidget {
                       Positioned(
                         top: _badgeInset,
                         left: _badgeInset,
-                        child: _StateBadge(state: state, colors: colors),
+                        child: FlightStateBadge(state: state),
                       ),
                     ],
                   ),
@@ -131,67 +132,12 @@ class FlightHeroCell extends StatelessWidget {
   }
 }
 
-class _StateBadge extends StatelessWidget {
-  const _StateBadge({required this.state, required this.colors});
-
-  static const _dotSize = 5.0;
-  static const _padding = EdgeInsets.symmetric(horizontal: 10, vertical: 2);
-
-  final FlightState state;
-  final _HeroColors colors;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final isLive = state == FlightState.live;
-    return Container(
-      padding: _padding,
-      decoration: BoxDecoration(
-        color: isLive ? AppColors.yellow : colors.noSignalBadgeFill,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: colors.noSignalBadgeBorder == null || isLive
-            ? null
-            : Border.all(color: colors.noSignalBadgeBorder!),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isLive) ...[
-            const SizedBox(
-              width: _dotSize,
-              height: _dotSize,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColors.neutral900,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.grid + 1),
-          ],
-          Text(
-            (isLive
-                    ? localizations.flightBadgeLive
-                    : localizations.flightBadgeNoSignal)
-                .toUpperCase(),
-            style: AppTextStyles.badgeLabel.copyWith(
-              color: isLive ? AppColors.neutral900 : colors.noSignalBadgeText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 enum _HeroColors {
   light(
     surface: AppColors.white,
     border: AppColors.neutral200,
     title: AppColors.neutral800,
     route: AppColors.neutral500,
-    noSignalBadgeFill: AppColors.neutral700,
-    noSignalBadgeText: AppColors.yellow,
     shadow: [
       BoxShadow(
         color: Color(0x12000000),
@@ -206,9 +152,6 @@ enum _HeroColors {
     border: AppColors.neutral700,
     title: AppColors.neutral50,
     route: AppColors.neutral400,
-    noSignalBadgeFill: null,
-    noSignalBadgeBorder: AppColors.neutral500,
-    noSignalBadgeText: AppColors.neutral300,
     shadow: null,
   );
 
@@ -217,18 +160,12 @@ enum _HeroColors {
     required this.border,
     required this.title,
     required this.route,
-    required this.noSignalBadgeFill,
-    required this.noSignalBadgeText,
     required this.shadow,
-    this.noSignalBadgeBorder,
   });
 
   final Color surface;
   final Color border;
   final Color title;
   final Color route;
-  final Color? noSignalBadgeFill;
-  final Color? noSignalBadgeBorder;
-  final Color noSignalBadgeText;
   final List<BoxShadow>? shadow;
 }

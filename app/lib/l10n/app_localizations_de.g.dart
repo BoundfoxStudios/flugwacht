@@ -150,6 +150,36 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mapSheetArrivalPlaceholder => '–:–';
+
+  @override
+  String get mapSheetValuePlaceholder => '–';
+
+  @override
+  String get mapSheetAltitudeLabel => 'Höhe';
+
+  @override
+  String get mapSheetSpeedLabel => 'Tempo';
+
+  @override
+  String get mapSheetSignalLabel => 'Signal';
+
+  @override
+  String mapSheetAltitudeValue(String value) {
+    return '$value m';
+  }
+
+  @override
+  String mapSheetSpeedValue(String value) {
+    return '$value km/h';
+  }
+
+  @override
+  String mapSheetSource(String source) {
+    return 'Quelle: $source · © OpenStreetMap';
+  }
+
+  @override
   String get flightRowWaitingForSignal => 'wartet auf Signal';
 
   @override

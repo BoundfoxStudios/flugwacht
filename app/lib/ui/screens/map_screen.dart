@@ -12,12 +12,13 @@ import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
+import '../widgets/flight_sheet.dart';
 import '../widgets/map_visuals.dart';
 import 'list_sections.dart';
 import 'map_flights.dart';
 
-/// Height the peek sheet of M7.2 will take; the map keeps its framed content
-/// and the attribution above it.
+/// The peek height the handoff frames the map around; the camera keeps that
+/// much room free so the sheet never covers the framed flight.
 const mapSheetPeekHeight = 176.0;
 
 /// The full-screen map: every flight with a position as a marker, the selected
@@ -83,6 +84,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   );
   late final EffectCleanup _stopFramingSelection;
   late final EffectCleanup _stopPinging;
+  var _isSheetOpen = false;
   LatLng? _cameraStartCenter;
   LatLng? _cameraTargetCenter;
   double _cameraStartZoom = MapScreen._defaultZoom;
@@ -185,10 +187,33 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              const Positioned(
-                left: AppSpacing.cardPadding,
-                bottom: mapSheetPeekHeight + AppSpacing.grid,
-                child: _AttributionChip(),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!_isSheetOpen)
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: AppSpacing.cardPadding,
+                            bottom: AppSpacing.grid,
+                          ),
+                          child: _AttributionChip(),
+                        ),
+                      ),
+                    if (selected != null)
+                      FlightSheet(
+                        entry: selected,
+                        onOpenChanged: (isOpen) =>
+                            setState(() => _isSheetOpen = isOpen),
+                      ),
+                  ],
+                ),
               ),
             ],
           );

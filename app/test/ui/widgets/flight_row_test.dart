@@ -197,6 +197,7 @@ void main() {
   ) async {
     await pumpRow(tester, state: FlightState.waiting);
     final accessoryWidth = tester.getSize(find.text('today')).width;
+    final titleHeight = tester.getSize(find.text('EW594')).height;
 
     await pumpRow(
       tester,
@@ -204,8 +205,13 @@ void main() {
       row: flight(note: 'Anna & Ben ${'and everyone else ' * 10}'),
     );
 
+    final title = find.textContaining('Anna & Ben');
+    expect(
+      tester.renderObject<RenderParagraph>(title).didExceedMaxLines,
+      isTrue,
+    );
+    expect(tester.getSize(title).height, titleHeight);
     expect(tester.getSize(find.text('today')).width, accessoryWidth);
-    expect(tester.getSize(find.byType(FlightRow)).width, _rowWidth);
   });
 
   testWidgets('renders the german copy', (tester) async {

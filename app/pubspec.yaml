@@ -79,6 +79,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/data/airlines.csv
     - assets/fonts/OFL-BebasNeue.txt
     - assets/fonts/OFL-Barlow.txt
 

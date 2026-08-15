@@ -8,17 +8,19 @@ import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
+import 'flight_state_badge.dart';
 import 'mini_map.dart';
 import 'state_timeline.dart';
 
 /// The cell of an airborne flight: mini map with its state badge, the title
 /// line and the compact state timeline. The arrival block is M9.
-class FlightHeroCell extends StatelessWidget {
+class FlightHeroCell extends StatefulWidget {
   const FlightHeroCell({
     required this.flight,
     required this.state,
     required this.trail,
     super.key,
+    this.onTap,
     this.tileProvider,
   });
 
@@ -31,11 +33,44 @@ class FlightHeroCell extends StatelessWidget {
   final FlightState state;
   final List<TrailPoint> trail;
 
+  /// Opens the flight on the map; without it the cell is not interactive.
+  final VoidCallback? onTap;
+
   /// Handed to the mini map so tests render without loading tiles.
   final TileProvider? tileProvider;
 
   @override
+  State<FlightHeroCell> createState() => _FlightHeroCellState();
+}
+
+class _FlightHeroCellState extends State<FlightHeroCell> {
+  var _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final card = _buildCard(context);
+    final onTap = widget.onTap;
+    if (onTap == null) {
+      return card;
+    }
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: onTap,
+      child: Semantics(
+        button: true,
+        child: Transform.translate(
+          offset: _isPressed ? const Offset(0, 1) : Offset.zero,
+          child: card,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext context) {
+    final flight = widget.flight;
+    final state = widget.state;
     final localizations = AppLocalizations.of(context);
     final colors = switch (Theme.of(context).brightness) {
       Brightness.light => _HeroColors.light,
@@ -47,35 +82,40 @@ class FlightHeroCell extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: colors.border, width: _borderWidth),
+        border: Border.all(
+          color: colors.border,
+          width: FlightHeroCell._borderWidth,
+        ),
         boxShadow: colors.shadow,
       ),
       // Insets the clipped content so the opaque mini map stops at the border
       // instead of painting over it.
       child: Padding(
-        padding: const EdgeInsets.all(_borderWidth),
+        padding: const EdgeInsets.all(FlightHeroCell._borderWidth),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.card - _borderWidth),
+          borderRadius: BorderRadius.circular(
+            AppRadius.card - FlightHeroCell._borderWidth,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (position != null)
                 SizedBox(
-                  height: _mapHeight,
+                  height: FlightHeroCell._mapHeight,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
                       MiniMap(
                         position: position,
                         route: route,
-                        trail: trail,
+                        trail: widget.trail,
                         state: state,
-                        tileProvider: tileProvider,
+                        tileProvider: widget.tileProvider,
                       ),
                       Positioned(
-                        top: _badgeInset,
-                        left: _badgeInset,
-                        child: _StateBadge(state: state, colors: colors),
+                        top: FlightHeroCell._badgeInset,
+                        left: FlightHeroCell._badgeInset,
+                        child: FlightStateBadge(state: state),
                       ),
                     ],
                   ),
@@ -115,7 +155,7 @@ class FlightHeroCell extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: _blockGap),
+                    const SizedBox(height: FlightHeroCell._blockGap),
                     StateTimeline(
                       state: state,
                       variant: StateTimelineVariant.compact,
@@ -131,67 +171,12 @@ class FlightHeroCell extends StatelessWidget {
   }
 }
 
-class _StateBadge extends StatelessWidget {
-  const _StateBadge({required this.state, required this.colors});
-
-  static const _dotSize = 5.0;
-  static const _padding = EdgeInsets.symmetric(horizontal: 10, vertical: 2);
-
-  final FlightState state;
-  final _HeroColors colors;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final isLive = state == FlightState.live;
-    return Container(
-      padding: _padding,
-      decoration: BoxDecoration(
-        color: isLive ? AppColors.yellow : colors.noSignalBadgeFill,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: colors.noSignalBadgeBorder == null || isLive
-            ? null
-            : Border.all(color: colors.noSignalBadgeBorder!),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isLive) ...[
-            const SizedBox(
-              width: _dotSize,
-              height: _dotSize,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColors.neutral900,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.grid + 1),
-          ],
-          Text(
-            (isLive
-                    ? localizations.flightBadgeLive
-                    : localizations.flightBadgeNoSignal)
-                .toUpperCase(),
-            style: AppTextStyles.badgeLabel.copyWith(
-              color: isLive ? AppColors.neutral900 : colors.noSignalBadgeText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 enum _HeroColors {
   light(
     surface: AppColors.white,
     border: AppColors.neutral200,
     title: AppColors.neutral800,
     route: AppColors.neutral500,
-    noSignalBadgeFill: AppColors.neutral700,
-    noSignalBadgeText: AppColors.yellow,
     shadow: [
       BoxShadow(
         color: Color(0x12000000),
@@ -206,9 +191,6 @@ enum _HeroColors {
     border: AppColors.neutral700,
     title: AppColors.neutral50,
     route: AppColors.neutral400,
-    noSignalBadgeFill: null,
-    noSignalBadgeBorder: AppColors.neutral500,
-    noSignalBadgeText: AppColors.neutral300,
     shadow: null,
   );
 
@@ -217,18 +199,12 @@ enum _HeroColors {
     required this.border,
     required this.title,
     required this.route,
-    required this.noSignalBadgeFill,
-    required this.noSignalBadgeText,
     required this.shadow,
-    this.noSignalBadgeBorder,
   });
 
   final Color surface;
   final Color border;
   final Color title;
   final Color route;
-  final Color? noSignalBadgeFill;
-  final Color? noSignalBadgeBorder;
-  final Color noSignalBadgeText;
   final List<BoxShadow>? shadow;
 }

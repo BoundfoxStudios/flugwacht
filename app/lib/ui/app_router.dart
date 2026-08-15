@@ -6,6 +6,7 @@ import '../data/airline_directory.dart';
 import '../data/flight_repository.dart';
 import '../data/route_lookup.dart';
 import 'app_shell.dart';
+import 'map_selection.dart';
 import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
@@ -18,6 +19,7 @@ GoRouter createAppRouter({
   TileProvider? tileProvider,
 }) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
+  final mapSelection = MapSelection();
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/map',
@@ -30,7 +32,11 @@ GoRouter createAppRouter({
             routes: [
               GoRoute(
                 path: '/map',
-                builder: (context, state) => const MapScreen(),
+                builder: (context, state) => MapScreen(
+                  flightRepository: flightRepository,
+                  selection: mapSelection,
+                  tileProvider: tileProvider,
+                ),
               ),
             ],
           ),
@@ -40,6 +46,7 @@ GoRouter createAppRouter({
                 path: '/list',
                 builder: (context, state) => ListScreen(
                   flightRepository: flightRepository,
+                  mapSelection: mapSelection,
                   tileProvider: tileProvider,
                 ),
               ),

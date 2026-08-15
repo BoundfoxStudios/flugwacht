@@ -20,7 +20,7 @@ void main() {
   ) async {
     await pumpAppWithDeviceLocales(tester, const [Locale('de')]);
 
-    expect(find.text('Karte'), findsNWidgets(2));
+    expect(find.text('Karte'), findsOneWidget);
     expect(find.text('Liste'), findsOneWidget);
     expect(find.text('Mehr'), findsOneWidget);
   });
@@ -30,7 +30,7 @@ void main() {
   ) async {
     await pumpAppWithDeviceLocales(tester, const [Locale('fr')]);
 
-    expect(find.text('Map'), findsNWidgets(2));
+    expect(find.text('Map'), findsOneWidget);
     expect(find.text('List'), findsOneWidget);
     expect(find.text('More'), findsOneWidget);
   });

@@ -1,0 +1,402 @@
+import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/fix.dart';
+import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/domain/flight_day_window.dart';
+import 'package:flugwacht/domain/flight_route.dart';
+import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/source_id.dart';
+import 'package:flugwacht/domain/trail_point.dart';
+import 'package:flugwacht/l10n/app_localizations.g.dart';
+import 'package:flugwacht/main.dart';
+import 'package:flugwacht/ui/app_router.dart';
+import 'package:flugwacht/ui/map_selection.dart';
+import 'package:flugwacht/ui/screens/map_screen.dart';
+import 'package:flugwacht/ui/theme/app_theme.dart';
+import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
+import 'package:flugwacht/ui/widgets/flight_sheet.dart';
+import 'package:flugwacht/ui/widgets/map_visuals.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../../support/test_dependencies.dart';
+
+const _departureDate = CalendarDate(2026, 8, 12);
+final _window = FlightDayWindow.forDepartureDate(_departureDate);
+final _now = _window.start.add(const Duration(hours: 4));
+
+const _frankfurtToNewYork = FlightRoute(
+  origin: RouteAirport(
+    icaoCode: 'EDDF',
+    iataCode: 'FRA',
+    name: 'Frankfurt am Main',
+    latitude: 50.026402,
+    longitude: 8.543130,
+  ),
+  destination: RouteAirport(
+    icaoCode: 'KJFK',
+    iataCode: 'JFK',
+    name: 'New York JFK',
+    latitude: 40.639447,
+    longitude: -73.779317,
+  ),
+);
+
+const _munichToLisbon = FlightRoute(
+  origin: RouteAirport(
+    icaoCode: 'EDDM',
+    iataCode: 'MUC',
+    name: 'München',
+    latitude: 48.353802,
+    longitude: 11.786100,
+  ),
+  destination: RouteAirport(
+    icaoCode: 'LPPT',
+    iataCode: 'LIS',
+    name: 'Lisboa',
+    latitude: 38.781311,
+    longitude: -9.135919,
+  ),
+);
+
+Flight _airborneFlight(
+  int id, {
+  FlightRoute? route,
+  Duration positionAge = Duration.zero,
+  double latitude = 48.5,
+  double longitude = -20,
+}) => Flight(
+  id: id,
+  lookupKind: FlightLookupKind.flightNumber,
+  lookupValue: 'LH40$id',
+  departureDate: _departureDate,
+  route: route,
+  tracking: FlightTracking(
+    latestPosition: FixPosition(
+      latitude: latitude,
+      longitude: longitude,
+      timestamp: _now.subtract(positionAge),
+    ),
+    hasBeenAirborne: true,
+  ),
+);
+
+const _waitingFlight = Flight(
+  id: 9,
+  lookupKind: FlightLookupKind.flightNumber,
+  lookupValue: 'LH999',
+  departureDate: _departureDate,
+);
+
+Future<FakeFlightRepository> pumpMapScreen(
+  WidgetTester tester, {
+  List<Flight> flights = const [],
+  List<TrailPoint> trail = const [],
+  MapSelection? selection,
+  Locale locale = const Locale('en'),
+  Brightness brightness = Brightness.light,
+}) async {
+  final repository = FakeFlightRepository();
+  addTearDown(repository.dispose);
+  final mapSelection = selection ?? MapSelection();
+  addTearDown(mapSelection.dispose);
+  await tester.pumpWidget(
+    MaterialApp(
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: switch (brightness) {
+        Brightness.light => buildLightTheme(),
+        Brightness.dark => buildDarkTheme(),
+      },
+      home: MapScreen(
+        flightRepository: repository,
+        selection: mapSelection,
+        clock: () => _now,
+        tileProvider: StubTileProvider(),
+      ),
+    ),
+  );
+  repository.emit(flights);
+  await tester.pump();
+  if (trail.isNotEmpty) {
+    repository.emitTrail(trail);
+    await tester.pump();
+  }
+  // Lets the camera settle on the selected flight; markers outside the
+  // viewport are not built.
+  await tester.pump(const Duration(milliseconds: 300));
+  return repository;
+}
+
+/// Two flights airborne right now, so the app's own clock keeps them on the
+/// map.
+List<Flight> flightsAirborneNow() {
+  final today = DateTime.now();
+  return [
+    for (final (id, latitude) in [(1, 48.5), (2, 51.5)])
+      Flight(
+        id: id,
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH40$id',
+        departureDate: CalendarDate(today.year, today.month, today.day),
+        tracking: FlightTracking(
+          latestPosition: FixPosition(
+            latitude: latitude,
+            longitude: -20,
+            timestamp: today.toUtc(),
+          ),
+          hasBeenAirborne: true,
+        ),
+      ),
+  ];
+}
+
+Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
+  final repository = FakeFlightRepository();
+  addTearDown(repository.dispose);
+  await tester.pumpWidget(
+    FlugwachtApp(
+      router: createAppRouter(
+        flightRepository: repository,
+        airlineDirectory: createTestAirlineDirectory(),
+        routeLookup: FakeRouteLookup(),
+        tileProvider: StubTileProvider(),
+      ),
+    ),
+  );
+  repository.emit(flightsAirborneNow());
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+  return repository;
+}
+
+Finder aircraftMarkerAt(int index) => find
+    .byWidgetPredicate(
+      (widget) =>
+          widget is CustomPaint && widget.painter is AircraftMarkerPainter,
+    )
+    .at(index);
+
+Iterable<AircraftMarkerPainter> aircraftMarkers(WidgetTester tester) => tester
+    .widgetList<CustomPaint>(find.byType(CustomPaint))
+    .map((paint) => paint.painter)
+    .whereType<AircraftMarkerPainter>();
+
+List<Polyline<Object>> polylines(WidgetTester tester) {
+  final layers = tester.widgetList<PolylineLayer<Object>>(
+    find.byType(PolylineLayer<Object>),
+  );
+  return [for (final layer in layers) ...layer.polylines];
+}
+
+void main() {
+  testWidgets('marks every flight that has a position', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1), _waitingFlight, _airborneFlight(2)],
+    );
+
+    expect(aircraftMarkers(tester), hasLength(2));
+  });
+
+  testWidgets('draws trail and airports of the selected flight alone', (
+    tester,
+  ) async {
+    await pumpMapScreen(
+      tester,
+      flights: [
+        _airborneFlight(1, route: _frankfurtToNewYork),
+        _airborneFlight(2, route: _munichToLisbon),
+      ],
+      trail: [
+        TrailPoint(
+          timestamp: _now.subtract(const Duration(minutes: 20)),
+          latitude: 49,
+          longitude: 2,
+          sourceId: SourceId.adsblol,
+        ),
+      ],
+    );
+
+    expect(find.text('FRA'), findsOneWidget);
+    expect(find.text('JFK'), findsOneWidget);
+    expect(find.text('MUC'), findsNothing);
+    expect(polylines(tester), hasLength(2));
+  });
+
+  testWidgets('rings the selected flight only', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1), _airborneFlight(2)],
+    );
+
+    final markers = aircraftMarkers(tester).toList();
+    expect(markers.first.rings, isNotEmpty);
+    expect(markers.last.rings, isEmpty);
+  });
+
+  testWidgets('rings a selected flight without signal statically', (
+    tester,
+  ) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1, positionAge: const Duration(hours: 1))],
+    );
+
+    final marker = aircraftMarkers(tester).single;
+    expect(marker.state, FlightState.noSignal);
+    expect(marker.rings, hasLength(1));
+    final atRest = marker.rings.single;
+
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(aircraftMarkers(tester).single.rings.single, atRest);
+  });
+
+  testWidgets('pings a selected live flight', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+    final atRest = aircraftMarkers(tester).single.rings;
+
+    await tester.pump(const Duration(milliseconds: 800));
+
+    expect(aircraftMarkers(tester).single.rings, isNot(atRest));
+  });
+
+  testWidgets('stays a bare map while no flight has a position', (
+    tester,
+  ) async {
+    await pumpMapScreen(tester, flights: [_waitingFlight]);
+
+    expect(aircraftMarkers(tester), isEmpty);
+    expect(polylines(tester), isEmpty);
+    expect(find.byType(FlightSheet), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('sheets the selected flight', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1), _airborneFlight(2)],
+    );
+
+    final sheet = tester.widget<FlightSheet>(find.byType(FlightSheet));
+    expect(sheet.entries[sheet.selectedIndex].flight.id, 1);
+  });
+
+  testWidgets('selects the flight whose marker was tapped', (tester) async {
+    final repository = await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1), _airborneFlight(2, latitude: 50)],
+    );
+
+    await tester.tap(aircraftMarkerAt(1));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+    expect(aircraftMarkers(tester).last.rings, isNotEmpty);
+    expect(aircraftMarkers(tester).first.rings, isEmpty);
+    expect(repository.watchedTrails, [1, 2]);
+  });
+
+  testWidgets('selects the flight the sheet was swiped to', (tester) async {
+    final repository = await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1), _airborneFlight(2, latitude: 50)],
+    );
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(FlightSheet)),
+    );
+    await tester.pump();
+    for (var step = 0; step < 6; step++) {
+      await gesture.moveBy(const Offset(-100, 0));
+      await tester.pump();
+    }
+    await gesture.up();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+
+    expect(aircraftMarkers(tester).last.rings, isNotEmpty);
+    expect(repository.watchedTrails, [1, 2]);
+  });
+
+  testWidgets('hands the sheet on when the selected flight leaves the map', (
+    tester,
+  ) async {
+    final repository = await pumpMapScreen(
+      tester,
+      flights: [
+        _airborneFlight(1),
+        _airborneFlight(2, latitude: 50),
+        _airborneFlight(3, latitude: 51.5),
+      ],
+    );
+    await tester.tap(aircraftMarkerAt(2));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    repository.emit([_airborneFlight(1), _airborneFlight(2, latitude: 50)]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    final sheet = tester.widget<FlightSheet>(find.byType(FlightSheet));
+    expect(sheet.entries, hasLength(2));
+    expect(sheet.selectedIndex, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps its selection while another tab was in front', (
+    tester,
+  ) async {
+    await pumpApp(tester);
+    await tester.tap(aircraftMarkerAt(1));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await tester.tap(find.text('List'));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Map'));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
+  testWidgets('frames the flight the list handed over', (tester) async {
+    final repository = await pumpApp(tester);
+    await tester.tap(find.text('List'));
+    await tester.pump(const Duration(milliseconds: 300));
+    repository.emit(flightsAirborneNow());
+    await tester.pump();
+
+    await tester.tap(find.byType(FlightHeroCell).last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
+  testWidgets('attributes OpenStreetMap and the active source', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+
+    expect(find.text('© OpenStreetMap · Data: adsb.lol'), findsOneWidget);
+  });
+
+  testWidgets('attributes in German as well', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      locale: const Locale('de'),
+    );
+
+    expect(find.text('© OpenStreetMap · Daten: adsb.lol'), findsOneWidget);
+  });
+}

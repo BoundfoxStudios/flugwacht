@@ -146,6 +146,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapAttributionOpenStreetMap => '© OpenStreetMap';
 
   @override
+  String mapAttributionWithSource(String source) {
+    return '© OpenStreetMap · Data: $source';
+  }
+
+  @override
+  String get mapSheetArrivalPlaceholder => '–:–';
+
+  @override
+  String get mapSheetValuePlaceholder => '–';
+
+  @override
+  String get mapSheetAltitudeLabel => 'Altitude';
+
+  @override
+  String get mapSheetSpeedLabel => 'Speed';
+
+  @override
+  String get mapSheetSignalLabel => 'Signal';
+
+  @override
+  String mapSheetAltitudeValue(String value) {
+    return '$value m';
+  }
+
+  @override
+  String mapSheetSpeedValue(String value) {
+    return '$value km/h';
+  }
+
+  @override
+  String mapSheetSource(String source) {
+    return 'Source: $source · © OpenStreetMap';
+  }
+
+  @override
   String get flightRowWaitingForSignal => 'waiting for signal';
 
   @override

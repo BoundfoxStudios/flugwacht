@@ -9,6 +9,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../data/flight_repository.dart';
 import '../../domain/trail_point.dart';
 import '../../l10n/app_localizations.g.dart';
+import '../map_selection.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/app_fab.dart';
@@ -21,12 +22,16 @@ import 'list_sections.dart';
 class ListScreen extends StatefulWidget {
   const ListScreen({
     required this.flightRepository,
+    required this.mapSelection,
     super.key,
     this.clock = DateTime.now,
     this.tileProvider,
   });
 
   final FlightRepository flightRepository;
+
+  /// Written when a hero cell is tapped, so the map opens on that flight.
+  final MapSelection mapSelection;
 
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
@@ -65,6 +70,7 @@ class _ListScreenState extends State<ListScreen> {
                 today: _flightList.now.value,
                 repository: widget.flightRepository,
                 tileProvider: widget.tileProvider,
+                onFlightSelected: (flightId) => _openOnMap(context, flightId),
               );
       },
     ),
@@ -79,6 +85,11 @@ class _ListScreenState extends State<ListScreen> {
   );
 
   void _openNewFlight(BuildContext context) => context.push('/new-flight');
+
+  void _openOnMap(BuildContext context, int flightId) {
+    widget.mapSelection.flightId.value = flightId;
+    context.go('/map');
+  }
 }
 
 class _FlightSections extends StatelessWidget {
@@ -87,12 +98,14 @@ class _FlightSections extends StatelessWidget {
     required this.today,
     required this.repository,
     required this.tileProvider,
+    required this.onFlightSelected,
   });
 
   final FlightListSections sections;
   final DateTime today;
   final FlightRepository repository;
   final TileProvider? tileProvider;
+  final ValueChanged<int> onFlightSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +133,7 @@ class _FlightSections extends StatelessWidget {
                 entry: entry,
                 repository: repository,
                 tileProvider: tileProvider,
+                onTap: () => onFlightSelected(entry.flight.id),
               ),
             for (final entry in rows) _PaddedRow(entry: entry),
             if (sections.past.isNotEmpty) ...[
@@ -186,12 +200,14 @@ class _HeroCell extends StatefulWidget {
     required this.entry,
     required this.repository,
     required this.tileProvider,
+    required this.onTap,
     super.key,
   });
 
   final FlightListEntry entry;
   final FlightRepository repository;
   final TileProvider? tileProvider;
+  final VoidCallback onTap;
 
   @override
   State<_HeroCell> createState() => _HeroCellState();
@@ -224,6 +240,7 @@ class _HeroCellState extends State<_HeroCell> {
         flight: widget.entry.flight,
         state: widget.entry.state,
         trail: _trail.value,
+        onTap: widget.onTap,
         tileProvider: widget.tileProvider,
       ),
     ),

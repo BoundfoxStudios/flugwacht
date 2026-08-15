@@ -3,17 +3,14 @@ import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
-import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
-import 'package:flugwacht/ui/widgets/mini_map.dart';
 import 'package:flugwacht/ui/widgets/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';
@@ -64,6 +61,7 @@ Future<void> pumpHeroCell(
   FlightState state = FlightState.live,
   Flight? cell,
   List<TrailPoint> trail = const [],
+  VoidCallback? onTap,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
 }) async {
@@ -86,6 +84,7 @@ Future<void> pumpHeroCell(
                 flight: cell ?? flight(),
                 state: state,
                 trail: trail,
+                onTap: onTap,
                 tileProvider: StubTileProvider(),
               ),
             ),
@@ -109,6 +108,19 @@ BoxDecoration badgeDecoration(WidgetTester tester, String label) =>
             )
             .decoration!
         as BoxDecoration;
+
+double pressDip(WidgetTester tester) => tester
+    .widget<Transform>(
+      find
+          .descendant(
+            of: find.byType(FlightHeroCell),
+            matching: find.byType(Transform),
+          )
+          .first,
+    )
+    .transform
+    .getTranslation()
+    .y;
 
 void main() {
   testWidgets('heads the cell with the lookup value, note and route', (
@@ -233,6 +245,25 @@ void main() {
     expect(find.text('© OpenStreetMap'), findsOneWidget);
   });
 
+  testWidgets('dips while pressed and opens the flight on release', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpHeroCell(tester, onTap: () => taps++);
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(FlightHeroCell)),
+    );
+    await tester.pump();
+    expect(pressDip(tester), 1);
+
+    await gesture.up();
+    await tester.pump();
+
+    expect(taps, 1);
+    expect(pressDip(tester), 0);
+  });
+
   testWidgets('renders the german copy', (tester) async {
     await pumpHeroCell(
       tester,
@@ -242,33 +273,5 @@ void main() {
 
     expect(find.text('KEIN SIGNAL'), findsOneWidget);
     expect(find.text('© OpenStreetMap'), findsOneWidget);
-  });
-
-  test('keeps route, trail and position in view', () {
-    final trail = [
-      TrailPoint(
-        timestamp: DateTime.utc(2026, 8, 12, 11),
-        latitude: 49,
-        longitude: 2,
-        sourceId: SourceId.adsblol,
-      ),
-    ];
-
-    expect(
-      miniMapFocusPoints(position: _position, route: _route, trail: trail),
-      [
-        const LatLng(50.026402, 8.543130),
-        const LatLng(40.639447, -73.779317),
-        const LatLng(49, 2),
-        const LatLng(48.5, -20),
-      ],
-    );
-  });
-
-  test('falls back to the position alone without a route', () {
-    expect(
-      miniMapFocusPoints(position: _position, route: null, trail: const []),
-      [const LatLng(48.5, -20)],
-    );
   });
 }

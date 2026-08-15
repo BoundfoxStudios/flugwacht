@@ -330,6 +330,60 @@ abstract class AppLocalizations {
   /// **'© OpenStreetMap'**
   String get mapAttributionOpenStreetMap;
 
+  /// No description provided for @mapAttributionWithSource.
+  ///
+  /// In en, this message translates to:
+  /// **'© OpenStreetMap · Data: {source}'**
+  String mapAttributionWithSource(String source);
+
+  /// Stands in for the arrival time until the estimate of M9 exists.
+  ///
+  /// In en, this message translates to:
+  /// **'–:–'**
+  String get mapSheetArrivalPlaceholder;
+
+  /// Stands in for a measurement the flight has not reported.
+  ///
+  /// In en, this message translates to:
+  /// **'–'**
+  String get mapSheetValuePlaceholder;
+
+  /// No description provided for @mapSheetAltitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Altitude'**
+  String get mapSheetAltitudeLabel;
+
+  /// No description provided for @mapSheetSpeedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get mapSheetSpeedLabel;
+
+  /// No description provided for @mapSheetSignalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal'**
+  String get mapSheetSignalLabel;
+
+  /// No description provided for @mapSheetAltitudeValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} m'**
+  String mapSheetAltitudeValue(String value);
+
+  /// No description provided for @mapSheetSpeedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} km/h'**
+  String mapSheetSpeedValue(String value);
+
+  /// No description provided for @mapSheetSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source: {source} · © OpenStreetMap'**
+  String mapSheetSource(String source);
+
   /// No description provided for @flightRowWaitingForSignal.
   ///
   /// In en, this message translates to:

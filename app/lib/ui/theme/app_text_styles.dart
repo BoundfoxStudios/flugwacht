@@ -34,6 +34,13 @@ abstract final class AppTextStyles {
     letterSpacing: 22 * 0.025,
   );
 
+  static const buttonLabel = TextStyle(
+    fontFamily: AppFontFamilies.bebasNeue,
+    fontSize: 18,
+    height: 1,
+    letterSpacing: 18 * 0.05,
+  );
+
   static const fieldLabel = TextStyle(
     fontFamily: AppFontFamilies.bebasNeue,
     fontSize: 14,

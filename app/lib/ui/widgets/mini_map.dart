@@ -40,9 +40,13 @@ class MiniMap extends StatefulWidget {
     this.tileProvider,
   });
 
-  /// Zoom for a flight without a route, where only its position is known.
+  /// Zoom for a flight whose points are one spot on the globe — a flight
+  /// without a route, or one whose trail has not moved away from it yet.
   static const _regionalZoom = 6.0;
   static const _fitPadding = EdgeInsets.all(28);
+
+  /// Degrees the points have to span before fitting them beats the fixed zoom.
+  static const _minimumFitSpan = 0.01;
 
   final FixPosition position;
   final FlightRoute? route;
@@ -82,11 +86,13 @@ class _MiniMapState extends State<MiniMap> {
       return;
     }
     final fit = _cameraFit(points);
-    if (fit == null) {
-      return;
-    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
+      if (!mounted) {
+        return;
+      }
+      if (fit == null) {
+        _mapController.move(points.last, MiniMap._regionalZoom);
+      } else {
         _mapController.fitCamera(fit);
       }
     });
@@ -149,6 +155,8 @@ class _MiniMapState extends State<MiniMap> {
     final tiles = TileLayer(
       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       userAgentPackageName: 'de.boundfoxstudios.flugwacht',
+      // A fresh instance per build is what TileLayer does by default; it takes
+      // ownership and disposes whatever it is handed.
       tileProvider: widget.tileProvider ?? NetworkTileProvider(),
     );
     return colors.tileFilter == null
@@ -243,12 +251,18 @@ class _MiniMapState extends State<MiniMap> {
     ),
   );
 
-  CameraFit? _cameraFit(List<LatLng> points) => points.length < 2
-      ? null
-      : CameraFit.bounds(
-          bounds: LatLngBounds.fromPoints(points),
-          padding: MiniMap._fitPadding,
-        );
+  /// Null whenever the points are one spot on the globe: fitting a bounds
+  /// without an area blows the zoom up to infinity.
+  CameraFit? _cameraFit(List<LatLng> points) {
+    if (points.length < 2) {
+      return null;
+    }
+    final bounds = LatLngBounds.fromPoints(points);
+    final span = max(bounds.north - bounds.south, bounds.east - bounds.west);
+    return span < MiniMap._minimumFitSpan
+        ? null
+        : CameraFit.bounds(bounds: bounds, padding: MiniMap._fitPadding);
+  }
 }
 
 const _airportMarkerWidth = 96.0;

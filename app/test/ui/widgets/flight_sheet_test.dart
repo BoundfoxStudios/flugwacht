@@ -1,8 +1,10 @@
+import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_sections.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -13,6 +15,8 @@ import 'package:flugwacht/ui/widgets/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+
+import '../../support/test_dependencies.dart';
 
 const _origin = RouteAirport(
   icaoCode: 'EDDF',
@@ -98,7 +102,9 @@ Future<List<int>> pumpFlightSheet(
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
   DateTime Function()? clock,
+  SourceSetting? sourceSetting,
 }) async {
+  final setting = sourceSetting ?? await createTestSourceSetting();
   final selections = <int>[];
   await tester.pumpWidget(
     MaterialApp(
@@ -116,6 +122,7 @@ Future<List<int>> pumpFlightSheet(
             entries: entries ?? [entry ?? _entry()],
             selectedIndex: selectedIndex,
             onSelected: selections.add,
+            sourceSetting: setting,
             clock: clock ?? () => _now,
           ),
         ),
@@ -397,6 +404,17 @@ void main() {
     await openSheet(tester);
 
     expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+  });
+
+  testWidgets('names the source it was switched to', (tester) async {
+    final sourceSetting = await createTestSourceSetting();
+    await pumpFlightSheet(tester, sourceSetting: sourceSetting);
+    await openSheet(tester);
+
+    await sourceSetting.select(SourceId.adsbfi);
+    await tester.pump();
+
+    expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
   });
 
   testWidgets('reports the flight it was swiped to', (tester) async {

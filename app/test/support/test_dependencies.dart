@@ -9,6 +9,7 @@ import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/data/source_adapter.dart';
+import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/source_id.dart';
@@ -18,6 +19,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 const testAirlinesCsv =
     'Code,Name,ICAO,IATA,PositioningFlightPattern,CharterFlightPattern\n'
@@ -39,10 +42,20 @@ FlightRepository createTestRepository() {
 AirlineDirectory createTestAirlineDirectory() =>
     AirlineDirectory.fromCsv(testAirlinesCsv);
 
-GoRouter createTestAppRouter() => createAppRouter(
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<SourceSetting> createTestSourceSetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await SourceSetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
+Future<GoRouter> createTestAppRouter() async => createAppRouter(
   flightRepository: createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
   routeLookup: FakeRouteLookup(),
+  sourceSetting: await createTestSourceSetting(),
   tileProvider: StubTileProvider(),
 );
 

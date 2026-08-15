@@ -10,6 +10,7 @@ import 'data/flight_repository.dart';
 import 'data/polling_engine.dart';
 import 'data/readsb_source_adapter.dart';
 import 'data/route_lookup.dart';
+import 'data/source_setting.dart';
 import 'domain/airport_timezone.dart';
 import 'domain/source_id.dart';
 import 'l10n/app_localizations.g.dart';
@@ -23,9 +24,14 @@ Future<void> main() async {
   final client = http.Client();
   final flightRepository = FlightRepository(AppDatabase());
   final airlineDirectory = await AirlineDirectory.loadFromAssets();
+  final sourceSetting = await SourceSetting.load();
   PollingEngine(
     repository: flightRepository,
-    adapter: ReadsbSourceAdapter(sourceId: activeSourceId, client: client),
+    adapters: {
+      for (final sourceId in SourceId.values)
+        sourceId: ReadsbSourceAdapter(sourceId: sourceId, client: client),
+    },
+    activeSourceId: () => sourceSetting.activeId.value,
     airlineDirectory: airlineDirectory,
   ).start();
   runApp(
@@ -34,6 +40,7 @@ Future<void> main() async {
         flightRepository: flightRepository,
         airlineDirectory: airlineDirectory,
         routeLookup: RouteLookup(client: client),
+        sourceSetting: sourceSetting,
       ),
     ),
   );

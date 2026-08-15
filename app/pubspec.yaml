@@ -54,12 +54,15 @@ dependencies:
   flutter_svg: ^2.3.0
   timezone: ^0.11.1
   lat_lng_to_timezone: ^0.2.0
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   # Pinned by flutter_test; "any" resolves to that exact version
   fake_async: any
+  # Only for the in-memory preference store the tests run against
+  shared_preferences_platform_interface: ^2.4.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

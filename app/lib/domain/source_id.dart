@@ -1,7 +1,10 @@
 enum SourceId { adsblol, adsbfi, airplanes }
 
-/// The single source the app polls until M10/M12 make it switchable.
-const activeSourceId = SourceId.adsblol;
+const defaultSourceId = SourceId.adsblol;
+
+/// The sources the app offers; airplanes.live stays out until its gated API
+/// access is granted, although the app is otherwise ready to poll it (#57).
+const selectableSourceIds = [SourceId.adsblol, SourceId.adsbfi];
 
 extension SourceIdLabel on SourceId {
   /// The source's own name, never localized.

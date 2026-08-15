@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:signals/signals_flutter.dart';
 
+import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/signal_age.dart';
 import '../../domain/source_id.dart';
@@ -24,6 +26,7 @@ class FlightSheet extends StatefulWidget {
     required this.entries,
     required this.selectedIndex,
     required this.onSelected,
+    required this.sourceSetting,
     super.key,
     this.onOpenChanged,
     this.clock = DateTime.now,
@@ -51,6 +54,8 @@ class FlightSheet extends StatefulWidget {
 
   /// Reports the page the sheet settled on, so the selection follows a swipe.
   final ValueChanged<int> onSelected;
+
+  final SourceSetting sourceSetting;
 
   /// Lets the map hide what the open sheet would cover.
   final ValueChanged<bool>? onOpenChanged;
@@ -163,6 +168,7 @@ class _FlightSheetState extends State<FlightSheet> {
                                     isOpen: _isOpen,
                                     gap: gap,
                                     now: _now,
+                                    sourceSetting: widget.sourceSetting,
                                   ),
                                 ),
                             ],
@@ -249,6 +255,7 @@ class _FlightPage extends StatelessWidget {
     required this.isOpen,
     required this.gap,
     required this.now,
+    required this.sourceSetting,
   });
 
   final FlightListEntry entry;
@@ -256,6 +263,7 @@ class _FlightPage extends StatelessWidget {
   final bool isOpen;
   final double gap;
   final DateTime now;
+  final SourceSetting sourceSetting;
 
   @override
   Widget build(BuildContext context) {
@@ -305,9 +313,11 @@ class _FlightPage extends StatelessWidget {
             NoSignalInfoBox(age: signalAge),
           ],
           SizedBox(height: gap),
-          Text(
-            localizations.mapSheetSource(activeSourceId.label),
-            style: AppTextStyles.caption.copyWith(color: colors.footer),
+          SignalBuilder(
+            builder: (context) => Text(
+              localizations.mapSheetSource(sourceSetting.activeId.value.label),
+              style: AppTextStyles.caption.copyWith(color: colors.footer),
+            ),
           ),
         ],
       ],

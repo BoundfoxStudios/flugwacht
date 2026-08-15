@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
@@ -93,6 +94,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   List<Flight> flights = const [],
   List<TrailPoint> trail = const [],
   MapSelection? selection,
+  SourceSetting? sourceSetting,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
 }) async {
@@ -100,6 +102,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   addTearDown(repository.dispose);
   final mapSelection = selection ?? MapSelection();
   addTearDown(mapSelection.dispose);
+  final setting = sourceSetting ?? await createTestSourceSetting();
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -112,6 +115,7 @@ Future<FakeFlightRepository> pumpMapScreen(
       home: MapScreen(
         flightRepository: repository,
         selection: mapSelection,
+        sourceSetting: setting,
         clock: () => _now,
         tileProvider: StubTileProvider(),
       ),
@@ -161,6 +165,7 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         flightRepository: repository,
         airlineDirectory: createTestAirlineDirectory(),
         routeLookup: FakeRouteLookup(),
+        sourceSetting: await createTestSourceSetting(),
         tileProvider: StubTileProvider(),
       ),
     ),
@@ -398,5 +403,19 @@ void main() {
     );
 
     expect(find.text('© OpenStreetMap · Daten: adsb.lol'), findsOneWidget);
+  });
+
+  testWidgets('attributes the source it was switched to', (tester) async {
+    final sourceSetting = await createTestSourceSetting();
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      sourceSetting: sourceSetting,
+    );
+
+    await sourceSetting.select(SourceId.adsbfi);
+    await tester.pump();
+
+    expect(find.text('© OpenStreetMap · Data: adsb.fi'), findsOneWidget);
   });
 }

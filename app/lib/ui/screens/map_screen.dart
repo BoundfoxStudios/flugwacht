@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/flight_repository.dart';
+import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
@@ -29,6 +30,7 @@ class MapScreen extends StatefulWidget {
   const MapScreen({
     required this.flightRepository,
     required this.selection,
+    required this.sourceSetting,
     super.key,
     this.clock = DateTime.now,
     this.tileProvider,
@@ -60,6 +62,7 @@ class MapScreen extends StatefulWidget {
 
   final FlightRepository flightRepository;
   final MapSelection selection;
+  final SourceSetting sourceSetting;
 
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
@@ -200,14 +203,16 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (!_isSheetOpen)
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                             left: AppSpacing.cardPadding,
                             bottom: AppSpacing.grid,
                           ),
-                          child: _AttributionChip(),
+                          child: _AttributionChip(
+                            sourceSetting: widget.sourceSetting,
+                          ),
                         ),
                       ),
                     if (selected != null)
@@ -216,6 +221,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         selectedIndex: entries.indexOf(selected),
                         onSelected: (index) => _mapFlights.selectedId.value =
                             entries[index].flight.id,
+                        sourceSetting: widget.sourceSetting,
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
                         clock: widget.clock,
@@ -326,12 +332,14 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 }
 
 class _AttributionChip extends StatelessWidget {
-  const _AttributionChip();
+  const _AttributionChip({required this.sourceSetting});
 
   static const _padding = EdgeInsets.symmetric(horizontal: 7, vertical: 2);
   static const _radius = 4.0;
   static const _lightBackground = Color(0xd9ffffff);
   static const _darkBackground = Color(0xd9262626);
+
+  final SourceSetting sourceSetting;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -344,11 +352,15 @@ class _AttributionChip extends StatelessWidget {
     ),
     child: Padding(
       padding: _padding,
-      child: Text(
-        AppLocalizations.of(
-          context,
-        ).mapAttributionWithSource(activeSourceId.label),
-        style: AppTextStyles.attribution.copyWith(color: AppColors.neutral400),
+      child: SignalBuilder(
+        builder: (context) => Text(
+          AppLocalizations.of(
+            context,
+          ).mapAttributionWithSource(sourceSetting.activeId.value.label),
+          style: AppTextStyles.attribution.copyWith(
+            color: AppColors.neutral400,
+          ),
+        ),
       ),
     ),
   );

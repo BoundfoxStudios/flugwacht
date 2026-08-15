@@ -73,4 +73,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newFlightDatePickerConfirm => 'Done';
+
+  @override
+  String get newFlightPreviewFound => 'Found';
+
+  @override
+  String get newFlightPreviewRouteUnknown => 'Route unknown';
+
+  @override
+  String newFlightPreviewCallsign(String callsign) {
+    return 'Callsign: $callsign';
+  }
+
+  @override
+  String newFlightPreviewRoute(String origin, String destination) {
+    return '$origin → $destination';
+  }
+
+  @override
+  String newFlightPreviewRouteWithAirline(
+    String origin,
+    String destination,
+    String airline,
+  ) {
+    return '$origin → $destination · $airline';
+  }
 }

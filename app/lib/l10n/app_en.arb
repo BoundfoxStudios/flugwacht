@@ -22,5 +22,40 @@
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",
-  "newFlightDatePickerConfirm": "Done"
+  "newFlightDatePickerConfirm": "Done",
+  "newFlightPreviewFound": "Found",
+  "newFlightPreviewRouteUnknown": "Route unknown",
+  "newFlightPreviewCallsign": "Callsign: {callsign}",
+  "@newFlightPreviewCallsign": {
+    "placeholders": {
+      "callsign": {
+        "type": "String"
+      }
+    }
+  },
+  "newFlightPreviewRoute": "{origin} → {destination}",
+  "@newFlightPreviewRoute": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}",
+  "@newFlightPreviewRouteWithAirline": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      },
+      "airline": {
+        "type": "String"
+      }
+    }
+  }
 }

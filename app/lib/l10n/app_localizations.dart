@@ -217,6 +217,40 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get newFlightDatePickerConfirm;
+
+  /// No description provided for @newFlightPreviewFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Found'**
+  String get newFlightPreviewFound;
+
+  /// No description provided for @newFlightPreviewRouteUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Route unknown'**
+  String get newFlightPreviewRouteUnknown;
+
+  /// No description provided for @newFlightPreviewCallsign.
+  ///
+  /// In en, this message translates to:
+  /// **'Callsign: {callsign}'**
+  String newFlightPreviewCallsign(String callsign);
+
+  /// No description provided for @newFlightPreviewRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'{origin} → {destination}'**
+  String newFlightPreviewRoute(String origin, String destination);
+
+  /// No description provided for @newFlightPreviewRouteWithAirline.
+  ///
+  /// In en, this message translates to:
+  /// **'{origin} → {destination} · {airline}'**
+  String newFlightPreviewRouteWithAirline(
+    String origin,
+    String destination,
+    String airline,
+  );
 }
 
 class _AppLocalizationsDelegate

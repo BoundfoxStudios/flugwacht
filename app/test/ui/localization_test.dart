@@ -1,7 +1,8 @@
 import 'package:flugwacht/main.dart';
-import 'package:flugwacht/ui/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../support/test_dependencies.dart';
 
 Future<void> pumpAppWithDeviceLocales(
   WidgetTester tester,
@@ -9,7 +10,7 @@ Future<void> pumpAppWithDeviceLocales(
 ) async {
   tester.platformDispatcher.localesTestValue = locales;
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-  await tester.pumpWidget(FlugwachtApp(router: createAppRouter()));
+  await tester.pumpWidget(FlugwachtApp(router: createTestAppRouter()));
   await tester.pumpAndSettle();
 }
 

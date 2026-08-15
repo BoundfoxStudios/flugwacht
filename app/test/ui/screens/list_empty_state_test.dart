@@ -1,4 +1,4 @@
-import 'package:flugwacht/l10n/app_localizations.dart';
+import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/app_primary_button.dart';

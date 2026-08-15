@@ -12,7 +12,7 @@ import '../../domain/calendar_date.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_number.dart';
 import '../../domain/lookup_input.dart';
-import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/app_primary_button.dart';

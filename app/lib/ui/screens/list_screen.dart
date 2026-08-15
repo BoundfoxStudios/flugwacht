@@ -8,7 +8,7 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../data/flight_repository.dart';
 import '../../domain/trail_point.dart';
-import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/app_fab.dart';

@@ -128,7 +128,7 @@
   },
   "mapSheetArrivalPlaceholder": "–:–",
   "@mapSheetArrivalPlaceholder": {
-    "description": "Stands in for the arrival time until the estimate of M9 exists."
+    "description": "Stands in for the arrival time of a flight without an estimate."
   },
   "mapSheetValuePlaceholder": "–",
   "@mapSheetValuePlaceholder": {
@@ -201,6 +201,79 @@
   "@mapSheetSource": {
     "placeholders": {
       "source": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalLabel": "Approx. arrival",
+  "flightArrivalTimeFormat": "h:mm a",
+  "@flightArrivalTimeFormat": {
+    "description": "DateFormat pattern for the estimated arrival, localized per language."
+  },
+  "flightArrivalFrozenTime": "~{time}",
+  "@flightArrivalFrozenTime": {
+    "description": "Marks an arrival that stopped moving because the signal did.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalRemainingMinutes": "{minutes} min left",
+  "@flightArrivalRemainingMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalRemainingHours": "{hours} h left",
+  "@flightArrivalRemainingHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalRemainingHoursMinutes": "{hours} h {minutes} min left",
+  "@flightArrivalRemainingHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalAsOf": "As of {age}",
+  "@flightArrivalAsOf": {
+    "description": "Dates the frozen arrival with the signal age, e.g. \"As of 42 min ago\".",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalLocalTime": "Local time {city} · your time {time}",
+  "@flightArrivalLocalTime": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "flightArrivalSummary": "{label} · {detail}",
+  "@flightArrivalSummary": {
+    "description": "Joins the arrival label and its detail into the hero cell's single line.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "detail": {
         "type": "String"
       }
     }

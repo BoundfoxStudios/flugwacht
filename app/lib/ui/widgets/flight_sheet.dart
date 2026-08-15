@@ -40,6 +40,7 @@ class FlightSheet extends StatefulWidget {
   static const _peekGap = 6.0;
   static const _openGap = 8.0;
   static const _timeHeight = 0.95;
+  static const _arrivalGap = 12.0;
   static const _dataRowGap = 8.0;
   static const _dataRowPadding = 10.0;
   static const _dataLabelGap = 1.0;
@@ -263,19 +264,34 @@ class _FlightPage extends StatelessWidget {
     final signalAge = position == null
         ? null
         : signalAgeOf(now.difference(position.timestamp));
+    final arrival = arrivalDisplayOf(
+      context,
+      flight: entry.flight,
+      state: entry.state,
+      now: now,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _TitleRow(entry: entry, colors: colors, isOpen: isOpen),
         SizedBox(height: gap),
-        Text(
-          localizations.mapSheetArrivalPlaceholder,
-          style: AppTextStyles.timeLarge.copyWith(
-            color: colors.time,
-            height: FlightSheet._timeHeight,
+        if (arrival == null)
+          Text(
+            localizations.mapSheetArrivalPlaceholder,
+            style: AppTextStyles.timeLarge.copyWith(
+              color: colors.time,
+              height: FlightSheet._timeHeight,
+            ),
+          )
+        else ...[
+          _ArrivalRow(arrival: arrival, colors: colors),
+          SizedBox(height: gap),
+          Text(
+            arrival.localTime,
+            style: AppTextStyles.secondary.copyWith(color: colors.arrivalLabel),
           ),
-        ),
+        ],
         if (isOpen) ...[
           SizedBox(height: gap),
           StateTimeline(
@@ -297,6 +313,48 @@ class _FlightPage extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ArrivalRow extends StatelessWidget {
+  const _ArrivalRow({required this.arrival, required this.colors});
+
+  final ArrivalDisplay arrival;
+  final _SheetColors colors;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.baseline,
+    textBaseline: TextBaseline.alphabetic,
+    spacing: FlightSheet._arrivalGap,
+    children: [
+      Text(
+        arrival.time,
+        style: AppTextStyles.timeLarge.copyWith(
+          color: colors.time,
+          height: FlightSheet._timeHeight,
+        ),
+      ),
+      Flexible(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              arrival.label,
+              style: AppTextStyles.secondary.copyWith(
+                color: colors.arrivalLabel,
+              ),
+            ),
+            Text(
+              arrival.detail,
+              style: AppTextStyles.bodyEmphasis.copyWith(
+                color: colors.arrivalValue,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
 
 class _Grabber extends StatelessWidget {
@@ -512,4 +570,8 @@ enum _SheetColors {
   final Color dataValue;
 
   Color get footer => dataLabel;
+
+  Color get arrivalLabel => route;
+
+  Color get arrivalValue => dataValue;
 }

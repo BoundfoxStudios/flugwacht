@@ -13,12 +13,13 @@ import 'mini_map.dart';
 import 'state_timeline.dart';
 
 /// The cell of an airborne flight: mini map with its state badge, the title
-/// line and the compact state timeline. The arrival block is M9.
+/// line, the arrival and the compact state timeline.
 class FlightHeroCell extends StatefulWidget {
   const FlightHeroCell({
     required this.flight,
     required this.state,
     required this.trail,
+    required this.now,
     super.key,
     this.onTap,
     this.tileProvider,
@@ -28,10 +29,15 @@ class FlightHeroCell extends StatefulWidget {
   static const _badgeInset = 10.0;
   static const _blockGap = 6.0;
   static const _borderWidth = 1.0;
+  static const _arrivalGap = 10.0;
+  static const _timeHeight = 0.95;
 
   final Flight flight;
   final FlightState state;
   final List<TrailPoint> trail;
+
+  /// Ages the remaining flight time; the list hands its minute clock down.
+  final DateTime now;
 
   /// Opens the flight on the map; without it the cell is not interactive.
   final VoidCallback? onTap;
@@ -78,6 +84,12 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
     };
     final position = flight.tracking.latestPosition;
     final route = flight.route;
+    final arrival = arrivalDisplayOf(
+      context,
+      flight: flight,
+      state: state,
+      now: widget.now,
+    );
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -155,6 +167,10 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
                         ],
                       ],
                     ),
+                    if (arrival != null) ...[
+                      const SizedBox(height: FlightHeroCell._blockGap),
+                      _ArrivalRow(arrival: arrival, colors: colors),
+                    ],
                     const SizedBox(height: FlightHeroCell._blockGap),
                     StateTimeline(
                       state: state,
@@ -171,12 +187,46 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
   }
 }
 
+class _ArrivalRow extends StatelessWidget {
+  const _ArrivalRow({required this.arrival, required this.colors});
+
+  final ArrivalDisplay arrival;
+  final _HeroColors colors;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.baseline,
+    textBaseline: TextBaseline.alphabetic,
+    spacing: FlightHeroCell._arrivalGap,
+    children: [
+      Text(
+        arrival.time,
+        style: AppTextStyles.timeMedium.copyWith(
+          color: colors.time,
+          height: FlightHeroCell._timeHeight,
+        ),
+      ),
+      Expanded(
+        child: Text(
+          AppLocalizations.of(
+            context,
+          ).flightArrivalSummary(arrival.label, arrival.detail),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.accessory.copyWith(color: colors.arrivalDetail),
+        ),
+      ),
+    ],
+  );
+}
+
 enum _HeroColors {
   light(
     surface: AppColors.white,
     border: AppColors.neutral200,
     title: AppColors.neutral800,
     route: AppColors.neutral500,
+    time: AppColors.neutral900,
     shadow: [
       BoxShadow(
         color: Color(0x12000000),
@@ -191,6 +241,7 @@ enum _HeroColors {
     border: AppColors.neutral700,
     title: AppColors.neutral50,
     route: AppColors.neutral400,
+    time: AppColors.white,
     shadow: null,
   );
 
@@ -199,6 +250,7 @@ enum _HeroColors {
     required this.border,
     required this.title,
     required this.route,
+    required this.time,
     required this.shadow,
   });
 
@@ -206,5 +258,8 @@ enum _HeroColors {
   final Color border;
   final Color title;
   final Color route;
+  final Color time;
   final List<BoxShadow>? shadow;
+
+  Color get arrivalDetail => route;
 }

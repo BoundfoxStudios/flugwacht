@@ -1,5 +1,4 @@
 import 'package:flugwacht/main.dart';
-import 'package:flugwacht/ui/app_router.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
@@ -9,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/test_dependencies.dart';
+
 Future<GoRouter> pumpApp(WidgetTester tester) async {
-  final router = createAppRouter();
+  final router = createTestAppRouter();
   await tester.pumpWidget(FlugwachtApp(router: router));
   await tester.pumpAndSettle();
   return router;

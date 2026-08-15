@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/airline_directory.dart';
+import '../data/flight_repository.dart';
+import '../data/route_lookup.dart';
 import 'app_shell.dart';
 import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
 import 'screens/new_flight_screen.dart';
 
-GoRouter createAppRouter() {
+GoRouter createAppRouter({
+  required FlightRepository flightRepository,
+  required AirlineDirectory airlineDirectory,
+  required RouteLookup routeLookup,
+}) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
   return GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -49,7 +56,11 @@ GoRouter createAppRouter() {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           fullscreenDialog: true,
-          child: const NewFlightScreen(),
+          child: NewFlightScreen(
+            flightRepository: flightRepository,
+            airlineDirectory: airlineDirectory,
+            routeLookup: routeLookup,
+          ),
         ),
       ),
     ],

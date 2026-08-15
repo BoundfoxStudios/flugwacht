@@ -2,14 +2,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 
+import 'data/airline_directory.dart';
+import 'data/database.dart';
+import 'data/flight_repository.dart';
+import 'data/route_lookup.dart';
 import 'l10n/app_localizations.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   LicenseRegistry.addLicense(_fontLicenses);
-  runApp(FlugwachtApp(router: createAppRouter()));
+  runApp(
+    FlugwachtApp(
+      router: createAppRouter(
+        flightRepository: FlightRepository(AppDatabase()),
+        airlineDirectory: await AirlineDirectory.loadFromAssets(),
+        routeLookup: RouteLookup(client: http.Client()),
+      ),
+    ),
+  );
 }
 
 Stream<LicenseEntry> _fontLicenses() async* {

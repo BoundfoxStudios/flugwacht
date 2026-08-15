@@ -5,7 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../app_icons.dart';
+import '../../data/airline_directory.dart';
+import '../../data/flight_repository.dart';
+import '../../data/route_lookup.dart';
+import '../../domain/calendar_date.dart';
 import '../../domain/flight.dart';
+import '../../domain/flight_number.dart';
+import '../../domain/lookup_input.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
@@ -13,9 +19,21 @@ import '../widgets/app_primary_button.dart';
 import '../widgets/app_segmented_control.dart';
 import '../widgets/departure_date_picker.dart';
 import 'new_flight_form.dart';
+import 'new_flight_preview.dart';
+import 'new_flight_preview_card.dart';
 
 class NewFlightScreen extends StatefulWidget {
-  const NewFlightScreen({super.key, this.today});
+  const NewFlightScreen({
+    required this.flightRepository,
+    required this.airlineDirectory,
+    required this.routeLookup,
+    super.key,
+    this.today,
+  });
+
+  final FlightRepository flightRepository;
+  final AirlineDirectory airlineDirectory;
+  final RouteLookup routeLookup;
 
   /// The day the selectable date range is built around; defaults to the
   /// current day.
@@ -27,6 +45,11 @@ class NewFlightScreen extends StatefulWidget {
 
 class _NewFlightScreenState extends State<NewFlightScreen> {
   late final _form = NewFlightForm(today: widget.today ?? DateTime.now());
+  late final _preview = NewFlightPreview(
+    form: _form,
+    airlineDirectory: widget.airlineDirectory,
+    routeLookup: widget.routeLookup,
+  );
   final _inputControllers = {
     for (final kind in FlightLookupKind.values) kind: TextEditingController(),
   };
@@ -38,6 +61,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
       controller.dispose();
     }
     _noteController.dispose();
+    _preview.dispose();
     _form.dispose();
     super.dispose();
   }
@@ -102,12 +126,14 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.screenPaddingLarge * 2),
+                  const SizedBox(height: AppSpacing.cardPaddingLarge),
+                  SignalBuilder(builder: (context) => _previewCard()),
+                  const SizedBox(height: AppSpacing.screenPaddingLarge),
                   Center(
                     child: SignalBuilder(
                       builder: (context) => AppPrimaryButton(
                         label: localizations.newFlightSubmit,
-                        onPressed: _form.isValid.value ? () {} : null,
+                        onPressed: _form.isValid.value ? _saveFlight : null,
                       ),
                     ),
                   ),
@@ -175,6 +201,66 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
         ),
       ),
     );
+  }
+
+  Widget _previewCard() {
+    final state = _preview.state.value;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 175),
+      switchInCurve: Curves.easeInOut,
+      child: switch (state) {
+        FlightPreviewHidden() => const SizedBox.shrink(),
+        _ => NewFlightPreviewCard(
+          state: state,
+          airlineName: _airlineNameOf(state),
+        ),
+      },
+    );
+  }
+
+  String? _airlineNameOf(FlightPreviewState state) {
+    if (state is! FlightPreviewFound) {
+      return null;
+    }
+    final callsign = FlightNumber.tryParse(state.callsign);
+    return callsign == null
+        ? null
+        : widget.airlineDirectory.airlineName(callsign.airlineCode);
+  }
+
+  Future<void> _saveFlight() async {
+    final kind = _form.lookupKind.value;
+    final input = _form.inputFor(kind).value;
+    final flightNumber = FlightNumber.tryParse(input);
+    final previewState = _preview.state.value;
+    final candidates = kind == FlightLookupKind.flightNumber
+        ? widget.airlineDirectory.callsignCandidates(flightNumber!)
+        : const <String>[];
+    final departureDate = _form.departureDate.value;
+    final note = _form.note.value.trim();
+
+    await widget.flightRepository.addFlight(
+      lookupKind: kind,
+      lookupValue: switch (kind) {
+        FlightLookupKind.flightNumber => flightNumber!.normalized,
+        FlightLookupKind.registration => normalizedRegistration(input)!,
+        FlightLookupKind.hexAddress => normalizedHexAddress(input)!,
+      },
+      departureDate: CalendarDate(
+        departureDate.year,
+        departureDate.month,
+        departureDate.day,
+      ),
+      note: note.isEmpty ? null : note,
+      expectedCallsign: switch (previewState) {
+        FlightPreviewFound(:final callsign) => callsign,
+        _ => candidates.isEmpty ? null : candidates.first,
+      },
+      route: previewState is FlightPreviewFound ? previewState.route : null,
+    );
+    if (mounted) {
+      context.pop();
+    }
   }
 
   Future<void> _pickDepartureDate() async {

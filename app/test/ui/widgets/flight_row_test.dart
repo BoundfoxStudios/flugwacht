@@ -229,7 +229,7 @@ void main() {
       locale: const Locale('de'),
     );
     expect(find.text('STR → PMI · geplant'), findsOneWidget);
-    expect(find.text('Sa., 15. Aug.'), findsOneWidget);
+    expect(find.text('Sa, 15. Aug'), findsOneWidget);
 
     await pumpRow(tester, state: FlightState.ended, locale: const Locale('de'));
     expect(find.text('gelandet ✓'), findsOneWidget);

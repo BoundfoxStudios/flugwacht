@@ -24,7 +24,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listTitle => 'Flüge';
 
   @override
-  String get listHeaderDateFormat => 'EEE, d. MMMM';
+  String get listHeaderDateFormat => 'ccc, d. MMMM';
 
   @override
   String get newFlightTitle => 'Neuer Flug';
@@ -64,7 +64,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Tag des Abflugs · öffnet die Systemauswahl · Nachtflüge zählen bis in den Folgetag';
 
   @override
-  String get newFlightDepartureDateFormat => 'EEE, d. MMMM y';
+  String get newFlightDepartureDateFormat => 'ccc, d. MMMM y';
 
   @override
   String get newFlightNoteLabel => 'Notiz (optional)';
@@ -108,7 +108,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listPastSectionTitle => 'Vorbei';
 
   @override
-  String get listPlannedDateFormat => 'EEE, d. MMM';
+  String get listPlannedDateFormat => 'ccc, d. LLL';
 
   @override
   String flightTitleWithNote(String lookupValue, String note) {

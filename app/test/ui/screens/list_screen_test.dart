@@ -112,7 +112,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Flüge'), findsOneWidget);
-    expect(find.text('Mi., 12. August'), findsOneWidget);
+    expect(find.text('Mi, 12. August'), findsOneWidget);
   });
 
   testWidgets('appends the note to the lookup value only when there is one', (

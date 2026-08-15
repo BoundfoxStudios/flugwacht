@@ -6,6 +6,7 @@ import 'package:flugwacht/data/airline_directory.dart';
 import 'package:flugwacht/data/database.dart';
 import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/data/route_lookup.dart';
+import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/ui/app_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +36,25 @@ GoRouter createTestAppRouter() => createAppRouter(
   airlineDirectory: createTestAirlineDirectory(),
   routeLookup: FakeRouteLookup(),
 );
+
+class FakeFlightRepository implements FlightRepository {
+  final _flights = StreamController<List<Flight>>.broadcast();
+  final expiryChecks = <DateTime>[];
+
+  void emit(List<Flight> flights) => _flights.add(flights);
+
+  void dispose() => unawaited(_flights.close());
+
+  @override
+  Stream<List<Flight>> watchFlights() => _flights.stream;
+
+  @override
+  Future<void> deleteExpiredFlights(DateTime now) async =>
+      expiryChecks.add(now);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
 
 class FakeRouteLookup implements RouteLookup {
   FakeRouteLookup([this.result = const RouteNotFound()]);

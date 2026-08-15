@@ -264,6 +264,60 @@ abstract class AppLocalizations {
     String airline,
   );
 
+  /// No description provided for @listPastSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get listPastSectionTitle;
+
+  /// DateFormat pattern for the departure date on a planned row, localized per language.
+  ///
+  /// In en, this message translates to:
+  /// **'EEE, MMM d'**
+  String get listPlannedDateFormat;
+
+  /// No description provided for @flightTitleWithNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{lookupValue} · {note}'**
+  String flightTitleWithNote(String lookupValue, String note);
+
+  /// No description provided for @flightRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'{origin} → {destination}'**
+  String flightRoute(String origin, String destination);
+
+  /// No description provided for @flightRowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{route} · {state}'**
+  String flightRowSubtitle(String route, String state);
+
+  /// No description provided for @flightRowWaitingForSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'waiting for signal'**
+  String get flightRowWaitingForSignal;
+
+  /// No description provided for @flightRowToday.
+  ///
+  /// In en, this message translates to:
+  /// **'today'**
+  String get flightRowToday;
+
+  /// No description provided for @flightRowLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'landed ✓'**
+  String get flightRowLanded;
+
+  /// No description provided for @flightRowMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'missed'**
+  String get flightRowMissed;
+
   /// No description provided for @flightStatePlanned.
   ///
   /// In en, this message translates to:

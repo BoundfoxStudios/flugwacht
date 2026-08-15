@@ -248,7 +248,7 @@ void main() {
 
     expect(find.text('Abbrechen'), findsOneWidget);
     expect(find.text('Wie auf dem Ticket, z. B. LH 400'), findsOneWidget);
-    expect(find.text('Mi., 12. August 2026'), findsOneWidget);
+    expect(find.text('Mi, 12. August 2026'), findsOneWidget);
     expect(find.text('Flug eintragen'), findsOneWidget);
   });
 

@@ -4,5 +4,20 @@
   "tabMap": "Karte",
   "tabList": "Liste",
   "tabMore": "Mehr",
-  "newFlightTitle": "Neuer Flug"
+  "newFlightTitle": "Neuer Flug",
+  "newFlightCancel": "Abbrechen",
+  "newFlightKindFlightNumber": "Flugnummer",
+  "newFlightKindRegistration": "Kennzeichen",
+  "newFlightKindHexAddress": "Hex",
+  "newFlightFlightNumberHint": "Wie auf dem Ticket, z. B. LH 400",
+  "newFlightRegistrationHint": "Kennzeichen des Flugzeugs, z. B. D-AIMA",
+  "newFlightHexAddressHint": "Sechsstellige ICAO-Adresse, z. B. 3C6444",
+  "newFlightLowCostCarrierHint": "Ryanair, easyJet und Wizz Air fliegen oft unter einem Rufzeichen, das nicht zur Flugnummer passt. Findet Flugwacht deinen Flug nicht, trag ihn über Kennzeichen oder Hex ein.",
+  "newFlightDepartureDateLabel": "Startdatum",
+  "newFlightDepartureDateHint": "Tag des Abflugs · öffnet die Systemauswahl · Nachtflüge zählen bis in den Folgetag",
+  "newFlightDepartureDateFormat": "EEE, d. MMMM y",
+  "newFlightNoteLabel": "Notiz (optional)",
+  "newFlightNoteHint": "Woran du den Flug erkennst, z. B. Anna & Ben",
+  "newFlightSubmit": "Flug eintragen",
+  "newFlightDatePickerConfirm": "Fertig"
 }

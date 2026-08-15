@@ -127,6 +127,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New flight'**
   String get newFlightTitle;
+
+  /// No description provided for @newFlightCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get newFlightCancel;
+
+  /// No description provided for @newFlightKindFlightNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight number'**
+  String get newFlightKindFlightNumber;
+
+  /// No description provided for @newFlightKindRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration'**
+  String get newFlightKindRegistration;
+
+  /// No description provided for @newFlightKindHexAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex'**
+  String get newFlightKindHexAddress;
+
+  /// No description provided for @newFlightFlightNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'As printed on your ticket, e.g. LH 400'**
+  String get newFlightFlightNumberHint;
+
+  /// No description provided for @newFlightRegistrationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The registration of the aircraft, e.g. D-AIMA'**
+  String get newFlightRegistrationHint;
+
+  /// No description provided for @newFlightHexAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The six digit ICAO address, e.g. 3C6444'**
+  String get newFlightHexAddressHint;
+
+  /// No description provided for @newFlightLowCostCarrierHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ryanair, easyJet and Wizz Air often fly under a callsign that does not match the flight number. If your flight stays unfound, add it by registration or hex address.'**
+  String get newFlightLowCostCarrierHint;
+
+  /// No description provided for @newFlightDepartureDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure date'**
+  String get newFlightDepartureDateLabel;
+
+  /// No description provided for @newFlightDepartureDateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Day of departure · opens the system picker · night flights count into the next day'**
+  String get newFlightDepartureDateHint;
+
+  /// DateFormat pattern for the departure date field, localized per language.
+  ///
+  /// In en, this message translates to:
+  /// **'EEE, MMMM d, y'**
+  String get newFlightDepartureDateFormat;
+
+  /// No description provided for @newFlightNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get newFlightNoteLabel;
+
+  /// No description provided for @newFlightNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Whatever helps you recognise the flight, e.g. Anna & Ben'**
+  String get newFlightNoteHint;
+
+  /// No description provided for @newFlightSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add flight'**
+  String get newFlightSubmit;
+
+  /// No description provided for @newFlightDatePickerConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get newFlightDatePickerConfirm;
 }
 
 class _AppLocalizationsDelegate

@@ -22,4 +22,54 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get newFlightTitle => 'Neuer Flug';
+
+  @override
+  String get newFlightCancel => 'Abbrechen';
+
+  @override
+  String get newFlightKindFlightNumber => 'Flugnummer';
+
+  @override
+  String get newFlightKindRegistration => 'Kennzeichen';
+
+  @override
+  String get newFlightKindHexAddress => 'Hex';
+
+  @override
+  String get newFlightFlightNumberHint => 'Wie auf dem Ticket, z. B. LH 400';
+
+  @override
+  String get newFlightRegistrationHint =>
+      'Kennzeichen des Flugzeugs, z. B. D-AIMA';
+
+  @override
+  String get newFlightHexAddressHint =>
+      'Sechsstellige ICAO-Adresse, z. B. 3C6444';
+
+  @override
+  String get newFlightLowCostCarrierHint =>
+      'Ryanair, easyJet und Wizz Air fliegen oft unter einem Rufzeichen, das nicht zur Flugnummer passt. Findet Flugwacht deinen Flug nicht, trag ihn über Kennzeichen oder Hex ein.';
+
+  @override
+  String get newFlightDepartureDateLabel => 'Startdatum';
+
+  @override
+  String get newFlightDepartureDateHint =>
+      'Tag des Abflugs · öffnet die Systemauswahl · Nachtflüge zählen bis in den Folgetag';
+
+  @override
+  String get newFlightDepartureDateFormat => 'EEE, d. MMMM y';
+
+  @override
+  String get newFlightNoteLabel => 'Notiz (optional)';
+
+  @override
+  String get newFlightNoteHint =>
+      'Woran du den Flug erkennst, z. B. Anna & Ben';
+
+  @override
+  String get newFlightSubmit => 'Flug eintragen';
+
+  @override
+  String get newFlightDatePickerConfirm => 'Fertig';
 }

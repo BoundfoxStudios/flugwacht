@@ -74,7 +74,8 @@ class AirlineDirectory {
   String? airlineName(String code) =>
       (_airlinesByIcaoCode[code] ?? _airlinesByIataCode[code]?.first)?.name;
 
-  bool isLowCostCarrier(String code) => _lowCostCarrierIataCodes.contains(code);
+  static bool isLowCostCarrier(String code) =>
+      _lowCostCarrierIataCodes.contains(code);
 }
 
 class _Airline {

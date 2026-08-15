@@ -444,6 +444,60 @@ abstract class AppLocalizations {
   /// **'Source: {source} · © OpenStreetMap'**
   String mapSheetSource(String source);
 
+  /// No description provided for @flightArrivalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Approx. arrival'**
+  String get flightArrivalLabel;
+
+  /// DateFormat pattern for the estimated arrival, localized per language.
+  ///
+  /// In en, this message translates to:
+  /// **'h:mm a'**
+  String get flightArrivalTimeFormat;
+
+  /// Marks an arrival that stopped moving because the signal did.
+  ///
+  /// In en, this message translates to:
+  /// **'~{time}'**
+  String flightArrivalFrozenTime(String time);
+
+  /// No description provided for @flightArrivalRemainingMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min left'**
+  String flightArrivalRemainingMinutes(String minutes);
+
+  /// No description provided for @flightArrivalRemainingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h left'**
+  String flightArrivalRemainingHours(String hours);
+
+  /// No description provided for @flightArrivalRemainingHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min left'**
+  String flightArrivalRemainingHoursMinutes(String hours, String minutes);
+
+  /// Dates the frozen arrival with the signal age, e.g. "As of 42 min ago".
+  ///
+  /// In en, this message translates to:
+  /// **'As of {age}'**
+  String flightArrivalAsOf(String age);
+
+  /// No description provided for @flightArrivalLocalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Local time {city} · your time {time}'**
+  String flightArrivalLocalTime(String city, String time);
+
+  /// Joins the arrival label and its detail into the hero cell's single line.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {detail}'**
+  String flightArrivalSummary(String label, String detail);
+
   /// No description provided for @flightRowWaitingForSignal.
   ///
   /// In en, this message translates to:

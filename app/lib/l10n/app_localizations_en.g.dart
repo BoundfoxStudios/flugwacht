@@ -222,6 +222,47 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get flightArrivalLabel => 'Approx. arrival';
+
+  @override
+  String get flightArrivalTimeFormat => 'h:mm a';
+
+  @override
+  String flightArrivalFrozenTime(String time) {
+    return '~$time';
+  }
+
+  @override
+  String flightArrivalRemainingMinutes(String minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String flightArrivalRemainingHours(String hours) {
+    return '$hours h left';
+  }
+
+  @override
+  String flightArrivalRemainingHoursMinutes(String hours, String minutes) {
+    return '$hours h $minutes min left';
+  }
+
+  @override
+  String flightArrivalAsOf(String age) {
+    return 'As of $age';
+  }
+
+  @override
+  String flightArrivalLocalTime(String city, String time) {
+    return 'Local time $city · your time $time';
+  }
+
+  @override
+  String flightArrivalSummary(String label, String detail) {
+    return '$label · $detail';
+  }
+
+  @override
   String get flightRowWaitingForSignal => 'waiting for signal';
 
   @override

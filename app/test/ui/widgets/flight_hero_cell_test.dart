@@ -18,6 +18,10 @@ import '../../support/test_dependencies.dart';
 const _cellKey = ValueKey('cell');
 const _cellWidth = 360.0;
 
+/// The test font renders every glyph a full em wide, so the arrival line needs
+/// more room here than the design gives it on a phone.
+const _wideCellWidth = 900.0;
+
 const _route = FlightRoute(
   origin: RouteAirport(
     icaoCode: 'EDDF',
@@ -35,26 +39,31 @@ const _route = FlightRoute(
   ),
 );
 
-final _position = FixPosition(
-  latitude: 48.5,
-  longitude: -20,
-  timestamp: DateTime.utc(2026, 8, 12, 12),
-  trackDegrees: 271.4,
-);
+final _positionTime = DateTime.utc(2026, 8, 12, 12);
+final _now = _positionTime.add(const Duration(seconds: 3));
 
-Flight flight({String? note = 'Anna & Ben', FlightRoute? route = _route}) =>
-    Flight(
-      id: 1,
-      lookupKind: FlightLookupKind.flightNumber,
-      lookupValue: 'LH400',
-      departureDate: const CalendarDate(2026, 8, 12),
-      note: note,
-      route: route,
-      tracking: FlightTracking(
-        latestPosition: _position,
-        hasBeenAirborne: true,
-      ),
-    );
+Flight flight({
+  String? note = 'Anna & Ben',
+  FlightRoute? route = _route,
+  double? speedKnots,
+}) => Flight(
+  id: 1,
+  lookupKind: FlightLookupKind.flightNumber,
+  lookupValue: 'LH400',
+  departureDate: const CalendarDate(2026, 8, 12),
+  note: note,
+  route: route,
+  tracking: FlightTracking(
+    latestPosition: FixPosition(
+      latitude: 48.5,
+      longitude: -20,
+      timestamp: _positionTime,
+      trackDegrees: 271.4,
+      groundSpeedKnots: speedKnots,
+    ),
+    hasBeenAirborne: true,
+  ),
+);
 
 Future<void> pumpHeroCell(
   WidgetTester tester, {
@@ -64,6 +73,7 @@ Future<void> pumpHeroCell(
   VoidCallback? onTap,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
+  double width = _cellWidth,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -79,11 +89,12 @@ Future<void> pumpHeroCell(
           child: RepaintBoundary(
             key: _cellKey,
             child: SizedBox(
-              width: _cellWidth,
+              width: width,
               child: FlightHeroCell(
                 flight: cell ?? flight(),
                 state: state,
                 trail: trail,
+                now: _now,
                 onTap: onTap,
                 tileProvider: StubTileProvider(),
               ),
@@ -186,7 +197,7 @@ void main() {
     expect(find.bySemanticsLabel('no signal'), findsOneWidget);
   });
 
-  testWidgets('renders no arrival estimate yet', (tester) async {
+  testWidgets('renders no arrival block without an estimate', (tester) async {
     await pumpHeroCell(tester);
 
     expect(
@@ -200,6 +211,30 @@ void main() {
         '© OpenStreetMap',
       ]),
     );
+  });
+
+  testWidgets('shows the arrival of a live flight in one line', (tester) async {
+    await pumpHeroCell(
+      tester,
+      cell: flight(speedKnots: 473),
+      width: _wideCellWidth,
+    );
+
+    expect(find.text('12:51 PM'), findsOneWidget);
+    expect(find.text('Approx. arrival · 4 h 51 min left'), findsOneWidget);
+  });
+
+  testWidgets('freezes the arrival of a flight without signal', (tester) async {
+    await pumpHeroCell(
+      tester,
+      state: FlightState.noSignal,
+      cell: flight(speedKnots: 473),
+      locale: const Locale('de'),
+      width: _wideCellWidth,
+    );
+
+    expect(find.text('~12:51'), findsOneWidget);
+    expect(find.text('Ankunft ca. · Stand: vor 3 s'), findsOneWidget);
   });
 
   testWidgets('fills the live badge and leaves it without a border', (

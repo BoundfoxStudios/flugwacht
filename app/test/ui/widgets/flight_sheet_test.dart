@@ -12,15 +12,30 @@ import 'package:flugwacht/ui/widgets/pager_dots.dart';
 import 'package:flugwacht/ui/widgets/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
+
+const _origin = RouteAirport(
+  icaoCode: 'EDDF',
+  iataCode: 'FRA',
+  name: 'Frankfurt am Main',
+  latitude: 50.026402,
+  longitude: 8.543130,
+);
 
 const _route = FlightRoute(
-  origin: RouteAirport(
-    icaoCode: 'EDDF',
-    iataCode: 'FRA',
-    name: 'Frankfurt am Main',
-    latitude: 50.026402,
-    longitude: 8.543130,
+  origin: _origin,
+  destination: RouteAirport(
+    icaoCode: 'KJFK',
+    iataCode: 'JFK',
+    name: 'New York JFK',
+    location: 'New York',
+    latitude: 40.639447,
+    longitude: -73.779317,
   ),
+);
+
+const _routeWithoutCity = FlightRoute(
+  origin: _origin,
   destination: RouteAirport(
     icaoCode: 'KJFK',
     iataCode: 'JFK',
@@ -32,6 +47,16 @@ const _route = FlightRoute(
 
 final _positionTime = DateTime.utc(2026, 8, 12, 12);
 final _now = _positionTime.add(const Duration(seconds: 3));
+
+/// The fixture position is 4257.5 km short of JFK, which its 473 kn cover in
+/// 4 h 51 min 36 s.
+const _timeToDestination = Duration(seconds: 17496);
+
+String _deviceTime(
+  DateTime arrival, {
+  String pattern = 'h:mm a',
+  String locale = 'en',
+}) => DateFormat(pattern, locale).format(arrival.toLocal());
 
 FlightListEntry _entry({
   int id = 1,
@@ -107,16 +132,98 @@ Future<void> openSheet(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('peeks with the flight, its state and the arrival placeholder', (
+  testWidgets('peeks with the flight, its state and its arrival', (
     tester,
   ) async {
     await pumpFlightSheet(tester);
 
     expect(find.text('LH401 · Anna & Ben'), findsOneWidget);
     expect(find.byType(FlightStateBadge), findsOneWidget);
-    expect(find.text('–:–'), findsOneWidget);
+    expect(find.text('12:51 PM'), findsOneWidget);
     expect(find.byType(StateTimeline), findsNothing);
     expect(find.text('Altitude'), findsNothing);
+  });
+
+  testWidgets('arrives in destination local time, next to the viewer own', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester);
+
+    final arrival = _positionTime.add(_timeToDestination);
+    expect(find.text('12:51 PM'), findsOneWidget);
+    expect(find.text('Approx. arrival'), findsOneWidget);
+    expect(find.text('4 h 51 min left'), findsOneWidget);
+    expect(
+      find.text('Local time New York · your time ${_deviceTime(arrival)}'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('names the destination airport when it has no city', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, entry: _entry(route: _routeWithoutCity));
+
+    expect(find.textContaining('Local time New York JFK · '), findsOneWidget);
+  });
+
+  testWidgets('counts the remaining time down', (tester) async {
+    var now = _now;
+    await pumpFlightSheet(tester, clock: () => now);
+    expect(find.text('4 h 51 min left'), findsOneWidget);
+
+    now = now.add(const Duration(minutes: 1));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('4 h 50 min left'), findsOneWidget);
+  });
+
+  testWidgets('freezes the arrival of a flight without signal', (tester) async {
+    final positionTime = _now.subtract(const Duration(minutes: 42));
+    await pumpFlightSheet(
+      tester,
+      entry: _entry(state: FlightState.noSignal, positionTime: positionTime),
+    );
+
+    expect(find.text('~12:09 PM'), findsOneWidget);
+    expect(find.text('As of 42 min ago'), findsOneWidget);
+    expect(find.textContaining('left'), findsNothing);
+    expect(find.textContaining('Local time New York · '), findsOneWidget);
+  });
+
+  testWidgets('keeps the placeholder while the route is unknown', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, entry: _entry(route: null));
+
+    expect(find.text('–:–'), findsOneWidget);
+    expect(find.text('Approx. arrival'), findsNothing);
+    expect(find.textContaining('Local time'), findsNothing);
+  });
+
+  testWidgets('keeps the placeholder while the flight still taxis', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, entry: _entry(speedKnots: 30));
+
+    expect(find.text('–:–'), findsOneWidget);
+    expect(find.text('Approx. arrival'), findsNothing);
+  });
+
+  testWidgets('arrives in german copy and clock format', (tester) async {
+    await pumpFlightSheet(tester, locale: const Locale('de'));
+
+    final arrival = _positionTime.add(_timeToDestination);
+    expect(find.text('12:51'), findsOneWidget);
+    expect(find.text('Ankunft ca.'), findsOneWidget);
+    expect(find.text('noch 4 Std 51 Min'), findsOneWidget);
+    expect(
+      find.text(
+        'Ortszeit New York · bei dir '
+        '${_deviceTime(arrival, pattern: 'HH:mm', locale: 'de')}',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('opens on a drag and closes again', (tester) async {

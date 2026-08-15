@@ -48,6 +48,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
 | Notifications | `flutter_local_notifications`, local only, no backend |
 | Date and time | native system pickers (`showDatePicker` / `showTimePicker`, `CupertinoDatePicker`); the departure time is optional |
+| Time zones | `lat_lng_to_timezone` maps the destination's coordinates to an IANA zone, `timezone` converts the arrival instant into it — both offline; the full database variant is required because the reduced ones drop linked zones like Europe/Amsterdam |
 
 Dependency versions are always looked up at add time (pub.dev), never guessed.
 
@@ -136,8 +137,10 @@ is tested — focused on the domain, where the known pitfalls live:
   previous day's rotation of a daily callsign is not adopted at midnight;
   without a stored time the search starts with the window
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
-- Arrival estimate: remaining distance / ground speed, no estimate without a
-  route
+- Arrival estimate: remaining great-circle distance / ground speed, anchored
+  on the fix timestamp so a position that stops coming in freezes its
+  estimate; no estimate without a route, without a position, on the ground,
+  or below a ground speed of 50 kn
 - Source adapter: request URLs per source and lookup kind (registration path
   differs on airplanes.live), empty `ac` array as successful empty result,
   network errors / non-2xx / malformed payloads mapped onto the sealed result —

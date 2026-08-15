@@ -131,6 +131,7 @@ class _FlightSections extends StatelessWidget {
               _HeroCell(
                 key: ValueKey(entry.flight.id),
                 entry: entry,
+                now: today,
                 repository: repository,
                 tileProvider: tileProvider,
                 onTap: () => onFlightSelected(entry.flight.id),
@@ -198,6 +199,7 @@ class _PaddedRow extends StatelessWidget {
 class _HeroCell extends StatefulWidget {
   const _HeroCell({
     required this.entry,
+    required this.now,
     required this.repository,
     required this.tileProvider,
     required this.onTap,
@@ -205,6 +207,7 @@ class _HeroCell extends StatefulWidget {
   });
 
   final FlightListEntry entry;
+  final DateTime now;
   final FlightRepository repository;
   final TileProvider? tileProvider;
   final VoidCallback onTap;
@@ -240,6 +243,7 @@ class _HeroCellState extends State<_HeroCell> {
         flight: widget.entry.flight,
         state: widget.entry.state,
         trail: _trail.value,
+        now: widget.now,
         onTap: widget.onTap,
         tileProvider: widget.tileProvider,
       ),

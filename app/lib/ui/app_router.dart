@@ -36,7 +36,8 @@ GoRouter createAppRouter({
             routes: [
               GoRoute(
                 path: '/list',
-                builder: (context, state) => const ListScreen(),
+                builder: (context, state) =>
+                    ListScreen(flightRepository: flightRepository),
               ),
             ],
           ),

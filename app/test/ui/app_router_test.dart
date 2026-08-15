@@ -3,8 +3,8 @@ import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
+import 'package:flugwacht/ui/widgets/app_fab.dart';
 import 'package:flugwacht/ui/widgets/app_tab_bar.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -48,7 +48,7 @@ void main() {
 
     await tester.tap(find.text('List'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.tap(find.byType(AppFab));
     await tester.pumpAndSettle();
 
     expect(find.byType(NewFlightScreen), findsOneWidget);

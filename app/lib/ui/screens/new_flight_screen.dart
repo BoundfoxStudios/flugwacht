@@ -54,6 +54,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     for (final kind in FlightLookupKind.values) kind: TextEditingController(),
   };
   final _noteController = TextEditingController();
+  final _isSaving = signal(false);
 
   @override
   void dispose() {
@@ -63,6 +64,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     _noteController.dispose();
     _preview.dispose();
     _form.dispose();
+    _isSaving.dispose();
     super.dispose();
   }
 
@@ -133,7 +135,9 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                     child: SignalBuilder(
                       builder: (context) => AppPrimaryButton(
                         label: localizations.newFlightSubmit,
-                        onPressed: _form.isValid.value ? _saveFlight : null,
+                        onPressed: _form.isValid.value && !_isSaving.value
+                            ? _saveFlight
+                            : null,
                       ),
                     ),
                   ),
@@ -229,6 +233,12 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
   }
 
   Future<void> _saveFlight() async {
+    // The second tap of a double tap arrives before the disabled button is
+    // rebuilt, so the guard has to sit in the handler.
+    if (_isSaving.value) {
+      return;
+    }
+    _isSaving.value = true;
     final kind = _form.lookupKind.value;
     final input = _form.inputFor(kind).value;
     final flightNumber = FlightNumber.tryParse(input);
@@ -239,25 +249,29 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     final departureDate = _form.departureDate.value;
     final note = _form.note.value.trim();
 
-    await widget.flightRepository.addFlight(
-      lookupKind: kind,
-      lookupValue: switch (kind) {
-        FlightLookupKind.flightNumber => flightNumber!.normalized,
-        FlightLookupKind.registration => normalizedRegistration(input)!,
-        FlightLookupKind.hexAddress => normalizedHexAddress(input)!,
-      },
-      departureDate: CalendarDate(
-        departureDate.year,
-        departureDate.month,
-        departureDate.day,
-      ),
-      note: note.isEmpty ? null : note,
-      expectedCallsign: switch (previewState) {
-        FlightPreviewFound(:final callsign) => callsign,
-        _ => candidates.isEmpty ? null : candidates.first,
-      },
-      route: previewState is FlightPreviewFound ? previewState.route : null,
-    );
+    try {
+      await widget.flightRepository.addFlight(
+        lookupKind: kind,
+        lookupValue: switch (kind) {
+          FlightLookupKind.flightNumber => flightNumber!.normalized,
+          FlightLookupKind.registration => normalizedRegistration(input)!,
+          FlightLookupKind.hexAddress => normalizedHexAddress(input)!,
+        },
+        departureDate: CalendarDate(
+          departureDate.year,
+          departureDate.month,
+          departureDate.day,
+        ),
+        note: note.isEmpty ? null : note,
+        expectedCallsign: switch (previewState) {
+          FlightPreviewFound(:final callsign) => callsign,
+          _ => candidates.isEmpty ? null : candidates.first,
+        },
+        route: previewState is FlightPreviewFound ? previewState.route : null,
+      );
+    } finally {
+      _isSaving.value = false;
+    }
     if (mounted) {
       context.pop();
     }

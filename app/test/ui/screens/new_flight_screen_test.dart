@@ -361,6 +361,22 @@ void main() {
     expect(flight.lookupValue, '3c6444');
   });
 
+  testWidgets('ignores a second tap while the flight is being saved', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(tester);
+
+    await enterLookupValue(tester, 'LH 400');
+    await tester.tap(find.byType(AppPrimaryButton));
+    await tester.tap(find.byType(AppPrimaryButton), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    final flights = await tester.runAsync(
+      () => repository.watchFlights().first,
+    );
+    expect(flights, hasLength(1));
+  });
+
   testWidgets('closes the modal after saving', (tester) async {
     await pumpNewFlightScreen(tester);
 

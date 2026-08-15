@@ -83,6 +83,138 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _originIcaoCodeMeta = const VerificationMeta(
+    'originIcaoCode',
+  );
+  @override
+  late final GeneratedColumn<String> originIcaoCode = GeneratedColumn<String>(
+    'origin_icao_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _originIataCodeMeta = const VerificationMeta(
+    'originIataCode',
+  );
+  @override
+  late final GeneratedColumn<String> originIataCode = GeneratedColumn<String>(
+    'origin_iata_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _originNameMeta = const VerificationMeta(
+    'originName',
+  );
+  @override
+  late final GeneratedColumn<String> originName = GeneratedColumn<String>(
+    'origin_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _originLocationMeta = const VerificationMeta(
+    'originLocation',
+  );
+  @override
+  late final GeneratedColumn<String> originLocation = GeneratedColumn<String>(
+    'origin_location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _originLatitudeMeta = const VerificationMeta(
+    'originLatitude',
+  );
+  @override
+  late final GeneratedColumn<double> originLatitude = GeneratedColumn<double>(
+    'origin_latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _originLongitudeMeta = const VerificationMeta(
+    'originLongitude',
+  );
+  @override
+  late final GeneratedColumn<double> originLongitude = GeneratedColumn<double>(
+    'origin_longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _destinationIcaoCodeMeta =
+      const VerificationMeta('destinationIcaoCode');
+  @override
+  late final GeneratedColumn<String> destinationIcaoCode =
+      GeneratedColumn<String>(
+        'destination_icao_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _destinationIataCodeMeta =
+      const VerificationMeta('destinationIataCode');
+  @override
+  late final GeneratedColumn<String> destinationIataCode =
+      GeneratedColumn<String>(
+        'destination_iata_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _destinationNameMeta = const VerificationMeta(
+    'destinationName',
+  );
+  @override
+  late final GeneratedColumn<String> destinationName = GeneratedColumn<String>(
+    'destination_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _destinationLocationMeta =
+      const VerificationMeta('destinationLocation');
+  @override
+  late final GeneratedColumn<String> destinationLocation =
+      GeneratedColumn<String>(
+        'destination_location',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _destinationLatitudeMeta =
+      const VerificationMeta('destinationLatitude');
+  @override
+  late final GeneratedColumn<double> destinationLatitude =
+      GeneratedColumn<double>(
+        'destination_latitude',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _destinationLongitudeMeta =
+      const VerificationMeta('destinationLongitude');
+  @override
+  late final GeneratedColumn<double> destinationLongitude =
+      GeneratedColumn<double>(
+        'destination_longitude',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _hasBeenAirborneMeta = const VerificationMeta(
     'hasBeenAirborne',
   );
@@ -256,6 +388,18 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     note,
     hexAddress,
     expectedCallsign,
+    originIcaoCode,
+    originIataCode,
+    originName,
+    originLocation,
+    originLatitude,
+    originLongitude,
+    destinationIcaoCode,
+    destinationIataCode,
+    destinationName,
+    destinationLocation,
+    destinationLatitude,
+    destinationLongitude,
     hasBeenAirborne,
     lastKnownOnGround,
     latestLatitude,
@@ -326,6 +470,111 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         expectedCallsign.isAcceptableOrUnknown(
           data['expected_callsign']!,
           _expectedCallsignMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_icao_code')) {
+      context.handle(
+        _originIcaoCodeMeta,
+        originIcaoCode.isAcceptableOrUnknown(
+          data['origin_icao_code']!,
+          _originIcaoCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_iata_code')) {
+      context.handle(
+        _originIataCodeMeta,
+        originIataCode.isAcceptableOrUnknown(
+          data['origin_iata_code']!,
+          _originIataCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_name')) {
+      context.handle(
+        _originNameMeta,
+        originName.isAcceptableOrUnknown(data['origin_name']!, _originNameMeta),
+      );
+    }
+    if (data.containsKey('origin_location')) {
+      context.handle(
+        _originLocationMeta,
+        originLocation.isAcceptableOrUnknown(
+          data['origin_location']!,
+          _originLocationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_latitude')) {
+      context.handle(
+        _originLatitudeMeta,
+        originLatitude.isAcceptableOrUnknown(
+          data['origin_latitude']!,
+          _originLatitudeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_longitude')) {
+      context.handle(
+        _originLongitudeMeta,
+        originLongitude.isAcceptableOrUnknown(
+          data['origin_longitude']!,
+          _originLongitudeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_icao_code')) {
+      context.handle(
+        _destinationIcaoCodeMeta,
+        destinationIcaoCode.isAcceptableOrUnknown(
+          data['destination_icao_code']!,
+          _destinationIcaoCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_iata_code')) {
+      context.handle(
+        _destinationIataCodeMeta,
+        destinationIataCode.isAcceptableOrUnknown(
+          data['destination_iata_code']!,
+          _destinationIataCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_name')) {
+      context.handle(
+        _destinationNameMeta,
+        destinationName.isAcceptableOrUnknown(
+          data['destination_name']!,
+          _destinationNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_location')) {
+      context.handle(
+        _destinationLocationMeta,
+        destinationLocation.isAcceptableOrUnknown(
+          data['destination_location']!,
+          _destinationLocationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_latitude')) {
+      context.handle(
+        _destinationLatitudeMeta,
+        destinationLatitude.isAcceptableOrUnknown(
+          data['destination_latitude']!,
+          _destinationLatitudeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_longitude')) {
+      context.handle(
+        _destinationLongitudeMeta,
+        destinationLongitude.isAcceptableOrUnknown(
+          data['destination_longitude']!,
+          _destinationLongitudeMeta,
         ),
       );
     }
@@ -491,6 +740,54 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.string,
         data['${effectivePrefix}expected_callsign'],
       ),
+      originIcaoCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_icao_code'],
+      ),
+      originIataCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_iata_code'],
+      ),
+      originName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_name'],
+      ),
+      originLocation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_location'],
+      ),
+      originLatitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}origin_latitude'],
+      ),
+      originLongitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}origin_longitude'],
+      ),
+      destinationIcaoCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_icao_code'],
+      ),
+      destinationIataCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_iata_code'],
+      ),
+      destinationName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_name'],
+      ),
+      destinationLocation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_location'],
+      ),
+      destinationLatitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}destination_latitude'],
+      ),
+      destinationLongitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}destination_longitude'],
+      ),
       hasBeenAirborne: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}has_been_airborne'],
@@ -569,6 +866,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final String? note;
   final String? hexAddress;
   final String? expectedCallsign;
+  final String? originIcaoCode;
+  final String? originIataCode;
+  final String? originName;
+  final String? originLocation;
+  final double? originLatitude;
+  final double? originLongitude;
+  final String? destinationIcaoCode;
+  final String? destinationIataCode;
+  final String? destinationName;
+  final String? destinationLocation;
+  final double? destinationLatitude;
+  final double? destinationLongitude;
   final bool hasBeenAirborne;
   final bool? lastKnownOnGround;
   final double? latestLatitude;
@@ -591,6 +900,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.note,
     this.hexAddress,
     this.expectedCallsign,
+    this.originIcaoCode,
+    this.originIataCode,
+    this.originName,
+    this.originLocation,
+    this.originLatitude,
+    this.originLongitude,
+    this.destinationIcaoCode,
+    this.destinationIataCode,
+    this.destinationName,
+    this.destinationLocation,
+    this.destinationLatitude,
+    this.destinationLongitude,
     required this.hasBeenAirborne,
     this.lastKnownOnGround,
     this.latestLatitude,
@@ -625,6 +946,42 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     }
     if (!nullToAbsent || expectedCallsign != null) {
       map['expected_callsign'] = Variable<String>(expectedCallsign);
+    }
+    if (!nullToAbsent || originIcaoCode != null) {
+      map['origin_icao_code'] = Variable<String>(originIcaoCode);
+    }
+    if (!nullToAbsent || originIataCode != null) {
+      map['origin_iata_code'] = Variable<String>(originIataCode);
+    }
+    if (!nullToAbsent || originName != null) {
+      map['origin_name'] = Variable<String>(originName);
+    }
+    if (!nullToAbsent || originLocation != null) {
+      map['origin_location'] = Variable<String>(originLocation);
+    }
+    if (!nullToAbsent || originLatitude != null) {
+      map['origin_latitude'] = Variable<double>(originLatitude);
+    }
+    if (!nullToAbsent || originLongitude != null) {
+      map['origin_longitude'] = Variable<double>(originLongitude);
+    }
+    if (!nullToAbsent || destinationIcaoCode != null) {
+      map['destination_icao_code'] = Variable<String>(destinationIcaoCode);
+    }
+    if (!nullToAbsent || destinationIataCode != null) {
+      map['destination_iata_code'] = Variable<String>(destinationIataCode);
+    }
+    if (!nullToAbsent || destinationName != null) {
+      map['destination_name'] = Variable<String>(destinationName);
+    }
+    if (!nullToAbsent || destinationLocation != null) {
+      map['destination_location'] = Variable<String>(destinationLocation);
+    }
+    if (!nullToAbsent || destinationLatitude != null) {
+      map['destination_latitude'] = Variable<double>(destinationLatitude);
+    }
+    if (!nullToAbsent || destinationLongitude != null) {
+      map['destination_longitude'] = Variable<double>(destinationLongitude);
     }
     map['has_been_airborne'] = Variable<bool>(hasBeenAirborne);
     if (!nullToAbsent || lastKnownOnGround != null) {
@@ -694,6 +1051,42 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       expectedCallsign: expectedCallsign == null && nullToAbsent
           ? const Value.absent()
           : Value(expectedCallsign),
+      originIcaoCode: originIcaoCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originIcaoCode),
+      originIataCode: originIataCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originIataCode),
+      originName: originName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originName),
+      originLocation: originLocation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originLocation),
+      originLatitude: originLatitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originLatitude),
+      originLongitude: originLongitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originLongitude),
+      destinationIcaoCode: destinationIcaoCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationIcaoCode),
+      destinationIataCode: destinationIataCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationIataCode),
+      destinationName: destinationName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationName),
+      destinationLocation: destinationLocation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationLocation),
+      destinationLatitude: destinationLatitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationLatitude),
+      destinationLongitude: destinationLongitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationLongitude),
       hasBeenAirborne: Value(hasBeenAirborne),
       lastKnownOnGround: lastKnownOnGround == null && nullToAbsent
           ? const Value.absent()
@@ -756,6 +1149,28 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       note: serializer.fromJson<String?>(json['note']),
       hexAddress: serializer.fromJson<String?>(json['hexAddress']),
       expectedCallsign: serializer.fromJson<String?>(json['expectedCallsign']),
+      originIcaoCode: serializer.fromJson<String?>(json['originIcaoCode']),
+      originIataCode: serializer.fromJson<String?>(json['originIataCode']),
+      originName: serializer.fromJson<String?>(json['originName']),
+      originLocation: serializer.fromJson<String?>(json['originLocation']),
+      originLatitude: serializer.fromJson<double?>(json['originLatitude']),
+      originLongitude: serializer.fromJson<double?>(json['originLongitude']),
+      destinationIcaoCode: serializer.fromJson<String?>(
+        json['destinationIcaoCode'],
+      ),
+      destinationIataCode: serializer.fromJson<String?>(
+        json['destinationIataCode'],
+      ),
+      destinationName: serializer.fromJson<String?>(json['destinationName']),
+      destinationLocation: serializer.fromJson<String?>(
+        json['destinationLocation'],
+      ),
+      destinationLatitude: serializer.fromJson<double?>(
+        json['destinationLatitude'],
+      ),
+      destinationLongitude: serializer.fromJson<double?>(
+        json['destinationLongitude'],
+      ),
       hasBeenAirborne: serializer.fromJson<bool>(json['hasBeenAirborne']),
       lastKnownOnGround: serializer.fromJson<bool?>(json['lastKnownOnGround']),
       latestLatitude: serializer.fromJson<double?>(json['latestLatitude']),
@@ -799,6 +1214,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'note': serializer.toJson<String?>(note),
       'hexAddress': serializer.toJson<String?>(hexAddress),
       'expectedCallsign': serializer.toJson<String?>(expectedCallsign),
+      'originIcaoCode': serializer.toJson<String?>(originIcaoCode),
+      'originIataCode': serializer.toJson<String?>(originIataCode),
+      'originName': serializer.toJson<String?>(originName),
+      'originLocation': serializer.toJson<String?>(originLocation),
+      'originLatitude': serializer.toJson<double?>(originLatitude),
+      'originLongitude': serializer.toJson<double?>(originLongitude),
+      'destinationIcaoCode': serializer.toJson<String?>(destinationIcaoCode),
+      'destinationIataCode': serializer.toJson<String?>(destinationIataCode),
+      'destinationName': serializer.toJson<String?>(destinationName),
+      'destinationLocation': serializer.toJson<String?>(destinationLocation),
+      'destinationLatitude': serializer.toJson<double?>(destinationLatitude),
+      'destinationLongitude': serializer.toJson<double?>(destinationLongitude),
       'hasBeenAirborne': serializer.toJson<bool>(hasBeenAirborne),
       'lastKnownOnGround': serializer.toJson<bool?>(lastKnownOnGround),
       'latestLatitude': serializer.toJson<double?>(latestLatitude),
@@ -836,6 +1263,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<String?> note = const Value.absent(),
     Value<String?> hexAddress = const Value.absent(),
     Value<String?> expectedCallsign = const Value.absent(),
+    Value<String?> originIcaoCode = const Value.absent(),
+    Value<String?> originIataCode = const Value.absent(),
+    Value<String?> originName = const Value.absent(),
+    Value<String?> originLocation = const Value.absent(),
+    Value<double?> originLatitude = const Value.absent(),
+    Value<double?> originLongitude = const Value.absent(),
+    Value<String?> destinationIcaoCode = const Value.absent(),
+    Value<String?> destinationIataCode = const Value.absent(),
+    Value<String?> destinationName = const Value.absent(),
+    Value<String?> destinationLocation = const Value.absent(),
+    Value<double?> destinationLatitude = const Value.absent(),
+    Value<double?> destinationLongitude = const Value.absent(),
     bool? hasBeenAirborne,
     Value<bool?> lastKnownOnGround = const Value.absent(),
     Value<double?> latestLatitude = const Value.absent(),
@@ -860,6 +1299,40 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     expectedCallsign: expectedCallsign.present
         ? expectedCallsign.value
         : this.expectedCallsign,
+    originIcaoCode: originIcaoCode.present
+        ? originIcaoCode.value
+        : this.originIcaoCode,
+    originIataCode: originIataCode.present
+        ? originIataCode.value
+        : this.originIataCode,
+    originName: originName.present ? originName.value : this.originName,
+    originLocation: originLocation.present
+        ? originLocation.value
+        : this.originLocation,
+    originLatitude: originLatitude.present
+        ? originLatitude.value
+        : this.originLatitude,
+    originLongitude: originLongitude.present
+        ? originLongitude.value
+        : this.originLongitude,
+    destinationIcaoCode: destinationIcaoCode.present
+        ? destinationIcaoCode.value
+        : this.destinationIcaoCode,
+    destinationIataCode: destinationIataCode.present
+        ? destinationIataCode.value
+        : this.destinationIataCode,
+    destinationName: destinationName.present
+        ? destinationName.value
+        : this.destinationName,
+    destinationLocation: destinationLocation.present
+        ? destinationLocation.value
+        : this.destinationLocation,
+    destinationLatitude: destinationLatitude.present
+        ? destinationLatitude.value
+        : this.destinationLatitude,
+    destinationLongitude: destinationLongitude.present
+        ? destinationLongitude.value
+        : this.destinationLongitude,
     hasBeenAirborne: hasBeenAirborne ?? this.hasBeenAirborne,
     lastKnownOnGround: lastKnownOnGround.present
         ? lastKnownOnGround.value
@@ -918,6 +1391,42 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       expectedCallsign: data.expectedCallsign.present
           ? data.expectedCallsign.value
           : this.expectedCallsign,
+      originIcaoCode: data.originIcaoCode.present
+          ? data.originIcaoCode.value
+          : this.originIcaoCode,
+      originIataCode: data.originIataCode.present
+          ? data.originIataCode.value
+          : this.originIataCode,
+      originName: data.originName.present
+          ? data.originName.value
+          : this.originName,
+      originLocation: data.originLocation.present
+          ? data.originLocation.value
+          : this.originLocation,
+      originLatitude: data.originLatitude.present
+          ? data.originLatitude.value
+          : this.originLatitude,
+      originLongitude: data.originLongitude.present
+          ? data.originLongitude.value
+          : this.originLongitude,
+      destinationIcaoCode: data.destinationIcaoCode.present
+          ? data.destinationIcaoCode.value
+          : this.destinationIcaoCode,
+      destinationIataCode: data.destinationIataCode.present
+          ? data.destinationIataCode.value
+          : this.destinationIataCode,
+      destinationName: data.destinationName.present
+          ? data.destinationName.value
+          : this.destinationName,
+      destinationLocation: data.destinationLocation.present
+          ? data.destinationLocation.value
+          : this.destinationLocation,
+      destinationLatitude: data.destinationLatitude.present
+          ? data.destinationLatitude.value
+          : this.destinationLatitude,
+      destinationLongitude: data.destinationLongitude.present
+          ? data.destinationLongitude.value
+          : this.destinationLongitude,
       hasBeenAirborne: data.hasBeenAirborne.present
           ? data.hasBeenAirborne.value
           : this.hasBeenAirborne,
@@ -974,6 +1483,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write('note: $note, ')
           ..write('hexAddress: $hexAddress, ')
           ..write('expectedCallsign: $expectedCallsign, ')
+          ..write('originIcaoCode: $originIcaoCode, ')
+          ..write('originIataCode: $originIataCode, ')
+          ..write('originName: $originName, ')
+          ..write('originLocation: $originLocation, ')
+          ..write('originLatitude: $originLatitude, ')
+          ..write('originLongitude: $originLongitude, ')
+          ..write('destinationIcaoCode: $destinationIcaoCode, ')
+          ..write('destinationIataCode: $destinationIataCode, ')
+          ..write('destinationName: $destinationName, ')
+          ..write('destinationLocation: $destinationLocation, ')
+          ..write('destinationLatitude: $destinationLatitude, ')
+          ..write('destinationLongitude: $destinationLongitude, ')
           ..write('hasBeenAirborne: $hasBeenAirborne, ')
           ..write('lastKnownOnGround: $lastKnownOnGround, ')
           ..write('latestLatitude: $latestLatitude, ')
@@ -1007,6 +1528,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     note,
     hexAddress,
     expectedCallsign,
+    originIcaoCode,
+    originIataCode,
+    originName,
+    originLocation,
+    originLatitude,
+    originLongitude,
+    destinationIcaoCode,
+    destinationIataCode,
+    destinationName,
+    destinationLocation,
+    destinationLatitude,
+    destinationLongitude,
     hasBeenAirborne,
     lastKnownOnGround,
     latestLatitude,
@@ -1033,6 +1566,18 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.note == this.note &&
           other.hexAddress == this.hexAddress &&
           other.expectedCallsign == this.expectedCallsign &&
+          other.originIcaoCode == this.originIcaoCode &&
+          other.originIataCode == this.originIataCode &&
+          other.originName == this.originName &&
+          other.originLocation == this.originLocation &&
+          other.originLatitude == this.originLatitude &&
+          other.originLongitude == this.originLongitude &&
+          other.destinationIcaoCode == this.destinationIcaoCode &&
+          other.destinationIataCode == this.destinationIataCode &&
+          other.destinationName == this.destinationName &&
+          other.destinationLocation == this.destinationLocation &&
+          other.destinationLatitude == this.destinationLatitude &&
+          other.destinationLongitude == this.destinationLongitude &&
           other.hasBeenAirborne == this.hasBeenAirborne &&
           other.lastKnownOnGround == this.lastKnownOnGround &&
           other.latestLatitude == this.latestLatitude &&
@@ -1061,6 +1606,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<String?> note;
   final Value<String?> hexAddress;
   final Value<String?> expectedCallsign;
+  final Value<String?> originIcaoCode;
+  final Value<String?> originIataCode;
+  final Value<String?> originName;
+  final Value<String?> originLocation;
+  final Value<double?> originLatitude;
+  final Value<double?> originLongitude;
+  final Value<String?> destinationIcaoCode;
+  final Value<String?> destinationIataCode;
+  final Value<String?> destinationName;
+  final Value<String?> destinationLocation;
+  final Value<double?> destinationLatitude;
+  final Value<double?> destinationLongitude;
   final Value<bool> hasBeenAirborne;
   final Value<bool?> lastKnownOnGround;
   final Value<double?> latestLatitude;
@@ -1083,6 +1640,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.note = const Value.absent(),
     this.hexAddress = const Value.absent(),
     this.expectedCallsign = const Value.absent(),
+    this.originIcaoCode = const Value.absent(),
+    this.originIataCode = const Value.absent(),
+    this.originName = const Value.absent(),
+    this.originLocation = const Value.absent(),
+    this.originLatitude = const Value.absent(),
+    this.originLongitude = const Value.absent(),
+    this.destinationIcaoCode = const Value.absent(),
+    this.destinationIataCode = const Value.absent(),
+    this.destinationName = const Value.absent(),
+    this.destinationLocation = const Value.absent(),
+    this.destinationLatitude = const Value.absent(),
+    this.destinationLongitude = const Value.absent(),
     this.hasBeenAirborne = const Value.absent(),
     this.lastKnownOnGround = const Value.absent(),
     this.latestLatitude = const Value.absent(),
@@ -1106,6 +1675,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.note = const Value.absent(),
     this.hexAddress = const Value.absent(),
     this.expectedCallsign = const Value.absent(),
+    this.originIcaoCode = const Value.absent(),
+    this.originIataCode = const Value.absent(),
+    this.originName = const Value.absent(),
+    this.originLocation = const Value.absent(),
+    this.originLatitude = const Value.absent(),
+    this.originLongitude = const Value.absent(),
+    this.destinationIcaoCode = const Value.absent(),
+    this.destinationIataCode = const Value.absent(),
+    this.destinationName = const Value.absent(),
+    this.destinationLocation = const Value.absent(),
+    this.destinationLatitude = const Value.absent(),
+    this.destinationLongitude = const Value.absent(),
     this.hasBeenAirborne = const Value.absent(),
     this.lastKnownOnGround = const Value.absent(),
     this.latestLatitude = const Value.absent(),
@@ -1131,6 +1712,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<String>? note,
     Expression<String>? hexAddress,
     Expression<String>? expectedCallsign,
+    Expression<String>? originIcaoCode,
+    Expression<String>? originIataCode,
+    Expression<String>? originName,
+    Expression<String>? originLocation,
+    Expression<double>? originLatitude,
+    Expression<double>? originLongitude,
+    Expression<String>? destinationIcaoCode,
+    Expression<String>? destinationIataCode,
+    Expression<String>? destinationName,
+    Expression<String>? destinationLocation,
+    Expression<double>? destinationLatitude,
+    Expression<double>? destinationLongitude,
     Expression<bool>? hasBeenAirborne,
     Expression<bool>? lastKnownOnGround,
     Expression<double>? latestLatitude,
@@ -1154,6 +1747,23 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (note != null) 'note': note,
       if (hexAddress != null) 'hex_address': hexAddress,
       if (expectedCallsign != null) 'expected_callsign': expectedCallsign,
+      if (originIcaoCode != null) 'origin_icao_code': originIcaoCode,
+      if (originIataCode != null) 'origin_iata_code': originIataCode,
+      if (originName != null) 'origin_name': originName,
+      if (originLocation != null) 'origin_location': originLocation,
+      if (originLatitude != null) 'origin_latitude': originLatitude,
+      if (originLongitude != null) 'origin_longitude': originLongitude,
+      if (destinationIcaoCode != null)
+        'destination_icao_code': destinationIcaoCode,
+      if (destinationIataCode != null)
+        'destination_iata_code': destinationIataCode,
+      if (destinationName != null) 'destination_name': destinationName,
+      if (destinationLocation != null)
+        'destination_location': destinationLocation,
+      if (destinationLatitude != null)
+        'destination_latitude': destinationLatitude,
+      if (destinationLongitude != null)
+        'destination_longitude': destinationLongitude,
       if (hasBeenAirborne != null) 'has_been_airborne': hasBeenAirborne,
       if (lastKnownOnGround != null) 'last_known_on_ground': lastKnownOnGround,
       if (latestLatitude != null) 'latest_latitude': latestLatitude,
@@ -1186,6 +1796,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<String?>? note,
     Value<String?>? hexAddress,
     Value<String?>? expectedCallsign,
+    Value<String?>? originIcaoCode,
+    Value<String?>? originIataCode,
+    Value<String?>? originName,
+    Value<String?>? originLocation,
+    Value<double?>? originLatitude,
+    Value<double?>? originLongitude,
+    Value<String?>? destinationIcaoCode,
+    Value<String?>? destinationIataCode,
+    Value<String?>? destinationName,
+    Value<String?>? destinationLocation,
+    Value<double?>? destinationLatitude,
+    Value<double?>? destinationLongitude,
     Value<bool>? hasBeenAirborne,
     Value<bool?>? lastKnownOnGround,
     Value<double?>? latestLatitude,
@@ -1209,6 +1831,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       note: note ?? this.note,
       hexAddress: hexAddress ?? this.hexAddress,
       expectedCallsign: expectedCallsign ?? this.expectedCallsign,
+      originIcaoCode: originIcaoCode ?? this.originIcaoCode,
+      originIataCode: originIataCode ?? this.originIataCode,
+      originName: originName ?? this.originName,
+      originLocation: originLocation ?? this.originLocation,
+      originLatitude: originLatitude ?? this.originLatitude,
+      originLongitude: originLongitude ?? this.originLongitude,
+      destinationIcaoCode: destinationIcaoCode ?? this.destinationIcaoCode,
+      destinationIataCode: destinationIataCode ?? this.destinationIataCode,
+      destinationName: destinationName ?? this.destinationName,
+      destinationLocation: destinationLocation ?? this.destinationLocation,
+      destinationLatitude: destinationLatitude ?? this.destinationLatitude,
+      destinationLongitude: destinationLongitude ?? this.destinationLongitude,
       hasBeenAirborne: hasBeenAirborne ?? this.hasBeenAirborne,
       lastKnownOnGround: lastKnownOnGround ?? this.lastKnownOnGround,
       latestLatitude: latestLatitude ?? this.latestLatitude,
@@ -1258,6 +1892,48 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     }
     if (expectedCallsign.present) {
       map['expected_callsign'] = Variable<String>(expectedCallsign.value);
+    }
+    if (originIcaoCode.present) {
+      map['origin_icao_code'] = Variable<String>(originIcaoCode.value);
+    }
+    if (originIataCode.present) {
+      map['origin_iata_code'] = Variable<String>(originIataCode.value);
+    }
+    if (originName.present) {
+      map['origin_name'] = Variable<String>(originName.value);
+    }
+    if (originLocation.present) {
+      map['origin_location'] = Variable<String>(originLocation.value);
+    }
+    if (originLatitude.present) {
+      map['origin_latitude'] = Variable<double>(originLatitude.value);
+    }
+    if (originLongitude.present) {
+      map['origin_longitude'] = Variable<double>(originLongitude.value);
+    }
+    if (destinationIcaoCode.present) {
+      map['destination_icao_code'] = Variable<String>(
+        destinationIcaoCode.value,
+      );
+    }
+    if (destinationIataCode.present) {
+      map['destination_iata_code'] = Variable<String>(
+        destinationIataCode.value,
+      );
+    }
+    if (destinationName.present) {
+      map['destination_name'] = Variable<String>(destinationName.value);
+    }
+    if (destinationLocation.present) {
+      map['destination_location'] = Variable<String>(destinationLocation.value);
+    }
+    if (destinationLatitude.present) {
+      map['destination_latitude'] = Variable<double>(destinationLatitude.value);
+    }
+    if (destinationLongitude.present) {
+      map['destination_longitude'] = Variable<double>(
+        destinationLongitude.value,
+      );
     }
     if (hasBeenAirborne.present) {
       map['has_been_airborne'] = Variable<bool>(hasBeenAirborne.value);
@@ -1326,6 +2002,18 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write('note: $note, ')
           ..write('hexAddress: $hexAddress, ')
           ..write('expectedCallsign: $expectedCallsign, ')
+          ..write('originIcaoCode: $originIcaoCode, ')
+          ..write('originIataCode: $originIataCode, ')
+          ..write('originName: $originName, ')
+          ..write('originLocation: $originLocation, ')
+          ..write('originLatitude: $originLatitude, ')
+          ..write('originLongitude: $originLongitude, ')
+          ..write('destinationIcaoCode: $destinationIcaoCode, ')
+          ..write('destinationIataCode: $destinationIataCode, ')
+          ..write('destinationName: $destinationName, ')
+          ..write('destinationLocation: $destinationLocation, ')
+          ..write('destinationLatitude: $destinationLatitude, ')
+          ..write('destinationLongitude: $destinationLongitude, ')
           ..write('hasBeenAirborne: $hasBeenAirborne, ')
           ..write('lastKnownOnGround: $lastKnownOnGround, ')
           ..write('latestLatitude: $latestLatitude, ')
@@ -1758,6 +2446,18 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<String?> note,
       Value<String?> hexAddress,
       Value<String?> expectedCallsign,
+      Value<String?> originIcaoCode,
+      Value<String?> originIataCode,
+      Value<String?> originName,
+      Value<String?> originLocation,
+      Value<double?> originLatitude,
+      Value<double?> originLongitude,
+      Value<String?> destinationIcaoCode,
+      Value<String?> destinationIataCode,
+      Value<String?> destinationName,
+      Value<String?> destinationLocation,
+      Value<double?> destinationLatitude,
+      Value<double?> destinationLongitude,
       Value<bool> hasBeenAirborne,
       Value<bool?> lastKnownOnGround,
       Value<double?> latestLatitude,
@@ -1782,6 +2482,18 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<String?> note,
       Value<String?> hexAddress,
       Value<String?> expectedCallsign,
+      Value<String?> originIcaoCode,
+      Value<String?> originIataCode,
+      Value<String?> originName,
+      Value<String?> originLocation,
+      Value<double?> originLatitude,
+      Value<double?> originLongitude,
+      Value<String?> destinationIcaoCode,
+      Value<String?> destinationIataCode,
+      Value<String?> destinationName,
+      Value<String?> destinationLocation,
+      Value<double?> destinationLatitude,
+      Value<double?> destinationLongitude,
       Value<bool> hasBeenAirborne,
       Value<bool?> lastKnownOnGround,
       Value<double?> latestLatitude,
@@ -1863,6 +2575,66 @@ class $$FlightsTableFilterComposer
 
   ColumnFilters<String> get expectedCallsign => $composableBuilder(
     column: $table.expectedCallsign,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originIcaoCode => $composableBuilder(
+    column: $table.originIcaoCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originIataCode => $composableBuilder(
+    column: $table.originIataCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originName => $composableBuilder(
+    column: $table.originName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originLocation => $composableBuilder(
+    column: $table.originLocation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get originLatitude => $composableBuilder(
+    column: $table.originLatitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get originLongitude => $composableBuilder(
+    column: $table.originLongitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationIcaoCode => $composableBuilder(
+    column: $table.destinationIcaoCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationIataCode => $composableBuilder(
+    column: $table.destinationIataCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationName => $composableBuilder(
+    column: $table.destinationName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationLocation => $composableBuilder(
+    column: $table.destinationLocation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get destinationLatitude => $composableBuilder(
+    column: $table.destinationLatitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get destinationLongitude => $composableBuilder(
+    column: $table.destinationLongitude,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2007,6 +2779,66 @@ class $$FlightsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get originIcaoCode => $composableBuilder(
+    column: $table.originIcaoCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originIataCode => $composableBuilder(
+    column: $table.originIataCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originName => $composableBuilder(
+    column: $table.originName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originLocation => $composableBuilder(
+    column: $table.originLocation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get originLatitude => $composableBuilder(
+    column: $table.originLatitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get originLongitude => $composableBuilder(
+    column: $table.originLongitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationIcaoCode => $composableBuilder(
+    column: $table.destinationIcaoCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationIataCode => $composableBuilder(
+    column: $table.destinationIataCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationName => $composableBuilder(
+    column: $table.destinationName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationLocation => $composableBuilder(
+    column: $table.destinationLocation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get destinationLatitude => $composableBuilder(
+    column: $table.destinationLatitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get destinationLongitude => $composableBuilder(
+    column: $table.destinationLongitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get hasBeenAirborne => $composableBuilder(
     column: $table.hasBeenAirborne,
     builder: (column) => ColumnOrderings(column),
@@ -2119,6 +2951,66 @@ class $$FlightsTableAnnotationComposer
 
   GeneratedColumn<String> get expectedCallsign => $composableBuilder(
     column: $table.expectedCallsign,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get originIcaoCode => $composableBuilder(
+    column: $table.originIcaoCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get originIataCode => $composableBuilder(
+    column: $table.originIataCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get originName => $composableBuilder(
+    column: $table.originName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get originLocation => $composableBuilder(
+    column: $table.originLocation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get originLatitude => $composableBuilder(
+    column: $table.originLatitude,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get originLongitude => $composableBuilder(
+    column: $table.originLongitude,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationIcaoCode => $composableBuilder(
+    column: $table.destinationIcaoCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationIataCode => $composableBuilder(
+    column: $table.destinationIataCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationName => $composableBuilder(
+    column: $table.destinationName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationLocation => $composableBuilder(
+    column: $table.destinationLocation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get destinationLatitude => $composableBuilder(
+    column: $table.destinationLatitude,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get destinationLongitude => $composableBuilder(
+    column: $table.destinationLongitude,
     builder: (column) => column,
   );
 
@@ -2256,6 +3148,18 @@ class $$FlightsTableTableManager
                 Value<String?> note = const Value.absent(),
                 Value<String?> hexAddress = const Value.absent(),
                 Value<String?> expectedCallsign = const Value.absent(),
+                Value<String?> originIcaoCode = const Value.absent(),
+                Value<String?> originIataCode = const Value.absent(),
+                Value<String?> originName = const Value.absent(),
+                Value<String?> originLocation = const Value.absent(),
+                Value<double?> originLatitude = const Value.absent(),
+                Value<double?> originLongitude = const Value.absent(),
+                Value<String?> destinationIcaoCode = const Value.absent(),
+                Value<String?> destinationIataCode = const Value.absent(),
+                Value<String?> destinationName = const Value.absent(),
+                Value<String?> destinationLocation = const Value.absent(),
+                Value<double?> destinationLatitude = const Value.absent(),
+                Value<double?> destinationLongitude = const Value.absent(),
                 Value<bool> hasBeenAirborne = const Value.absent(),
                 Value<bool?> lastKnownOnGround = const Value.absent(),
                 Value<double?> latestLatitude = const Value.absent(),
@@ -2282,6 +3186,18 @@ class $$FlightsTableTableManager
                 note: note,
                 hexAddress: hexAddress,
                 expectedCallsign: expectedCallsign,
+                originIcaoCode: originIcaoCode,
+                originIataCode: originIataCode,
+                originName: originName,
+                originLocation: originLocation,
+                originLatitude: originLatitude,
+                originLongitude: originLongitude,
+                destinationIcaoCode: destinationIcaoCode,
+                destinationIataCode: destinationIataCode,
+                destinationName: destinationName,
+                destinationLocation: destinationLocation,
+                destinationLatitude: destinationLatitude,
+                destinationLongitude: destinationLongitude,
                 hasBeenAirborne: hasBeenAirborne,
                 lastKnownOnGround: lastKnownOnGround,
                 latestLatitude: latestLatitude,
@@ -2307,6 +3223,18 @@ class $$FlightsTableTableManager
                 Value<String?> note = const Value.absent(),
                 Value<String?> hexAddress = const Value.absent(),
                 Value<String?> expectedCallsign = const Value.absent(),
+                Value<String?> originIcaoCode = const Value.absent(),
+                Value<String?> originIataCode = const Value.absent(),
+                Value<String?> originName = const Value.absent(),
+                Value<String?> originLocation = const Value.absent(),
+                Value<double?> originLatitude = const Value.absent(),
+                Value<double?> originLongitude = const Value.absent(),
+                Value<String?> destinationIcaoCode = const Value.absent(),
+                Value<String?> destinationIataCode = const Value.absent(),
+                Value<String?> destinationName = const Value.absent(),
+                Value<String?> destinationLocation = const Value.absent(),
+                Value<double?> destinationLatitude = const Value.absent(),
+                Value<double?> destinationLongitude = const Value.absent(),
                 Value<bool> hasBeenAirborne = const Value.absent(),
                 Value<bool?> lastKnownOnGround = const Value.absent(),
                 Value<double?> latestLatitude = const Value.absent(),
@@ -2333,6 +3261,18 @@ class $$FlightsTableTableManager
                 note: note,
                 hexAddress: hexAddress,
                 expectedCallsign: expectedCallsign,
+                originIcaoCode: originIcaoCode,
+                originIataCode: originIataCode,
+                originName: originName,
+                originLocation: originLocation,
+                originLatitude: originLatitude,
+                originLongitude: originLongitude,
+                destinationIcaoCode: destinationIcaoCode,
+                destinationIataCode: destinationIataCode,
+                destinationName: destinationName,
+                destinationLocation: destinationLocation,
+                destinationLatitude: destinationLatitude,
+                destinationLongitude: destinationLongitude,
                 hasBeenAirborne: hasBeenAirborne,
                 lastKnownOnGround: lastKnownOnGround,
                 latestLatitude: latestLatitude,

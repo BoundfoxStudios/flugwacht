@@ -4,6 +4,11 @@
   "tabMap": "Map",
   "tabList": "List",
   "tabMore": "More",
+  "listTitle": "Flights",
+  "listHeaderDateFormat": "EEE, MMMM d",
+  "@listHeaderDateFormat": {
+    "description": "DateFormat pattern for today's date in the list header, localized per language."
+  },
   "newFlightTitle": "New flight",
   "newFlightCancel": "Cancel",
   "newFlightKindFlightNumber": "Flight number",

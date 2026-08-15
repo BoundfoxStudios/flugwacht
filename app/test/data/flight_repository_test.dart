@@ -6,6 +6,7 @@ import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
+import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
@@ -451,5 +452,65 @@ void main() {
     await pumpEventQueue();
 
     expect(emissions.map((flights) => flights.length), [1, 0]);
+  });
+
+  group('route', () {
+    const route = FlightRoute(
+      origin: RouteAirport(
+        icaoCode: 'EDDF',
+        iataCode: 'FRA',
+        name: 'Frankfurt Airport',
+        location: 'Frankfurt-am-Main',
+        latitude: 50.026402,
+        longitude: 8.543130,
+      ),
+      destination: RouteAirport(
+        icaoCode: 'KJFK',
+        name: 'John F Kennedy Airport',
+        latitude: 40.639447,
+        longitude: -73.779317,
+      ),
+    );
+
+    test('round-trips a route through the database', () async {
+      final added = await repository.addFlight(
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH400',
+        departureDate: const CalendarDate(2026, 3, 17),
+        route: route,
+      );
+
+      final stored = (await repository.watchFlights().first).single.route!;
+      expect(added.route?.origin.icaoCode, 'EDDF');
+      expect(stored.origin.icaoCode, 'EDDF');
+      expect(stored.origin.iataCode, 'FRA');
+      expect(stored.origin.name, 'Frankfurt Airport');
+      expect(stored.origin.location, 'Frankfurt-am-Main');
+      expect(stored.origin.latitude, 50.026402);
+      expect(stored.origin.longitude, 8.543130);
+      expect(stored.destination.icaoCode, 'KJFK');
+      expect(stored.destination.name, 'John F Kennedy Airport');
+      expect(stored.destination.latitude, 40.639447);
+      expect(stored.destination.longitude, -73.779317);
+    });
+
+    test('keeps an absent iata code and location null', () async {
+      await repository.addFlight(
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH400',
+        departureDate: const CalendarDate(2026, 3, 17),
+        route: route,
+      );
+
+      final stored = (await repository.watchFlights().first).single.route!;
+      expect(stored.destination.iataCode, isNull);
+      expect(stored.destination.location, isNull);
+    });
+
+    test('reads back no route for a flight added without one', () async {
+      await addFlight();
+
+      expect((await repository.watchFlights().first).single.route, isNull);
+    });
   });
 }

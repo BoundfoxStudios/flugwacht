@@ -15,6 +15,18 @@ class Flights extends Table {
   TextColumn get note => text().nullable()();
   TextColumn get hexAddress => text().nullable()();
   TextColumn get expectedCallsign => text().nullable()();
+  TextColumn get originIcaoCode => text().nullable()();
+  TextColumn get originIataCode => text().nullable()();
+  TextColumn get originName => text().nullable()();
+  TextColumn get originLocation => text().nullable()();
+  RealColumn get originLatitude => real().nullable()();
+  RealColumn get originLongitude => real().nullable()();
+  TextColumn get destinationIcaoCode => text().nullable()();
+  TextColumn get destinationIataCode => text().nullable()();
+  TextColumn get destinationName => text().nullable()();
+  TextColumn get destinationLocation => text().nullable()();
+  RealColumn get destinationLatitude => real().nullable()();
+  RealColumn get destinationLongitude => real().nullable()();
   BoolColumn get hasBeenAirborne =>
       boolean().withDefault(const Constant(false))();
   BoolColumn get lastKnownOnGround => boolean().nullable()();

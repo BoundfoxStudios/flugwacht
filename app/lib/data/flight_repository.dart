@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../domain/calendar_date.dart';
 import '../domain/fix.dart';
 import '../domain/flight.dart';
+import '../domain/flight_route.dart';
 import '../domain/flight_state.dart';
 import '../domain/source_id.dart';
 import '../domain/trail_point.dart';
@@ -29,6 +30,7 @@ class FlightRepository {
     String? note,
     String? hexAddress,
     String? expectedCallsign,
+    FlightRoute? route,
   }) async {
     final row = await _database
         .into(_database.flights)
@@ -40,6 +42,18 @@ class FlightRepository {
             note: Value(note),
             hexAddress: Value(hexAddress),
             expectedCallsign: Value(expectedCallsign),
+            originIcaoCode: Value(route?.origin.icaoCode),
+            originIataCode: Value(route?.origin.iataCode),
+            originName: Value(route?.origin.name),
+            originLocation: Value(route?.origin.location),
+            originLatitude: Value(route?.origin.latitude),
+            originLongitude: Value(route?.origin.longitude),
+            destinationIcaoCode: Value(route?.destination.icaoCode),
+            destinationIataCode: Value(route?.destination.iataCode),
+            destinationName: Value(route?.destination.name),
+            destinationLocation: Value(route?.destination.location),
+            destinationLatitude: Value(route?.destination.latitude),
+            destinationLongitude: Value(route?.destination.longitude),
           ),
         );
     return _toFlight(row);
@@ -127,12 +141,60 @@ Flight _toFlight(FlightRow row) => Flight(
   note: row.note,
   hexAddress: row.hexAddress,
   expectedCallsign: row.expectedCallsign,
+  route: _toRoute(row),
   tracking: FlightTracking(
     latestPosition: _toPosition(row),
     hasBeenAirborne: row.hasBeenAirborne,
     lastKnownOnGround: row.lastKnownOnGround,
   ),
 );
+
+FlightRoute? _toRoute(FlightRow row) {
+  final origin = _toAirport(
+    row.originIcaoCode,
+    row.originIataCode,
+    row.originName,
+    row.originLocation,
+    row.originLatitude,
+    row.originLongitude,
+  );
+  final destination = _toAirport(
+    row.destinationIcaoCode,
+    row.destinationIataCode,
+    row.destinationName,
+    row.destinationLocation,
+    row.destinationLatitude,
+    row.destinationLongitude,
+  );
+  if (origin == null || destination == null) {
+    return null;
+  }
+  return FlightRoute(origin: origin, destination: destination);
+}
+
+RouteAirport? _toAirport(
+  String? icaoCode,
+  String? iataCode,
+  String? name,
+  String? location,
+  double? latitude,
+  double? longitude,
+) {
+  if (icaoCode == null ||
+      name == null ||
+      latitude == null ||
+      longitude == null) {
+    return null;
+  }
+  return RouteAirport(
+    icaoCode: icaoCode,
+    iataCode: iataCode,
+    name: name,
+    location: location,
+    latitude: latitude,
+    longitude: longitude,
+  );
+}
 
 FixPosition? _toPosition(FlightRow row) {
   final latitude = row.latestLatitude;

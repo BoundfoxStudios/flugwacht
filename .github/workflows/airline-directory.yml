@@ -1,0 +1,111 @@
+name: Airline Directory
+
+on:
+  schedule:
+    # Upstream publishes its dump daily at ~03:50 UTC; check afterwards and off
+    # the hour, where scheduled runs are least likely to be delayed or dropped
+    - cron: '25 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: airline-directory
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_PATH: airlines/schema-01/airlines.csv
+  ASSET_PATH: app/assets/data/airlines.csv
+  REFRESH_BRANCH: feature/airline-directory-refresh
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # The pull request must come from the app, not from GITHUB_TOKEN: main
+      # requires four checks that a GITHUB_TOKEN pull request would leave
+      # waiting for a manual "Approve workflows to run"
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
+          owner: BoundfoxStudios
+          repositories: flugwacht
+          permission-contents: write
+          permission-pull-requests: write
+      - uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Download the upstream directory
+        run: |
+          curl --fail --silent --show-error --location --proto '=https' \
+            --retry 3 --retry-delay 2 --retry-max-time 60 \
+            --connect-timeout 10 --max-time 60 \
+            --output "$RUNNER_TEMP/airlines.csv" \
+            "https://raw.githubusercontent.com/vradarserver/standing-data/main/$UPSTREAM_PATH"
+      # An error page or a truncated response must never land as a refresh
+      - name: Check the download for plausibility
+        run: |
+          header=$(head -1 "$RUNNER_TEMP/airlines.csv" | sed 's/^\xef\xbb\xbf//' | tr -d '\r')
+          expected='Code,Name,ICAO,IATA,PositioningFlightPattern,CharterFlightPattern'
+          if [ "$header" != "$expected" ]; then
+            echo "::error::unexpected header: $header"
+            exit 1
+          fi
+          rows=$(wc -l < "$RUNNER_TEMP/airlines.csv")
+          if [ "$rows" -lt 5000 ]; then
+            echo "::error::only $rows rows, expected at least 5000"
+            exit 1
+          fi
+      - name: Compare with the committed copy
+        id: compare
+        run: |
+          if cmp --silent "$RUNNER_TEMP/airlines.csv" "$ASSET_PATH"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo 'The bundled airline directory is up to date.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            cp "$RUNNER_TEMP/airlines.csv" "$ASSET_PATH"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Propose the refresh
+        if: steps.compare.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          numstat=$(git diff --numstat -- "$ASSET_PATH")
+          added=$(echo "$numstat" | cut -f1)
+          removed=$(echo "$numstat" | cut -f2)
+          upstream=$(gh api "repos/vradarserver/standing-data/commits?path=$UPSTREAM_PATH&per_page=1" \
+            --jq '.[0] | "\(.sha) on \(.commit.author.date[0:10])"')
+
+          bot_id=$(gh api "users/$APP_SLUG%5Bbot%5D" --jq .id)
+          git config user.name "$APP_SLUG[bot]"
+          git config user.email "$bot_id+$APP_SLUG[bot]@users.noreply.github.com"
+          git switch --create "$REFRESH_BRANCH"
+          git add "$ASSET_PATH"
+          git commit --message 'chore: refresh the bundled airline directory'
+          git push --force origin "$REFRESH_BRANCH"
+
+          summary="$added added, $removed removed lines · upstream $upstream"
+          echo "$summary" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$(gh pr list --head "$REFRESH_BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
+            echo 'Updated the open refresh pull request.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          gh pr create --base main --head "$REFRESH_BRANCH" \
+            --title 'Refresh the bundled airline directory' \
+            --body "$(cat <<BODY
+          Upstream changed \`$UPSTREAM_PATH\`, so the vendored copy is out of date.
+
+          - Upstream commit: $upstream
+          - Change: $added added, $removed removed lines
+
+          Opened by the \`Airline Directory\` workflow. The verification is \`checks\`: the tests in \`app/test/data/airline_directory_test.dart\` read the bundled file itself, so a lost \`LH\` row, a reordered airline or a low-cost-carrier code without an airline turns the suite red instead of quietly degrading the callsign lookup.
+          BODY
+          )"

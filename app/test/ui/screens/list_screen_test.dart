@@ -161,6 +161,35 @@ void main() {
     expect(topOf('UA961'), lessThan(topOf('BA915')));
   });
 
+  testWidgets('labels the past section above its rows', (tester) async {
+    final repository = await pumpListScreen(tester);
+
+    repository.emit([
+      _flight(id: 1, lookupValue: 'EW594'),
+      _flight(
+        id: 2,
+        lookupValue: 'BA915',
+        tracking: _seenAt(DateTime(2026, 8, 12, 8), onGround: true),
+      ),
+    ]);
+    await tester.pump();
+
+    double topOf(String text) => tester.getTopLeft(find.text(text)).dy;
+    expect(topOf('EW594'), lessThan(topOf('Past')));
+    expect(topOf('Past'), lessThan(topOf('BA915')));
+  });
+
+  testWidgets('leaves out the past label while nothing is over', (
+    tester,
+  ) async {
+    final repository = await pumpListScreen(tester);
+
+    repository.emit([_flight()]);
+    await tester.pump();
+
+    expect(find.text('Past'), findsNothing);
+  });
+
   testWidgets('opens the new flight screen from the add button', (
     tester,
   ) async {

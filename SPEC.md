@@ -48,6 +48,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Icons | Font Awesome Pro `regular` via `font_awesome_flutter` + kit 85fa8e3a78; SVG fallback available locally |
 | Notifications | `flutter_local_notifications`, local only, no backend |
 | Date and time | native system pickers (`showDatePicker` / `showTimePicker`, `CupertinoDatePicker`); the departure time is optional |
+| Time zones | `lat_lng_to_timezone` maps the destination's coordinates to an IANA zone, `timezone` converts the arrival instant into it — both offline; the full database variant is required because the reduced ones drop linked zones like Europe/Amsterdam |
 
 Dependency versions are always looked up at add time (pub.dev), never guessed.
 

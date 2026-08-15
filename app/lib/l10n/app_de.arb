@@ -19,5 +19,10 @@
   "newFlightNoteLabel": "Notiz (optional)",
   "newFlightNoteHint": "Woran du den Flug erkennst, z. B. Anna & Ben",
   "newFlightSubmit": "Flug eintragen",
-  "newFlightDatePickerConfirm": "Fertig"
+  "newFlightDatePickerConfirm": "Fertig",
+  "newFlightPreviewFound": "Gefunden",
+  "newFlightPreviewRouteUnknown": "Route unbekannt",
+  "newFlightPreviewCallsign": "Funk: {callsign}",
+  "newFlightPreviewRoute": "{origin} → {destination}",
+  "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}"
 }

@@ -30,7 +30,9 @@
 - Monorepo: the Flutter app lives in `app/` — run all Flutter/Dart commands
   there. `website/` (planned) and possibly `backend/` (later expansion stage)
   will join next to it.
-- Repo-level branding assets (logo) live in `assets/`.
+- The logo masters live in `app/assets/logo/` because Flutter only bundles
+  assets from inside the package; the app renders them with `flutter_svg`.
+  The app-icon masters stay in `assets/icon/`, they are build-time input only.
 
 ## Credentials
 

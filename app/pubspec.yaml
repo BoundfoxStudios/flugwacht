@@ -82,7 +82,6 @@ flutter:
 
   assets:
     - assets/data/airlines.csv
-    # Copies of the branding masters in the repository's assets/logo
     - assets/logo/logo-light.svg
     - assets/logo/logo-dark.svg
     - assets/fonts/OFL-BebasNeue.txt

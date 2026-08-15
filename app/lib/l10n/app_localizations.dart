@@ -122,6 +122,18 @@ abstract class AppLocalizations {
   /// **'More'**
   String get tabMore;
 
+  /// No description provided for @listTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Flights'**
+  String get listTitle;
+
+  /// DateFormat pattern for today's date in the list header, localized per language.
+  ///
+  /// In en, this message translates to:
+  /// **'EEE, MMMM d'**
+  String get listHeaderDateFormat;
+
   /// No description provided for @newFlightTitle.
   ///
   /// In en, this message translates to:

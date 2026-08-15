@@ -21,6 +21,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabMore => 'More';
 
   @override
+  String get listTitle => 'Flights';
+
+  @override
+  String get listHeaderDateFormat => 'EEE, MMMM d';
+
+  @override
   String get newFlightTitle => 'New flight';
 
   @override

@@ -4,6 +4,8 @@
   "tabMap": "Karte",
   "tabList": "Liste",
   "tabMore": "Mehr",
+  "listTitle": "Flüge",
+  "listHeaderDateFormat": "EEE, d. MMMM",
   "newFlightTitle": "Neuer Flug",
   "newFlightCancel": "Abbrechen",
   "newFlightKindFlightNumber": "Flugnummer",

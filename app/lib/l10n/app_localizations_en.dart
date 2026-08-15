@@ -127,6 +127,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get flightBadgeLive => 'Live';
+
+  @override
+  String get flightBadgeNoSignal => 'No signal';
+
+  @override
+  String get mapAttributionOpenStreetMap => '© OpenStreetMap';
+
+  @override
   String get flightRowWaitingForSignal => 'waiting for signal';
 
   @override

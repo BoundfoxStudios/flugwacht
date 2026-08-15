@@ -73,11 +73,11 @@ void main() {
   });
 
   test('detects low cost carriers by iata code', () {
-    expect(directory.isLowCostCarrier('FR'), isTrue);
-    expect(directory.isLowCostCarrier('U2'), isTrue);
-    expect(directory.isLowCostCarrier('W6'), isTrue);
-    expect(directory.isLowCostCarrier('LH'), isFalse);
-    expect(directory.isLowCostCarrier('DLH'), isFalse);
+    expect(AirlineDirectory.isLowCostCarrier('FR'), isTrue);
+    expect(AirlineDirectory.isLowCostCarrier('U2'), isTrue);
+    expect(AirlineDirectory.isLowCostCarrier('W6'), isTrue);
+    expect(AirlineDirectory.isLowCostCarrier('LH'), isFalse);
+    expect(AirlineDirectory.isLowCostCarrier('DLH'), isFalse);
   });
 
   group('bundled airlines.csv', () {

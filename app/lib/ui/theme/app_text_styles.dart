@@ -98,6 +98,11 @@ abstract final class AppTextStyles {
     fontWeight: FontWeight.w600,
   );
 
+  static const accessory = TextStyle(
+    fontFamily: AppFontFamilies.barlow,
+    fontSize: 14,
+  );
+
   static const secondary = TextStyle(
     fontFamily: AppFontFamilies.barlow,
     fontSize: 13,

@@ -1,6 +1,7 @@
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/about_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
+import 'package:flugwacht/ui/widgets/flugwacht_lockup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,10 +32,12 @@ String textContaining(WidgetTester tester, String fragment) => tester
     .firstWhere((data) => data.contains(fragment));
 
 void main() {
-  testWidgets('names the app and the installed version', (tester) async {
+  testWidgets('heads the screen with the lockup and the installed version', (
+    tester,
+  ) async {
     await pumpAboutScreen(tester, version: '2.7.0');
 
-    expect(find.text('Flugwacht'), findsOneWidget);
+    expect(find.byType(FlugwachtLockup), findsOneWidget);
     expect(find.textContaining('2.7.0'), findsOneWidget);
   });
 

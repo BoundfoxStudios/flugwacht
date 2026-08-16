@@ -95,6 +95,8 @@ flutter:
     - assets/data/airlines.csv
     - assets/logo/logo-light.svg
     - assets/logo/logo-dark.svg
+    - assets/logo/lockup-light.svg
+    - assets/logo/lockup-dark.svg
     - assets/logo/bfs.svg
     - assets/fonts/OFL-BebasNeue.txt
     - assets/fonts/OFL-Barlow.txt

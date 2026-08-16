@@ -10,7 +10,7 @@ import '../../app_icons.dart';
 import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_tokens.dart';
-import '../widgets/radar_eye_logo.dart';
+import '../widgets/flugwacht_lockup.dart';
 import '../widgets/settings_card.dart';
 
 const _boundfoxUrl = 'https://boundfoxstudios.com';
@@ -85,30 +85,25 @@ class AboutScreen extends StatelessWidget {
 class _IdentityCard extends StatelessWidget {
   const _IdentityCard({required this.version});
 
-  static const _logoSize = 56.0;
+  static const _lockupHeight = 40.0;
 
   final String version;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final localizations = AppLocalizations.of(context);
-    return SettingsCard(
-      children: [
-        Column(
-          spacing: AppSpacing.grid * 2,
-          children: [
-            const RadarEyeLogo(size: _logoSize),
-            Text(localizations.appTitle, style: theme.textTheme.headlineMedium),
-            Text(
-              localizations.aboutVersion(version),
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => SettingsCard(
+    children: [
+      Column(
+        spacing: AppSpacing.cardPadding,
+        children: [
+          const FlugwachtLockup(height: _lockupHeight),
+          Text(
+            AppLocalizations.of(context).aboutVersion(version),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 class _CreditsCard extends StatelessWidget {

@@ -7,6 +7,7 @@ import '../data/flight_repository.dart';
 import '../data/map_style_setting.dart';
 import '../data/route_lookup.dart';
 import '../data/source_setting.dart';
+import '../data/units_setting.dart';
 import 'app_shell.dart';
 import 'map_selection.dart';
 import 'screens/list_screen.dart';
@@ -21,6 +22,7 @@ GoRouter createAppRouter({
   required RouteLookup routeLookup,
   required SourceSetting sourceSetting,
   required MapStyleSetting mapStyleSetting,
+  required UnitsSetting unitsSetting,
   required MapTileSources tileSources,
   required PackageInfo packageInfo,
 }) {
@@ -42,6 +44,7 @@ GoRouter createAppRouter({
                   flightRepository: flightRepository,
                   selection: mapSelection,
                   sourceSetting: sourceSetting,
+                  unitsSetting: unitsSetting,
                   mapStyleSetting: mapStyleSetting,
                   tileSources: tileSources,
                 ),
@@ -67,6 +70,7 @@ GoRouter createAppRouter({
                 path: '/more',
                 builder: (context, state) => MoreScreen(
                   sourceSetting: sourceSetting,
+                  unitsSetting: unitsSetting,
                   packageInfo: packageInfo,
                 ),
               ),

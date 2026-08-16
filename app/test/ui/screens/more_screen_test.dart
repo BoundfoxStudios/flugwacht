@@ -1,5 +1,7 @@
 import 'package:flugwacht/data/source_setting.dart';
+import 'package:flugwacht/data/units_setting.dart';
 import 'package:flugwacht/domain/source_id.dart';
+import 'package:flugwacht/domain/units.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -9,12 +11,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/test_dependencies.dart';
 
-Future<SourceSetting> pumpMoreScreen(
+Future<({SourceSetting source, UnitsSetting units})> pumpMoreScreen(
   WidgetTester tester, {
   String version = '1.4.2',
   Locale locale = const Locale('en'),
 }) async {
   final sourceSetting = await createTestSourceSetting();
+  final unitsSetting = await createTestUnitsSetting();
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -23,12 +26,13 @@ Future<SourceSetting> pumpMoreScreen(
       theme: buildLightTheme(),
       home: MoreScreen(
         sourceSetting: sourceSetting,
+        unitsSetting: unitsSetting,
         packageInfo: testPackageInfo(version: version),
       ),
     ),
   );
   await tester.pumpAndSettle();
-  return sourceSetting;
+  return (source: sourceSetting, units: unitsSetting);
 }
 
 bool isSelected(WidgetTester tester, String label) => tester
@@ -57,14 +61,23 @@ void main() {
   testWidgets('selecting another source persists it and marks its row', (
     tester,
   ) async {
-    final sourceSetting = await pumpMoreScreen(tester);
+    final settings = await pumpMoreScreen(tester);
 
     await tester.tap(find.text('adsb.fi'));
     await tester.pumpAndSettle();
 
-    expect(sourceSetting.activeId.value, SourceId.adsbfi);
+    expect(settings.source.activeId.value, SourceId.adsbfi);
     expect(isSelected(tester, 'adsb.fi'), isTrue);
     expect(isSelected(tester, 'adsb.lol'), isFalse);
+  });
+
+  testWidgets('switches the units the app displays', (tester) async {
+    final settings = await pumpMoreScreen(tester);
+
+    await tester.tap(find.text('Aviation (ft, kt)'));
+    await tester.pumpAndSettle();
+
+    expect(settings.units.units.value, Units.aviation);
   });
 
   testWidgets('names the app version below the about entry', (tester) async {

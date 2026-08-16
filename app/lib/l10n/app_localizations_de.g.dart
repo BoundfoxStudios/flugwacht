@@ -231,6 +231,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String mapSheetAltitudeValueFeet(String value) {
+    return '$value ft';
+  }
+
+  @override
+  String mapSheetSpeedValueKnots(String value) {
+    return '$value kt';
+  }
+
+  @override
   String mapSheetSource(String source, String attribution) {
     return 'Quelle: $source · $attribution';
   }
@@ -312,6 +322,15 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsSourceExplainer =>
       'Alle Quellen liefern dieselben Werte — sie unterscheiden sich nur darin, wer deinen Flieger gerade empfängt. Bei Lücken lohnt das Umschalten; die Spur läuft dabei weiter.';
+
+  @override
+  String get settingsUnitsSectionTitle => 'Einheiten';
+
+  @override
+  String get settingsUnitsMetric => 'Metrisch (m, km/h)';
+
+  @override
+  String get settingsUnitsAviation => 'Luftfahrt (ft, kt)';
 
   @override
   String get settingsAboutTitle => 'Über Flugwacht';

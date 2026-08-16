@@ -9,6 +9,8 @@ import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/remaining_time.dart';
 import '../../domain/signal_age.dart';
+import '../../domain/unit_conversion.dart';
+import '../../domain/units.dart';
 import '../../l10n/app_localizations.g.dart';
 
 /// The lookup value with the note appended, the way both the list rows and the
@@ -106,6 +108,48 @@ ArrivalDisplay? arrivalDisplayOf(
       formatTime(context, pattern, estimate.arrivesAt.toLocal()),
     ),
   );
+}
+
+/// The altitude in the unit the settings ask for, or nothing while the flight
+/// has not reported one.
+String? altitudeLabel({
+  required AppLocalizations localizations,
+  required NumberFormat numbers,
+  required Units units,
+  required double? altitudeFeet,
+}) {
+  if (altitudeFeet == null) {
+    return null;
+  }
+  return switch (units) {
+    Units.metric => localizations.mapSheetAltitudeValue(
+      numbers.format(metersFromFeet(altitudeFeet)),
+    ),
+    Units.aviation => localizations.mapSheetAltitudeValueFeet(
+      numbers.format(altitudeFeet.round()),
+    ),
+  };
+}
+
+/// The ground speed in the unit the settings ask for, or nothing while the
+/// flight has not reported one.
+String? speedLabel({
+  required AppLocalizations localizations,
+  required NumberFormat numbers,
+  required Units units,
+  required double? groundSpeedKnots,
+}) {
+  if (groundSpeedKnots == null) {
+    return null;
+  }
+  return switch (units) {
+    Units.metric => localizations.mapSheetSpeedValue(
+      numbers.format(kilometersPerHourFromKnots(groundSpeedKnots)),
+    ),
+    Units.aviation => localizations.mapSheetSpeedValueKnots(
+      numbers.format(groundSpeedKnots.round()),
+    ),
+  };
 }
 
 /// How much of the flight is left, in the unit the breakdown holds.

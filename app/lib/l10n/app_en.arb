@@ -221,6 +221,22 @@
       }
     }
   },
+  "mapSheetAltitudeValueFeet": "{value} ft",
+  "@mapSheetAltitudeValueFeet": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSheetSpeedValueKnots": "{value} kt",
+  "@mapSheetSpeedValueKnots": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "mapSheetSource": "Source: {source} · {attribution}",
   "@mapSheetSource": {
     "description": "The flight data source next to the credit of the rendered tiles.",
@@ -333,6 +349,9 @@
   "settingsTitle": "Settings",
   "settingsSourceSectionTitle": "Data source",
   "settingsSourceExplainer": "All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.",
+  "settingsUnitsSectionTitle": "Units",
+  "settingsUnitsMetric": "Metric (m, km/h)",
+  "settingsUnitsAviation": "Aviation (ft, kt)",
   "settingsAboutTitle": "About Flugwacht",
   "settingsAboutSubtitle": "Version {version} · Licenses & sources",
   "@settingsAboutSubtitle": {

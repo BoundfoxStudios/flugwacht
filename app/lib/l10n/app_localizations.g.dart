@@ -468,6 +468,18 @@ abstract class AppLocalizations {
   /// **'{value} km/h'**
   String mapSheetSpeedValue(String value);
 
+  /// No description provided for @mapSheetAltitudeValueFeet.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} ft'**
+  String mapSheetAltitudeValueFeet(String value);
+
+  /// No description provided for @mapSheetSpeedValueKnots.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kt'**
+  String mapSheetSpeedValueKnots(String value);
+
   /// The flight data source next to the credit of the rendered tiles.
   ///
   /// In en, this message translates to:
@@ -593,6 +605,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.'**
   String get settingsSourceExplainer;
+
+  /// No description provided for @settingsUnitsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get settingsUnitsSectionTitle;
+
+  /// No description provided for @settingsUnitsMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric (m, km/h)'**
+  String get settingsUnitsMetric;
+
+  /// No description provided for @settingsUnitsAviation.
+  ///
+  /// In en, this message translates to:
+  /// **'Aviation (ft, kt)'**
+  String get settingsUnitsAviation;
 
   /// No description provided for @settingsAboutTitle.
   ///

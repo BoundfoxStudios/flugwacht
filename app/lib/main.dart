@@ -15,6 +15,7 @@ import 'data/polling_engine.dart';
 import 'data/readsb_source_adapter.dart';
 import 'data/route_lookup.dart';
 import 'data/source_setting.dart';
+import 'data/units_setting.dart';
 import 'data/vector_tile_source.dart';
 import 'domain/airport_timezone.dart';
 import 'domain/source_id.dart';
@@ -32,6 +33,7 @@ Future<void> main() async {
   final airlineDirectory = await AirlineDirectory.loadFromAssets();
   final sourceSetting = await SourceSetting.load();
   final mapStyleSetting = await MapStyleSetting.load();
+  final unitsSetting = await UnitsSetting.load();
   final packageInfo = await PackageInfo.fromPlatform();
   // Not awaited: the map draws its ground as soon as the planet run is known,
   // and starts without tiles rather than without a first frame.
@@ -54,6 +56,7 @@ Future<void> main() async {
         routeLookup: RouteLookup(client: client),
         sourceSetting: sourceSetting,
         mapStyleSetting: mapStyleSetting,
+        unitsSetting: unitsSetting,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,

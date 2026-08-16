@@ -10,6 +10,7 @@ import '../../app_icons.dart';
 import '../../data/flight_repository.dart';
 import '../../data/map_style_setting.dart';
 import '../../data/source_setting.dart';
+import '../../data/units_setting.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/map_style.dart';
 import '../../domain/source_id.dart';
@@ -36,6 +37,7 @@ class MapScreen extends StatefulWidget {
     required this.flightRepository,
     required this.selection,
     required this.sourceSetting,
+    required this.unitsSetting,
     required this.mapStyleSetting,
     required this.tileSources,
     super.key,
@@ -72,6 +74,7 @@ class MapScreen extends StatefulWidget {
   final FlightRepository flightRepository;
   final MapSelection selection;
   final SourceSetting sourceSetting;
+  final UnitsSetting unitsSetting;
   final MapStyleSetting mapStyleSetting;
 
   /// Reads the current time; injectable so the minute ticker stays testable.
@@ -279,6 +282,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         onSelected: (index) => _mapFlights.selectedId.value =
                             entries[index].flight.id,
                         sourceSetting: widget.sourceSetting,
+                        unitsSetting: widget.unitsSetting,
                         mapStyle: mapStyle,
                         showsSourceComparison: showsSourceComparison,
                         onOpenChanged: (isOpen) =>

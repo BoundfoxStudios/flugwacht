@@ -181,6 +181,7 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         sourceSetting: await createTestSourceSetting(),
         mapStyleSetting: await createTestMapStyleSetting(),
         tileSources: testTileSources(),
+        packageInfo: testPackageInfo(),
       ),
     ),
   );

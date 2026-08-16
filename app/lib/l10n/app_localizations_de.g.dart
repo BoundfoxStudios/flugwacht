@@ -304,6 +304,29 @@ class AppLocalizationsDe extends AppLocalizations {
   String get flightRowMissed => 'verpasst';
 
   @override
+  String get settingsTitle => 'Einstellungen';
+
+  @override
+  String get settingsSourceSectionTitle => 'Datenquelle';
+
+  @override
+  String get settingsSourceExplainer =>
+      'Alle Quellen liefern dieselben Werte — sie unterscheiden sich nur darin, wer deinen Flieger gerade empfängt. Bei Lücken lohnt das Umschalten; die Spur läuft dabei weiter.';
+
+  @override
+  String get settingsAboutTitle => 'Über Flugwacht';
+
+  @override
+  String settingsAboutSubtitle(String version) {
+    return 'Version $version · Lizenzen & Quellen';
+  }
+
+  @override
+  String settingsDataFootnote(String sources) {
+    return 'Daten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr. Karte © OpenStreetMap.';
+  }
+
+  @override
   String get flightStatePlanned => 'geplant';
 
   @override

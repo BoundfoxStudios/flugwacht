@@ -58,6 +58,7 @@ Future<void> main() async {
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,
         ),
+        packageInfo: packageInfo,
       ),
     ),
   );

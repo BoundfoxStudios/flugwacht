@@ -576,6 +576,42 @@ abstract class AppLocalizations {
   /// **'missed'**
   String get flightRowMissed;
 
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsSourceSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data source'**
+  String get settingsSourceSectionTitle;
+
+  /// No description provided for @settingsSourceExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.'**
+  String get settingsSourceExplainer;
+
+  /// No description provided for @settingsAboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Flugwacht'**
+  String get settingsAboutTitle;
+
+  /// No description provided for @settingsAboutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} · Licenses & sources'**
+  String settingsAboutSubtitle(String version);
+
+  /// Credits the sources the app offers; the list carries each source's license.
+  ///
+  /// In en, this message translates to:
+  /// **'Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.'**
+  String settingsDataFootnote(String sources);
+
   /// No description provided for @flightStatePlanned.
   ///
   /// In en, this message translates to:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../data/airline_directory.dart';
 import '../data/flight_repository.dart';
@@ -21,6 +22,7 @@ GoRouter createAppRouter({
   required SourceSetting sourceSetting,
   required MapStyleSetting mapStyleSetting,
   required MapTileSources tileSources,
+  required PackageInfo packageInfo,
 }) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
   final mapSelection = MapSelection();
@@ -63,7 +65,10 @@ GoRouter createAppRouter({
             routes: [
               GoRoute(
                 path: '/more',
-                builder: (context, state) => const MoreScreen(),
+                builder: (context, state) => MoreScreen(
+                  sourceSetting: sourceSetting,
+                  packageInfo: packageInfo,
+                ),
               ),
             ],
           ),

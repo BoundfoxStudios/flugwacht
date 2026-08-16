@@ -330,6 +330,27 @@
   },
   "flightRowLanded": "landed ✓",
   "flightRowMissed": "missed",
+  "settingsTitle": "Settings",
+  "settingsSourceSectionTitle": "Data source",
+  "settingsSourceExplainer": "All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.",
+  "settingsAboutTitle": "About Flugwacht",
+  "settingsAboutSubtitle": "Version {version} · Licenses & sources",
+  "@settingsAboutSubtitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDataFootnote": "Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.",
+  "@settingsDataFootnote": {
+    "description": "Credits the sources the app offers; the list carries each source's license.",
+    "placeholders": {
+      "sources": {
+        "type": "String"
+      }
+    }
+  },
   "flightStatePlanned": "planned",
   "flightStateWaiting": "waiting",
   "flightStateLive": "live",

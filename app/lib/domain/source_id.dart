@@ -20,4 +20,10 @@ extension SourceIdLabel on SourceId {
     SourceId.adsbfi => 'adsb.fi',
     SourceId.airplanes => 'airplanes.live',
   };
+
+  /// The name a credit carries, with the license the source puts on its data.
+  String get licenseLabel => switch (this) {
+    SourceId.adsblol => '$label (ODbL)',
+    SourceId.adsbfi || SourceId.airplanes => label,
+  };
 }

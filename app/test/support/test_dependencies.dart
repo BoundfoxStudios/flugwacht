@@ -22,6 +22,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:signals/signals.dart';
@@ -72,6 +73,14 @@ Future<GoRouter> createTestAppRouter() async => createAppRouter(
   sourceSetting: await createTestSourceSetting(),
   mapStyleSetting: await createTestMapStyleSetting(),
   tileSources: testTileSources(),
+  packageInfo: testPackageInfo(),
+);
+
+PackageInfo testPackageInfo({String version = '1.0.0'}) => PackageInfo(
+  appName: 'Flugwacht',
+  packageName: 'com.boundfoxstudios.apps.flugwacht',
+  version: version,
+  buildNumber: '1',
 );
 
 /// Tiles from stub providers under a stand-in package name, so no widget test

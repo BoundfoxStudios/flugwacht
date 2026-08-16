@@ -118,9 +118,17 @@
   "flightBadgeLive": "Live",
   "flightBadgeNoSignal": "No signal",
   "mapAttributionOpenStreetMap": "© OpenStreetMap",
-  "mapAttributionWithSource": "© OpenStreetMap · Data: {source}",
+  "mapAttributionOpenMapTiles": "© OpenStreetMap · © OpenMapTiles",
+  "@mapAttributionOpenMapTiles": {
+    "description": "Credit of the reduced style, whose vector tiles OpenFreeMap serves from OpenMapTiles data."
+  },
+  "mapAttributionWithSource": "{attribution} · Data: {source}",
   "@mapAttributionWithSource": {
+    "description": "The credit of the rendered tiles next to the flight data source.",
     "placeholders": {
+      "attribution": {
+        "type": "String"
+      },
       "source": {
         "type": "String"
       }
@@ -205,10 +213,14 @@
       }
     }
   },
-  "mapSheetSource": "Source: {source} · © OpenStreetMap",
+  "mapSheetSource": "Source: {source} · {attribution}",
   "@mapSheetSource": {
+    "description": "The flight data source next to the credit of the rendered tiles.",
     "placeholders": {
       "source": {
+        "type": "String"
+      },
+      "attribution": {
         "type": "String"
       }
     }

@@ -19,6 +19,7 @@ import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../support/test_dependencies.dart';
 
@@ -97,6 +98,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   SourceSetting? sourceSetting,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
+  bool withVectorTiles = false,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
@@ -117,7 +119,7 @@ Future<FakeFlightRepository> pumpMapScreen(
         selection: mapSelection,
         sourceSetting: setting,
         clock: () => _now,
-        tileSources: testTileSources(),
+        tileSources: testTileSources(withVectorTiles: withVectorTiles),
       ),
     ),
   );
@@ -130,6 +132,10 @@ Future<FakeFlightRepository> pumpMapScreen(
   // Lets the camera settle on the selected flight; markers outside the
   // viewport are not built.
   await tester.pump(const Duration(milliseconds: 300));
+  if (withVectorTiles) {
+    // The vector layer schedules its cache housekeeping three seconds out.
+    await tester.pump(const Duration(seconds: 3));
+  }
   return repository;
 }
 
@@ -392,7 +398,10 @@ void main() {
   testWidgets('attributes OpenStreetMap and the active source', (tester) async {
     await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
 
-    expect(find.text('© OpenStreetMap · Data: adsb.lol'), findsOneWidget);
+    expect(
+      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.lol'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('attributes in German as well', (tester) async {
@@ -402,7 +411,10 @@ void main() {
       locale: const Locale('de'),
     );
 
-    expect(find.text('© OpenStreetMap · Daten: adsb.lol'), findsOneWidget);
+    expect(
+      find.text('© OpenStreetMap · © OpenMapTiles · Daten: adsb.lol'),
+      findsOneWidget,
+    );
   });
 
   group('source comparison', () {
@@ -483,6 +495,19 @@ void main() {
     await sourceSetting.select(SourceId.adsbfi);
     await tester.pump();
 
-    expect(find.text('© OpenStreetMap · Data: adsb.fi'), findsOneWidget);
+    expect(
+      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.fi'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('draws the reduced style', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      withVectorTiles: true,
+    );
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
   });
 }

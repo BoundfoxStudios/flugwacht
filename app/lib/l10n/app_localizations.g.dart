@@ -360,11 +360,17 @@ abstract class AppLocalizations {
   /// **'© OpenStreetMap'**
   String get mapAttributionOpenStreetMap;
 
-  /// No description provided for @mapAttributionWithSource.
+  /// Credit of the reduced style, whose vector tiles OpenFreeMap serves from OpenMapTiles data.
   ///
   /// In en, this message translates to:
-  /// **'© OpenStreetMap · Data: {source}'**
-  String mapAttributionWithSource(String source);
+  /// **'© OpenStreetMap · © OpenMapTiles'**
+  String get mapAttributionOpenMapTiles;
+
+  /// The credit of the rendered tiles next to the flight data source.
+  ///
+  /// In en, this message translates to:
+  /// **'{attribution} · Data: {source}'**
+  String mapAttributionWithSource(String attribution, String source);
 
   /// Title of the map legend that names the trail color of every source.
   ///
@@ -450,11 +456,11 @@ abstract class AppLocalizations {
   /// **'{value} km/h'**
   String mapSheetSpeedValue(String value);
 
-  /// No description provided for @mapSheetSource.
+  /// The flight data source next to the credit of the rendered tiles.
   ///
   /// In en, this message translates to:
-  /// **'Source: {source} · © OpenStreetMap'**
-  String mapSheetSource(String source);
+  /// **'Source: {source} · {attribution}'**
+  String mapSheetSource(String source, String attribution);
 
   /// Link in the sheet of a flight without signal that switches to the next source.
   ///

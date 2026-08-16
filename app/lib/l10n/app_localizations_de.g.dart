@@ -161,8 +161,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapAttributionOpenStreetMap => '© OpenStreetMap';
 
   @override
-  String mapAttributionWithSource(String source) {
-    return '© OpenStreetMap · Daten: $source';
+  String get mapAttributionOpenMapTiles => '© OpenStreetMap · © OpenMapTiles';
+
+  @override
+  String mapAttributionWithSource(String attribution, String source) {
+    return '$attribution · Daten: $source';
   }
 
   @override
@@ -222,8 +225,8 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String mapSheetSource(String source) {
-    return 'Quelle: $source · © OpenStreetMap';
+  String mapSheetSource(String source, String attribution) {
+    return 'Quelle: $source · $attribution';
   }
 
   @override

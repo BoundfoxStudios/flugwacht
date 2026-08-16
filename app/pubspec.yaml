@@ -56,6 +56,8 @@ dependencies:
   lat_lng_to_timezone: ^0.2.0
   shared_preferences: ^2.5.5
   package_info_plus: ^10.2.1
+  vector_map_tiles: ^9.0.0-beta.11
+  vector_tile_renderer: ^6.1.0
 
 dev_dependencies:
   flutter_test:

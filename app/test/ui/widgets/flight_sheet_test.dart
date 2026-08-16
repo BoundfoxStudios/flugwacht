@@ -405,7 +405,10 @@ void main() {
 
     await openSheet(tester);
 
-    expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+    expect(
+      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('explains the compared trail instead of the local time', (
@@ -428,7 +431,10 @@ void main() {
     await openSheet(tester);
 
     expect(find.text('11,278 m'), findsOneWidget);
-    expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+    expect(
+      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
+      findsOneWidget,
+    );
   });
 
   group('try another source', () {
@@ -476,7 +482,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(sourceSetting.activeId.value, SourceId.adsbfi);
-      expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
+      expect(
+        find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('keeps the link tappable at 44 pixels', (tester) async {
@@ -511,7 +520,10 @@ void main() {
     await sourceSetting.select(SourceId.adsbfi);
     await tester.pump();
 
-    expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
+    expect(
+      find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('reports the flight it was swiped to', (tester) async {

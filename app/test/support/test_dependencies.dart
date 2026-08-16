@@ -10,6 +10,7 @@ import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/data/source_adapter.dart';
 import 'package:flugwacht/data/source_setting.dart';
+import 'package:flugwacht/data/vector_tile_source.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/source_id.dart';
@@ -22,6 +23,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
+import 'package:signals/signals.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 const testAirlinesCsv =
     'Code,Name,ICAO,IATA,PositioningFlightPattern,CharterFlightPattern\n'
@@ -60,10 +63,21 @@ Future<GoRouter> createTestAppRouter() async => createAppRouter(
   tileSources: testTileSources(),
 );
 
-/// Tiles from a stub provider under a stand-in package name, so no widget
-/// test loads a tile over the network.
-MapTileSources testTileSources() => MapTileSources(
-  userAgentPackageName: 'com.boundfoxstudios.apps.flugwacht',
+/// Tiles from stub providers under a stand-in package name, so no widget test
+/// loads a tile over the network — and none writes into a platform directory
+/// the test binding does not have.
+MapTileSources testTileSources({
+  String userAgentPackageName = 'com.boundfoxstudios.apps.flugwacht',
+  bool withVectorTiles = false,
+}) => MapTileSources(
+  userAgentPackageName: userAgentPackageName,
+  vectorTileProviders: signal(
+    withVectorTiles
+        ? TileProviders({
+            VectorTileSource.styleSourceName: StubVectorTileProvider(),
+          })
+        : null,
+  ),
   tileProvider: StubTileProvider(),
 );
 
@@ -118,6 +132,21 @@ class FakeFlightRepository implements FlightRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+/// Serves an empty tile so no widget test ever requests a vector tile.
+class StubVectorTileProvider extends VectorTileProvider {
+  @override
+  int get maximumZoom => 14;
+
+  @override
+  int get minimumZoom => 0;
+
+  @override
+  TileOffset get tileOffset => TileOffset.DEFAULT;
+
+  @override
+  Future<Uint8List> provide(TileIdentity tile) async => Uint8List(0);
 }
 
 /// Serves a transparent pixel so no widget test ever requests a map tile.

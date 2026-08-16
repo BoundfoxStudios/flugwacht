@@ -4,13 +4,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:signals/signals_flutter.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../domain/fix.dart';
 import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/map_style.dart';
 import '../../domain/source_id.dart';
 import '../../domain/trail_point.dart';
+import '../../l10n/app_localizations.g.dart';
 import '../theme/app_tokens.dart';
+import '../theme/reduced_map_theme.dart';
 
 /// Zoom for a flight whose points are one spot on the globe — a flight without
 /// a route, or one whose trail has not moved away from it yet.
@@ -49,17 +54,44 @@ CameraFit? cameraFitFor(List<LatLng> points, {required EdgeInsets padding}) {
 
 /// Where the map takes its tiles from and how the app identifies itself while
 /// asking for them — the OSM tile usage policy expects the real bundle ID.
-@immutable
 class MapTileSources {
-  const MapTileSources({required this.userAgentPackageName, this.tileProvider});
+  const MapTileSources({
+    required this.userAgentPackageName,
+    required this.vectorTileProviders,
+    this.tileProvider,
+  });
 
   final String userAgentPackageName;
+
+  /// Null until the OpenFreeMap TileJSON named the planet run to read from.
+  final ReadonlySignal<TileProviders?> vectorTileProviders;
 
   /// Injectable so tests render without loading tiles over the network.
   final TileProvider? tileProvider;
 }
 
-Widget mapTiles({required MapColors colors, required MapTileSources sources}) {
+/// The credit the rendered ground requires: OpenFreeMap serves the reduced
+/// style from OpenMapTiles data and asks to be credited for it on top of
+/// OpenStreetMap, the raster style credits OpenStreetMap alone.
+String mapTileAttribution(AppLocalizations localizations, MapStyle style) =>
+    switch (style) {
+      MapStyle.reduced => localizations.mapAttributionOpenMapTiles,
+      MapStyle.rasterOsm => localizations.mapAttributionOpenStreetMap,
+    };
+
+Widget mapTiles({
+  required MapColors colors,
+  required MapStyle style,
+  required MapTileSources sources,
+}) => switch (style) {
+  MapStyle.reduced => _ReducedTiles(colors: colors, sources: sources),
+  MapStyle.rasterOsm => _rasterTiles(colors: colors, sources: sources),
+};
+
+Widget _rasterTiles({
+  required MapColors colors,
+  required MapTileSources sources,
+}) {
   final tiles = TileLayer(
     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     userAgentPackageName: sources.userAgentPackageName,
@@ -70,6 +102,28 @@ Widget mapTiles({required MapColors colors, required MapTileSources sources}) {
   return colors.tileFilter == null
       ? tiles
       : ColorFiltered(colorFilter: colors.tileFilter!, child: tiles);
+}
+
+/// The reduced style renders a real dark variant, so it never goes through the
+/// raster inversion.
+class _ReducedTiles extends StatelessWidget {
+  const _ReducedTiles({required this.colors, required this.sources});
+
+  final MapColors colors;
+  final MapTileSources sources;
+
+  @override
+  Widget build(BuildContext context) => SignalBuilder(
+    builder: (context) {
+      final providers = sources.vectorTileProviders.value;
+      return providers == null
+          ? const SizedBox.shrink()
+          : VectorTileLayer(
+              theme: reducedMapTheme(colors.brightness),
+              tileProviders: providers,
+            );
+    },
+  );
 }
 
 /// The sources that stitched the trail together.
@@ -215,6 +269,7 @@ const _darkTileFilter = ColorFilter.matrix(<double>[
 
 enum MapColors {
   light(
+    brightness: Brightness.light,
     mapBackground: AppColors.white,
     trail: AppColors.neutral700,
     airplanesTrail: AppColors.neutral500,
@@ -229,6 +284,7 @@ enum MapColors {
     pingOpacity: 0.5,
   ),
   dark(
+    brightness: Brightness.dark,
     mapBackground: AppColors.neutral800,
     trail: AppColors.neutral300,
     airplanesTrail: AppColors.neutral300,
@@ -245,6 +301,7 @@ enum MapColors {
   );
 
   const MapColors({
+    required this.brightness,
     required this.mapBackground,
     required this.trail,
     required this.airplanesTrail,
@@ -274,6 +331,7 @@ enum MapColors {
     SourceId.airplanes => airplanesTrail,
   };
 
+  final Brightness brightness;
   final Color mapBackground;
   final Color trail;
   final Color airplanesTrail;

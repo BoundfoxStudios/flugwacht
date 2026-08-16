@@ -11,6 +11,7 @@ import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/mini_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';
@@ -42,6 +43,7 @@ Future<void> pumpMiniMap(
   FlightRoute? route,
   List<TrailPoint> trail = const [],
   Brightness brightness = Brightness.light,
+  bool withVectorTiles = false,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -62,7 +64,7 @@ Future<void> pumpMiniMap(
                 route: route,
                 trail: trail,
                 state: state,
-                tileSources: testTileSources(),
+                tileSources: testTileSources(withVectorTiles: withVectorTiles),
               ),
             ),
           ),
@@ -71,6 +73,10 @@ Future<void> pumpMiniMap(
     ),
   );
   await tester.pump();
+  if (withVectorTiles) {
+    // The vector layer schedules its cache housekeeping three seconds out.
+    await tester.pump(const Duration(seconds: 3));
+  }
 }
 
 /// The amber of a live aircraft, tolerant of the contour anti-aliasing that
@@ -155,5 +161,11 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expectAmberAircraft(await renderedPixels(tester, _mapKey));
+  });
+
+  testWidgets('draws the reduced style', (tester) async {
+    await pumpMiniMap(tester, at: position(), withVectorTiles: true);
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
   });
 }

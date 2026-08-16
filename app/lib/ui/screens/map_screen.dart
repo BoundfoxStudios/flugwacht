@@ -9,6 +9,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../data/flight_repository.dart';
 import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/map_style.dart';
 import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../map_selection.dart';
@@ -154,7 +155,11 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   backgroundColor: colors.mapBackground,
                 ),
                 children: [
-                  mapTiles(colors: colors, sources: widget.tileSources),
+                  mapTiles(
+                    colors: colors,
+                    style: defaultMapStyle,
+                    sources: widget.tileSources,
+                  ),
                   if (selected != null && position != null) ...[
                     PolylineLayer(
                       polylines: flightPolylines(
@@ -371,14 +376,18 @@ class _AttributionChip extends StatelessWidget {
     child: Padding(
       padding: _padding,
       child: SignalBuilder(
-        builder: (context) => Text(
-          AppLocalizations.of(
-            context,
-          ).mapAttributionWithSource(sourceSetting.activeId.value.label),
-          style: AppTextStyles.attribution.copyWith(
-            color: AppColors.neutral400,
-          ),
-        ),
+        builder: (context) {
+          final localizations = AppLocalizations.of(context);
+          return Text(
+            localizations.mapAttributionWithSource(
+              mapTileAttribution(localizations, defaultMapStyle),
+              sourceSetting.activeId.value.label,
+            ),
+            style: AppTextStyles.attribution.copyWith(
+              color: AppColors.neutral400,
+            ),
+          );
+        },
       ),
     ),
   );

@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart' show LatLng;
 import '../../domain/fix.dart';
 import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/map_style.dart';
 import '../../domain/trail_point.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
@@ -103,7 +104,11 @@ class _MiniMapState extends State<MiniMap> {
               keepAlive: true,
             ),
             children: [
-              mapTiles(colors: colors, sources: widget.tileSources),
+              mapTiles(
+                colors: colors,
+                style: defaultMapStyle,
+                sources: widget.tileSources,
+              ),
               PolylineLayer(
                 polylines: flightPolylines(
                   colors: colors,
@@ -124,7 +129,7 @@ class _MiniMapState extends State<MiniMap> {
           right: AppSpacing.grid,
           bottom: AppSpacing.grid / 2,
           child: Text(
-            AppLocalizations.of(context).mapAttributionOpenStreetMap,
+            mapTileAttribution(AppLocalizations.of(context), defaultMapStyle),
             style: AppTextStyles.attribution.copyWith(
               color: AppColors.neutral400,
             ),

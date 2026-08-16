@@ -42,7 +42,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Settings | `shared_preferences` (`SharedPreferencesAsync`) for the active source, later the map style and the units |
 | Routing | `go_router` (tab shell map · list · more + modal "new flight" screen) |
 | Map (OSM raster) | `flutter_map` with OSM tiles; the tile user agent carries the bundle ID read via `package_info_plus`, caching is flutter_map's built-in tile cache at its defaults |
-| Map (reduced style) | open — decided in its milestone (maplibre_gl / custom style set) |
+| Map (reduced style) | `vector_map_tiles` renders OpenFreeMap's keyless OpenMapTiles vector tiles with a minimal theme built in Dart from the app tokens (light + dark); the tile template comes from the TileJSON because OpenFreeMap moves it with every weekly planet run |
 | HTTP | `http`, one source adapter behind an interface (sources are field-identical) |
 | Fonts | Bebas Neue + Barlow, bundled at build time — never downloaded at runtime; shipped as assets (plain pubspec `fonts:` or `google_fonts` with local files, decided in M1.3), OFL licenses included |
 | Localization | `flutter_localizations` + `intl` via gen-l10n (`l10n.yaml`, ARB files); English is the base/template language (`app_en.arb`), German the second language; device language selects the locale, English is the fallback; set up early (M1.6) so no string is ever hard-coded |
@@ -162,7 +162,7 @@ active state), no framework tests.
 - Fix normalization as defined in the domain concept (binding), trail points
   carry their source ID
 - Treat coverage gaps as a regular state, never as an error UI
-- Attribution visible (active source + © OpenStreetMap)
+- Attribution visible (active source + © OpenStreetMap, plus © OpenMapTiles while the reduced style renders)
 - `flutter analyze` + `flutter test` before every commit; conventional commits,
   title line only
 - Take design tokens and measurements pixel-perfect from the handoff README
@@ -222,7 +222,6 @@ handoff README.
 
 ## Open Questions
 
-- Technology for the reduced map style (decided in M11)
 - Background polling on iOS (M14, with the user)
 - FA Pro kit setup may need the user's license access on the host
 - Content of the about/licenses page (M15)

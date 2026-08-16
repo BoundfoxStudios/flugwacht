@@ -6,6 +6,7 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/map_style.dart';
 import '../../domain/signal_age.dart';
 import '../../domain/source_id.dart';
 import '../../domain/unit_conversion.dart';
@@ -15,6 +16,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'map_visuals.dart';
 import 'no_signal_info_box.dart';
 import 'pager_dots.dart';
 import 'state_timeline.dart';
@@ -335,7 +337,10 @@ class _FlightPage extends StatelessWidget {
   Widget _footer(AppLocalizations localizations) {
     final activeId = sourceSetting.activeId.value;
     final attribution = Text(
-      localizations.mapSheetSource(activeId.label),
+      localizations.mapSheetSource(
+        activeId.label,
+        mapTileAttribution(localizations, defaultMapStyle),
+      ),
       style: AppTextStyles.caption.copyWith(color: colors.footer),
     );
     if (entry.state != FlightState.noSignal) {

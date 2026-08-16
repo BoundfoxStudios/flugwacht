@@ -30,7 +30,7 @@ void main() {
   testWidgets('switching tabs shows the selected screen', (tester) async {
     await pumpApp(tester);
 
-    await tester.tap(find.text('List'));
+    await tester.tap(find.text('Flights'));
     await tester.pumpAndSettle();
     expect(find.byType(ListScreen), findsOneWidget);
 
@@ -70,7 +70,7 @@ void main() {
   ) async {
     await pumpApp(tester);
 
-    await tester.tap(find.text('List'));
+    await tester.tap(find.text('Flights'));
     await tester.pumpAndSettle();
     // A fresh install has no flight, so the empty state carries the only way
     // into the modal.

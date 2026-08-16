@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabList.
   ///
   /// In en, this message translates to:
-  /// **'List'**
+  /// **'Flights'**
   String get tabList;
 
   /// No description provided for @tabMore.

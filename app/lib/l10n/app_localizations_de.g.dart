@@ -15,7 +15,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tabMap => 'Karte';
 
   @override
-  String get tabList => 'Liste';
+  String get tabList => 'Flüge';
 
   @override
   String get tabMore => 'Mehr';

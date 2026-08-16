@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 
+class AppTab {
+  const AppTab({required this.icon, required this.label});
+
+  final FaIconData icon;
+  final String label;
+}
+
 class AppTabBar extends StatelessWidget {
   const AppTabBar({
-    required this.labels,
+    required this.tabs,
     required this.currentIndex,
     required this.onTabSelected,
     super.key,
   });
 
   static const height = 76.0;
+  static const _iconSize = 20.0;
+  static const _iconGap = 6.0;
 
-  final List<String> labels;
+  final List<AppTab> tabs;
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
 
@@ -34,10 +44,10 @@ class AppTabBar extends StatelessWidget {
           height: height,
           child: Row(
             children: [
-              for (final (index, label) in labels.indexed)
+              for (final (index, tab) in tabs.indexed)
                 Expanded(
                   child: _TabItem(
-                    label: label,
+                    tab: tab,
                     isActive: index == currentIndex,
                     colors: colors,
                     onSelected: () => onTabSelected(index),
@@ -88,13 +98,13 @@ enum _TabBarColors {
 
 class _TabItem extends StatefulWidget {
   const _TabItem({
-    required this.label,
+    required this.tab,
     required this.isActive,
     required this.colors,
     required this.onSelected,
   });
 
-  final String label;
+  final AppTab tab;
   final bool isActive;
   final _TabBarColors colors;
   final VoidCallback onSelected;
@@ -108,7 +118,7 @@ class _TabItemState extends State<_TabItem> {
 
   @override
   Widget build(BuildContext context) {
-    final labelColor = switch ((widget.isActive, _isPressed)) {
+    final color = switch ((widget.isActive, _isPressed)) {
       (true, false) => widget.colors.active,
       (true, true) => widget.colors.activePressed,
       (false, false) => widget.colors.inactive,
@@ -129,9 +139,27 @@ class _TabItemState extends State<_TabItem> {
             fit: StackFit.expand,
             children: [
               Center(
-                child: Text(
-                  widget.label,
-                  style: AppTextStyles.tabLabel.copyWith(color: labelColor),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: AppTabBar._iconGap,
+                  children: [
+                    FaIcon(
+                      widget.tab.icon,
+                      size: AppTabBar._iconSize,
+                      color: color,
+                    ),
+                    // The bar height is fixed, so a text scale that no longer
+                    // fits shrinks the label instead of the icon.
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          widget.tab.label,
+                          style: AppTextStyles.tabLabel.copyWith(color: color),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (widget.isActive)

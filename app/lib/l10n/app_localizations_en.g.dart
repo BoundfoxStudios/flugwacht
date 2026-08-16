@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabMap => 'Map';
 
   @override
-  String get tabList => 'List';
+  String get tabList => 'Flights';
 
   @override
   String get tabMore => 'More';

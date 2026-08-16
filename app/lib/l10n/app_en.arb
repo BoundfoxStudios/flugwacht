@@ -2,7 +2,7 @@
   "@@locale": "en",
   "appTitle": "Flugwacht",
   "tabMap": "Map",
-  "tabList": "List",
+  "tabList": "Flights",
   "tabMore": "More",
   "listTitle": "Flights",
   "listHeaderDateFormat": "EEE, MMMM d",

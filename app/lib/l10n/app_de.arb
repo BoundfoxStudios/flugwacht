@@ -2,7 +2,7 @@
   "@@locale": "de",
   "appTitle": "Flugwacht",
   "tabMap": "Karte",
-  "tabList": "Liste",
+  "tabList": "Flüge",
   "tabMore": "Mehr",
   "listTitle": "Flüge",
   "listHeaderDateFormat": "ccc, d. MMMM",

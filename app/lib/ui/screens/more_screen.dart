@@ -8,7 +8,6 @@ import '../../data/notification_service.dart';
 import '../../data/notification_setting.dart';
 import '../../data/source_setting.dart';
 import '../../data/units_setting.dart';
-import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
@@ -60,7 +59,6 @@ class MoreScreen extends StatelessWidget {
                     notificationService: notificationService,
                   ),
                   _AboutCard(version: packageInfo.version),
-                  const _DataFootnote(),
                 ],
               ),
             ),
@@ -134,22 +132,4 @@ class _AboutCard extends StatelessWidget {
       ],
     );
   }
-}
-
-class _DataFootnote extends StatelessWidget {
-  const _DataFootnote();
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.grid),
-    child: Text(
-      AppLocalizations.of(context).settingsDataFootnote(
-        selectableSourceIds.map((sourceId) => sourceId.licenseLabel).join(', '),
-      ),
-      style: AppTextStyles.caption.copyWith(
-        color: Theme.of(context).textTheme.labelSmall?.color,
-        height: 1.5,
-      ),
-    ),
-  );
 }

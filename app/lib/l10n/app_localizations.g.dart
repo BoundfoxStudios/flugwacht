@@ -654,12 +654,6 @@ abstract class AppLocalizations {
   /// **'Landed'**
   String get settingsNotificationLanded;
 
-  /// No description provided for @settingsNotificationsFootnote.
-  ///
-  /// In en, this message translates to:
-  /// **'Local on your device — no account, no server.'**
-  String get settingsNotificationsFootnote;
-
   /// No description provided for @settingsNotificationsDelivery.
   ///
   /// In en, this message translates to:
@@ -743,12 +737,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Flugwacht on GitHub'**
   String get aboutGithub;
-
-  /// Credits the sources the app offers; the list carries each source's license.
-  ///
-  /// In en, this message translates to:
-  /// **'Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.'**
-  String settingsDataFootnote(String sources);
 
   /// No description provided for @notificationDepartedBody.
   ///

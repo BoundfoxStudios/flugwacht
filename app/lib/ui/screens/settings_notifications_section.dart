@@ -101,10 +101,6 @@ class _SettingsNotificationsSectionState
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
         ),
-        Text(
-          localizations.settingsNotificationsFootnote,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
       ],
     );
   }

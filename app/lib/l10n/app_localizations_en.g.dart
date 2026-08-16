@@ -350,10 +350,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsNotificationLanded => 'Landed';
 
   @override
-  String get settingsNotificationsFootnote =>
-      'Local on your device — no account, no server.';
-
-  @override
   String get settingsNotificationsDelivery =>
       'Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.';
 
@@ -403,11 +399,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutGithub => 'Flugwacht on GitHub';
-
-  @override
-  String settingsDataFootnote(String sources) {
-    return 'Data: $sources — free for private use, community networks without warranty. Map © OpenStreetMap.';
-  }
 
   @override
   String get notificationDepartedBody => 'The flight has taken off.';

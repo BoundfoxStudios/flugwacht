@@ -60,11 +60,6 @@ bool isSelected(WidgetTester tester, String label) => tester
     .widget<AppRadioRow>(find.widgetWithText(AppRadioRow, label))
     .isSelected;
 
-String textContaining(WidgetTester tester, String fragment) => tester
-    .widgetList<Text>(find.byType(Text))
-    .map((text) => text.data ?? '')
-    .firstWhere((data) => data.contains(fragment));
-
 void main() {
   testWidgets('offers the selectable sources with the active one marked', (
     tester,
@@ -177,17 +172,5 @@ void main() {
     await pumpMoreScreen(tester, version: '2.7.0');
 
     expect(find.textContaining('2.7.0'), findsOneWidget);
-  });
-
-  testWidgets('credits only the selectable sources in the data footnote', (
-    tester,
-  ) async {
-    await pumpMoreScreen(tester);
-
-    final footnote = textContaining(tester, 'ODbL');
-    expect(footnote, contains('adsb.lol (ODbL)'));
-    expect(footnote, contains('adsb.fi'));
-    expect(footnote, isNot(contains('airplanes.live')));
-    expect(footnote, contains('OpenStreetMap'));
   });
 }

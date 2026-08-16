@@ -364,7 +364,6 @@
   "settingsNotificationDeparted": "Departed",
   "settingsNotificationArrivingSoon": "Arriving soon (~30 min)",
   "settingsNotificationLanded": "Landed",
-  "settingsNotificationsFootnote": "Local on your device — no account, no server.",
   "settingsNotificationsDelivery": "Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.",
   "settingsNotificationsDenied": "Notifications for Flugwacht are switched off in your system settings.",
   "settingsNotificationsUnavailable": "This device could not set notifications up, so the switches above stay without effect.",
@@ -401,15 +400,6 @@
   "aboutLicenses": "Open-source licenses",
   "aboutBoundfox": "A project by Boundfox Studios",
   "aboutGithub": "Flugwacht on GitHub",
-  "settingsDataFootnote": "Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.",
-  "@settingsDataFootnote": {
-    "description": "Credits the sources the app offers; the list carries each source's license.",
-    "placeholders": {
-      "sources": {
-        "type": "String"
-      }
-    }
-  },
   "notificationDepartedBody": "The flight has taken off.",
   "notificationArrivingSoonBody": "Arriving in about 30 minutes.",
   "notificationLandedBody": "The flight has landed.",

@@ -35,6 +35,11 @@ class FlightNotifier {
   final _pendingArrivingSoonAt = <int, DateTime>{};
 
   Future<void> trackingChanged(Flight flight, FlightTracking tracking) async {
+    // A marker says the user was told. Nothing reaches them through a service
+    // the device could not set up, so nothing may be marked either.
+    if (_service.permission.value == NotificationPermission.unavailable) {
+      return;
+    }
     final updated = flight.copyWith(tracking: tracking);
     final plan = planNotifications(
       flight: updated,

@@ -1,4 +1,5 @@
 import 'package:flugwacht/data/flight_notifier.dart';
+import 'package:flugwacht/data/notification_service.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
@@ -82,6 +83,29 @@ void main() {
 
     expect(service.shown, [(FlightNotification.departed, 7)]);
     expect(repository.notificationMarks, [(7, FlightNotification.departed)]);
+  });
+
+  test('marks nothing while the service is unavailable', () async {
+    final unavailableService = UnavailableNotificationService();
+    addTearDown(unavailableService.dispose);
+    final quietNotifier = FlightNotifier(
+      repository: repository,
+      service: unavailableService,
+      setting: setting,
+      copy: (kind, flight) => (title: flight.lookupValue, body: kind.name),
+      clock: () => now,
+    );
+
+    await quietNotifier.trackingChanged(
+      _flight,
+      FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 30),
+        hasBeenAirborne: true,
+      ),
+    );
+    await quietNotifier.reconcileDeliveredReminders();
+
+    expect(repository.notificationMarks, isEmpty);
   });
 
   test('delivers nothing while its switch is off', () async {

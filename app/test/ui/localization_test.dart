@@ -10,7 +10,7 @@ Future<void> pumpAppWithDeviceLocales(
 ) async {
   tester.platformDispatcher.localesTestValue = locales;
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-  await tester.pumpWidget(FlugwachtApp(router: createTestAppRouter()));
+  await tester.pumpWidget(FlugwachtApp(router: await createTestAppRouter()));
   await tester.pumpAndSettle();
 }
 

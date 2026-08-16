@@ -366,7 +366,19 @@ abstract class AppLocalizations {
   /// **'© OpenStreetMap · Data: {source}'**
   String mapAttributionWithSource(String source);
 
-  /// Stands in for the arrival time until the estimate of M9 exists.
+  /// Title of the map legend that names the trail color of every source.
+  ///
+  /// In en, this message translates to:
+  /// **'TRAIL BY SOURCE'**
+  String get mapLegendTitle;
+
+  /// Marks the legend row of the source the app is polling right now.
+  ///
+  /// In en, this message translates to:
+  /// **'active'**
+  String get mapLegendActive;
+
+  /// Stands in for the arrival time of a flight without an estimate.
   ///
   /// In en, this message translates to:
   /// **'–:–'**
@@ -443,6 +455,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source: {source} · © OpenStreetMap'**
   String mapSheetSource(String source);
+
+  /// Link in the sheet of a flight without signal that switches to the next source.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another source'**
+  String get mapSheetTryAnotherSource;
+
+  /// Explains the multi-colored trail while points of several sources are on the map.
+  ///
+  /// In en, this message translates to:
+  /// **'The trail survives switching — every point knows its source.'**
+  String get mapSheetSourceComparison;
 
   /// No description provided for @flightArrivalLabel.
   ///

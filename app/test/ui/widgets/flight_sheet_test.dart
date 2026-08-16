@@ -1,8 +1,10 @@
+import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_sections.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -13,6 +15,8 @@ import 'package:flugwacht/ui/widgets/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+
+import '../../support/test_dependencies.dart';
 
 const _origin = RouteAirport(
   icaoCode: 'EDDF',
@@ -98,7 +102,10 @@ Future<List<int>> pumpFlightSheet(
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
   DateTime Function()? clock,
+  SourceSetting? sourceSetting,
+  bool showsSourceComparison = false,
 }) async {
+  final setting = sourceSetting ?? await createTestSourceSetting();
   final selections = <int>[];
   await tester.pumpWidget(
     MaterialApp(
@@ -116,6 +123,8 @@ Future<List<int>> pumpFlightSheet(
             entries: entries ?? [entry ?? _entry()],
             selectedIndex: selectedIndex,
             onSelected: selections.add,
+            sourceSetting: setting,
+            showsSourceComparison: showsSourceComparison,
             clock: clock ?? () => _now,
           ),
         ),
@@ -397,6 +406,112 @@ void main() {
     await openSheet(tester);
 
     expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+  });
+
+  testWidgets('explains the compared trail instead of the local time', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, showsSourceComparison: true);
+
+    expect(
+      find.text('The trail survives switching — every point knows its source.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Local time'), findsNothing);
+  });
+
+  testWidgets('keeps the rest of the open sheet unchanged while comparing', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, showsSourceComparison: true);
+
+    await openSheet(tester);
+
+    expect(find.text('11,278 m'), findsOneWidget);
+    expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+  });
+
+  group('try another source', () {
+    Finder linkTapTarget() => find.ancestor(
+      of: find.text('Try another source'),
+      matching: find.byType(GestureDetector),
+    );
+
+    testWidgets('offers another source to a flight without signal', (
+      tester,
+    ) async {
+      await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      await openSheet(tester);
+
+      expect(find.text('Try another source'), findsOneWidget);
+    });
+
+    testWidgets('offers no other source while the signal is there', (
+      tester,
+    ) async {
+      await pumpFlightSheet(tester);
+
+      await openSheet(tester);
+
+      expect(find.text('Try another source'), findsNothing);
+    });
+
+    testWidgets('keeps the link out of the peek', (tester) async {
+      await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      expect(find.text('Try another source'), findsNothing);
+    });
+
+    testWidgets('switches to the next source on a tap', (tester) async {
+      final sourceSetting = await createTestSourceSetting();
+      await pumpFlightSheet(
+        tester,
+        entry: _entry(state: FlightState.noSignal),
+        sourceSetting: sourceSetting,
+      );
+      await openSheet(tester);
+
+      await tester.tap(linkTapTarget().first);
+      await tester.pumpAndSettle();
+
+      expect(sourceSetting.activeId.value, SourceId.adsbfi);
+      expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
+    });
+
+    testWidgets('keeps the link tappable at 44 pixels', (tester) async {
+      await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      await openSheet(tester);
+
+      expect(
+        tester.getSize(linkTapTarget().first).height,
+        greaterThanOrEqualTo(44),
+      );
+    });
+
+    testWidgets('offers another source in German as well', (tester) async {
+      await pumpFlightSheet(
+        tester,
+        entry: _entry(state: FlightState.noSignal),
+        locale: const Locale('de'),
+      );
+
+      await openSheet(tester);
+
+      expect(find.text('Andere Quelle probieren'), findsOneWidget);
+    });
+  });
+
+  testWidgets('names the source it was switched to', (tester) async {
+    final sourceSetting = await createTestSourceSetting();
+    await pumpFlightSheet(tester, sourceSetting: sourceSetting);
+    await openSheet(tester);
+
+    await sourceSetting.select(SourceId.adsbfi);
+    await tester.pump();
+
+    expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
   });
 
   testWidgets('reports the flight it was swiped to', (tester) async {

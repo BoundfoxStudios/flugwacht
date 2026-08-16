@@ -126,6 +126,14 @@
       }
     }
   },
+  "mapLegendTitle": "TRAIL BY SOURCE",
+  "@mapLegendTitle": {
+    "description": "Title of the map legend that names the trail color of every source."
+  },
+  "mapLegendActive": "active",
+  "@mapLegendActive": {
+    "description": "Marks the legend row of the source the app is polling right now."
+  },
   "mapSheetArrivalPlaceholder": "–:–",
   "@mapSheetArrivalPlaceholder": {
     "description": "Stands in for the arrival time of a flight without an estimate."
@@ -204,6 +212,14 @@
         "type": "String"
       }
     }
+  },
+  "mapSheetTryAnotherSource": "Try another source",
+  "@mapSheetTryAnotherSource": {
+    "description": "Link in the sheet of a flight without signal that switches to the next source."
+  },
+  "mapSheetSourceComparison": "The trail survives switching — every point knows its source.",
+  "@mapSheetSourceComparison": {
+    "description": "Explains the multi-colored trail while points of several sources are on the map."
   },
   "flightArrivalLabel": "Approx. arrival",
   "flightArrivalTimeFormat": "h:mm a",

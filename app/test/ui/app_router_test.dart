@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 import '../support/test_dependencies.dart';
 
 Future<GoRouter> pumpApp(WidgetTester tester) async {
-  final router = createTestAppRouter();
+  final router = await createTestAppRouter();
   await tester.pumpWidget(FlugwachtApp(router: router));
   await tester.pumpAndSettle();
   return router;

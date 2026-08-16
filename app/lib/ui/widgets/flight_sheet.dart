@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:signals/signals_flutter.dart';
 
+import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/signal_age.dart';
 import '../../domain/source_id.dart';
@@ -24,7 +26,9 @@ class FlightSheet extends StatefulWidget {
     required this.entries,
     required this.selectedIndex,
     required this.onSelected,
+    required this.sourceSetting,
     super.key,
+    this.showsSourceComparison = false,
     this.onOpenChanged,
     this.clock = DateTime.now,
   });
@@ -51,6 +55,12 @@ class FlightSheet extends StatefulWidget {
 
   /// Reports the page the sheet settled on, so the selection follows a swipe.
   final ValueChanged<int> onSelected;
+
+  final SourceSetting sourceSetting;
+
+  /// Whether the selected flight's trail carries points of several sources;
+  /// its page then explains the colors instead of naming the local time.
+  final bool showsSourceComparison;
 
   /// Lets the map hide what the open sheet would cover.
   final ValueChanged<bool>? onOpenChanged;
@@ -154,7 +164,8 @@ class _FlightSheetState extends State<FlightSheet> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              for (final entry in widget.entries)
+                              for (final (index, entry)
+                                  in widget.entries.indexed)
                                 SizedBox(
                                   width: constraints.maxWidth,
                                   child: _FlightPage(
@@ -163,6 +174,10 @@ class _FlightSheetState extends State<FlightSheet> {
                                     isOpen: _isOpen,
                                     gap: gap,
                                     now: _now,
+                                    sourceSetting: widget.sourceSetting,
+                                    showsSourceComparison:
+                                        widget.showsSourceComparison &&
+                                        index == widget.selectedIndex,
                                   ),
                                 ),
                             ],
@@ -249,6 +264,8 @@ class _FlightPage extends StatelessWidget {
     required this.isOpen,
     required this.gap,
     required this.now,
+    required this.sourceSetting,
+    required this.showsSourceComparison,
   });
 
   final FlightListEntry entry;
@@ -256,6 +273,8 @@ class _FlightPage extends StatelessWidget {
   final bool isOpen;
   final double gap;
   final DateTime now;
+  final SourceSetting sourceSetting;
+  final bool showsSourceComparison;
 
   @override
   Widget build(BuildContext context) {
@@ -288,7 +307,9 @@ class _FlightPage extends StatelessWidget {
           _ArrivalRow(arrival: arrival, colors: colors),
           SizedBox(height: gap),
           Text(
-            arrival.localTime,
+            showsSourceComparison
+                ? localizations.mapSheetSourceComparison
+                : arrival.localTime,
             style: AppTextStyles.secondary.copyWith(color: colors.arrivalLabel),
           ),
         ],
@@ -305,14 +326,65 @@ class _FlightPage extends StatelessWidget {
             NoSignalInfoBox(age: signalAge),
           ],
           SizedBox(height: gap),
-          Text(
-            localizations.mapSheetSource(activeSourceId.label),
-            style: AppTextStyles.caption.copyWith(color: colors.footer),
-          ),
+          SignalBuilder(builder: (context) => _footer(localizations)),
         ],
       ],
     );
   }
+
+  Widget _footer(AppLocalizations localizations) {
+    final activeId = sourceSetting.activeId.value;
+    final attribution = Text(
+      localizations.mapSheetSource(activeId.label),
+      style: AppTextStyles.caption.copyWith(color: colors.footer),
+    );
+    if (entry.state != FlightState.noSignal) {
+      return attribution;
+    }
+    return Row(
+      children: [
+        Expanded(child: attribution),
+        _AnotherSourceLink(
+          onTap: () =>
+              unawaited(sourceSetting.select(nextSelectableSourceId(activeId))),
+        ),
+      ],
+    );
+  }
+}
+
+/// Switches a flight the active source cannot see to the next one; until the
+/// settings of M12 arrive this is the only switch the app offers.
+class _AnotherSourceLink extends StatelessWidget {
+  const _AnotherSourceLink({required this.onTap});
+
+  static const _minimumTapTarget = 44.0;
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: onTap,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: _minimumTapTarget),
+      child: Padding(
+        padding: const EdgeInsets.only(left: AppSpacing.cardPadding),
+        child: Center(
+          widthFactor: 1,
+          child: Text(
+            AppLocalizations.of(context).mapSheetTryAnotherSource,
+            style: AppTextStyles.secondary.copyWith(
+              color: switch (Theme.of(context).brightness) {
+                Brightness.light => AppColors.linkLight,
+                Brightness.dark => AppColors.linkDark,
+              },
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _ArrivalRow extends StatelessWidget {

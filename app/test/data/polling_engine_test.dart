@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/polling_engine.dart';
+import 'package:flugwacht/data/readsb_source_adapter.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
@@ -11,6 +12,8 @@ import 'package:flugwacht/domain/flight_day_window.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 import '../support/test_dependencies.dart';
 
@@ -72,7 +75,8 @@ void main() {
     final adapter = FakeSourceAdapter();
     final engine = PollingEngine(
       repository: repository,
-      adapter: adapter,
+      adapters: {SourceId.adsblol: adapter},
+      activeSourceId: () => SourceId.adsblol,
       airlineDirectory: createTestAirlineDirectory(),
       clock: () => noon.add(async.elapsed),
     )..start();
@@ -595,6 +599,104 @@ void main() {
         async.flushMicrotasks();
 
         expect(started.adapter.registrationRequests, hasLength(1));
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+  });
+
+  group('active source', () {
+    ({PollingEngine engine, FakeFlightRepository repository}) startEngineOn(
+      FakeAsync async,
+      SourceId Function() activeSourceId,
+      List<String> requestedUrls, {
+      List<Flight> flights = const [],
+    }) {
+      final client = MockClient((request) async {
+        requestedUrls.add(request.url.toString());
+        return http.Response(
+          '{"ac": [{"hex": "3c64c6", "flight": "DLH400", "lat": 49.875687, '
+          '"lon": 7.888834, "seen_pos": 1}], '
+          '"now": ${noon.add(async.elapsed).millisecondsSinceEpoch}}',
+          200,
+        );
+      });
+      final repository = FakeFlightRepository();
+      final engine = PollingEngine(
+        repository: repository,
+        adapters: {
+          for (final sourceId in SourceId.values)
+            sourceId: ReadsbSourceAdapter(sourceId: sourceId, client: client),
+        },
+        activeSourceId: activeSourceId,
+        airlineDirectory: createTestAirlineDirectory(),
+        clock: () => noon.add(async.elapsed),
+      )..start();
+      repository.emit(flights);
+      return (engine: engine, repository: repository);
+    }
+
+    test('polls through the adapter of the source that is active', () {
+      fakeAsync((async) {
+        final requestedUrls = <String>[];
+        var activeSourceId = SourceId.adsblol;
+        final started = startEngineOn(
+          async,
+          () => activeSourceId,
+          requestedUrls,
+          flights: [
+            flightWith(
+              hexAddress: '3c64c6',
+              expectedCallsign: 'DLH400',
+              latestPosition: positionAt(noon),
+            ),
+          ],
+        );
+        async.flushMicrotasks();
+        expect(requestedUrls.single, 'https://api.adsb.lol/v2/hex/3c64c6');
+
+        activeSourceId = SourceId.adsbfi;
+        async.elapse(const Duration(seconds: 5));
+
+        expect(
+          requestedUrls.last,
+          'https://opendata.adsb.fi/api/v2/hex/3c64c6',
+        );
+        expect(started.repository.trailAppends.last.$3, SourceId.adsbfi);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('keeps one adapter per source, so its rate limit spans flights', () {
+      fakeAsync((async) {
+        final requestedUrls = <String>[];
+        final started = startEngineOn(
+          async,
+          () => SourceId.adsblol,
+          requestedUrls,
+          flights: [
+            flightWith(
+              hexAddress: '3c64c6',
+              expectedCallsign: 'DLH400',
+              latestPosition: positionAt(noon),
+            ),
+            flightWith(
+              id: 2,
+              lookupKind: FlightLookupKind.hexAddress,
+              lookupValue: '3c64c7',
+              latestPosition: positionAt(noon),
+            ),
+          ],
+        );
+
+        async.flushMicrotasks();
+        expect(requestedUrls, hasLength(1));
+
+        async.elapse(const Duration(seconds: 1));
+        expect(requestedUrls, hasLength(2));
 
         started.engine.stop();
         started.repository.dispose();

@@ -19,7 +19,8 @@ import 'source_adapter.dart';
 class PollingEngine with WidgetsBindingObserver {
   PollingEngine({
     required this._repository,
-    required this._adapter,
+    required this._adapters,
+    required this._activeSourceId,
     required this._airlineDirectory,
     this.clock = DateTime.now,
   });
@@ -27,7 +28,11 @@ class PollingEngine with WidgetsBindingObserver {
   static const _tickInterval = Duration(seconds: 1);
 
   final FlightRepository _repository;
-  final SourceAdapter _adapter;
+
+  /// One adapter per source, so each keeps its own rate limit.
+  final Map<SourceId, SourceAdapter> _adapters;
+
+  final SourceId Function() _activeSourceId;
   final AirlineDirectory _airlineDirectory;
   final DateTime Function() clock;
 
@@ -113,13 +118,14 @@ class PollingEngine with WidgetsBindingObserver {
   Future<void> _pollFlight(Flight flight) async {
     _runningLookups.add(flight.id);
     try {
+      final adapter = _adapters[_activeSourceId()]!;
       final window = FlightDayWindow.forDepartureDate(flight.departureDate);
       switch (planPollQuery(flight, _callsignCandidates(flight))) {
         case HexAddressPollQuery(:final hexAddress):
           await _applyOutcome(
             flight,
             _outcomeOf(
-              await _adapter.lookupByHexAddress(hexAddress),
+              await adapter.lookupByHexAddress(hexAddress),
               flight,
               HexAddressPollQuery(hexAddress),
               window,
@@ -129,7 +135,7 @@ class PollingEngine with WidgetsBindingObserver {
           await _applyOutcome(
             flight,
             _outcomeOf(
-              await _adapter.lookupByRegistration(registration),
+              await adapter.lookupByRegistration(registration),
               flight,
               RegistrationPollQuery(registration),
               window,
@@ -141,7 +147,7 @@ class PollingEngine with WidgetsBindingObserver {
               return;
             }
             final outcome = _outcomeOf(
-              await _adapter.lookupByCallsign(candidate),
+              await adapter.lookupByCallsign(candidate),
               flight,
               CallsignSearchPollQuery([candidate]),
               window,

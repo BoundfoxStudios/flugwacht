@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
@@ -93,6 +94,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   List<Flight> flights = const [],
   List<TrailPoint> trail = const [],
   MapSelection? selection,
+  SourceSetting? sourceSetting,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
 }) async {
@@ -100,6 +102,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   addTearDown(repository.dispose);
   final mapSelection = selection ?? MapSelection();
   addTearDown(mapSelection.dispose);
+  final setting = sourceSetting ?? await createTestSourceSetting();
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -112,6 +115,7 @@ Future<FakeFlightRepository> pumpMapScreen(
       home: MapScreen(
         flightRepository: repository,
         selection: mapSelection,
+        sourceSetting: setting,
         clock: () => _now,
         tileProvider: StubTileProvider(),
       ),
@@ -161,6 +165,7 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         flightRepository: repository,
         airlineDirectory: createTestAirlineDirectory(),
         routeLookup: FakeRouteLookup(),
+        sourceSetting: await createTestSourceSetting(),
         tileProvider: StubTileProvider(),
       ),
     ),
@@ -398,5 +403,86 @@ void main() {
     );
 
     expect(find.text('© OpenStreetMap · Daten: adsb.lol'), findsOneWidget);
+  });
+
+  group('source comparison', () {
+    List<TrailPoint> trailFrom(List<SourceId> sourceIds) => [
+      for (final (index, sourceId) in sourceIds.indexed)
+        TrailPoint(
+          timestamp: _now.subtract(Duration(minutes: 20 - index)),
+          latitude: 49 - index * 0.1,
+          longitude: 2,
+          sourceId: sourceId,
+        ),
+    ];
+
+    testWidgets('legends the trail once a second source delivered', (
+      tester,
+    ) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      expect(find.text('TRAIL BY SOURCE'), findsOneWidget);
+    });
+
+    testWidgets('leaves a single-source trail as it was', (tester) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsblol]),
+      );
+
+      expect(find.text('TRAIL BY SOURCE'), findsNothing);
+      expect(
+        polylines(tester).single,
+        isA<Polyline<Object>>()
+            .having((line) => line.color, 'color', MapColors.light.trail)
+            .having((line) => line.strokeWidth, 'strokeWidth', 2.5),
+      );
+    });
+
+    testWidgets('thickens the compared trail', (tester) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      expect(polylines(tester), hasLength(2));
+      expect(
+        polylines(tester).map((line) => line.strokeWidth),
+        everyElement(3.0),
+      );
+    });
+
+    testWidgets('hides the legend behind the open sheet', (tester) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      await tester.drag(find.byType(FlightSheet), const Offset(0, -160));
+      await tester.pump();
+
+      expect(find.text('TRAIL BY SOURCE'), findsNothing);
+    });
+  });
+
+  testWidgets('attributes the source it was switched to', (tester) async {
+    final sourceSetting = await createTestSourceSetting();
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      sourceSetting: sourceSetting,
+    );
+
+    await sourceSetting.select(SourceId.adsbfi);
+    await tester.pump();
+
+    expect(find.text('© OpenStreetMap · Data: adsb.fi'), findsOneWidget);
   });
 }

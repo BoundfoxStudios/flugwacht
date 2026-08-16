@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../data/airline_directory.dart';
 import '../data/flight_repository.dart';
 import '../data/route_lookup.dart';
+import '../data/source_setting.dart';
 import 'app_shell.dart';
 import 'map_selection.dart';
 import 'screens/list_screen.dart';
@@ -16,6 +17,7 @@ GoRouter createAppRouter({
   required FlightRepository flightRepository,
   required AirlineDirectory airlineDirectory,
   required RouteLookup routeLookup,
+  required SourceSetting sourceSetting,
   TileProvider? tileProvider,
 }) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -35,6 +37,7 @@ GoRouter createAppRouter({
                 builder: (context, state) => MapScreen(
                   flightRepository: flightRepository,
                   selection: mapSelection,
+                  sourceSetting: sourceSetting,
                   tileProvider: tileProvider,
                 ),
               ),

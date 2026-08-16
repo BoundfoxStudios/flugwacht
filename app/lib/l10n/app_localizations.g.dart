@@ -684,6 +684,24 @@ abstract class AppLocalizations {
   /// **'Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.'**
   String settingsDataFootnote(String sources);
 
+  /// No description provided for @notificationDepartedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The flight has taken off.'**
+  String get notificationDepartedBody;
+
+  /// No description provided for @notificationArrivingSoonBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Arriving in about 30 minutes.'**
+  String get notificationArrivingSoonBody;
+
+  /// No description provided for @notificationLandedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The flight has landed.'**
+  String get notificationLandedBody;
+
   /// No description provided for @notificationChannelName.
   ///
   /// In en, this message translates to:

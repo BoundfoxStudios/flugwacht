@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
+import 'package:flugwacht/data/flight_notifier.dart';
 import 'package:flugwacht/data/lookup_result.dart';
+import 'package:flugwacht/data/notification_service.dart';
 import 'package:flugwacht/data/polling_engine.dart';
 import 'package:flugwacht/data/readsb_source_adapter.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
@@ -9,6 +11,7 @@ import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
+import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,23 +68,43 @@ void main() {
 
   LookupResult successWith(Fix fix) => LookupSuccess([fix]);
 
+  FlightNotifier notifierFor(
+    FakeAsync async,
+    FakeFlightRepository repository,
+    NotificationService service,
+  ) => FlightNotifier(
+    repository: repository,
+    service: service,
+    setting: FakeNotificationSetting(),
+    copy: (kind, flight) => (title: flight.lookupValue, body: kind.name),
+    clock: () => noon.add(async.elapsed),
+  );
+
   ({
     PollingEngine engine,
     FakeFlightRepository repository,
     FakeSourceAdapter adapter,
+    FakeNotificationService notifications,
   })
   startEngine(FakeAsync async, List<Flight> flights) {
     final repository = FakeFlightRepository();
     final adapter = FakeSourceAdapter();
+    final notifications = createTestNotificationService();
     final engine = PollingEngine(
       repository: repository,
       adapters: {SourceId.adsblol: adapter},
       activeSourceId: () => SourceId.adsblol,
       airlineDirectory: createTestAirlineDirectory(),
+      notifier: notifierFor(async, repository, notifications),
       clock: () => noon.add(async.elapsed),
     )..start();
     repository.emit(flights);
-    return (engine: engine, repository: repository, adapter: adapter);
+    return (
+      engine: engine,
+      repository: repository,
+      adapter: adapter,
+      notifications: notifications,
+    );
   }
 
   test('searches the callsign candidates in order until one answers', () {
@@ -631,6 +654,11 @@ void main() {
         },
         activeSourceId: activeSourceId,
         airlineDirectory: createTestAirlineDirectory(),
+        notifier: notifierFor(
+          async,
+          repository,
+          createTestNotificationService(),
+        ),
         clock: () => noon.add(async.elapsed),
       )..start();
       repository.emit(flights);
@@ -720,6 +748,46 @@ void main() {
 
       expect(started.adapter.hexAddressRequests, hasLength(1));
 
+      started.repository.dispose();
+    });
+  });
+
+  test('notifies once when a waiting flight turns up airborne', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(hexAddress: '3c64c6', expectedCallsign: 'DLH400'),
+      ]);
+      started.adapter.results['3c64c6'] = successWith(
+        fixWith(callsign: 'DLH400', positionAtTimestamp: noon),
+      );
+
+      async
+        ..flushMicrotasks()
+        ..elapse(const Duration(seconds: 30));
+
+      expect(started.notifications.shown, [(FlightNotification.departed, 1)]);
+      expect(started.repository.notificationMarks, [
+        (1, FlightNotification.departed),
+      ]);
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  test('takes the arrival reminder of a deleted flight back', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [flightWith()]);
+      async.flushMicrotasks();
+
+      started.repository.emit(const []);
+      async.flushMicrotasks();
+
+      expect(started.notifications.cancelled, [
+        (FlightNotification.arrivingSoon, 1),
+      ]);
+
+      started.engine.stop();
       started.repository.dispose();
     });
   });

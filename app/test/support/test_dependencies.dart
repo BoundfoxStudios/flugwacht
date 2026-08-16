@@ -17,6 +17,7 @@ import 'package:flugwacht/data/units_setting.dart';
 import 'package:flugwacht/data/vector_tile_source.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/ui/app_router.dart';
@@ -99,6 +100,9 @@ class FakeNotificationService implements NotificationService {
 
   var permissionRequests = 0;
   var permissionRefreshes = 0;
+  final shown = <(FlightNotification, int)>[];
+  final scheduled = <(FlightNotification, int, DateTime)>[];
+  final cancelled = <(FlightNotification, int)>[];
 
   @override
   Future<void> requestPermission() async {
@@ -109,7 +113,56 @@ class FakeNotificationService implements NotificationService {
   @override
   Future<void> refreshPermission() async => permissionRefreshes++;
 
+  @override
+  Future<void> show(
+    FlightNotification kind, {
+    required int flightId,
+    required String title,
+    required String body,
+  }) async => shown.add((kind, flightId));
+
+  @override
+  Future<void> schedule(
+    FlightNotification kind, {
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) async => scheduled.add((kind, flightId, at));
+
+  @override
+  Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
+      cancelled.add((kind, flightId));
+
   void dispose() => permission.dispose();
+}
+
+/// Switch states without a preference store behind them, so a synchronous test
+/// can set them up in one line.
+class FakeNotificationSetting implements NotificationSetting {
+  FakeNotificationSetting({
+    this.enabled = const {
+      FlightNotification.departed,
+      FlightNotification.arrivingSoon,
+      FlightNotification.landed,
+    },
+  });
+
+  Set<FlightNotification> enabled;
+
+  @override
+  bool isEnabled(FlightNotification kind) => enabled.contains(kind);
+
+  @override
+  Future<void> select(
+    FlightNotification kind, {
+    required bool isEnabled,
+  }) async {
+    enabled = isEnabled ? {...enabled, kind} : ({...enabled}..remove(kind));
+  }
+
+  @override
+  void dispose() {}
 }
 
 FakeNotificationService createTestNotificationService({
@@ -166,6 +219,7 @@ class FakeFlightRepository implements FlightRepository {
   final trackingUpdates = <(int, FlightTracking)>[];
   final trailAppends = <(int, FixPosition, SourceId)>[];
   final identityUpdates = <(int, String?, String?)>[];
+  final notificationMarks = <(int, FlightNotification)>[];
 
   void emit(List<Flight> flights) => _flights.add(flights);
 
@@ -206,6 +260,13 @@ class FakeFlightRepository implements FlightRepository {
     required String? hexAddress,
     required String? expectedCallsign,
   }) async => identityUpdates.add((flightId, hexAddress, expectedCallsign));
+
+  @override
+  Future<void> markNotificationDelivered(
+    int flightId,
+    FlightNotification kind,
+    DateTime deliveredAt,
+  ) async => notificationMarks.add((flightId, kind));
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();

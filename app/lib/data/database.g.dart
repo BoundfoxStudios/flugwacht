@@ -390,6 +390,37 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         type: DriftSqlType.double,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _departedNotifiedAtMeta =
+      const VerificationMeta('departedNotifiedAt');
+  @override
+  late final GeneratedColumn<int> departedNotifiedAt = GeneratedColumn<int>(
+    'departed_notified_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _arrivingSoonNotifiedAtMeta =
+      const VerificationMeta('arrivingSoonNotifiedAt');
+  @override
+  late final GeneratedColumn<int> arrivingSoonNotifiedAt = GeneratedColumn<int>(
+    'arriving_soon_notified_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _landedNotifiedAtMeta = const VerificationMeta(
+    'landedNotifiedAt',
+  );
+  @override
+  late final GeneratedColumn<int> landedNotifiedAt = GeneratedColumn<int>(
+    'landed_notified_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -426,6 +457,9 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     latestIndicatedAirspeedKnots,
     latestMach,
     latestVerticalRateFeetPerMinute,
+    departedNotifiedAt,
+    arrivingSoonNotifiedAt,
+    landedNotifiedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -722,6 +756,33 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         ),
       );
     }
+    if (data.containsKey('departed_notified_at')) {
+      context.handle(
+        _departedNotifiedAtMeta,
+        departedNotifiedAt.isAcceptableOrUnknown(
+          data['departed_notified_at']!,
+          _departedNotifiedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('arriving_soon_notified_at')) {
+      context.handle(
+        _arrivingSoonNotifiedAtMeta,
+        arrivingSoonNotifiedAt.isAcceptableOrUnknown(
+          data['arriving_soon_notified_at']!,
+          _arrivingSoonNotifiedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('landed_notified_at')) {
+      context.handle(
+        _landedNotifiedAtMeta,
+        landedNotifiedAt.isAcceptableOrUnknown(
+          data['landed_notified_at']!,
+          _landedNotifiedAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -869,6 +930,18 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.double,
         data['${effectivePrefix}latest_vertical_rate_feet_per_minute'],
       ),
+      departedNotifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}departed_notified_at'],
+      ),
+      arrivingSoonNotifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}arriving_soon_notified_at'],
+      ),
+      landedNotifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}landed_notified_at'],
+      ),
     );
   }
 
@@ -918,6 +991,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final double? latestIndicatedAirspeedKnots;
   final double? latestMach;
   final double? latestVerticalRateFeetPerMinute;
+  final int? departedNotifiedAt;
+  final int? arrivingSoonNotifiedAt;
+  final int? landedNotifiedAt;
   const FlightRow({
     required this.id,
     required this.lookupKind,
@@ -953,6 +1029,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.latestIndicatedAirspeedKnots,
     this.latestMach,
     this.latestVerticalRateFeetPerMinute,
+    this.departedNotifiedAt,
+    this.arrivingSoonNotifiedAt,
+    this.landedNotifiedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1067,6 +1146,15 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
         latestVerticalRateFeetPerMinute,
       );
     }
+    if (!nullToAbsent || departedNotifiedAt != null) {
+      map['departed_notified_at'] = Variable<int>(departedNotifiedAt);
+    }
+    if (!nullToAbsent || arrivingSoonNotifiedAt != null) {
+      map['arriving_soon_notified_at'] = Variable<int>(arrivingSoonNotifiedAt);
+    }
+    if (!nullToAbsent || landedNotifiedAt != null) {
+      map['landed_notified_at'] = Variable<int>(landedNotifiedAt);
+    }
     return map;
   }
 
@@ -1167,6 +1255,15 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           latestVerticalRateFeetPerMinute == null && nullToAbsent
           ? const Value.absent()
           : Value(latestVerticalRateFeetPerMinute),
+      departedNotifiedAt: departedNotifiedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(departedNotifiedAt),
+      arrivingSoonNotifiedAt: arrivingSoonNotifiedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(arrivingSoonNotifiedAt),
+      landedNotifiedAt: landedNotifiedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(landedNotifiedAt),
     );
   }
 
@@ -1238,6 +1335,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       latestVerticalRateFeetPerMinute: serializer.fromJson<double?>(
         json['latestVerticalRateFeetPerMinute'],
       ),
+      departedNotifiedAt: serializer.fromJson<int?>(json['departedNotifiedAt']),
+      arrivingSoonNotifiedAt: serializer.fromJson<int?>(
+        json['arrivingSoonNotifiedAt'],
+      ),
+      landedNotifiedAt: serializer.fromJson<int?>(json['landedNotifiedAt']),
     );
   }
   @override
@@ -1294,6 +1396,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'latestVerticalRateFeetPerMinute': serializer.toJson<double?>(
         latestVerticalRateFeetPerMinute,
       ),
+      'departedNotifiedAt': serializer.toJson<int?>(departedNotifiedAt),
+      'arrivingSoonNotifiedAt': serializer.toJson<int?>(arrivingSoonNotifiedAt),
+      'landedNotifiedAt': serializer.toJson<int?>(landedNotifiedAt),
     };
   }
 
@@ -1332,6 +1437,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<double?> latestIndicatedAirspeedKnots = const Value.absent(),
     Value<double?> latestMach = const Value.absent(),
     Value<double?> latestVerticalRateFeetPerMinute = const Value.absent(),
+    Value<int?> departedNotifiedAt = const Value.absent(),
+    Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
+    Value<int?> landedNotifiedAt = const Value.absent(),
   }) => FlightRow(
     id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
@@ -1417,6 +1525,15 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     latestVerticalRateFeetPerMinute: latestVerticalRateFeetPerMinute.present
         ? latestVerticalRateFeetPerMinute.value
         : this.latestVerticalRateFeetPerMinute,
+    departedNotifiedAt: departedNotifiedAt.present
+        ? departedNotifiedAt.value
+        : this.departedNotifiedAt,
+    arrivingSoonNotifiedAt: arrivingSoonNotifiedAt.present
+        ? arrivingSoonNotifiedAt.value
+        : this.arrivingSoonNotifiedAt,
+    landedNotifiedAt: landedNotifiedAt.present
+        ? landedNotifiedAt.value
+        : this.landedNotifiedAt,
   );
   FlightRow copyWithCompanion(FlightsCompanion data) {
     return FlightRow(
@@ -1519,6 +1636,15 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           data.latestVerticalRateFeetPerMinute.present
           ? data.latestVerticalRateFeetPerMinute.value
           : this.latestVerticalRateFeetPerMinute,
+      departedNotifiedAt: data.departedNotifiedAt.present
+          ? data.departedNotifiedAt.value
+          : this.departedNotifiedAt,
+      arrivingSoonNotifiedAt: data.arrivingSoonNotifiedAt.present
+          ? data.arrivingSoonNotifiedAt.value
+          : this.arrivingSoonNotifiedAt,
+      landedNotifiedAt: data.landedNotifiedAt.present
+          ? data.landedNotifiedAt.value
+          : this.landedNotifiedAt,
     );
   }
 
@@ -1565,8 +1691,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           )
           ..write('latestMach: $latestMach, ')
           ..write(
-            'latestVerticalRateFeetPerMinute: $latestVerticalRateFeetPerMinute',
+            'latestVerticalRateFeetPerMinute: $latestVerticalRateFeetPerMinute, ',
           )
+          ..write('departedNotifiedAt: $departedNotifiedAt, ')
+          ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
+          ..write('landedNotifiedAt: $landedNotifiedAt')
           ..write(')'))
         .toString();
   }
@@ -1607,6 +1736,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     latestIndicatedAirspeedKnots,
     latestMach,
     latestVerticalRateFeetPerMinute,
+    departedNotifiedAt,
+    arrivingSoonNotifiedAt,
+    landedNotifiedAt,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1650,7 +1782,10 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
               this.latestIndicatedAirspeedKnots &&
           other.latestMach == this.latestMach &&
           other.latestVerticalRateFeetPerMinute ==
-              this.latestVerticalRateFeetPerMinute);
+              this.latestVerticalRateFeetPerMinute &&
+          other.departedNotifiedAt == this.departedNotifiedAt &&
+          other.arrivingSoonNotifiedAt == this.arrivingSoonNotifiedAt &&
+          other.landedNotifiedAt == this.landedNotifiedAt);
 }
 
 class FlightsCompanion extends UpdateCompanion<FlightRow> {
@@ -1688,6 +1823,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<double?> latestIndicatedAirspeedKnots;
   final Value<double?> latestMach;
   final Value<double?> latestVerticalRateFeetPerMinute;
+  final Value<int?> departedNotifiedAt;
+  final Value<int?> arrivingSoonNotifiedAt;
+  final Value<int?> landedNotifiedAt;
   const FlightsCompanion({
     this.id = const Value.absent(),
     this.lookupKind = const Value.absent(),
@@ -1723,6 +1861,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.latestIndicatedAirspeedKnots = const Value.absent(),
     this.latestMach = const Value.absent(),
     this.latestVerticalRateFeetPerMinute = const Value.absent(),
+    this.departedNotifiedAt = const Value.absent(),
+    this.arrivingSoonNotifiedAt = const Value.absent(),
+    this.landedNotifiedAt = const Value.absent(),
   });
   FlightsCompanion.insert({
     this.id = const Value.absent(),
@@ -1759,6 +1900,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.latestIndicatedAirspeedKnots = const Value.absent(),
     this.latestMach = const Value.absent(),
     this.latestVerticalRateFeetPerMinute = const Value.absent(),
+    this.departedNotifiedAt = const Value.absent(),
+    this.arrivingSoonNotifiedAt = const Value.absent(),
+    this.landedNotifiedAt = const Value.absent(),
   }) : lookupKind = Value(lookupKind),
        lookupValue = Value(lookupValue),
        departureDate = Value(departureDate);
@@ -1797,6 +1941,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<double>? latestIndicatedAirspeedKnots,
     Expression<double>? latestMach,
     Expression<double>? latestVerticalRateFeetPerMinute,
+    Expression<int>? departedNotifiedAt,
+    Expression<int>? arrivingSoonNotifiedAt,
+    Expression<int>? landedNotifiedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1846,6 +1993,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (latestMach != null) 'latest_mach': latestMach,
       if (latestVerticalRateFeetPerMinute != null)
         'latest_vertical_rate_feet_per_minute': latestVerticalRateFeetPerMinute,
+      if (departedNotifiedAt != null)
+        'departed_notified_at': departedNotifiedAt,
+      if (arrivingSoonNotifiedAt != null)
+        'arriving_soon_notified_at': arrivingSoonNotifiedAt,
+      if (landedNotifiedAt != null) 'landed_notified_at': landedNotifiedAt,
     });
   }
 
@@ -1884,6 +2036,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<double?>? latestIndicatedAirspeedKnots,
     Value<double?>? latestMach,
     Value<double?>? latestVerticalRateFeetPerMinute,
+    Value<int?>? departedNotifiedAt,
+    Value<int?>? arrivingSoonNotifiedAt,
+    Value<int?>? landedNotifiedAt,
   }) {
     return FlightsCompanion(
       id: id ?? this.id,
@@ -1928,6 +2083,10 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       latestVerticalRateFeetPerMinute:
           latestVerticalRateFeetPerMinute ??
           this.latestVerticalRateFeetPerMinute,
+      departedNotifiedAt: departedNotifiedAt ?? this.departedNotifiedAt,
+      arrivingSoonNotifiedAt:
+          arrivingSoonNotifiedAt ?? this.arrivingSoonNotifiedAt,
+      landedNotifiedAt: landedNotifiedAt ?? this.landedNotifiedAt,
     );
   }
 
@@ -2058,6 +2217,17 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
         latestVerticalRateFeetPerMinute.value,
       );
     }
+    if (departedNotifiedAt.present) {
+      map['departed_notified_at'] = Variable<int>(departedNotifiedAt.value);
+    }
+    if (arrivingSoonNotifiedAt.present) {
+      map['arriving_soon_notified_at'] = Variable<int>(
+        arrivingSoonNotifiedAt.value,
+      );
+    }
+    if (landedNotifiedAt.present) {
+      map['landed_notified_at'] = Variable<int>(landedNotifiedAt.value);
+    }
     return map;
   }
 
@@ -2104,8 +2274,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           )
           ..write('latestMach: $latestMach, ')
           ..write(
-            'latestVerticalRateFeetPerMinute: $latestVerticalRateFeetPerMinute',
+            'latestVerticalRateFeetPerMinute: $latestVerticalRateFeetPerMinute, ',
           )
+          ..write('departedNotifiedAt: $departedNotifiedAt, ')
+          ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
+          ..write('landedNotifiedAt: $landedNotifiedAt')
           ..write(')'))
         .toString();
   }
@@ -2545,6 +2718,9 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<double?> latestIndicatedAirspeedKnots,
       Value<double?> latestMach,
       Value<double?> latestVerticalRateFeetPerMinute,
+      Value<int?> departedNotifiedAt,
+      Value<int?> arrivingSoonNotifiedAt,
+      Value<int?> landedNotifiedAt,
     });
 typedef $$FlightsTableUpdateCompanionBuilder =
     FlightsCompanion Function({
@@ -2582,6 +2758,9 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<double?> latestIndicatedAirspeedKnots,
       Value<double?> latestMach,
       Value<double?> latestVerticalRateFeetPerMinute,
+      Value<int?> departedNotifiedAt,
+      Value<int?> arrivingSoonNotifiedAt,
+      Value<int?> landedNotifiedAt,
     });
 
 final class $$FlightsTableReferences
@@ -2787,6 +2966,21 @@ class $$FlightsTableFilterComposer
         column: $table.latestVerticalRateFeetPerMinute,
         builder: (column) => ColumnFilters(column),
       );
+
+  ColumnFilters<int> get departedNotifiedAt => $composableBuilder(
+    column: $table.departedNotifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get arrivingSoonNotifiedAt => $composableBuilder(
+    column: $table.arrivingSoonNotifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get landedNotifiedAt => $composableBuilder(
+    column: $table.landedNotifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   Expression<bool> trailPointsRefs(
     Expression<bool> Function($$TrailPointsTableFilterComposer f) f,
@@ -2995,6 +3189,21 @@ class $$FlightsTableOrderingComposer
         column: $table.latestVerticalRateFeetPerMinute,
         builder: (column) => ColumnOrderings(column),
       );
+
+  ColumnOrderings<int> get departedNotifiedAt => $composableBuilder(
+    column: $table.departedNotifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get arrivingSoonNotifiedAt => $composableBuilder(
+    column: $table.arrivingSoonNotifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get landedNotifiedAt => $composableBuilder(
+    column: $table.landedNotifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FlightsTableAnnotationComposer
@@ -3176,6 +3385,21 @@ class $$FlightsTableAnnotationComposer
         builder: (column) => column,
       );
 
+  GeneratedColumn<int> get departedNotifiedAt => $composableBuilder(
+    column: $table.departedNotifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get arrivingSoonNotifiedAt => $composableBuilder(
+    column: $table.arrivingSoonNotifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get landedNotifiedAt => $composableBuilder(
+    column: $table.landedNotifiedAt,
+    builder: (column) => column,
+  );
+
   Expression<T> trailPointsRefs<T extends Object>(
     Expression<T> Function($$TrailPointsTableAnnotationComposer a) f,
   ) {
@@ -3269,6 +3493,9 @@ class $$FlightsTableTableManager
                 Value<double?> latestMach = const Value.absent(),
                 Value<double?> latestVerticalRateFeetPerMinute =
                     const Value.absent(),
+                Value<int?> departedNotifiedAt = const Value.absent(),
+                Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
+                Value<int?> landedNotifiedAt = const Value.absent(),
               }) => FlightsCompanion(
                 id: id,
                 lookupKind: lookupKind,
@@ -3305,6 +3532,9 @@ class $$FlightsTableTableManager
                 latestMach: latestMach,
                 latestVerticalRateFeetPerMinute:
                     latestVerticalRateFeetPerMinute,
+                departedNotifiedAt: departedNotifiedAt,
+                arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
+                landedNotifiedAt: landedNotifiedAt,
               ),
           createCompanionCallback:
               ({
@@ -3347,6 +3577,9 @@ class $$FlightsTableTableManager
                 Value<double?> latestMach = const Value.absent(),
                 Value<double?> latestVerticalRateFeetPerMinute =
                     const Value.absent(),
+                Value<int?> departedNotifiedAt = const Value.absent(),
+                Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
+                Value<int?> landedNotifiedAt = const Value.absent(),
               }) => FlightsCompanion.insert(
                 id: id,
                 lookupKind: lookupKind,
@@ -3383,6 +3616,9 @@ class $$FlightsTableTableManager
                 latestMach: latestMach,
                 latestVerticalRateFeetPerMinute:
                     latestVerticalRateFeetPerMinute,
+                departedNotifiedAt: departedNotifiedAt,
+                arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
+                landedNotifiedAt: landedNotifiedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(

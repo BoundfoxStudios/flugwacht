@@ -371,6 +371,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationDepartedBody => 'The flight has taken off.';
+
+  @override
+  String get notificationArrivingSoonBody => 'Arriving in about 30 minutes.';
+
+  @override
+  String get notificationLandedBody => 'The flight has landed.';
+
+  @override
   String get notificationChannelName => 'Flight status';
 
   @override

@@ -2,6 +2,7 @@ import 'calendar_date.dart';
 import 'day_time.dart';
 import 'fix.dart';
 import 'flight_day_window.dart';
+import 'flight_notification.dart';
 import 'flight_route.dart';
 
 enum FlightLookupKind { flightNumber, registration, hexAddress }
@@ -18,6 +19,7 @@ class Flight {
     this.expectedCallsign,
     this.route,
     this.tracking = const FlightTracking(),
+    this.notifications = const NotificationMarkers(),
   });
 
   final int id;
@@ -30,6 +32,7 @@ class Flight {
   final String? expectedCallsign;
   final FlightRoute? route;
   final FlightTracking tracking;
+  final NotificationMarkers notifications;
 
   Flight copyWith({
     int? id,
@@ -42,6 +45,7 @@ class Flight {
     String? expectedCallsign,
     FlightRoute? route,
     FlightTracking? tracking,
+    NotificationMarkers? notifications,
   }) => Flight(
     id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
@@ -53,6 +57,7 @@ class Flight {
     expectedCallsign: expectedCallsign ?? this.expectedCallsign,
     route: route ?? this.route,
     tracking: tracking ?? this.tracking,
+    notifications: notifications ?? this.notifications,
   );
 }
 

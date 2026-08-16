@@ -377,6 +377,9 @@
       }
     }
   },
+  "notificationDepartedBody": "The flight has taken off.",
+  "notificationArrivingSoonBody": "Arriving in about 30 minutes.",
+  "notificationLandedBody": "The flight has landed.",
   "notificationChannelName": "Flight status",
   "notificationChannelDescription": "Departure, arrival and landing of your flights.",
   "flightStatePlanned": "planned",

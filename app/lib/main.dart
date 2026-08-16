@@ -9,6 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/airline_directory.dart';
 import 'data/database.dart';
+import 'data/flight_notifier.dart';
 import 'data/flight_repository.dart';
 import 'data/map_style_setting.dart';
 import 'data/notification_service.dart';
@@ -24,6 +25,7 @@ import 'domain/source_id.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
+import 'ui/widgets/flight_labels.dart';
 import 'ui/widgets/map_visuals.dart';
 
 Future<void> main() async {
@@ -60,6 +62,13 @@ Future<void> main() async {
     },
     activeSourceId: () => sourceSetting.activeId.value,
     airlineDirectory: airlineDirectory,
+    notifier: FlightNotifier(
+      repository: flightRepository,
+      service: notificationService,
+      setting: notificationSetting,
+      copy: (kind, flight) =>
+          flightNotificationText(localizations, kind, flight),
+    ),
   ).start();
   runApp(
     FlugwachtApp(

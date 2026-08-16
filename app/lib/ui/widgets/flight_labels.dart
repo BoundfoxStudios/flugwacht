@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
+import '../../data/flight_notifier.dart';
 import '../../domain/airport_timezone.dart';
 import '../../domain/arrival_estimate.dart';
 import '../../domain/day_time.dart';
 import '../../domain/flight.dart';
+import '../../domain/flight_notification.dart';
 import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/remaining_time.dart';
@@ -21,6 +23,22 @@ String flightTitle(AppLocalizations localizations, Flight flight) {
       ? flight.lookupValue
       : localizations.flightTitleWithNote(flight.lookupValue, note);
 }
+
+/// What a notification about a flight says; the title names the flight the way
+/// every screen does.
+FlightNotificationText flightNotificationText(
+  AppLocalizations localizations,
+  FlightNotification kind,
+  Flight flight,
+) => (
+  title: flightTitle(localizations, flight),
+  body: switch (kind) {
+    FlightNotification.departed => localizations.notificationDepartedBody,
+    FlightNotification.arrivingSoon =>
+      localizations.notificationArrivingSoonBody,
+    FlightNotification.landed => localizations.notificationLandedBody,
+  },
+);
 
 /// The route in IATA codes, falling back to ICAO for an airport without one.
 String? flightRouteLabel(AppLocalizations localizations, FlightRoute? route) =>

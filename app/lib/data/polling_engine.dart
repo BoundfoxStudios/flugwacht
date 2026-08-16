@@ -10,6 +10,7 @@ import '../domain/flight_state.dart';
 import '../domain/poll_planning.dart';
 import '../domain/source_id.dart';
 import 'airline_directory.dart';
+import 'flight_notifier.dart';
 import 'flight_repository.dart';
 import 'lookup_result.dart';
 import 'source_adapter.dart';
@@ -22,6 +23,7 @@ class PollingEngine with WidgetsBindingObserver {
     required this._adapters,
     required this._activeSourceId,
     required this._airlineDirectory,
+    required this._notifier,
     this.clock = DateTime.now,
   });
 
@@ -34,6 +36,7 @@ class PollingEngine with WidgetsBindingObserver {
 
   final SourceId Function() _activeSourceId;
   final AirlineDirectory _airlineDirectory;
+  final FlightNotifier _notifier;
   final DateTime Function() clock;
 
   final _lastPollStarts = <int, DateTime>{};
@@ -58,6 +61,7 @@ class PollingEngine with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      unawaited(_notifier.reconcileDeliveredReminders());
       _startScheduler();
     } else {
       _stopScheduler();
@@ -78,9 +82,13 @@ class PollingEngine with WidgetsBindingObserver {
   bool get _isPolling => _scheduler != null;
 
   void _onFlights(List<Flight> flights) {
+    final goneIds = _flights
+        .map((flight) => flight.id)
+        .where((flightId) => !flights.any((flight) => flight.id == flightId));
     _flights = flights;
     final storedIds = flights.map((flight) => flight.id).toSet();
     _lastPollStarts.removeWhere((flightId, _) => !storedIds.contains(flightId));
+    unawaited(_notifier.flightsRemoved(goneIds.toList()));
     if (_scheduler != null) {
       _pollDueFlights();
     }
@@ -210,6 +218,7 @@ class PollingEngine with WidgetsBindingObserver {
         :final adoptedIdentity,
       ):
         await _repository.updateTracking(flight.id, tracking);
+        await _notifier.trackingChanged(flight, tracking);
         await _appendTrailPoint(flight, trailPosition, sourceId);
         if (adoptedIdentity != null) {
           await _repository.updateIdentity(

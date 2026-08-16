@@ -4,6 +4,7 @@ import '../domain/calendar_date.dart';
 import '../domain/day_time.dart';
 import '../domain/fix.dart';
 import '../domain/flight.dart';
+import '../domain/flight_notification.dart';
 import '../domain/flight_route.dart';
 import '../domain/flight_state.dart';
 import '../domain/source_id.dart';
@@ -105,6 +106,25 @@ class FlightRepository {
     );
   }
 
+  /// Remembers that a notification of a flight went out, so it never goes out
+  /// a second time.
+  Future<void> markNotificationDelivered(
+    int flightId,
+    FlightNotification kind,
+    DateTime deliveredAt,
+  ) async {
+    final at = Value(deliveredAt.millisecondsSinceEpoch);
+    await (_database.update(
+      _database.flights,
+    )..where((row) => row.id.equals(flightId))).write(switch (kind) {
+      FlightNotification.departed => FlightsCompanion(departedNotifiedAt: at),
+      FlightNotification.arrivingSoon => FlightsCompanion(
+        arrivingSoonNotifiedAt: at,
+      ),
+      FlightNotification.landed => FlightsCompanion(landedNotifiedAt: at),
+    });
+  }
+
   Future<void> appendTrailPoint(
     int flightId,
     FixPosition position,
@@ -167,6 +187,11 @@ Flight _toFlight(FlightRow row) => Flight(
     latestPosition: _toPosition(row),
     hasBeenAirborne: row.hasBeenAirborne,
     lastKnownOnGround: row.lastKnownOnGround,
+  ),
+  notifications: NotificationMarkers(
+    departedAt: _toInstant(row.departedNotifiedAt),
+    arrivingSoonAt: _toInstant(row.arrivingSoonNotifiedAt),
+    landedAt: _toInstant(row.landedNotifiedAt),
   ),
 );
 
@@ -246,6 +271,9 @@ TrailPoint _toTrailPoint(TrailPointRow row) => TrailPoint(
   longitude: row.longitude,
   sourceId: row.sourceId,
 );
+
+DateTime? _toInstant(int? epochMilliseconds) =>
+    epochMilliseconds == null ? null : _toUtcInstant(epochMilliseconds);
 
 DateTime _toUtcInstant(int epochMilliseconds) =>
     DateTime.fromMillisecondsSinceEpoch(epochMilliseconds, isUtc: true);

@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:signals/signals.dart';
 
-import '../../data/flight_repository.dart';
+import '../../data/persistence/flight_repository.dart';
 import '../../domain/trail_point.dart';
 import '../map_selection.dart';
 import 'flight_list.dart';

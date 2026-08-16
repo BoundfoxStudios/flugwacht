@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:signals/signals.dart';
 
-import '../../data/flight_repository.dart';
+import '../../data/persistence/flight_repository.dart';
 import '../../domain/flight.dart';
 import 'list_sections.dart';
 

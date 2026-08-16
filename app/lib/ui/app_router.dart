@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../data/airline_directory.dart';
-import '../data/flight_repository.dart';
-import '../data/map_style_setting.dart';
-import '../data/notification_service.dart';
-import '../data/notification_setting.dart';
-import '../data/route_lookup.dart';
-import '../data/source_setting.dart';
-import '../data/units_setting.dart';
+import '../data/lookup/airline_directory.dart';
+import '../data/lookup/route_lookup.dart';
+import '../data/notifications/notification_service.dart';
+import '../data/persistence/flight_repository.dart';
+import '../data/settings/map_style_setting.dart';
+import '../data/settings/notification_setting.dart';
+import '../data/settings/source_setting.dart';
+import '../data/settings/units_setting.dart';
 import 'app_shell.dart';
 import 'map_selection.dart';
 import 'screens/about_screen.dart';
@@ -18,7 +18,7 @@ import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
 import 'screens/new_flight_screen.dart';
-import 'widgets/map_visuals.dart';
+import 'widgets/map/map_visuals.dart';
 
 GoRouter createAppRouter({
   required FlightRepository flightRepository,

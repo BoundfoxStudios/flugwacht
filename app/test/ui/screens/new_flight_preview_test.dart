@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:flugwacht/data/route_lookup.dart';
+import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/ui/screens/new_flight_form.dart';

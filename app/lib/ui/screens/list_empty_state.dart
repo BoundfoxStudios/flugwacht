@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
-import '../widgets/app_primary_button.dart';
-import '../widgets/radar_eye_logo.dart';
+import '../widgets/branding/radar_eye_logo.dart';
+import '../widgets/controls/app_primary_button.dart';
 
 /// The whole list screen while there is no flight to show: the centered call
 /// to action is the only way on, so the screen carries neither header nor FAB.

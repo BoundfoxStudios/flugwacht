@@ -9,11 +9,11 @@ import '../domain/flight_number.dart';
 import '../domain/flight_state.dart';
 import '../domain/poll_planning.dart';
 import '../domain/source_id.dart';
-import 'airline_directory.dart';
-import 'flight_notifier.dart';
-import 'flight_repository.dart';
-import 'lookup_result.dart';
-import 'source_adapter.dart';
+import 'adapters/lookup_result.dart';
+import 'adapters/source_adapter.dart';
+import 'lookup/airline_directory.dart';
+import 'notifications/flight_notifier.dart';
+import 'persistence/flight_repository.dart';
 
 /// Polls the stored flights while the app is in the foreground and writes what
 /// the source answers back into the repository.

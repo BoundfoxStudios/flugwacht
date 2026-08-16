@@ -1,15 +1,15 @@
-import 'package:flugwacht/data/notification_service.dart';
-import 'package:flugwacht/data/notification_setting.dart';
-import 'package:flugwacht/data/source_setting.dart';
-import 'package:flugwacht/data/units_setting.dart';
+import 'package:flugwacht/data/notifications/notification_service.dart';
+import 'package:flugwacht/data/settings/notification_setting.dart';
+import 'package:flugwacht/data/settings/source_setting.dart';
+import 'package:flugwacht/data/settings/units_setting.dart';
 import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/units.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
-import 'package:flugwacht/ui/widgets/app_radio_row.dart';
-import 'package:flugwacht/ui/widgets/app_switch_row.dart';
+import 'package:flugwacht/ui/widgets/controls/app_radio_row.dart';
+import 'package:flugwacht/ui/widgets/controls/app_switch_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

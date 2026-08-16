@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../app_icons.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_tokens.dart';
-import '../widgets/settings_card.dart';
+import '../widgets/chrome/settings_card.dart';
 
 /// The questions live ADS-B data provokes, answered once instead of in
 /// footnotes all over the app.

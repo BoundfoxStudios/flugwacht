@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../app_icons.dart';
 import '../l10n/app_localizations.g.dart';
-import 'widgets/app_tab_bar.dart';
+import 'widgets/chrome/app_tab_bar.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({required this.navigationShell, super.key});

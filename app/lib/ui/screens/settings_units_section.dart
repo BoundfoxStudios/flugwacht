@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/units_setting.dart';
+import '../../data/settings/units_setting.dart';
 import '../../domain/units.dart';
 import '../../l10n/app_localizations.g.dart';
-import '../widgets/app_segmented_control.dart';
-import '../widgets/settings_card.dart';
+import '../widgets/chrome/settings_card.dart';
+import '../widgets/controls/app_segmented_control.dart';
 
 /// Picks the units altitude and speed are displayed in; the estimates keep
 /// working on the raw values either way.

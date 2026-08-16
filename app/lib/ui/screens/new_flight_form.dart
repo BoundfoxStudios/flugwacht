@@ -1,6 +1,6 @@
 import 'package:signals/signals.dart';
 
-import '../../data/airline_directory.dart';
+import '../../data/lookup/airline_directory.dart';
 import '../../domain/day_time.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_number.dart';

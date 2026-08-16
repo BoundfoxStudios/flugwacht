@@ -7,6 +7,15 @@
 
 <h1 align="center">Flugwacht</h1>
 
+<p align="center">
+  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/checks.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/checks.yml/badge.svg?branch=main" alt="Checks workflow status"></a>
+  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/android.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/android.yml/badge.svg?branch=main" alt="Android workflow status"></a>
+  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/ios.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/ios.yml/badge.svg?branch=main" alt="iOS workflow status"></a>
+  <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBoundfoxStudios%2Fflugwacht%2Fmain%2Fapp%2F.fvmrc&query=%24.flutter&label=Flutter&logo=flutter&color=02569B" alt="Pinned Flutter version">
+  <a href="https://play.google.com/store/apps/details?id=com.boundfoxstudios.apps.flugwacht"><img src="https://img.shields.io/badge/Play_Store-3DDC84?logo=googleplay&logoColor=white" alt="Flugwacht on the Play Store"></a>
+  <a href="https://apps.apple.com/us/app/flugwacht/id6801012878"><img src="https://img.shields.io/badge/App_Store-0D96F6?logo=appstore&logoColor=white" alt="Flugwacht on the App Store"></a>
+</p>
+
 A deliberately minimal flight tracker for individual, manually added flights —
 a Flutter app for iOS and Android. The app's user interface is in German.
 

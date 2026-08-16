@@ -30,7 +30,7 @@ per task; reviews and feedback happen in issue comments. Implementation is
 PR-based: `main` is protected, work happens on `feature/`/`fix/` branches,
 merging only after Manuel's approval (details: `.claude/CLAUDE.md`). The repo
 holds only this spec as a working copy — it and all other planning files are
-deleted once the app is finished (M16; git history keeps them).
+deleted once the app is finished (M17; git history keeps them).
 
 ## Tech Stack
 
@@ -88,8 +88,8 @@ app/       → Flutter app (iOS + Android)
 assets/    → repo-level branding: logo/ (mark + lockup SVGs), icon/ (SVG masters + generated/ platform exports)
 tools/     → repo-level tooling; icon-generator/ renders all launcher/store images from the SVG masters
 website/   → project website (planned, does not exist yet)
-backend/   → possible later expansion stage (only if unavoidable — Manuel's call)
-design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M16
+backend/   → optional expansion stage, strictly user opt-in (Backend milestone — Manuel's call)
+design_handoff_flugwacht/ → design reference, untracked local copy; deleted in M17
 ```
 
 ## Code Style
@@ -177,8 +177,10 @@ active state), no framework tests.
 **Never:**
 - Reintroduce OpenSky, an own receiver, history, or paid sources
 - Add a backend/server/accounts to the core tracking (per the handoff,
-  everything stays local on the device); a backend as a later expansion stage is
-  Manuel's explicit call
+  everything stays local on the device); a backend exists only as an optional
+  expansion stage the user explicitly opts into (Backend milestone) — the
+  local-only default always keeps working, and the stage itself is Manuel's
+  explicit call
 - Demo flight in the empty state
 - Substitute brand colors
 - Commit or push directly to `main` (PR workflow); merge PRs without approval
@@ -208,9 +210,14 @@ handoff README.
 | M11 | Map style | Reduced style + toggle button, persist the choice (technology decision here) |
 | M12 | Settings | Source, units (metric/aviation), notification switches, footnotes |
 | M13 | Notifications | Local: departed · arriving soon (~30 min) · landed |
-| M14 | Background | Feasibility of background polling (iOS limits) — investigation, decision with the user |
+| M14 | Background | Feasibility of background polling (iOS limits) — investigated and declined (#147): no background polling; Live Activity instead |
 | M15 | Polish | About/licenses page, "ended/missed" detail states |
-| M16 | Cleanup | Delete `SPEC.md`, the local design handoff folder, and any remaining planning files; check for spike leftovers |
+| M16 | Live Activity | iOS-only Lock Screen / Dynamic Island activity for tracked flights: system-driven countdown, `staleDate` honesty, data refreshes on app opens (#148) |
+| M17 | Cleanup | Delete `SPEC.md`, the local design handoff folder, and any remaining planning files; check for spike leftovers |
+
+Outside the numbered sequence: the **Backend** milestone (optional expansion
+stage, strictly user opt-in, #150) and the parked Android live-surface
+findings (#149).
 
 ## Success Criteria (app overall)
 
@@ -222,6 +229,6 @@ handoff README.
 
 ## Open Questions
 
-- Background polling on iOS (M14, with the user)
+- Live Activity design and lifecycle (M16, with the user)
 - FA Pro kit setup may need the user's license access on the host
 - Content of the about/licenses page (M15)

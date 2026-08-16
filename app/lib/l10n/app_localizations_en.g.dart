@@ -358,6 +358,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notifications for Flugwacht are switched off in your system settings.';
 
   @override
+  String get settingsNotificationsUnavailable =>
+      'This device could not set notifications up, so the switches above stay without effect.';
+
+  @override
   String get settingsAboutTitle => 'About Flugwacht';
 
   @override

@@ -94,6 +94,7 @@
   "settingsNotificationsFootnote": "Lokal auf dem Gerät — kein Konto, kein Server.",
   "settingsNotificationsDelivery": "Gestartet und Gelandet erreichen dich nur, solange Flugwacht offen ist. Ankunft bald kommt auch bei geschlossener App — ungefähr zum richtigen Zeitpunkt.",
   "settingsNotificationsDenied": "In deinen Systemeinstellungen sind Mitteilungen für Flugwacht ausgeschaltet.",
+  "settingsNotificationsUnavailable": "Auf diesem Gerät ließen sich Mitteilungen nicht einrichten — die Schalter oben bleiben ohne Wirkung.",
   "settingsAboutTitle": "Über Flugwacht",
   "settingsAboutSubtitle": "Version {version} · Lizenzen & Quellen",
   "settingsDataFootnote": "Daten: {sources} — frei für privaten Gebrauch, Community-Netze ohne Gewähr. Karte © OpenStreetMap.",

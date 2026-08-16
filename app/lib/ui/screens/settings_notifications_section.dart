@@ -76,18 +76,30 @@ class _SettingsNotificationsSectionState
           ),
         ),
         SignalBuilder(
+          builder: (context) => switch (notificationService.permission.value) {
+            NotificationPermission.denied => Text(
+              localizations.settingsNotificationsDenied,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            NotificationPermission.unavailable => Text(
+              localizations.settingsNotificationsUnavailable,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            NotificationPermission.notDetermined ||
+            NotificationPermission.granted => const SizedBox.shrink(),
+          },
+        ),
+        // Nothing is delivered on a device that could not set the notifications
+        // up, so promising when they arrive would be a lie.
+        SignalBuilder(
           builder: (context) =>
               notificationService.permission.value ==
-                  NotificationPermission.denied
-              ? Text(
-                  localizations.settingsNotificationsDenied,
+                  NotificationPermission.unavailable
+              ? const SizedBox.shrink()
+              : Text(
+                  localizations.settingsNotificationsDelivery,
                   style: Theme.of(context).textTheme.bodySmall,
-                )
-              : const SizedBox.shrink(),
-        ),
-        Text(
-          localizations.settingsNotificationsDelivery,
-          style: Theme.of(context).textTheme.bodySmall,
+                ),
         ),
         Text(
           localizations.settingsNotificationsFootnote,

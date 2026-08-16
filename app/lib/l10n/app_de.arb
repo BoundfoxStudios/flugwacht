@@ -65,7 +65,6 @@
   "mapSheetSpeedValueKnots": "{value} kt",
   "mapSheetSource": "Quelle: {source} · {attribution}",
   "mapSheetTryAnotherSource": "Andere Quelle probieren",
-  "mapSheetSourceComparison": "Die Spur bleibt beim Umschalten erhalten — jeder Punkt kennt seine Quelle.",
   "flightArrivalLabel": "Ankunft ca.",
   "flightArrivalTimeFormat": "HH:mm",
   "flightArrivalFrozenTime": "~{time}",

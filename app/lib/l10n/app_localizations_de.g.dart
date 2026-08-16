@@ -249,10 +249,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapSheetTryAnotherSource => 'Andere Quelle probieren';
 
   @override
-  String get mapSheetSourceComparison =>
-      'Die Spur bleibt beim Umschalten erhalten — jeder Punkt kennt seine Quelle.';
-
-  @override
   String get flightArrivalLabel => 'Ankunft ca.';
 
   @override

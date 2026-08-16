@@ -492,12 +492,6 @@ abstract class AppLocalizations {
   /// **'Try another source'**
   String get mapSheetTryAnotherSource;
 
-  /// Explains the multi-colored trail while points of several sources are on the map.
-  ///
-  /// In en, this message translates to:
-  /// **'The trail survives switching — every point knows its source.'**
-  String get mapSheetSourceComparison;
-
   /// No description provided for @flightArrivalLabel.
   ///
   /// In en, this message translates to:

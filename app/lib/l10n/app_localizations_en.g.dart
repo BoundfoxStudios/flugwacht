@@ -250,10 +250,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapSheetTryAnotherSource => 'Try another source';
 
   @override
-  String get mapSheetSourceComparison =>
-      'The trail survives switching — every point knows its source.';
-
-  @override
   String get flightArrivalLabel => 'Approx. arrival';
 
   @override

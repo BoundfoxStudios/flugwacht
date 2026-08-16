@@ -284,7 +284,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         sourceSetting: widget.sourceSetting,
                         unitsSetting: widget.unitsSetting,
                         mapStyle: mapStyle,
-                        showsSourceComparison: showsSourceComparison,
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
                         clock: widget.clock,

@@ -334,6 +334,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsUnitsAviation => 'Aviation (ft, kt)';
 
   @override
+  String get settingsNotificationsSectionTitle => 'Notifications';
+
+  @override
+  String get settingsNotificationDeparted => 'Departed';
+
+  @override
+  String get settingsNotificationArrivingSoon => 'Arriving soon (~30 min)';
+
+  @override
+  String get settingsNotificationLanded => 'Landed';
+
+  @override
+  String get settingsNotificationsFootnote =>
+      'Local on your device — no account, no server.';
+
+  @override
   String get settingsAboutTitle => 'About Flugwacht';
 
   @override

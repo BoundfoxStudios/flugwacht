@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../data/notification_setting.dart';
 import '../../data/source_setting.dart';
 import '../../data/units_setting.dart';
 import '../../domain/source_id.dart';
@@ -8,6 +9,7 @@ import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/settings_card.dart';
+import 'settings_notifications_section.dart';
 import 'settings_source_section.dart';
 import 'settings_units_section.dart';
 
@@ -15,6 +17,7 @@ class MoreScreen extends StatelessWidget {
   const MoreScreen({
     required this.sourceSetting,
     required this.unitsSetting,
+    required this.notificationSetting,
     required this.packageInfo,
     super.key,
   });
@@ -23,6 +26,7 @@ class MoreScreen extends StatelessWidget {
 
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
+  final NotificationSetting notificationSetting;
   final PackageInfo packageInfo;
 
   @override
@@ -45,6 +49,9 @@ class MoreScreen extends StatelessWidget {
                 children: [
                   SettingsSourceSection(sourceSetting: sourceSetting),
                   SettingsUnitsSection(unitsSetting: unitsSetting),
+                  SettingsNotificationsSection(
+                    notificationSetting: notificationSetting,
+                  ),
                   _AboutCard(version: packageInfo.version),
                   const _DataFootnote(),
                 ],

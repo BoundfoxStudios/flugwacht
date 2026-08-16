@@ -352,6 +352,11 @@
   "settingsUnitsSectionTitle": "Units",
   "settingsUnitsMetric": "Metric (m, km/h)",
   "settingsUnitsAviation": "Aviation (ft, kt)",
+  "settingsNotificationsSectionTitle": "Notifications",
+  "settingsNotificationDeparted": "Departed",
+  "settingsNotificationArrivingSoon": "Arriving soon (~30 min)",
+  "settingsNotificationLanded": "Landed",
+  "settingsNotificationsFootnote": "Local on your device — no account, no server.",
   "settingsAboutTitle": "About Flugwacht",
   "settingsAboutSubtitle": "Version {version} · Licenses & sources",
   "@settingsAboutSubtitle": {

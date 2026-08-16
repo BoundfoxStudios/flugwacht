@@ -624,6 +624,36 @@ abstract class AppLocalizations {
   /// **'Aviation (ft, kt)'**
   String get settingsUnitsAviation;
 
+  /// No description provided for @settingsNotificationsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotificationsSectionTitle;
+
+  /// No description provided for @settingsNotificationDeparted.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed'**
+  String get settingsNotificationDeparted;
+
+  /// No description provided for @settingsNotificationArrivingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Arriving soon (~30 min)'**
+  String get settingsNotificationArrivingSoon;
+
+  /// No description provided for @settingsNotificationLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'Landed'**
+  String get settingsNotificationLanded;
+
+  /// No description provided for @settingsNotificationsFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Local on your device — no account, no server.'**
+  String get settingsNotificationsFootnote;
+
   /// No description provided for @settingsAboutTitle.
   ///
   /// In en, this message translates to:

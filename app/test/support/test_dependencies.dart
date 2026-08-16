@@ -8,6 +8,7 @@ import 'package:flugwacht/data/database.dart';
 import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/map_style_setting.dart';
+import 'package:flugwacht/data/notification_setting.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/data/source_adapter.dart';
 import 'package:flugwacht/data/source_setting.dart';
@@ -76,6 +77,15 @@ Future<UnitsSetting> createTestUnitsSetting() async {
   return setting;
 }
 
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<NotificationSetting> createTestNotificationSetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await NotificationSetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
 Future<GoRouter> createTestAppRouter() async => createAppRouter(
   flightRepository: createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
@@ -83,6 +93,7 @@ Future<GoRouter> createTestAppRouter() async => createAppRouter(
   sourceSetting: await createTestSourceSetting(),
   mapStyleSetting: await createTestMapStyleSetting(),
   unitsSetting: await createTestUnitsSetting(),
+  notificationSetting: await createTestNotificationSetting(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );

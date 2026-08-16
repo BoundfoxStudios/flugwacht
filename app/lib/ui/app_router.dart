@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../data/airline_directory.dart';
 import '../data/flight_repository.dart';
 import '../data/map_style_setting.dart';
+import '../data/notification_service.dart';
 import '../data/notification_setting.dart';
 import '../data/route_lookup.dart';
 import '../data/source_setting.dart';
@@ -25,6 +26,7 @@ GoRouter createAppRouter({
   required MapStyleSetting mapStyleSetting,
   required UnitsSetting unitsSetting,
   required NotificationSetting notificationSetting,
+  required NotificationService notificationService,
   required MapTileSources tileSources,
   required PackageInfo packageInfo,
 }) {
@@ -74,6 +76,7 @@ GoRouter createAppRouter({
                   sourceSetting: sourceSetting,
                   unitsSetting: unitsSetting,
                   notificationSetting: notificationSetting,
+                  notificationService: notificationService,
                   packageInfo: packageInfo,
                 ),
               ),
@@ -91,6 +94,8 @@ GoRouter createAppRouter({
             flightRepository: flightRepository,
             airlineDirectory: airlineDirectory,
             routeLookup: routeLookup,
+            notificationService: notificationService,
+            notificationSetting: notificationSetting,
           ),
         ),
       ),

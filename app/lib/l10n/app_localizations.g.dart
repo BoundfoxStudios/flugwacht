@@ -654,6 +654,18 @@ abstract class AppLocalizations {
   /// **'Local on your device — no account, no server.'**
   String get settingsNotificationsFootnote;
 
+  /// No description provided for @settingsNotificationsDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.'**
+  String get settingsNotificationsDelivery;
+
+  /// No description provided for @settingsNotificationsDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications for Flugwacht are switched off in your system settings.'**
+  String get settingsNotificationsDenied;
+
   /// No description provided for @settingsAboutTitle.
   ///
   /// In en, this message translates to:
@@ -671,6 +683,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.'**
   String settingsDataFootnote(String sources);
+
+  /// No description provided for @notificationChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight status'**
+  String get notificationChannelName;
+
+  /// No description provided for @notificationChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure, arrival and landing of your flights.'**
+  String get notificationChannelDescription;
 
   /// No description provided for @flightStatePlanned.
   ///

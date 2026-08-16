@@ -7,10 +7,13 @@ import 'package:signals/signals_flutter.dart';
 import '../../app_icons.dart';
 import '../../data/airline_directory.dart';
 import '../../data/flight_repository.dart';
+import '../../data/notification_service.dart';
+import '../../data/notification_setting.dart';
 import '../../data/route_lookup.dart';
 import '../../domain/calendar_date.dart';
 import '../../domain/day_time.dart';
 import '../../domain/flight.dart';
+import '../../domain/flight_notification.dart';
 import '../../domain/flight_number.dart';
 import '../../domain/lookup_input.dart';
 import '../../l10n/app_localizations.g.dart';
@@ -32,6 +35,8 @@ class NewFlightScreen extends StatefulWidget {
     required this.flightRepository,
     required this.airlineDirectory,
     required this.routeLookup,
+    required this.notificationService,
+    required this.notificationSetting,
     super.key,
     this.today,
   });
@@ -39,6 +44,8 @@ class NewFlightScreen extends StatefulWidget {
   final FlightRepository flightRepository;
   final AirlineDirectory airlineDirectory;
   final RouteLookup routeLookup;
+  final NotificationService notificationService;
+  final NotificationSetting notificationSetting;
 
   /// The day the selectable date range is built around; defaults to the
   /// current day.
@@ -337,8 +344,23 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     } finally {
       _isSaving.value = false;
     }
+    await _askForNotificationPermission();
     if (mounted) {
       context.pop();
+    }
+  }
+
+  /// The app asks where the notifications become worth something: right after
+  /// the first flight is saved, and only for switches that are on.
+  Future<void> _askForNotificationPermission() async {
+    final isUndecided =
+        widget.notificationService.permission.value ==
+        NotificationPermission.notDetermined;
+    final wantsAny = FlightNotification.values.any(
+      widget.notificationSetting.isEnabled,
+    );
+    if (isUndecided && wantsAny) {
+      await widget.notificationService.requestPermission();
     }
   }
 

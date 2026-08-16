@@ -349,6 +349,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Lokal auf dem Gerät — kein Konto, kein Server.';
 
   @override
+  String get settingsNotificationsDelivery =>
+      'Gestartet und Gelandet erreichen dich nur, solange Flugwacht offen ist. Ankunft bald kommt auch bei geschlossener App — ungefähr zum richtigen Zeitpunkt.';
+
+  @override
+  String get settingsNotificationsDenied =>
+      'In deinen Systemeinstellungen sind Mitteilungen für Flugwacht ausgeschaltet.';
+
+  @override
   String get settingsAboutTitle => 'Über Flugwacht';
 
   @override
@@ -360,6 +368,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String settingsDataFootnote(String sources) {
     return 'Daten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr. Karte © OpenStreetMap.';
   }
+
+  @override
+  String get notificationChannelName => 'Flugstatus';
+
+  @override
+  String get notificationChannelDescription =>
+      'Start, Ankunft und Landung deiner Flüge.';
 
   @override
   String get flightStatePlanned => 'geplant';

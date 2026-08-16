@@ -8,6 +8,7 @@ import 'package:flugwacht/data/database.dart';
 import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/map_style_setting.dart';
+import 'package:flugwacht/data/notification_service.dart';
 import 'package:flugwacht/data/notification_setting.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/data/source_adapter.dart';
@@ -86,6 +87,39 @@ Future<NotificationSetting> createTestNotificationSetting() async {
   return setting;
 }
 
+/// A service that records what the app asked of it instead of talking to the
+/// platform, so no test touches the notification plugin.
+class FakeNotificationService implements NotificationService {
+  FakeNotificationService({
+    NotificationPermission permission = NotificationPermission.notDetermined,
+  }) : permission = signal(permission);
+
+  @override
+  final Signal<NotificationPermission> permission;
+
+  var permissionRequests = 0;
+  var permissionRefreshes = 0;
+
+  @override
+  Future<void> requestPermission() async {
+    permissionRequests++;
+    permission.value = NotificationPermission.granted;
+  }
+
+  @override
+  Future<void> refreshPermission() async => permissionRefreshes++;
+
+  void dispose() => permission.dispose();
+}
+
+FakeNotificationService createTestNotificationService({
+  NotificationPermission permission = NotificationPermission.notDetermined,
+}) {
+  final service = FakeNotificationService(permission: permission);
+  addTearDown(service.dispose);
+  return service;
+}
+
 Future<GoRouter> createTestAppRouter() async => createAppRouter(
   flightRepository: createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
@@ -94,6 +128,7 @@ Future<GoRouter> createTestAppRouter() async => createAppRouter(
   mapStyleSetting: await createTestMapStyleSetting(),
   unitsSetting: await createTestUnitsSetting(),
   notificationSetting: await createTestNotificationSetting(),
+  notificationService: createTestNotificationService(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );

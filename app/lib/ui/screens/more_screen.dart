@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../data/notification_service.dart';
 import '../../data/notification_setting.dart';
 import '../../data/source_setting.dart';
 import '../../data/units_setting.dart';
@@ -18,6 +19,7 @@ class MoreScreen extends StatelessWidget {
     required this.sourceSetting,
     required this.unitsSetting,
     required this.notificationSetting,
+    required this.notificationService,
     required this.packageInfo,
     super.key,
   });
@@ -27,6 +29,7 @@ class MoreScreen extends StatelessWidget {
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
   final NotificationSetting notificationSetting;
+  final NotificationService notificationService;
   final PackageInfo packageInfo;
 
   @override
@@ -51,6 +54,7 @@ class MoreScreen extends StatelessWidget {
                   SettingsUnitsSection(unitsSetting: unitsSetting),
                   SettingsNotificationsSection(
                     notificationSetting: notificationSetting,
+                    notificationService: notificationService,
                   ),
                   _AboutCard(version: packageInfo.version),
                   const _DataFootnote(),

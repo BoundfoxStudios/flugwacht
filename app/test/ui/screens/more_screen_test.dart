@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/notification_service.dart';
 import 'package:flugwacht/data/notification_setting.dart';
 import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/data/units_setting.dart';
@@ -25,6 +26,7 @@ pumpMoreScreen(
   WidgetTester tester, {
   String version = '1.4.2',
   Locale locale = const Locale('en'),
+  NotificationPermission permission = NotificationPermission.granted,
 }) async {
   final sourceSetting = await createTestSourceSetting();
   final unitsSetting = await createTestUnitsSetting();
@@ -39,6 +41,9 @@ pumpMoreScreen(
         sourceSetting: sourceSetting,
         unitsSetting: unitsSetting,
         notificationSetting: notificationSetting,
+        notificationService: createTestNotificationService(
+          permission: permission,
+        ),
         packageInfo: testPackageInfo(version: version),
       ),
     ),
@@ -116,6 +121,37 @@ void main() {
       settings.notifications.isEnabled(FlightNotification.departed),
       isTrue,
     );
+  });
+
+  testWidgets('explains when each notification can reach you', (tester) async {
+    await pumpMoreScreen(tester);
+
+    expect(
+      find.textContaining('only arrive while Flugwacht is open'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('explains the delivery in german too', (tester) async {
+    await pumpMoreScreen(tester, locale: const Locale('de'));
+
+    expect(find.textContaining('solange Flugwacht offen ist'), findsOneWidget);
+  });
+
+  testWidgets('points at the system settings while notifications are off', (
+    tester,
+  ) async {
+    await pumpMoreScreen(tester, permission: NotificationPermission.denied);
+
+    expect(find.textContaining('system settings'), findsOneWidget);
+  });
+
+  testWidgets('hides the system hint while the permission is granted', (
+    tester,
+  ) async {
+    await pumpMoreScreen(tester);
+
+    expect(find.textContaining('system settings'), findsNothing);
   });
 
   testWidgets('names the app version below the about entry', (tester) async {

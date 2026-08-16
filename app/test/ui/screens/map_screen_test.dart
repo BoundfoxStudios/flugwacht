@@ -183,6 +183,7 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         mapStyleSetting: await createTestMapStyleSetting(),
         unitsSetting: await createTestUnitsSetting(),
         notificationSetting: await createTestNotificationSetting(),
+        notificationService: createTestNotificationService(),
         tileSources: testTileSources(),
         packageInfo: testPackageInfo(),
       ),

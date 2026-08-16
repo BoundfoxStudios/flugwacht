@@ -357,6 +357,8 @@
   "settingsNotificationArrivingSoon": "Arriving soon (~30 min)",
   "settingsNotificationLanded": "Landed",
   "settingsNotificationsFootnote": "Local on your device — no account, no server.",
+  "settingsNotificationsDelivery": "Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.",
+  "settingsNotificationsDenied": "Notifications for Flugwacht are switched off in your system settings.",
   "settingsAboutTitle": "About Flugwacht",
   "settingsAboutSubtitle": "Version {version} · Licenses & sources",
   "@settingsAboutSubtitle": {
@@ -375,6 +377,8 @@
       }
     }
   },
+  "notificationChannelName": "Flight status",
+  "notificationChannelDescription": "Departure, arrival and landing of your flights.",
   "flightStatePlanned": "planned",
   "flightStateWaiting": "waiting",
   "flightStateLive": "live",

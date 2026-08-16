@@ -12,6 +12,7 @@
   <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/android.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/android.yml/badge.svg?branch=main" alt="Android workflow status"></a>
   <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/ios.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/ios.yml/badge.svg?branch=main" alt="iOS workflow status"></a>
   <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBoundfoxStudios%2Fflugwacht%2Fmain%2Fapp%2F.fvmrc&query=%24.flutter&label=Flutter&logo=flutter&color=02569B" alt="Pinned Flutter version">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/BoundfoxStudios/flugwacht" alt="License"></a>
   <a href="https://play.google.com/store/apps/details?id=com.boundfoxstudios.apps.flugwacht"><img src="https://img.shields.io/badge/Play_Store-3DDC84?logo=googleplay&logoColor=white" alt="Flugwacht on the Play Store"></a>
   <a href="https://apps.apple.com/us/app/flugwacht/id6801012878"><img src="https://img.shields.io/badge/App_Store-0D96F6?logo=appstore&logoColor=white" alt="Flugwacht on the App Store"></a>
 </p>
@@ -86,3 +87,11 @@ free for private use, with no guarantees about availability or freshness.
 Route lookup via
 [vradarserver/standing-data](https://github.com/vradarserver/standing-data).
 Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
+
+## License
+
+The source code is licensed under the [MIT license](LICENSE). The Flugwacht
+name, the logo, and the app icon assets are not covered by it — they remain the
+property of Boundfox Studios and may not be used to identify your own builds or
+products. The bundled fonts keep their own SIL Open Font License
+(`app/assets/fonts/OFL-*.txt`).

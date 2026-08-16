@@ -254,8 +254,8 @@ void main() {
     await tester.pump();
 
     double topOf(String text) => tester.getTopLeft(find.text(text)).dy;
-    expect(topOf('EW594'), lessThan(topOf('Past')));
-    expect(topOf('Past'), lessThan(topOf('BA915')));
+    expect(topOf('EW594'), lessThan(topOf('Past · gone in 24 h')));
+    expect(topOf('Past · gone in 24 h'), lessThan(topOf('BA915')));
   });
 
   testWidgets('leaves out the past label while nothing is over', (
@@ -266,7 +266,7 @@ void main() {
     repository.emit([_flight()]);
     await tester.pump();
 
-    expect(find.text('Past'), findsNothing);
+    expect(find.text('Past · gone in 24 h'), findsNothing);
   });
 
   testWidgets('opens the new flight screen from the add button', (

@@ -77,7 +77,7 @@
       }
     }
   },
-  "listPastSectionTitle": "Past",
+  "listPastSectionTitle": "Past · gone in 24 h",
   "listPlannedDateFormat": "EEE, MMM d",
   "@listPlannedDateFormat": {
     "description": "DateFormat pattern for the departure date on a planned row, localized per language."
@@ -332,6 +332,18 @@
   },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
+  "flightRowYesterday": "yesterday",
+  "flightRowPastSubtitle": "{route} · {day}",
+  "@flightRowPastSubtitle": {
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
   "flightRowDepartureTime": "from {time}",
   "@flightRowDepartureTime": {
     "placeholders": {

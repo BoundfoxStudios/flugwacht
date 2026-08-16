@@ -131,7 +131,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get listPastSectionTitle => 'Vorbei';
+  String get listPastSectionTitle => 'Vorbei · weg in 24 h';
 
   @override
   String get listPlannedDateFormat => 'ccc, d. LLL';
@@ -298,6 +298,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get flightRowToday => 'heute';
+
+  @override
+  String get flightRowYesterday => 'gestern';
+
+  @override
+  String flightRowPastSubtitle(String route, String day) {
+    return '$route · $day';
+  }
 
   @override
   String flightRowDepartureTime(String time) {

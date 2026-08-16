@@ -315,7 +315,7 @@ abstract class AppLocalizations {
   /// No description provided for @listPastSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Past'**
+  /// **'Past · gone in 24 h'**
   String get listPastSectionTitle;
 
   /// DateFormat pattern for the departure date on a planned row, localized per language.
@@ -563,6 +563,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'today'**
   String get flightRowToday;
+
+  /// No description provided for @flightRowYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get flightRowYesterday;
+
+  /// No description provided for @flightRowPastSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{route} · {day}'**
+  String flightRowPastSubtitle(String route, String day);
 
   /// No description provided for @flightRowDepartureTime.
   ///

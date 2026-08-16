@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/flight.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/relative_day.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
@@ -13,13 +14,21 @@ import 'flight_labels.dart';
 /// A non-hero list cell: the waiting row, the dashed planned row and the
 /// grayed row of the past section, told apart by the derived flight state.
 class FlightRow extends StatelessWidget {
-  const FlightRow({required this.flight, required this.state, super.key});
+  const FlightRow({
+    required this.flight,
+    required this.state,
+    required this.now,
+    super.key,
+  });
 
   static const _verticalPadding = 14.0;
   static const _titleGap = 2.0;
 
   final Flight flight;
   final FlightState state;
+
+  /// Names the departure day of a past row relative to the current one.
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +44,7 @@ class FlightRow extends StatelessWidget {
       FlightState.live ||
       FlightState.noSignal => _RowVariant.current,
     };
-    final subtitle = _subtitle(localizations, variant);
+    final subtitle = _subtitle(context, localizations, variant);
     final content = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.cardPaddingLarge,
@@ -96,10 +105,17 @@ class FlightRow extends StatelessWidget {
     };
   }
 
-  String? _subtitle(AppLocalizations localizations, _RowVariant variant) {
+  String? _subtitle(
+    BuildContext context,
+    AppLocalizations localizations,
+    _RowVariant variant,
+  ) {
     final route = flightRouteLabel(localizations, flight.route);
     if (variant == _RowVariant.past) {
-      return route;
+      final day = _departureDay(context, localizations);
+      return route == null
+          ? day
+          : localizations.flightRowPastSubtitle(route, day);
     }
     final stateText = switch (state) {
       FlightState.waiting => localizations.flightRowWaitingForSignal,
@@ -113,19 +129,28 @@ class FlightRow extends StatelessWidget {
         : localizations.flightRowSubtitle(route, stateText);
   }
 
+  String _departureDay(BuildContext context, AppLocalizations localizations) =>
+      switch (relativeDayOf(flight.departureDate, now)) {
+        RelativeDay.today => localizations.flightRowToday,
+        RelativeDay.yesterday => localizations.flightRowYesterday,
+        RelativeDay.earlier => _departureDate(context, localizations),
+      };
+
+  String _departureDate(BuildContext context, AppLocalizations localizations) =>
+      DateFormat(
+        localizations.listPlannedDateFormat,
+        Localizations.localeOf(context).toLanguageTag(),
+      ).format(
+        DateTime(
+          flight.departureDate.year,
+          flight.departureDate.month,
+          flight.departureDate.day,
+        ),
+      );
+
   String _accessory(AppLocalizations localizations, BuildContext context) =>
       switch (state) {
-        FlightState.planned =>
-          DateFormat(
-            localizations.listPlannedDateFormat,
-            Localizations.localeOf(context).toLanguageTag(),
-          ).format(
-            DateTime(
-              flight.departureDate.year,
-              flight.departureDate.month,
-              flight.departureDate.day,
-            ),
-          ),
+        FlightState.planned => _departureDate(context, localizations),
         FlightState.ended => localizations.flightRowLanded,
         FlightState.missed => localizations.flightRowMissed,
         FlightState.waiting => _waitingAccessory(localizations, context),

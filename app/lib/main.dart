@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -11,6 +9,7 @@ import 'data/airline_directory.dart';
 import 'data/database.dart';
 import 'data/flight_notifier.dart';
 import 'data/flight_repository.dart';
+import 'data/font_licenses.dart';
 import 'data/map_style_setting.dart';
 import 'data/notification_service.dart';
 import 'data/notification_setting.dart';
@@ -30,7 +29,7 @@ import 'ui/widgets/map_visuals.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  LicenseRegistry.addLicense(_fontLicenses);
+  registerFontLicenses();
   initializeAirportTimezones();
   final client = http.Client();
   final flightRepository = FlightRepository(AppDatabase());
@@ -89,15 +88,6 @@ Future<void> main() async {
       ),
     ),
   );
-}
-
-Stream<LicenseEntry> _fontLicenses() async* {
-  yield LicenseEntryWithLineBreaks(const [
-    'Bebas Neue',
-  ], await rootBundle.loadString('assets/fonts/OFL-BebasNeue.txt'));
-  yield LicenseEntryWithLineBreaks(const [
-    'Barlow',
-  ], await rootBundle.loadString('assets/fonts/OFL-Barlow.txt'));
 }
 
 class FlugwachtApp extends StatelessWidget {

@@ -1,10 +1,12 @@
 import 'package:flugwacht/main.dart';
+import 'package:flugwacht/ui/screens/about_screen.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
 import 'package:flugwacht/ui/widgets/app_primary_button.dart';
 import 'package:flugwacht/ui/widgets/app_tab_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,6 +41,28 @@ void main() {
     await tester.tap(find.text('Map'));
     await tester.pumpAndSettle();
     expect(find.byType(MapScreen), findsOneWidget);
+  });
+
+  testWidgets('the settings card opens the about screen and comes back', (
+    tester,
+  ) async {
+    final router = await pumpApp(tester);
+
+    await tester.tap(find.text('More'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('About Flugwacht'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('About Flugwacht'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AboutScreen), findsOneWidget);
+    expect(router.state.uri.toString(), '/more/about');
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MoreScreen), findsOneWidget);
+    expect(find.byType(AboutScreen), findsNothing);
   });
 
   testWidgets('new flight opens without the tab bar and can be closed', (

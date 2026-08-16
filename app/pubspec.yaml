@@ -59,6 +59,7 @@ dependencies:
   vector_map_tiles: ^9.0.0-beta.11
   vector_tile_renderer: ^6.1.0
   flutter_local_notifications: ^22.3.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +77,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.34.5
   build_runner: ^2.15.1
+  url_launcher_platform_interface: ^2.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -93,6 +95,9 @@ flutter:
     - assets/data/airlines.csv
     - assets/logo/logo-light.svg
     - assets/logo/logo-dark.svg
+    - assets/logo/lockup-light.svg
+    - assets/logo/lockup-dark.svg
+    - assets/logo/bfs.svg
     - assets/fonts/OFL-BebasNeue.txt
     - assets/fonts/OFL-Barlow.txt
 

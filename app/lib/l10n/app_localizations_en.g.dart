@@ -132,7 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get listPastSectionTitle => 'Past';
+  String get listPastSectionTitle => 'Past · gone in 24 h';
 
   @override
   String get listPlannedDateFormat => 'EEE, MMM d';
@@ -301,6 +301,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flightRowToday => 'today';
 
   @override
+  String get flightRowYesterday => 'yesterday';
+
+  @override
+  String flightRowPastSubtitle(String route, String day) {
+    return '$route · $day';
+  }
+
+  @override
   String flightRowDepartureTime(String time) {
     return 'from $time';
   }
@@ -368,6 +376,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String settingsAboutSubtitle(String version) {
     return 'Version $version · Licenses & sources';
   }
+
+  @override
+  String get aboutTitle => 'About Flugwacht';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutSourcesSectionTitle => 'Data & map';
+
+  @override
+  String aboutSources(String sources) {
+    return 'Flight data: $sources — free for private use, community networks without warranty about availability or freshness.';
+  }
+
+  @override
+  String get aboutMapAttribution => 'Map © OpenStreetMap contributors.';
+
+  @override
+  String get aboutIconCredit => 'Icons: Font Awesome Pro';
+
+  @override
+  String get aboutLicenses => 'Open-source licenses';
+
+  @override
+  String get aboutBoundfox => 'A project by Boundfox Studios';
+
+  @override
+  String get aboutGithub => 'Flugwacht on GitHub';
 
   @override
   String settingsDataFootnote(String sources) {

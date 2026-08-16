@@ -53,6 +53,7 @@ Future<void> pumpRow(
   Flight? row,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
+  DateTime? now,
 }) => tester.pumpWidget(
   MaterialApp(
     locale: locale,
@@ -73,7 +74,11 @@ Future<void> pumpRow(
                 Brightness.light => AppColors.neutral50,
                 Brightness.dark => AppColors.neutral900,
               },
-              child: FlightRow(flight: row ?? flight(), state: state),
+              child: FlightRow(
+                flight: row ?? flight(),
+                state: state,
+                now: now ?? DateTime(2026, 8, 15, 18),
+              ),
             ),
           ),
         ),
@@ -179,11 +184,35 @@ void main() {
   ) async {
     await pumpRow(tester, state: FlightState.ended);
 
-    expect(find.text('STR → PMI'), findsOneWidget);
+    expect(find.text('STR → PMI · today'), findsOneWidget);
     expect(find.text('landed ✓'), findsOneWidget);
     expect(colorOf(tester, 'EW594'), AppColors.neutral400);
-    expect(colorOf(tester, 'STR → PMI'), AppColors.neutral400);
+    expect(colorOf(tester, 'STR → PMI · today'), AppColors.neutral400);
     expect(colorOf(tester, 'landed ✓'), AppColors.neutral400);
+  });
+
+  testWidgets('names yesterday as the departure day of a past row', (
+    tester,
+  ) async {
+    await pumpRow(
+      tester,
+      state: FlightState.ended,
+      now: DateTime(2026, 8, 16, 2),
+    );
+
+    expect(find.text('STR → PMI · yesterday'), findsOneWidget);
+  });
+
+  testWidgets('dates a past row that survived beyond yesterday', (
+    tester,
+  ) async {
+    await pumpRow(
+      tester,
+      state: FlightState.missed,
+      now: DateTime(2026, 8, 17, 9),
+    );
+
+    expect(find.text('STR → PMI · Sat, Aug 15'), findsOneWidget);
   });
 
   testWidgets('marks a missed flight as missed', (tester) async {
@@ -193,12 +222,13 @@ void main() {
   });
 
   testWidgets(
-    'leaves a past row without a subtitle when the route is unknown',
+    'leaves the day as the only subtitle of a past row without route',
     (tester) async {
       await pumpRow(tester, state: FlightState.ended, row: flight(route: null));
 
       expect(find.text('EW594'), findsOneWidget);
-      expect(find.byType(Text), findsNWidgets(2));
+      expect(find.text('today'), findsOneWidget);
+      expect(find.byType(Text), findsNWidgets(3));
     },
   );
 
@@ -266,8 +296,14 @@ void main() {
     expect(find.text('STR → PMI · geplant'), findsOneWidget);
     expect(find.text('Sa, 15. Aug'), findsOneWidget);
 
-    await pumpRow(tester, state: FlightState.ended, locale: const Locale('de'));
+    await pumpRow(
+      tester,
+      state: FlightState.ended,
+      locale: const Locale('de'),
+      now: DateTime(2026, 8, 16, 2),
+    );
     expect(find.text('gelandet ✓'), findsOneWidget);
+    expect(find.text('STR → PMI · gestern'), findsOneWidget);
 
     await pumpRow(
       tester,

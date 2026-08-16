@@ -12,6 +12,7 @@ import '../data/source_setting.dart';
 import '../data/units_setting.dart';
 import 'app_shell.dart';
 import 'map_selection.dart';
+import 'screens/about_screen.dart';
 import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
@@ -79,6 +80,13 @@ GoRouter createAppRouter({
                   notificationService: notificationService,
                   packageInfo: packageInfo,
                 ),
+                routes: [
+                  GoRoute(
+                    path: 'about',
+                    builder: (context, state) =>
+                        AboutScreen(packageInfo: packageInfo),
+                  ),
+                ],
               ),
             ],
           ),

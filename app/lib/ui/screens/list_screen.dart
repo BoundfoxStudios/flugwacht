@@ -143,10 +143,11 @@ class _FlightSections extends StatelessWidget {
                 tileSources: tileSources,
                 onTap: () => onFlightSelected(entry.flight.id),
               ),
-            for (final entry in rows) _PaddedRow(entry: entry),
+            for (final entry in rows) _PaddedRow(entry: entry, now: today),
             if (sections.past.isNotEmpty) ...[
               const _PastSectionLabel(),
-              for (final entry in sections.past) _PaddedRow(entry: entry),
+              for (final entry in sections.past)
+                _PaddedRow(entry: entry, now: today),
             ],
           ],
         ),
@@ -184,7 +185,7 @@ class _ListHeader extends StatelessWidget {
 }
 
 class _PaddedRow extends StatelessWidget {
-  const _PaddedRow({required this.entry});
+  const _PaddedRow({required this.entry, required this.now});
 
   static const padding = EdgeInsets.fromLTRB(
     AppSpacing.screenPadding,
@@ -194,11 +195,12 @@ class _PaddedRow extends StatelessWidget {
   );
 
   final FlightListEntry entry;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: padding,
-    child: FlightRow(flight: entry.flight, state: entry.state),
+    child: FlightRow(flight: entry.flight, state: entry.state, now: now),
   );
 }
 

@@ -315,7 +315,7 @@ abstract class AppLocalizations {
   /// No description provided for @listPastSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Past'**
+  /// **'Past · gone in 24 h'**
   String get listPastSectionTitle;
 
   /// DateFormat pattern for the departure date on a planned row, localized per language.
@@ -564,6 +564,18 @@ abstract class AppLocalizations {
   /// **'today'**
   String get flightRowToday;
 
+  /// No description provided for @flightRowYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get flightRowYesterday;
+
+  /// No description provided for @flightRowPastSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{route} · {day}'**
+  String flightRowPastSubtitle(String route, String day);
+
   /// No description provided for @flightRowDepartureTime.
   ///
   /// In en, this message translates to:
@@ -683,6 +695,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Version {version} · Licenses & sources'**
   String settingsAboutSubtitle(String version);
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Flugwacht'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String aboutVersion(String version);
+
+  /// No description provided for @aboutSourcesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data & map'**
+  String get aboutSourcesSectionTitle;
+
+  /// Credits the sources the app offers; the list carries each source's license.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight data: {sources} — free for private use, community networks without warranty about availability or freshness.'**
+  String aboutSources(String sources);
+
+  /// No description provided for @aboutMapAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Map © OpenStreetMap contributors.'**
+  String get aboutMapAttribution;
+
+  /// No description provided for @aboutIconCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Icons: Font Awesome Pro'**
+  String get aboutIconCredit;
+
+  /// No description provided for @aboutLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source licenses'**
+  String get aboutLicenses;
+
+  /// No description provided for @aboutBoundfox.
+  ///
+  /// In en, this message translates to:
+  /// **'A project by Boundfox Studios'**
+  String get aboutBoundfox;
+
+  /// No description provided for @aboutGithub.
+  ///
+  /// In en, this message translates to:
+  /// **'Flugwacht on GitHub'**
+  String get aboutGithub;
 
   /// Credits the sources the app offers; the list carries each source's license.
   ///

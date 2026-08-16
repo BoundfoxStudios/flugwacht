@@ -77,7 +77,7 @@
       }
     }
   },
-  "listPastSectionTitle": "Past",
+  "listPastSectionTitle": "Past · gone in 24 h",
   "listPlannedDateFormat": "EEE, MMM d",
   "@listPlannedDateFormat": {
     "description": "DateFormat pattern for the departure date on a planned row, localized per language."
@@ -332,6 +332,18 @@
   },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
+  "flightRowYesterday": "yesterday",
+  "flightRowPastSubtitle": "{route} · {day}",
+  "@flightRowPastSubtitle": {
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
   "flightRowDepartureTime": "from {time}",
   "@flightRowDepartureTime": {
     "placeholders": {
@@ -369,6 +381,30 @@
       }
     }
   },
+  "aboutTitle": "About Flugwacht",
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutSourcesSectionTitle": "Data & map",
+  "aboutSources": "Flight data: {sources} — free for private use, community networks without warranty about availability or freshness.",
+  "@aboutSources": {
+    "description": "Credits the sources the app offers; the list carries each source's license.",
+    "placeholders": {
+      "sources": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutMapAttribution": "Map © OpenStreetMap contributors.",
+  "aboutIconCredit": "Icons: Font Awesome Pro",
+  "aboutLicenses": "Open-source licenses",
+  "aboutBoundfox": "A project by Boundfox Studios",
+  "aboutGithub": "Flugwacht on GitHub",
   "settingsDataFootnote": "Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.",
   "@settingsDataFootnote": {
     "description": "Credits the sources the app offers; the list carries each source's license.",

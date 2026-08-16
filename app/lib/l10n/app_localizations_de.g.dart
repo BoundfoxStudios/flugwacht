@@ -164,6 +164,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapStyleToggleLabel => 'Kartenstil wechseln';
 
   @override
+  String get mapRecenterLabel => 'Auf den Flug zentrieren';
+
+  @override
   String get mapAttributionOpenMapTiles => '© OpenStreetMap · © OpenMapTiles';
 
   @override

@@ -366,6 +366,12 @@ abstract class AppLocalizations {
   /// **'Switch map style'**
   String get mapStyleToggleLabel;
 
+  /// Accessibility label of the button that frames the selected flight again.
+  ///
+  /// In en, this message translates to:
+  /// **'Center on the flight'**
+  String get mapRecenterLabel;
+
   /// Credit of the reduced style, whose vector tiles OpenFreeMap serves from OpenMapTiles data.
   ///
   /// In en, this message translates to:

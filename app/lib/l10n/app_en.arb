@@ -122,6 +122,10 @@
   "@mapStyleToggleLabel": {
     "description": "Accessibility label of the button that switches between the reduced and the OpenStreetMap style."
   },
+  "mapRecenterLabel": "Center on the flight",
+  "@mapRecenterLabel": {
+    "description": "Accessibility label of the button that frames the selected flight again."
+  },
   "mapAttributionOpenMapTiles": "© OpenStreetMap · © OpenMapTiles",
   "@mapAttributionOpenMapTiles": {
     "description": "Credit of the reduced style, whose vector tiles OpenFreeMap serves from OpenMapTiles data."

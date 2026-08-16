@@ -165,6 +165,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapStyleToggleLabel => 'Switch map style';
 
   @override
+  String get mapRecenterLabel => 'Center on the flight';
+
+  @override
   String get mapAttributionOpenMapTiles => '© OpenStreetMap · © OpenMapTiles';
 
   @override

@@ -477,35 +477,24 @@ void main() {
     expect(flights, hasLength(1));
   });
 
-  testWidgets('closes the modal after saving', (tester) async {
+  testWidgets('closes the modal once the notification offer is answered', (
+    tester,
+  ) async {
     await pumpNewFlightScreen(tester);
 
     await enterLookupValue(tester, 'LH 400');
     await submit(tester);
+    await tester.tap(find.text('No thanks'));
+    await tester.pumpAndSettle();
 
     expect(find.byType(NewFlightScreen), findsNothing);
   });
 
-  testWidgets('asks for the notification permission when a flight is saved', (
-    tester,
-  ) async {
-    final service = createTestNotificationService();
-    await pumpNewFlightScreen(tester, notificationService: service);
-
-    await enterLookupValue(tester, 'LH 400');
-    await submit(tester);
-
-    expect(service.permissionRequests, 1);
-  });
-
-  testWidgets('asks for nothing while every notification is switched off', (
+  testWidgets('offers the notifications when the first flight is saved', (
     tester,
   ) async {
     final service = createTestNotificationService();
     final setting = await createTestNotificationSetting();
-    for (final kind in FlightNotification.values) {
-      await setting.select(kind, isEnabled: false);
-    }
     await pumpNewFlightScreen(
       tester,
       notificationService: service,
@@ -515,10 +504,83 @@ void main() {
     await enterLookupValue(tester, 'LH 400');
     await submit(tester);
 
+    expect(find.text('Turn notifications on?'), findsOneWidget);
     expect(service.permissionRequests, 0);
   });
 
-  testWidgets('asks for nothing a device could not set up', (tester) async {
+  testWidgets('an accepted offer switches every kind on and asks the system', (
+    tester,
+  ) async {
+    final service = createTestNotificationService();
+    final setting = await createTestNotificationSetting();
+    await pumpNewFlightScreen(
+      tester,
+      notificationService: service,
+      notificationSetting: setting,
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+    await tester.tap(find.text('Yes, please'));
+    await tester.pumpAndSettle();
+
+    for (final kind in FlightNotification.values) {
+      expect(setting.isEnabled(kind), isTrue, reason: kind.name);
+    }
+    expect(service.permissionRequests, 1);
+  });
+
+  testWidgets('a declined offer leaves everything off and asks for nothing', (
+    tester,
+  ) async {
+    final service = createTestNotificationService();
+    final setting = await createTestNotificationSetting();
+    await pumpNewFlightScreen(
+      tester,
+      notificationService: service,
+      notificationSetting: setting,
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+    await tester.tap(find.text('No thanks'));
+    await tester.pumpAndSettle();
+
+    for (final kind in FlightNotification.values) {
+      expect(setting.isEnabled(kind), isFalse, reason: kind.name);
+    }
+    expect(service.permissionRequests, 0);
+  });
+
+  testWidgets('offers nothing a second time, whatever the answer was', (
+    tester,
+  ) async {
+    final service = createTestNotificationService();
+    final setting = await createTestNotificationSetting();
+    await pumpNewFlightScreen(
+      tester,
+      notificationService: service,
+      notificationSetting: setting,
+    );
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+    await tester.tap(find.text('No thanks'));
+    await tester.pumpAndSettle();
+
+    await pumpNewFlightScreen(
+      tester,
+      notificationService: service,
+      notificationSetting: setting,
+    );
+    await enterLookupValue(tester, 'LH 401');
+    await submit(tester);
+
+    expect(find.text('Turn notifications on?'), findsNothing);
+  });
+
+  testWidgets('offers nothing on a device that could not set up', (
+    tester,
+  ) async {
     final service = createTestNotificationService(
       permission: NotificationPermission.unavailable,
     );
@@ -527,10 +589,11 @@ void main() {
     await enterLookupValue(tester, 'LH 400');
     await submit(tester);
 
+    expect(find.text('Turn notifications on?'), findsNothing);
     expect(service.permissionRequests, 0);
   });
 
-  testWidgets('asks no second time once the permission has been decided', (
+  testWidgets('offers nothing once the permission has been decided', (
     tester,
   ) async {
     final service = createTestNotificationService(
@@ -541,6 +604,7 @@ void main() {
     await enterLookupValue(tester, 'LH 400');
     await submit(tester);
 
+    expect(find.text('Turn notifications on?'), findsNothing);
     expect(service.permissionRequests, 0);
   });
 }

@@ -672,6 +672,30 @@ abstract class AppLocalizations {
   /// **'This device could not set notifications up, so the switches above stay without effect.'**
   String get settingsNotificationsUnavailable;
 
+  /// No description provided for @notificationOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn notifications on?'**
+  String get notificationOfferTitle;
+
+  /// No description provided for @notificationOfferBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Flugwacht can tell you when your flight has departed, is arriving soon, and has landed. You can change this in the settings at any time.'**
+  String get notificationOfferBody;
+
+  /// No description provided for @notificationOfferAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, please'**
+  String get notificationOfferAccept;
+
+  /// No description provided for @notificationOfferDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'No thanks'**
+  String get notificationOfferDecline;
+
   /// No description provided for @settingsAboutTitle.
   ///
   /// In en, this message translates to:

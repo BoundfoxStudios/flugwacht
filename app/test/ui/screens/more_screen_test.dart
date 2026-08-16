@@ -20,6 +20,7 @@ Future<
     SourceSetting source,
     UnitsSetting units,
     NotificationSetting notifications,
+    FakeNotificationService service,
   })
 >
 pumpMoreScreen(
@@ -31,6 +32,9 @@ pumpMoreScreen(
   final sourceSetting = await createTestSourceSetting();
   final unitsSetting = await createTestUnitsSetting();
   final notificationSetting = await createTestNotificationSetting();
+  final notificationService = createTestNotificationService(
+    permission: permission,
+  );
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -41,9 +45,7 @@ pumpMoreScreen(
         sourceSetting: sourceSetting,
         unitsSetting: unitsSetting,
         notificationSetting: notificationSetting,
-        notificationService: createTestNotificationService(
-          permission: permission,
-        ),
+        notificationService: notificationService,
         packageInfo: testPackageInfo(version: version),
       ),
     ),
@@ -53,6 +55,7 @@ pumpMoreScreen(
     source: sourceSetting,
     units: unitsSetting,
     notifications: notificationSetting,
+    service: notificationService,
   );
 }
 
@@ -96,26 +99,68 @@ void main() {
     expect(settings.units.units.value, Units.aviation);
   });
 
-  testWidgets('turns a notification off and marks its row', (tester) async {
+  testWidgets('turns a notification on and marks its row', (tester) async {
     final settings = await pumpMoreScreen(tester);
 
     await tester.tap(find.text('Landed'));
     await tester.pumpAndSettle();
 
-    expect(
-      settings.notifications.isEnabled(FlightNotification.landed),
-      isFalse,
-    );
+    expect(settings.notifications.isEnabled(FlightNotification.landed), isTrue);
     expect(
       tester
           .widget<AppSwitchRow>(find.widgetWithText(AppSwitchRow, 'Landed'))
           .isEnabled,
-      isFalse,
+      isTrue,
     );
     expect(
       settings.notifications.isEnabled(FlightNotification.departed),
-      isTrue,
+      isFalse,
     );
+  });
+
+  testWidgets('a switch going on asks the system while it is undecided', (
+    tester,
+  ) async {
+    final settings = await pumpMoreScreen(
+      tester,
+      permission: NotificationPermission.notDetermined,
+    );
+
+    await tester.tap(find.text('Landed'));
+    await tester.pumpAndSettle();
+
+    expect(settings.service.permissionRequests, 1);
+  });
+
+  testWidgets('a switch going on asks nothing once the answer is known', (
+    tester,
+  ) async {
+    for (final permission in [
+      NotificationPermission.granted,
+      NotificationPermission.denied,
+    ]) {
+      final settings = await pumpMoreScreen(tester, permission: permission);
+
+      await tester.tap(find.text('Landed'));
+      await tester.pumpAndSettle();
+
+      expect(settings.service.permissionRequests, 0, reason: permission.name);
+    }
+  });
+
+  testWidgets('a switch going off asks for nothing', (tester) async {
+    final settings = await pumpMoreScreen(
+      tester,
+      permission: NotificationPermission.notDetermined,
+    );
+    await tester.tap(find.text('Landed'));
+    await tester.pumpAndSettle();
+    settings.service.permissionRequests = 0;
+
+    await tester.tap(find.text('Landed'));
+    await tester.pumpAndSettle();
+
+    expect(settings.service.permissionRequests, 0);
   });
 
   testWidgets('explains when each notification can reach you', (tester) async {

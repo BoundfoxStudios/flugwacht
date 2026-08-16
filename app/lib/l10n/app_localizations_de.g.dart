@@ -361,6 +361,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Auf diesem Gerät ließen sich Mitteilungen nicht einrichten — die Schalter oben bleiben ohne Wirkung.';
 
   @override
+  String get notificationOfferTitle => 'Mitteilungen einschalten?';
+
+  @override
+  String get notificationOfferBody =>
+      'Flugwacht sagt dir, wann dein Flug gestartet ist, bald ankommt und gelandet ist. Du kannst das jederzeit in den Einstellungen ändern.';
+
+  @override
+  String get notificationOfferAccept => 'Ja, gerne';
+
+  @override
+  String get notificationOfferDecline => 'Nein, danke';
+
+  @override
   String get settingsAboutTitle => 'Über Flugwacht';
 
   @override

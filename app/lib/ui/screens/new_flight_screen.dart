@@ -13,7 +13,6 @@ import '../../data/route_lookup.dart';
 import '../../domain/calendar_date.dart';
 import '../../domain/day_time.dart';
 import '../../domain/flight.dart';
-import '../../domain/flight_notification.dart';
 import '../../domain/flight_number.dart';
 import '../../domain/lookup_input.dart';
 import '../../l10n/app_localizations.g.dart';
@@ -24,6 +23,7 @@ import '../widgets/app_segmented_control.dart';
 import '../widgets/departure_date_picker.dart';
 import '../widgets/departure_time_picker.dart';
 import '../widgets/flight_labels.dart';
+import '../widgets/notification_offer_dialog.dart';
 import 'new_flight_form.dart';
 import 'new_flight_preview.dart';
 import 'new_flight_preview_card.dart';
@@ -344,24 +344,29 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     } finally {
       _isSaving.value = false;
     }
-    await _askForNotificationPermission();
+    await _offerNotifications();
     if (mounted) {
       context.pop();
     }
   }
 
-  /// The app asks where the notifications become worth something: right after
-  /// the first flight is saved, and only for switches that are on.
-  Future<void> _askForNotificationPermission() async {
+  /// The app offers the notifications where they become worth something: right
+  /// after the first flight is saved, in its own dialog. Only a yes turns the
+  /// switches on and reaches the operating system's prompt.
+  Future<void> _offerNotifications() async {
     final isUndecided =
         widget.notificationService.permission.value ==
         NotificationPermission.notDetermined;
-    final wantsAny = FlightNotification.values.any(
-      widget.notificationSetting.isEnabled,
-    );
-    if (isUndecided && wantsAny) {
-      await widget.notificationService.requestPermission();
+    if (!isUndecided || widget.notificationSetting.wasOffered || !mounted) {
+      return;
     }
+    final isAccepted = await showNotificationOfferDialog(context);
+    await widget.notificationSetting.rememberOffer();
+    if (!isAccepted) {
+      return;
+    }
+    await widget.notificationSetting.enableAll();
+    await widget.notificationService.requestPermission();
   }
 
   Future<void> _pickDepartureTime() async {

@@ -362,6 +362,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'This device could not set notifications up, so the switches above stay without effect.';
 
   @override
+  String get notificationOfferTitle => 'Turn notifications on?';
+
+  @override
+  String get notificationOfferBody =>
+      'Flugwacht can tell you when your flight has departed, is arriving soon, and has landed. You can change this in the settings at any time.';
+
+  @override
+  String get notificationOfferAccept => 'Yes, please';
+
+  @override
+  String get notificationOfferDecline => 'No thanks';
+
+  @override
   String get settingsAboutTitle => 'About Flugwacht';
 
   @override

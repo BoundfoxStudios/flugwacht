@@ -8,12 +8,16 @@ import 'package:flugwacht/data/database.dart';
 import 'package:flugwacht/data/flight_repository.dart';
 import 'package:flugwacht/data/lookup_result.dart';
 import 'package:flugwacht/data/map_style_setting.dart';
+import 'package:flugwacht/data/notification_service.dart';
+import 'package:flugwacht/data/notification_setting.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/data/source_adapter.dart';
 import 'package:flugwacht/data/source_setting.dart';
+import 'package:flugwacht/data/units_setting.dart';
 import 'package:flugwacht/data/vector_tile_source.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/ui/app_router.dart';
@@ -22,6 +26,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:signals/signals.dart';
@@ -65,13 +70,127 @@ Future<MapStyleSetting> createTestMapStyleSetting() async {
   return setting;
 }
 
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<UnitsSetting> createTestUnitsSetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await UnitsSetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<NotificationSetting> createTestNotificationSetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await NotificationSetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
+/// A service that records what the app asked of it instead of talking to the
+/// platform, so no test touches the notification plugin.
+class FakeNotificationService implements NotificationService {
+  FakeNotificationService({
+    NotificationPermission permission = NotificationPermission.notDetermined,
+  }) : permission = signal(permission);
+
+  @override
+  final Signal<NotificationPermission> permission;
+
+  var permissionRequests = 0;
+  var permissionRefreshes = 0;
+  final shown = <(FlightNotification, int)>[];
+  final scheduled = <(FlightNotification, int, DateTime)>[];
+  final cancelled = <(FlightNotification, int)>[];
+
+  @override
+  Future<void> requestPermission() async {
+    permissionRequests++;
+    permission.value = NotificationPermission.granted;
+  }
+
+  @override
+  Future<void> refreshPermission() async => permissionRefreshes++;
+
+  @override
+  Future<void> show(
+    FlightNotification kind, {
+    required int flightId,
+    required String title,
+    required String body,
+  }) async => shown.add((kind, flightId));
+
+  @override
+  Future<void> schedule(
+    FlightNotification kind, {
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) async => scheduled.add((kind, flightId, at));
+
+  @override
+  Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
+      cancelled.add((kind, flightId));
+
+  void dispose() => permission.dispose();
+}
+
+/// Switch states without a preference store behind them, so a synchronous test
+/// can set them up in one line.
+class FakeNotificationSetting implements NotificationSetting {
+  FakeNotificationSetting({
+    this.enabled = const {
+      FlightNotification.departed,
+      FlightNotification.arrivingSoon,
+      FlightNotification.landed,
+    },
+  });
+
+  Set<FlightNotification> enabled;
+
+  @override
+  bool isEnabled(FlightNotification kind) => enabled.contains(kind);
+
+  @override
+  Future<void> select(
+    FlightNotification kind, {
+    required bool isEnabled,
+  }) async {
+    enabled = isEnabled ? {...enabled, kind} : ({...enabled}..remove(kind));
+  }
+
+  @override
+  void dispose() {}
+}
+
+FakeNotificationService createTestNotificationService({
+  NotificationPermission permission = NotificationPermission.notDetermined,
+}) {
+  final service = FakeNotificationService(permission: permission);
+  addTearDown(service.dispose);
+  return service;
+}
+
 Future<GoRouter> createTestAppRouter() async => createAppRouter(
   flightRepository: createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
   routeLookup: FakeRouteLookup(),
   sourceSetting: await createTestSourceSetting(),
   mapStyleSetting: await createTestMapStyleSetting(),
+  unitsSetting: await createTestUnitsSetting(),
+  notificationSetting: await createTestNotificationSetting(),
+  notificationService: createTestNotificationService(),
   tileSources: testTileSources(),
+  packageInfo: testPackageInfo(),
+);
+
+PackageInfo testPackageInfo({String version = '1.0.0'}) => PackageInfo(
+  appName: 'Flugwacht',
+  packageName: 'com.boundfoxstudios.apps.flugwacht',
+  version: version,
+  buildNumber: '1',
 );
 
 /// Tiles from stub providers under a stand-in package name, so no widget test
@@ -100,6 +219,7 @@ class FakeFlightRepository implements FlightRepository {
   final trackingUpdates = <(int, FlightTracking)>[];
   final trailAppends = <(int, FixPosition, SourceId)>[];
   final identityUpdates = <(int, String?, String?)>[];
+  final notificationMarks = <(int, FlightNotification)>[];
 
   void emit(List<Flight> flights) => _flights.add(flights);
 
@@ -140,6 +260,13 @@ class FakeFlightRepository implements FlightRepository {
     required String? hexAddress,
     required String? expectedCallsign,
   }) async => identityUpdates.add((flightId, hexAddress, expectedCallsign));
+
+  @override
+  Future<void> markNotificationDelivered(
+    int flightId,
+    FlightNotification kind,
+    DateTime deliveredAt,
+  ) async => notificationMarks.add((flightId, kind));
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();

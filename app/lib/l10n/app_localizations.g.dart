@@ -468,6 +468,18 @@ abstract class AppLocalizations {
   /// **'{value} km/h'**
   String mapSheetSpeedValue(String value);
 
+  /// No description provided for @mapSheetAltitudeValueFeet.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} ft'**
+  String mapSheetAltitudeValueFeet(String value);
+
+  /// No description provided for @mapSheetSpeedValueKnots.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kt'**
+  String mapSheetSpeedValueKnots(String value);
+
   /// The flight data source next to the credit of the rendered tiles.
   ///
   /// In en, this message translates to:
@@ -575,6 +587,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'missed'**
   String get flightRowMissed;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsSourceSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data source'**
+  String get settingsSourceSectionTitle;
+
+  /// No description provided for @settingsSourceExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.'**
+  String get settingsSourceExplainer;
+
+  /// No description provided for @settingsUnitsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get settingsUnitsSectionTitle;
+
+  /// No description provided for @settingsUnitsMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric (m, km/h)'**
+  String get settingsUnitsMetric;
+
+  /// No description provided for @settingsUnitsAviation.
+  ///
+  /// In en, this message translates to:
+  /// **'Aviation (ft, kt)'**
+  String get settingsUnitsAviation;
+
+  /// No description provided for @settingsNotificationsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotificationsSectionTitle;
+
+  /// No description provided for @settingsNotificationDeparted.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed'**
+  String get settingsNotificationDeparted;
+
+  /// No description provided for @settingsNotificationArrivingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Arriving soon (~30 min)'**
+  String get settingsNotificationArrivingSoon;
+
+  /// No description provided for @settingsNotificationLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'Landed'**
+  String get settingsNotificationLanded;
+
+  /// No description provided for @settingsNotificationsFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Local on your device — no account, no server.'**
+  String get settingsNotificationsFootnote;
+
+  /// No description provided for @settingsNotificationsDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.'**
+  String get settingsNotificationsDelivery;
+
+  /// No description provided for @settingsNotificationsDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications for Flugwacht are switched off in your system settings.'**
+  String get settingsNotificationsDenied;
+
+  /// No description provided for @settingsAboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Flugwacht'**
+  String get settingsAboutTitle;
+
+  /// No description provided for @settingsAboutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} · Licenses & sources'**
+  String settingsAboutSubtitle(String version);
+
+  /// Credits the sources the app offers; the list carries each source's license.
+  ///
+  /// In en, this message translates to:
+  /// **'Data: {sources} — free for private use, community networks without warranty. Map © OpenStreetMap.'**
+  String settingsDataFootnote(String sources);
+
+  /// No description provided for @notificationDepartedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The flight has taken off.'**
+  String get notificationDepartedBody;
+
+  /// No description provided for @notificationArrivingSoonBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Arriving in about 30 minutes.'**
+  String get notificationArrivingSoonBody;
+
+  /// No description provided for @notificationLandedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The flight has landed.'**
+  String get notificationLandedBody;
+
+  /// No description provided for @notificationChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight status'**
+  String get notificationChannelName;
+
+  /// No description provided for @notificationChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure, arrival and landing of your flights.'**
+  String get notificationChannelDescription;
 
   /// No description provided for @flightStatePlanned.
   ///

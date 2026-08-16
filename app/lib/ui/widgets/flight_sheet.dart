@@ -5,11 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/source_setting.dart';
+import '../../data/units_setting.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/map_style.dart';
 import '../../domain/signal_age.dart';
 import '../../domain/source_id.dart';
-import '../../domain/unit_conversion.dart';
+import '../../domain/units.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../screens/list_sections.dart';
 import '../theme/app_text_styles.dart';
@@ -29,6 +30,7 @@ class FlightSheet extends StatefulWidget {
     required this.selectedIndex,
     required this.onSelected,
     required this.sourceSetting,
+    required this.unitsSetting,
     required this.mapStyle,
     super.key,
     this.showsSourceComparison = false,
@@ -60,6 +62,7 @@ class FlightSheet extends StatefulWidget {
   final ValueChanged<int> onSelected;
 
   final SourceSetting sourceSetting;
+  final UnitsSetting unitsSetting;
 
   /// Names the tiles the map behind the sheet renders, which the footer has to
   /// credit while the sheet covers the map's own attribution.
@@ -182,6 +185,7 @@ class _FlightSheetState extends State<FlightSheet> {
                                     gap: gap,
                                     now: _now,
                                     sourceSetting: widget.sourceSetting,
+                                    unitsSetting: widget.unitsSetting,
                                     mapStyle: widget.mapStyle,
                                     showsSourceComparison:
                                         widget.showsSourceComparison &&
@@ -273,6 +277,7 @@ class _FlightPage extends StatelessWidget {
     required this.gap,
     required this.now,
     required this.sourceSetting,
+    required this.unitsSetting,
     required this.mapStyle,
     required this.showsSourceComparison,
   });
@@ -283,6 +288,7 @@ class _FlightPage extends StatelessWidget {
   final double gap;
   final DateTime now;
   final SourceSetting sourceSetting;
+  final UnitsSetting unitsSetting;
   final MapStyle mapStyle;
   final bool showsSourceComparison;
 
@@ -330,7 +336,14 @@ class _FlightPage extends StatelessWidget {
             variant: StateTimelineVariant.labeled,
           ),
           SizedBox(height: gap),
-          _DataRow(entry: entry, colors: colors, signalAge: signalAge),
+          SignalBuilder(
+            builder: (context) => _DataRow(
+              entry: entry,
+              colors: colors,
+              signalAge: signalAge,
+              units: unitsSetting.units.value,
+            ),
+          ),
           if (entry.state == FlightState.noSignal && signalAge != null) ...[
             SizedBox(height: gap),
             NoSignalInfoBox(age: signalAge),
@@ -366,8 +379,8 @@ class _FlightPage extends StatelessWidget {
   }
 }
 
-/// Switches a flight the active source cannot see to the next one; until the
-/// settings of M12 arrive this is the only switch the app offers.
+/// Switches a flight the active source cannot see to the next one, right where
+/// the gap shows up instead of over in the settings.
 class _AnotherSourceLink extends StatelessWidget {
   const _AnotherSourceLink({required this.onTap});
 
@@ -516,11 +529,13 @@ class _DataRow extends StatelessWidget {
     required this.entry,
     required this.colors,
     required this.signalAge,
+    required this.units,
   });
 
   final FlightListEntry entry;
   final _SheetColors colors;
   final SignalAge? signalAge;
+  final Units units;
 
   @override
   Widget build(BuildContext context) {
@@ -529,8 +544,18 @@ class _DataRow extends StatelessWidget {
       Localizations.localeOf(context).toLanguageTag(),
     );
     final position = entry.flight.tracking.latestPosition;
-    final altitude = metersFromFeet(position?.barometricAltitudeFeet);
-    final speed = kilometersPerHourFromKnots(position?.groundSpeedKnots);
+    final altitude = altitudeLabel(
+      localizations: localizations,
+      numbers: numbers,
+      units: units,
+      altitudeFeet: position?.barometricAltitudeFeet,
+    );
+    final speed = speedLabel(
+      localizations: localizations,
+      numbers: numbers,
+      units: units,
+      groundSpeedKnots: position?.groundSpeedKnots,
+    );
     return Container(
       padding: const EdgeInsets.only(top: FlightSheet._dataRowPadding),
       decoration: BoxDecoration(
@@ -542,16 +567,12 @@ class _DataRow extends StatelessWidget {
         children: [
           _DataColumn(
             label: localizations.mapSheetAltitudeLabel,
-            value: altitude == null
-                ? null
-                : localizations.mapSheetAltitudeValue(numbers.format(altitude)),
+            value: altitude,
             colors: colors,
           ),
           _DataColumn(
             label: localizations.mapSheetSpeedLabel,
-            value: speed == null
-                ? null
-                : localizations.mapSheetSpeedValue(numbers.format(speed)),
+            value: speed,
             colors: colors,
           ),
           _DataColumn(

@@ -231,6 +231,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String mapSheetAltitudeValueFeet(String value) {
+    return '$value ft';
+  }
+
+  @override
+  String mapSheetSpeedValueKnots(String value) {
+    return '$value kt';
+  }
+
+  @override
   String mapSheetSource(String source, String attribution) {
     return 'Quelle: $source · $attribution';
   }
@@ -302,6 +312,78 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get flightRowMissed => 'verpasst';
+
+  @override
+  String get settingsTitle => 'Einstellungen';
+
+  @override
+  String get settingsSourceSectionTitle => 'Datenquelle';
+
+  @override
+  String get settingsSourceExplainer =>
+      'Alle Quellen liefern dieselben Werte — sie unterscheiden sich nur darin, wer deinen Flieger gerade empfängt. Bei Lücken lohnt das Umschalten; die Spur läuft dabei weiter.';
+
+  @override
+  String get settingsUnitsSectionTitle => 'Einheiten';
+
+  @override
+  String get settingsUnitsMetric => 'Metrisch (m, km/h)';
+
+  @override
+  String get settingsUnitsAviation => 'Luftfahrt (ft, kt)';
+
+  @override
+  String get settingsNotificationsSectionTitle => 'Mitteilungen';
+
+  @override
+  String get settingsNotificationDeparted => 'Gestartet';
+
+  @override
+  String get settingsNotificationArrivingSoon => 'Ankunft bald (~30 Min)';
+
+  @override
+  String get settingsNotificationLanded => 'Gelandet';
+
+  @override
+  String get settingsNotificationsFootnote =>
+      'Lokal auf dem Gerät — kein Konto, kein Server.';
+
+  @override
+  String get settingsNotificationsDelivery =>
+      'Gestartet und Gelandet erreichen dich nur, solange Flugwacht offen ist. Ankunft bald kommt auch bei geschlossener App — ungefähr zum richtigen Zeitpunkt.';
+
+  @override
+  String get settingsNotificationsDenied =>
+      'In deinen Systemeinstellungen sind Mitteilungen für Flugwacht ausgeschaltet.';
+
+  @override
+  String get settingsAboutTitle => 'Über Flugwacht';
+
+  @override
+  String settingsAboutSubtitle(String version) {
+    return 'Version $version · Lizenzen & Quellen';
+  }
+
+  @override
+  String settingsDataFootnote(String sources) {
+    return 'Daten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr. Karte © OpenStreetMap.';
+  }
+
+  @override
+  String get notificationDepartedBody => 'Der Flug ist gestartet.';
+
+  @override
+  String get notificationArrivingSoonBody => 'Ankunft in etwa 30 Minuten.';
+
+  @override
+  String get notificationLandedBody => 'Der Flug ist gelandet.';
+
+  @override
+  String get notificationChannelName => 'Flugstatus';
+
+  @override
+  String get notificationChannelDescription =>
+      'Start, Ankunft und Landung deiner Flüge.';
 
   @override
   String get flightStatePlanned => 'geplant';

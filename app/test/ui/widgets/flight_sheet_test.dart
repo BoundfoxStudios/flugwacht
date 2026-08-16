@@ -1,4 +1,5 @@
 import 'package:flugwacht/data/source_setting.dart';
+import 'package:flugwacht/data/units_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
@@ -6,6 +7,7 @@ import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
+import 'package:flugwacht/domain/units.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_sections.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -104,9 +106,11 @@ Future<List<int>> pumpFlightSheet(
   Brightness brightness = Brightness.light,
   DateTime Function()? clock,
   SourceSetting? sourceSetting,
+  UnitsSetting? unitsSetting,
   bool showsSourceComparison = false,
 }) async {
   final setting = sourceSetting ?? await createTestSourceSetting();
+  final units = unitsSetting ?? await createTestUnitsSetting();
   final selections = <int>[];
   await tester.pumpWidget(
     MaterialApp(
@@ -125,6 +129,7 @@ Future<List<int>> pumpFlightSheet(
             selectedIndex: selectedIndex,
             onSelected: selections.add,
             sourceSetting: setting,
+            unitsSetting: units,
             mapStyle: MapStyle.reduced,
             showsSourceComparison: showsSourceComparison,
             clock: clock ?? () => _now,
@@ -297,6 +302,20 @@ void main() {
     expect(find.text('11,278 m'), findsOneWidget);
     expect(find.text('876 km/h'), findsOneWidget);
     expect(find.text('3 s ago'), findsOneWidget);
+  });
+
+  testWidgets('follows the units setting into feet and knots', (tester) async {
+    final unitsSetting = await createTestUnitsSetting();
+    await pumpFlightSheet(tester, unitsSetting: unitsSetting);
+
+    await openSheet(tester);
+    expect(find.text('11,278 m'), findsOneWidget);
+
+    await unitsSetting.select(Units.aviation);
+    await tester.pumpAndSettle();
+
+    expect(find.text('37,000 ft'), findsOneWidget);
+    expect(find.text('473 kt'), findsOneWidget);
   });
 
   testWidgets('counts the signal age up every second', (tester) async {

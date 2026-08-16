@@ -232,6 +232,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String mapSheetAltitudeValueFeet(String value) {
+    return '$value ft';
+  }
+
+  @override
+  String mapSheetSpeedValueKnots(String value) {
+    return '$value kt';
+  }
+
+  @override
   String mapSheetSource(String source, String attribution) {
     return 'Source: $source · $attribution';
   }
@@ -303,6 +313,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flightRowMissed => 'missed';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsSourceSectionTitle => 'Data source';
+
+  @override
+  String get settingsSourceExplainer =>
+      'All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.';
+
+  @override
+  String get settingsUnitsSectionTitle => 'Units';
+
+  @override
+  String get settingsUnitsMetric => 'Metric (m, km/h)';
+
+  @override
+  String get settingsUnitsAviation => 'Aviation (ft, kt)';
+
+  @override
+  String get settingsNotificationsSectionTitle => 'Notifications';
+
+  @override
+  String get settingsNotificationDeparted => 'Departed';
+
+  @override
+  String get settingsNotificationArrivingSoon => 'Arriving soon (~30 min)';
+
+  @override
+  String get settingsNotificationLanded => 'Landed';
+
+  @override
+  String get settingsNotificationsFootnote =>
+      'Local on your device — no account, no server.';
+
+  @override
+  String get settingsNotificationsDelivery =>
+      'Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.';
+
+  @override
+  String get settingsNotificationsDenied =>
+      'Notifications for Flugwacht are switched off in your system settings.';
+
+  @override
+  String get settingsAboutTitle => 'About Flugwacht';
+
+  @override
+  String settingsAboutSubtitle(String version) {
+    return 'Version $version · Licenses & sources';
+  }
+
+  @override
+  String settingsDataFootnote(String sources) {
+    return 'Data: $sources — free for private use, community networks without warranty. Map © OpenStreetMap.';
+  }
+
+  @override
+  String get notificationDepartedBody => 'The flight has taken off.';
+
+  @override
+  String get notificationArrivingSoonBody => 'Arriving in about 30 minutes.';
+
+  @override
+  String get notificationLandedBody => 'The flight has landed.';
+
+  @override
+  String get notificationChannelName => 'Flight status';
+
+  @override
+  String get notificationChannelDescription =>
+      'Departure, arrival and landing of your flights.';
 
   @override
   String get flightStatePlanned => 'planned';

@@ -45,10 +45,18 @@ for density_and_sizes in mdpi:48:108 hdpi:72:162 xhdpi:96:216 xxhdpi:144:324 xxx
   render android-monochrome.svg "$adaptive_size" "$staging/android/mipmap-$density/ic_launcher_monochrome.png"
 done
 
+# The status bar tints the small icon and keeps only its alpha, so it is drawn
+# on a 24dp canvas of its own instead of the adaptive icon's safe zone
+for density_and_size in mdpi:24 hdpi:36 xhdpi:48 xxhdpi:72 xxxhdpi:96; do
+  density="${density_and_size%%:*}"
+  size="${density_and_size#*:}"
+  render android-notification.svg "$size" "$staging/android/drawable-$density/ic_notification.png"
+done
+
 render tile.svg 512 "$staging/store/play-store-512.png"
 
 cp "$staging/ios/"*.png "$ios_icon_set/"
-for density_directory in "$staging/android/"mipmap-*; do
+for density_directory in "$staging/android/"mipmap-* "$staging/android/"drawable-*; do
   mkdir -p "$android_resources/$(basename "$density_directory")"
   cp "$density_directory/"*.png "$android_resources/$(basename "$density_directory")/"
 done

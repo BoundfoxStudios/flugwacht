@@ -9,18 +9,23 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/airline_directory.dart';
 import 'data/database.dart';
+import 'data/flight_notifier.dart';
 import 'data/flight_repository.dart';
 import 'data/map_style_setting.dart';
+import 'data/notification_service.dart';
+import 'data/notification_setting.dart';
 import 'data/polling_engine.dart';
 import 'data/readsb_source_adapter.dart';
 import 'data/route_lookup.dart';
 import 'data/source_setting.dart';
+import 'data/units_setting.dart';
 import 'data/vector_tile_source.dart';
 import 'domain/airport_timezone.dart';
 import 'domain/source_id.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
+import 'ui/widgets/flight_labels.dart';
 import 'ui/widgets/map_visuals.dart';
 
 Future<void> main() async {
@@ -32,7 +37,19 @@ Future<void> main() async {
   final airlineDirectory = await AirlineDirectory.loadFromAssets();
   final sourceSetting = await SourceSetting.load();
   final mapStyleSetting = await MapStyleSetting.load();
+  final unitsSetting = await UnitsSetting.load();
+  final notificationSetting = await NotificationSetting.load();
   final packageInfo = await PackageInfo.fromPlatform();
+  final localizations = await AppLocalizations.delegate.load(
+    basicLocaleListResolution(
+      WidgetsBinding.instance.platformDispatcher.locales,
+      AppLocalizations.supportedLocales,
+    ),
+  );
+  final notificationService = await LocalNotificationService.start(
+    channelName: localizations.notificationChannelName,
+    channelDescription: localizations.notificationChannelDescription,
+  );
   // Not awaited: the map draws its ground as soon as the planet run is known,
   // and starts without tiles rather than without a first frame.
   final vectorTileSource = VectorTileSource(client: client);
@@ -45,6 +62,13 @@ Future<void> main() async {
     },
     activeSourceId: () => sourceSetting.activeId.value,
     airlineDirectory: airlineDirectory,
+    notifier: FlightNotifier(
+      repository: flightRepository,
+      service: notificationService,
+      setting: notificationSetting,
+      copy: (kind, flight) =>
+          flightNotificationText(localizations, kind, flight),
+    ),
   ).start();
   runApp(
     FlugwachtApp(
@@ -54,10 +78,14 @@ Future<void> main() async {
         routeLookup: RouteLookup(client: client),
         sourceSetting: sourceSetting,
         mapStyleSetting: mapStyleSetting,
+        unitsSetting: unitsSetting,
+        notificationSetting: notificationSetting,
+        notificationService: notificationService,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,
         ),
+        packageInfo: packageInfo,
       ),
     ),
   );

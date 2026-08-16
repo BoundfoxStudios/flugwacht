@@ -43,6 +43,9 @@ class Flights extends Table {
   RealColumn get latestIndicatedAirspeedKnots => real().nullable()();
   RealColumn get latestMach => real().nullable()();
   RealColumn get latestVerticalRateFeetPerMinute => real().nullable()();
+  IntColumn get departedNotifiedAt => integer().nullable()();
+  IntColumn get arrivingSoonNotifiedAt => integer().nullable()();
+  IntColumn get landedNotifiedAt => integer().nullable()();
 }
 
 @DataClassName('TrailPointRow')
@@ -64,7 +67,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'flugwacht'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +77,11 @@ class AppDatabase extends _$AppDatabase {
           flights,
           flights.departureMinutesSinceMidnight,
         );
+      }
+      if (from < 3) {
+        await migrator.addColumn(flights, flights.departedNotifiedAt);
+        await migrator.addColumn(flights, flights.arrivingSoonNotifiedAt);
+        await migrator.addColumn(flights, flights.landedNotifiedAt);
       }
     },
     beforeOpen: (details) async {

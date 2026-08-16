@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flugwacht/data/flight_repository.dart';
+import 'package:flugwacht/data/notification_service.dart';
+import 'package:flugwacht/data/notification_setting.dart';
 import 'package:flugwacht/data/route_lookup.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/new_flight_preview_card.dart';
@@ -41,11 +44,14 @@ Future<FlightRepository> pumpNewFlightScreen(
   Locale locale = const Locale('en'),
   TargetPlatform platform = TargetPlatform.android,
   RouteLookup? routeLookup,
+  NotificationService? notificationService,
+  NotificationSetting? notificationSetting,
 }) async {
   tester.view.physicalSize = const Size(800, 1600);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final repository = createTestRepository();
+  final notifications = await createTestNotificationSetting();
   final router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -56,6 +62,9 @@ Future<FlightRepository> pumpNewFlightScreen(
           flightRepository: repository,
           airlineDirectory: createTestAirlineDirectory(),
           routeLookup: routeLookup ?? FakeRouteLookup(),
+          notificationService:
+              notificationService ?? createTestNotificationService(),
+          notificationSetting: notificationSetting ?? notifications,
           today: DateTime(2026, 8, 12),
         ),
       ),
@@ -475,5 +484,51 @@ void main() {
     await submit(tester);
 
     expect(find.byType(NewFlightScreen), findsNothing);
+  });
+
+  testWidgets('asks for the notification permission when a flight is saved', (
+    tester,
+  ) async {
+    final service = createTestNotificationService();
+    await pumpNewFlightScreen(tester, notificationService: service);
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+
+    expect(service.permissionRequests, 1);
+  });
+
+  testWidgets('asks for nothing while every notification is switched off', (
+    tester,
+  ) async {
+    final service = createTestNotificationService();
+    final setting = await createTestNotificationSetting();
+    for (final kind in FlightNotification.values) {
+      await setting.select(kind, isEnabled: false);
+    }
+    await pumpNewFlightScreen(
+      tester,
+      notificationService: service,
+      notificationSetting: setting,
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+
+    expect(service.permissionRequests, 0);
+  });
+
+  testWidgets('asks no second time once the permission has been decided', (
+    tester,
+  ) async {
+    final service = createTestNotificationService(
+      permission: NotificationPermission.denied,
+    );
+    await pumpNewFlightScreen(tester, notificationService: service);
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+
+    expect(service.permissionRequests, 0);
   });
 }

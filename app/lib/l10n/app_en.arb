@@ -78,6 +78,12 @@
     }
   },
   "listPastSectionTitle": "Past · gone in 24 h",
+  "listFlightDeleted": "Flight deleted",
+  "listUndoDelete": "Undo",
+  "listDeleteFlight": "Delete flight",
+  "@listDeleteFlight": {
+    "description": "Screen-reader label of the delete affordance a swiped row reveals."
+  },
   "listPlannedDateFormat": "EEE, MMM d",
   "@listPlannedDateFormat": {
     "description": "DateFormat pattern for the departure date on a planned row, localized per language."

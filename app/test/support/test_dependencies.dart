@@ -255,6 +255,7 @@ class FakeFlightRepository implements FlightRepository {
   final trailAppends = <(int, FixPosition, SourceId)>[];
   final identityUpdates = <(int, String?, String?)>[];
   final notificationMarks = <(int, FlightNotification)>[];
+  final deletedFlightIds = <int>[];
 
   void emit(List<Flight> flights) => _flights.add(flights);
 
@@ -277,6 +278,10 @@ class FakeFlightRepository implements FlightRepository {
   @override
   Future<void> deleteExpiredFlights(DateTime now) async =>
       expiryChecks.add(now);
+
+  @override
+  Future<void> deleteFlight(int flightId) async =>
+      deletedFlightIds.add(flightId);
 
   @override
   Future<void> updateTracking(int flightId, FlightTracking tracking) async =>

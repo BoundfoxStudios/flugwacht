@@ -116,4 +116,10 @@ ThemeData _themeFrom({
     backgroundColor: AppColors.amber,
     foregroundColor: AppColors.neutral900,
   ),
+  snackBarTheme: SnackBarThemeData(
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.card),
+    ),
+  ),
 );

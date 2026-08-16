@@ -318,6 +318,24 @@ abstract class AppLocalizations {
   /// **'Past · gone in 24 h'**
   String get listPastSectionTitle;
 
+  /// No description provided for @listFlightDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight deleted'**
+  String get listFlightDeleted;
+
+  /// No description provided for @listUndoDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get listUndoDelete;
+
+  /// Screen-reader label of the delete affordance a swiped row reveals.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete flight'**
+  String get listDeleteFlight;
+
   /// DateFormat pattern for the departure date on a planned row, localized per language.
   ///
   /// In en, this message translates to:

@@ -135,6 +135,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listPastSectionTitle => 'Past · gone in 24 h';
 
   @override
+  String get listFlightDeleted => 'Flight deleted';
+
+  @override
+  String get listUndoDelete => 'Undo';
+
+  @override
+  String get listDeleteFlight => 'Delete flight';
+
+  @override
   String get listPlannedDateFormat => 'EEE, MMM d';
 
   @override

@@ -13,4 +13,5 @@ abstract final class AppIcons {
   static const FaIconData map = FontAwesomeIcons.map;
   static const FaIconData planeUp = FontAwesomeIcons.planeUp;
   static const FaIconData ellipsis = FontAwesomeIcons.ellipsis;
+  static const FaIconData trash = FontAwesomeIcons.trash;
 }

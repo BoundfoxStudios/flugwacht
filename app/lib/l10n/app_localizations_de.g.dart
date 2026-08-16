@@ -134,6 +134,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listPastSectionTitle => 'Vorbei · weg in 24 h';
 
   @override
+  String get listFlightDeleted => 'Flug gelöscht';
+
+  @override
+  String get listUndoDelete => 'Rückgängig';
+
+  @override
+  String get listDeleteFlight => 'Flug löschen';
+
+  @override
   String get listPlannedDateFormat => 'ccc, d. LLL';
 
   @override

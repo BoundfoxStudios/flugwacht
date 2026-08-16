@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:flugwacht/data/map_style_setting.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
@@ -11,6 +13,7 @@ import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/mini_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';
@@ -42,7 +45,10 @@ Future<void> pumpMiniMap(
   FlightRoute? route,
   List<TrailPoint> trail = const [],
   Brightness brightness = Brightness.light,
+  bool withVectorTiles = false,
+  MapStyleSetting? mapStyleSetting,
 }) async {
+  final styleSetting = mapStyleSetting ?? await createTestMapStyleSetting();
   await tester.pumpWidget(
     MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -62,7 +68,8 @@ Future<void> pumpMiniMap(
                 route: route,
                 trail: trail,
                 state: state,
-                tileProvider: StubTileProvider(),
+                mapStyleSetting: styleSetting,
+                tileSources: testTileSources(withVectorTiles: withVectorTiles),
               ),
             ),
           ),
@@ -71,6 +78,10 @@ Future<void> pumpMiniMap(
     ),
   );
   await tester.pump();
+  if (withVectorTiles) {
+    // The vector layer schedules its cache housekeeping three seconds out.
+    await tester.pump(const Duration(seconds: 3));
+  }
 }
 
 /// The amber of a live aircraft, tolerant of the contour anti-aliasing that
@@ -155,5 +166,31 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expectAmberAircraft(await renderedPixels(tester, _mapKey));
+  });
+
+  testWidgets('draws the reduced style', (tester) async {
+    await pumpMiniMap(tester, at: position(), withVectorTiles: true);
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
+  });
+
+  testWidgets('follows the style the map tab settled on', (tester) async {
+    final setting = await createTestMapStyleSetting();
+    await setting.select(MapStyle.rasterOsm);
+
+    await pumpMiniMap(
+      tester,
+      at: position(),
+      withVectorTiles: true,
+      mapStyleSetting: setting,
+    );
+
+    expect(find.byType(VectorTileLayer), findsNothing);
+
+    await setting.select(MapStyle.reduced);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
   });
 }

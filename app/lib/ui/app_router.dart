@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/airline_directory.dart';
 import '../data/flight_repository.dart';
+import '../data/map_style_setting.dart';
 import '../data/route_lookup.dart';
 import '../data/source_setting.dart';
 import 'app_shell.dart';
@@ -12,13 +12,15 @@ import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
 import 'screens/new_flight_screen.dart';
+import 'widgets/map_visuals.dart';
 
 GoRouter createAppRouter({
   required FlightRepository flightRepository,
   required AirlineDirectory airlineDirectory,
   required RouteLookup routeLookup,
   required SourceSetting sourceSetting,
-  TileProvider? tileProvider,
+  required MapStyleSetting mapStyleSetting,
+  required MapTileSources tileSources,
 }) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
   final mapSelection = MapSelection();
@@ -38,7 +40,8 @@ GoRouter createAppRouter({
                   flightRepository: flightRepository,
                   selection: mapSelection,
                   sourceSetting: sourceSetting,
-                  tileProvider: tileProvider,
+                  mapStyleSetting: mapStyleSetting,
+                  tileSources: tileSources,
                 ),
               ),
             ],
@@ -50,7 +53,8 @@ GoRouter createAppRouter({
                 builder: (context, state) => ListScreen(
                   flightRepository: flightRepository,
                   mapSelection: mapSelection,
-                  tileProvider: tileProvider,
+                  mapStyleSetting: mapStyleSetting,
+                  tileSources: tileSources,
                 ),
               ),
             ],

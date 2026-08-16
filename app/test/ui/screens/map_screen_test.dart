@@ -1,3 +1,5 @@
+import 'package:flugwacht/app_icons.dart';
+import 'package:flugwacht/data/map_style_setting.dart';
 import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
@@ -15,10 +17,13 @@ import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight_sheet.dart';
+import 'package:flugwacht/ui/widgets/map_button.dart';
 import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../support/test_dependencies.dart';
 
@@ -97,12 +102,15 @@ Future<FakeFlightRepository> pumpMapScreen(
   SourceSetting? sourceSetting,
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
+  bool withVectorTiles = false,
+  MapStyleSetting? mapStyleSetting,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
   final mapSelection = selection ?? MapSelection();
   addTearDown(mapSelection.dispose);
   final setting = sourceSetting ?? await createTestSourceSetting();
+  final styleSetting = mapStyleSetting ?? await createTestMapStyleSetting();
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -117,7 +125,8 @@ Future<FakeFlightRepository> pumpMapScreen(
         selection: mapSelection,
         sourceSetting: setting,
         clock: () => _now,
-        tileProvider: StubTileProvider(),
+        mapStyleSetting: styleSetting,
+        tileSources: testTileSources(withVectorTiles: withVectorTiles),
       ),
     ),
   );
@@ -130,6 +139,10 @@ Future<FakeFlightRepository> pumpMapScreen(
   // Lets the camera settle on the selected flight; markers outside the
   // viewport are not built.
   await tester.pump(const Duration(milliseconds: 300));
+  if (withVectorTiles) {
+    // The vector layer schedules its cache housekeeping three seconds out.
+    await tester.pump(const Duration(seconds: 3));
+  }
   return repository;
 }
 
@@ -166,7 +179,8 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         airlineDirectory: createTestAirlineDirectory(),
         routeLookup: FakeRouteLookup(),
         sourceSetting: await createTestSourceSetting(),
-        tileProvider: StubTileProvider(),
+        mapStyleSetting: await createTestMapStyleSetting(),
+        tileSources: testTileSources(),
       ),
     ),
   );
@@ -175,6 +189,23 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 300));
   return repository;
 }
+
+/// Runs the camera animation to its end: one frame starts its ticker, the
+/// next carries it past the animation, the last one lets the map rebuild on
+/// the camera it landed on.
+Future<void> settleCamera(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+  await tester.pump();
+}
+
+Finder mapButtonWith(FaIconData icon) => find.byWidgetPredicate(
+  (widget) => widget is MapButton && widget.icon == icon,
+);
+
+/// The camera the map settled on, read through a layer inside the map.
+MapCamera cameraOf(WidgetTester tester) =>
+    MapCamera.of(tester.element(find.byType(MarkerLayer).first));
 
 Finder aircraftMarkerAt(int index) => find
     .byWidgetPredicate(
@@ -392,7 +423,10 @@ void main() {
   testWidgets('attributes OpenStreetMap and the active source', (tester) async {
     await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
 
-    expect(find.text('© OpenStreetMap · Data: adsb.lol'), findsOneWidget);
+    expect(
+      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.lol'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('attributes in German as well', (tester) async {
@@ -402,7 +436,10 @@ void main() {
       locale: const Locale('de'),
     );
 
-    expect(find.text('© OpenStreetMap · Daten: adsb.lol'), findsOneWidget);
+    expect(
+      find.text('© OpenStreetMap · © OpenMapTiles · Daten: adsb.lol'),
+      findsOneWidget,
+    );
   });
 
   group('source comparison', () {
@@ -483,6 +520,83 @@ void main() {
     await sourceSetting.select(SourceId.adsbfi);
     await tester.pump();
 
-    expect(find.text('© OpenStreetMap · Data: adsb.fi'), findsOneWidget);
+    expect(
+      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.fi'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('draws the reduced style', (tester) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      withVectorTiles: true,
+    );
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
+  });
+
+  testWidgets('swaps the tile layer when the style toggle is tapped', (
+    tester,
+  ) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      withVectorTiles: true,
+    );
+
+    await tester.tap(mapButtonWith(AppIcons.layerGroup));
+    await tester.pump();
+
+    expect(find.byType(VectorTileLayer), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is TileLayer && widget.urlTemplate != null,
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('names the style toggle for screen readers', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+
+    expect(find.bySemanticsLabel('Switch map style'), findsOneWidget);
+  });
+
+  testWidgets('credits the tiles the switched style renders', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+
+    await tester.tap(mapButtonWith(AppIcons.layerGroup));
+    await tester.pump();
+
+    expect(find.text('© OpenStreetMap · Data: adsb.lol'), findsOneWidget);
+  });
+
+  testWidgets('frames the selected flight again when re-centering', (
+    tester,
+  ) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1, route: _frankfurtToNewYork)],
+    );
+    await settleCamera(tester);
+    final framed = cameraOf(tester).center;
+
+    await tester.drag(find.byType(FlutterMap), const Offset(-180, -180));
+    await tester.pump();
+    expect(cameraOf(tester).center, isNot(framed));
+
+    await tester.tap(mapButtonWith(AppIcons.locationArrow));
+    await settleCamera(tester);
+
+    final recentered = cameraOf(tester).center;
+    expect(recentered.latitude, closeTo(framed.latitude, 0.0001));
+    expect(recentered.longitude, closeTo(framed.longitude, 0.0001));
+  });
+
+  testWidgets('names the re-center button for screen readers', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+
+    expect(find.bySemanticsLabel('Center on the flight'), findsOneWidget);
   });
 }

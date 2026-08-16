@@ -4,6 +4,7 @@ import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_sections.dart';
@@ -124,6 +125,7 @@ Future<List<int>> pumpFlightSheet(
             selectedIndex: selectedIndex,
             onSelected: selections.add,
             sourceSetting: setting,
+            mapStyle: MapStyle.reduced,
             showsSourceComparison: showsSourceComparison,
             clock: clock ?? () => _now,
           ),
@@ -405,7 +407,10 @@ void main() {
 
     await openSheet(tester);
 
-    expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+    expect(
+      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('explains the compared trail instead of the local time', (
@@ -428,7 +433,10 @@ void main() {
     await openSheet(tester);
 
     expect(find.text('11,278 m'), findsOneWidget);
-    expect(find.text('Source: adsb.lol · © OpenStreetMap'), findsOneWidget);
+    expect(
+      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
+      findsOneWidget,
+    );
   });
 
   group('try another source', () {
@@ -476,7 +484,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(sourceSetting.activeId.value, SourceId.adsbfi);
-      expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
+      expect(
+        find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('keeps the link tappable at 44 pixels', (tester) async {
@@ -511,7 +522,10 @@ void main() {
     await sourceSetting.select(SourceId.adsbfi);
     await tester.pump();
 
-    expect(find.text('Source: adsb.fi · © OpenStreetMap'), findsOneWidget);
+    expect(
+      find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('reports the flight it was swiped to', (tester) async {

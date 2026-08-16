@@ -96,7 +96,8 @@ Future<void> pumpHeroCell(
                 trail: trail,
                 now: _now,
                 onTap: onTap,
-                tileProvider: StubTileProvider(),
+                mapStyleSetting: await createTestMapStyleSetting(),
+                tileSources: testTileSources(),
               ),
             ),
           ),
@@ -208,7 +209,7 @@ void main() {
         'LIVE',
         'FRA',
         'JFK',
-        '© OpenStreetMap',
+        '© OpenStreetMap · © OpenMapTiles',
       ]),
     );
   });
@@ -277,7 +278,7 @@ void main() {
   testWidgets('credits OpenStreetMap on the map', (tester) async {
     await pumpHeroCell(tester);
 
-    expect(find.text('© OpenStreetMap'), findsOneWidget);
+    expect(find.text('© OpenStreetMap · © OpenMapTiles'), findsOneWidget);
   });
 
   testWidgets('dips while pressed and opens the flight on release', (
@@ -307,6 +308,6 @@ void main() {
     );
 
     expect(find.text('KEIN SIGNAL'), findsOneWidget);
-    expect(find.text('© OpenStreetMap'), findsOneWidget);
+    expect(find.text('© OpenStreetMap · © OpenMapTiles'), findsOneWidget);
   });
 }

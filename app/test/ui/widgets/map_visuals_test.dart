@@ -1,14 +1,21 @@
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
+import 'package:flugwacht/l10n/app_localizations_en.g.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
+import 'package:flugwacht/ui/theme/reduced_map_theme.dart';
 import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:vector_map_tiles/vector_map_tiles.dart';
+
+import '../../support/test_dependencies.dart';
 
 const _route = FlightRoute(
   origin: RouteAirport(
@@ -164,6 +171,139 @@ void main() {
           .having((fit) => fit.bounds.east, 'east', 10)
           .having((fit) => fit.bounds.west, 'west', -73)
           .having((fit) => fit.padding, 'padding', const EdgeInsets.all(40)),
+    );
+  });
+
+  /// The raster style's own layer; the vector layer builds a `TileLayer` of
+  /// its own that this finder leaves alone.
+  final osmTiles = find.byWidgetPredicate(
+    (widget) => widget is TileLayer && widget.urlTemplate != null,
+  );
+
+  Future<void> pumpTiles(
+    WidgetTester tester, {
+    required MapStyle style,
+    Brightness brightness = Brightness.light,
+    bool withVectorTiles = true,
+  }) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FlutterMap(
+          options: const MapOptions(),
+          children: [
+            mapTiles(
+              colors: switch (brightness) {
+                Brightness.light => MapColors.light,
+                Brightness.dark => MapColors.dark,
+              },
+              style: style,
+              sources: testTileSources(withVectorTiles: withVectorTiles),
+            ),
+          ],
+        ),
+      ),
+    );
+    // The vector layer schedules its cache housekeeping three seconds out.
+    await tester.pump(const Duration(seconds: 3));
+  }
+
+  testWidgets('draws the reduced style from vector tiles', (tester) async {
+    await pumpTiles(tester, style: MapStyle.reduced);
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
+    expect(osmTiles, findsNothing);
+  });
+
+  testWidgets('draws the OSM style from raster tiles', (tester) async {
+    await pumpTiles(tester, style: MapStyle.rasterOsm);
+
+    expect(osmTiles, findsOneWidget);
+    expect(find.byType(VectorTileLayer), findsNothing);
+  });
+
+  testWidgets('draws no tiles while the reduced style has no endpoint', (
+    tester,
+  ) async {
+    await pumpTiles(tester, style: MapStyle.reduced, withVectorTiles: false);
+
+    expect(find.byType(VectorTileLayer), findsNothing);
+  });
+
+  testWidgets('renders the reduced style in a theme variant of its own', (
+    tester,
+  ) async {
+    await pumpTiles(
+      tester,
+      style: MapStyle.reduced,
+      brightness: Brightness.dark,
+    );
+
+    expect(
+      tester.widget<VectorTileLayer>(find.byType(VectorTileLayer)).theme,
+      same(reducedMapTheme(Brightness.dark)),
+    );
+    expect(find.byType(ColorFiltered), findsNothing);
+  });
+
+  testWidgets('inverts the raster tiles for the dark theme', (tester) async {
+    await pumpTiles(
+      tester,
+      style: MapStyle.rasterOsm,
+      brightness: Brightness.dark,
+    );
+
+    expect(find.byType(ColorFiltered), findsOneWidget);
+  });
+
+  test('credits OpenMapTiles for the reduced style', () {
+    expect(
+      mapTileAttribution(AppLocalizationsEn(), MapStyle.reduced),
+      '© OpenStreetMap · © OpenMapTiles',
+    );
+  });
+
+  test('credits OpenStreetMap alone for the raster style', () {
+    expect(
+      mapTileAttribution(AppLocalizationsEn(), MapStyle.rasterOsm),
+      '© OpenStreetMap',
+    );
+  });
+
+  testWidgets('identifies the tile requests with the installed package', (
+    tester,
+  ) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'Flugwacht',
+      packageName: 'com.boundfoxstudios.apps.flugwacht',
+      version: '1.0.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+    final packageInfo = await PackageInfo.fromPlatform();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FlutterMap(
+          options: const MapOptions(),
+          children: [
+            mapTiles(
+              colors: MapColors.light,
+              style: MapStyle.rasterOsm,
+              sources: testTileSources(
+                userAgentPackageName: packageInfo.packageName,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(
+      tester
+          .widget<TileLayer>(find.byType(TileLayer))
+          .tileProvider
+          .headers['User-Agent'],
+      'flutter_map (com.boundfoxstudios.apps.flugwacht)',
     );
   });
 }

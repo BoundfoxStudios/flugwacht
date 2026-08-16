@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:signals/signals_flutter.dart';
 
+import '../../data/map_style_setting.dart';
 import '../../domain/fix.dart';
 import '../../domain/flight_route.dart';
 import '../../domain/flight_state.dart';
@@ -20,8 +22,9 @@ class MiniMap extends StatefulWidget {
     required this.route,
     required this.trail,
     required this.state,
+    required this.mapStyleSetting,
+    required this.tileSources,
     super.key,
-    this.tileProvider,
   });
 
   static const _fitPadding = EdgeInsets.all(28);
@@ -38,9 +41,9 @@ class MiniMap extends StatefulWidget {
   final FlightRoute? route;
   final List<TrailPoint> trail;
   final FlightState state;
+  final MapStyleSetting mapStyleSetting;
 
-  /// Injectable so tests render without loading tiles over the network.
-  final TileProvider? tileProvider;
+  final MapTileSources tileSources;
 
   @override
   State<MiniMap> createState() => _MiniMapState();
@@ -104,7 +107,13 @@ class _MiniMapState extends State<MiniMap> {
               keepAlive: true,
             ),
             children: [
-              mapTiles(colors: colors, tileProvider: widget.tileProvider),
+              SignalBuilder(
+                builder: (context) => mapTiles(
+                  colors: colors,
+                  style: widget.mapStyleSetting.style.value,
+                  sources: widget.tileSources,
+                ),
+              ),
               PolylineLayer(
                 polylines: flightPolylines(
                   colors: colors,
@@ -124,10 +133,15 @@ class _MiniMapState extends State<MiniMap> {
         Positioned(
           right: AppSpacing.grid,
           bottom: AppSpacing.grid / 2,
-          child: Text(
-            AppLocalizations.of(context).mapAttributionOpenStreetMap,
-            style: AppTextStyles.attribution.copyWith(
-              color: AppColors.neutral400,
+          child: SignalBuilder(
+            builder: (context) => Text(
+              mapTileAttribution(
+                AppLocalizations.of(context),
+                widget.mapStyleSetting.style.value,
+              ),
+              style: AppTextStyles.attribution.copyWith(
+                color: AppColors.neutral400,
+              ),
             ),
           ),
         ),

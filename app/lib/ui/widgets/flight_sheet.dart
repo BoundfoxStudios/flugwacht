@@ -6,6 +6,7 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
+import '../../domain/map_style.dart';
 import '../../domain/signal_age.dart';
 import '../../domain/source_id.dart';
 import '../../domain/unit_conversion.dart';
@@ -15,6 +16,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'map_visuals.dart';
 import 'no_signal_info_box.dart';
 import 'pager_dots.dart';
 import 'state_timeline.dart';
@@ -27,6 +29,7 @@ class FlightSheet extends StatefulWidget {
     required this.selectedIndex,
     required this.onSelected,
     required this.sourceSetting,
+    required this.mapStyle,
     super.key,
     this.showsSourceComparison = false,
     this.onOpenChanged,
@@ -57,6 +60,10 @@ class FlightSheet extends StatefulWidget {
   final ValueChanged<int> onSelected;
 
   final SourceSetting sourceSetting;
+
+  /// Names the tiles the map behind the sheet renders, which the footer has to
+  /// credit while the sheet covers the map's own attribution.
+  final MapStyle mapStyle;
 
   /// Whether the selected flight's trail carries points of several sources;
   /// its page then explains the colors instead of naming the local time.
@@ -175,6 +182,7 @@ class _FlightSheetState extends State<FlightSheet> {
                                     gap: gap,
                                     now: _now,
                                     sourceSetting: widget.sourceSetting,
+                                    mapStyle: widget.mapStyle,
                                     showsSourceComparison:
                                         widget.showsSourceComparison &&
                                         index == widget.selectedIndex,
@@ -265,6 +273,7 @@ class _FlightPage extends StatelessWidget {
     required this.gap,
     required this.now,
     required this.sourceSetting,
+    required this.mapStyle,
     required this.showsSourceComparison,
   });
 
@@ -274,6 +283,7 @@ class _FlightPage extends StatelessWidget {
   final double gap;
   final DateTime now;
   final SourceSetting sourceSetting;
+  final MapStyle mapStyle;
   final bool showsSourceComparison;
 
   @override
@@ -335,7 +345,10 @@ class _FlightPage extends StatelessWidget {
   Widget _footer(AppLocalizations localizations) {
     final activeId = sourceSetting.activeId.value;
     final attribution = Text(
-      localizations.mapSheetSource(activeId.label),
+      localizations.mapSheetSource(
+        activeId.label,
+        mapTileAttribution(localizations, mapStyle),
+      ),
       style: AppTextStyles.caption.copyWith(color: colors.footer),
     );
     if (entry.state != FlightState.noSignal) {

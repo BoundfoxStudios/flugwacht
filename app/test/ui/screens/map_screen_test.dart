@@ -397,7 +397,7 @@ void main() {
     await tester.tap(aircraftMarkerAt(1));
     await tester.pump(const Duration(milliseconds: 300));
 
-    await tester.tap(find.text('List'));
+    await tester.tap(find.text('Flights'));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Map'));
     await tester.pump(const Duration(milliseconds: 300));
@@ -410,7 +410,7 @@ void main() {
 
   testWidgets('frames the flight the list handed over', (tester) async {
     final repository = await pumpApp(tester);
-    await tester.tap(find.text('List'));
+    await tester.tap(find.text('Flights'));
     await tester.pump(const Duration(milliseconds: 300));
     repository.emit(flightsAirborneNow());
     await tester.pump();

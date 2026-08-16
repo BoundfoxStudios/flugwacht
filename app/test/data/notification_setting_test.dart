@@ -15,29 +15,53 @@ void main() {
     return setting;
   }
 
-  test('starts with every notification on', () async {
+  test('starts with every notification off', () async {
     final setting = await loadWith(const {});
+
+    for (final kind in FlightNotification.values) {
+      expect(setting.isEnabled(kind), isFalse, reason: kind.name);
+    }
+  });
+
+  test('restores every switch a previous run turned on', () async {
+    for (final kind in FlightNotification.values) {
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final previousRun = await NotificationSetting.load();
+      await previousRun.select(kind, isEnabled: true);
+      previousRun.dispose();
+
+      final setting = await NotificationSetting.load();
+      addTearDown(setting.dispose);
+
+      expect(setting.isEnabled(kind), isTrue, reason: kind.name);
+      for (final other in FlightNotification.values.where((it) => it != kind)) {
+        expect(setting.isEnabled(other), isFalse, reason: other.name);
+      }
+    }
+  });
+
+  test('enables every kind at once', () async {
+    final setting = await loadWith(const {});
+
+    await setting.enableAll();
 
     for (final kind in FlightNotification.values) {
       expect(setting.isEnabled(kind), isTrue, reason: kind.name);
     }
   });
 
-  test('restores every switch a previous run turned off', () async {
-    for (final kind in FlightNotification.values) {
-      SharedPreferencesAsyncPlatform.instance =
-          InMemorySharedPreferencesAsync.empty();
-      final previousRun = await NotificationSetting.load();
-      await previousRun.select(kind, isEnabled: false);
-      previousRun.dispose();
+  test('remembers the offer across launches', () async {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    final previousRun = await NotificationSetting.load();
+    expect(previousRun.wasOffered, isFalse);
+    await previousRun.rememberOffer();
+    previousRun.dispose();
 
-      final setting = await NotificationSetting.load();
-      addTearDown(setting.dispose);
+    final setting = await NotificationSetting.load();
+    addTearDown(setting.dispose);
 
-      expect(setting.isEnabled(kind), isFalse, reason: kind.name);
-      for (final other in FlightNotification.values.where((it) => it != kind)) {
-        expect(setting.isEnabled(other), isTrue, reason: other.name);
-      }
-    }
+    expect(setting.wasOffered, isTrue);
   });
 }

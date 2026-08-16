@@ -33,7 +33,6 @@ class FlightSheet extends StatefulWidget {
     required this.unitsSetting,
     required this.mapStyle,
     super.key,
-    this.showsSourceComparison = false,
     this.onOpenChanged,
     this.clock = DateTime.now,
   });
@@ -67,10 +66,6 @@ class FlightSheet extends StatefulWidget {
   /// Names the tiles the map behind the sheet renders, which the footer has to
   /// credit while the sheet covers the map's own attribution.
   final MapStyle mapStyle;
-
-  /// Whether the selected flight's trail carries points of several sources;
-  /// its page then explains the colors instead of naming the local time.
-  final bool showsSourceComparison;
 
   /// Lets the map hide what the open sheet would cover.
   final ValueChanged<bool>? onOpenChanged;
@@ -174,8 +169,7 @@ class _FlightSheetState extends State<FlightSheet> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              for (final (index, entry)
-                                  in widget.entries.indexed)
+                              for (final entry in widget.entries)
                                 SizedBox(
                                   width: constraints.maxWidth,
                                   child: _FlightPage(
@@ -187,9 +181,6 @@ class _FlightSheetState extends State<FlightSheet> {
                                     sourceSetting: widget.sourceSetting,
                                     unitsSetting: widget.unitsSetting,
                                     mapStyle: widget.mapStyle,
-                                    showsSourceComparison:
-                                        widget.showsSourceComparison &&
-                                        index == widget.selectedIndex,
                                   ),
                                 ),
                             ],
@@ -279,7 +270,6 @@ class _FlightPage extends StatelessWidget {
     required this.sourceSetting,
     required this.unitsSetting,
     required this.mapStyle,
-    required this.showsSourceComparison,
   });
 
   final FlightListEntry entry;
@@ -290,7 +280,6 @@ class _FlightPage extends StatelessWidget {
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
   final MapStyle mapStyle;
-  final bool showsSourceComparison;
 
   @override
   Widget build(BuildContext context) {
@@ -323,9 +312,7 @@ class _FlightPage extends StatelessWidget {
           _ArrivalRow(arrival: arrival, colors: colors),
           SizedBox(height: gap),
           Text(
-            showsSourceComparison
-                ? localizations.mapSheetSourceComparison
-                : arrival.localTime,
+            arrival.localTime,
             style: AppTextStyles.secondary.copyWith(color: colors.arrivalLabel),
           ),
         ],

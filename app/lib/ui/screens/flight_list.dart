@@ -27,17 +27,40 @@ class FlightList {
   /// Null until the repository has emitted for the first time.
   late final sections = computed<FlightListSections?>(() {
     final flights = _flights.value;
-    return flights == null ? null : groupFlights(flights, now.value);
+    if (flights == null) {
+      return null;
+    }
+    final held = _heldForDeletion.value;
+    return groupFlights(
+      flights.where((flight) => !held.contains(flight.id)).toList(),
+      now.value,
+    );
   });
 
   final _flights = signal<List<Flight>?>(null);
+  final _heldForDeletion = signal<Set<int>>(const {});
   late final StreamSubscription<List<Flight>> _subscription;
   late final Timer _ticker;
+
+  /// Takes the flight out of the list without deleting it, so an undo can put
+  /// it back untouched — deleting and re-inserting would cost it its id and
+  /// with it the trail that hangs off it.
+  void holdDeletion(int flightId) =>
+      _heldForDeletion.value = {..._heldForDeletion.value, flightId};
+
+  void releaseDeletion(int flightId) =>
+      _heldForDeletion.value = {..._heldForDeletion.value}..remove(flightId);
+
+  Future<void> commitDeletion(int flightId) async {
+    await _repository.deleteFlight(flightId);
+    releaseDeletion(flightId);
+  }
 
   void dispose() {
     _ticker.cancel();
     unawaited(_subscription.cancel());
     sections.dispose();
+    _heldForDeletion.dispose();
     _flights.dispose();
     now.dispose();
   }

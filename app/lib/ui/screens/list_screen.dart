@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
+import '../../app_icons.dart';
 import '../../data/flight_repository.dart';
 import '../../data/map_style_setting.dart';
 import '../../domain/trail_point.dart';
@@ -75,6 +77,8 @@ class _ListScreenState extends State<ListScreen> {
                 mapStyleSetting: widget.mapStyleSetting,
                 tileSources: widget.tileSources,
                 onFlightSelected: (flightId) => _openOnMap(context, flightId),
+                onFlightDeleted: (flightId) =>
+                    unawaited(_deleteFlight(context, flightId)),
               );
       },
     ),
@@ -90,6 +94,29 @@ class _ListScreenState extends State<ListScreen> {
 
   void _openNewFlight(BuildContext context) => context.push('/new-flight');
 
+  /// The row goes first and the delete follows only when the undo is gone, so
+  /// a wrong swipe costs the flight nothing.
+  Future<void> _deleteFlight(BuildContext context, int flightId) async {
+    final localizations = AppLocalizations.of(context);
+    _flightList.holdDeletion(flightId);
+    final closedReason = await ScaffoldMessenger.of(context)
+        .showSnackBar(
+          SnackBar(
+            content: Text(localizations.listFlightDeleted),
+            action: SnackBarAction(
+              label: localizations.listUndoDelete,
+              onPressed: () {},
+            ),
+          ),
+        )
+        .closed;
+    if (closedReason == SnackBarClosedReason.action) {
+      _flightList.releaseDeletion(flightId);
+      return;
+    }
+    await _flightList.commitDeletion(flightId);
+  }
+
   void _openOnMap(BuildContext context, int flightId) {
     widget.mapSelection.flightId.value = flightId;
     context.go('/map');
@@ -104,6 +131,7 @@ class _FlightSections extends StatelessWidget {
     required this.mapStyleSetting,
     required this.tileSources,
     required this.onFlightSelected,
+    required this.onFlightDeleted,
   });
 
   final FlightListSections sections;
@@ -112,6 +140,7 @@ class _FlightSections extends StatelessWidget {
   final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
   final ValueChanged<int> onFlightSelected;
+  final ValueChanged<int> onFlightDeleted;
 
   @override
   Widget build(BuildContext context) {
@@ -134,20 +163,33 @@ class _FlightSections extends StatelessWidget {
               ).format(today),
             ),
             for (final entry in sections.active)
-              _HeroCell(
-                key: ValueKey(entry.flight.id),
-                entry: entry,
-                now: today,
-                repository: repository,
-                mapStyleSetting: mapStyleSetting,
-                tileSources: tileSources,
-                onTap: () => onFlightSelected(entry.flight.id),
+              _SwipeToDelete(
+                flightId: entry.flight.id,
+                onDeleted: () => onFlightDeleted(entry.flight.id),
+                child: _HeroCell(
+                  key: ValueKey(entry.flight.id),
+                  entry: entry,
+                  now: today,
+                  repository: repository,
+                  mapStyleSetting: mapStyleSetting,
+                  tileSources: tileSources,
+                  onTap: () => onFlightSelected(entry.flight.id),
+                ),
               ),
-            for (final entry in rows) _PaddedRow(entry: entry, now: today),
+            for (final entry in rows)
+              _SwipeToDelete(
+                flightId: entry.flight.id,
+                onDeleted: () => onFlightDeleted(entry.flight.id),
+                child: _PaddedRow(entry: entry, now: today),
+              ),
             if (sections.past.isNotEmpty) ...[
               const _PastSectionLabel(),
               for (final entry in sections.past)
-                _PaddedRow(entry: entry, now: today),
+                _SwipeToDelete(
+                  flightId: entry.flight.id,
+                  onDeleted: () => onFlightDeleted(entry.flight.id),
+                  child: _PaddedRow(entry: entry, now: today),
+                ),
             ],
           ],
         ),
@@ -180,6 +222,56 @@ class _ListHeader extends StatelessWidget {
           Text(date, style: textTheme.bodySmall),
         ],
       ),
+    );
+  }
+}
+
+/// Swiping a flight to the left reveals the delete behind it and hands the row
+/// over; nothing is asked, because the undo in the snackbar is the way back.
+class _SwipeToDelete extends StatelessWidget {
+  const _SwipeToDelete({
+    required this.flightId,
+    required this.onDeleted,
+    required this.child,
+  });
+
+  static const _iconSize = 18.0;
+
+  final int flightId;
+  final VoidCallback onDeleted;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Dismissible(
+      key: ValueKey(flightId),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => onDeleted(),
+      background: Padding(
+        padding: _PaddedRow.padding,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.error,
+            borderRadius: BorderRadius.circular(AppRadius.card),
+          ),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: AppSpacing.screenPaddingLarge,
+              ),
+              child: FaIcon(
+                AppIcons.trash,
+                size: _iconSize,
+                color: colorScheme.onError,
+                semanticLabel: AppLocalizations.of(context).listDeleteFlight,
+              ),
+            ),
+          ),
+        ),
+      ),
+      child: child,
     );
   }
 }

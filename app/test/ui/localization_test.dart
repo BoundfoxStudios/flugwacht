@@ -21,7 +21,7 @@ void main() {
     await pumpAppWithDeviceLocales(tester, const [Locale('de')]);
 
     expect(find.text('Karte'), findsOneWidget);
-    expect(find.text('Liste'), findsOneWidget);
+    expect(find.text('Flüge'), findsOneWidget);
     expect(find.text('Mehr'), findsOneWidget);
   });
 
@@ -31,7 +31,7 @@ void main() {
     await pumpAppWithDeviceLocales(tester, const [Locale('fr')]);
 
     expect(find.text('Map'), findsOneWidget);
-    expect(find.text('List'), findsOneWidget);
+    expect(find.text('Flights'), findsOneWidget);
     expect(find.text('More'), findsOneWidget);
   });
 }

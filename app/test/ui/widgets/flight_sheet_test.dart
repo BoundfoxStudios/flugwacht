@@ -107,7 +107,6 @@ Future<List<int>> pumpFlightSheet(
   DateTime Function()? clock,
   SourceSetting? sourceSetting,
   UnitsSetting? unitsSetting,
-  bool showsSourceComparison = false,
 }) async {
   final setting = sourceSetting ?? await createTestSourceSetting();
   final units = unitsSetting ?? await createTestUnitsSetting();
@@ -131,7 +130,6 @@ Future<List<int>> pumpFlightSheet(
             sourceSetting: setting,
             unitsSetting: units,
             mapStyle: MapStyle.reduced,
-            showsSourceComparison: showsSourceComparison,
             clock: clock ?? () => _now,
           ),
         ),
@@ -426,32 +424,6 @@ void main() {
 
     await openSheet(tester);
 
-    expect(
-      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('explains the compared trail instead of the local time', (
-    tester,
-  ) async {
-    await pumpFlightSheet(tester, showsSourceComparison: true);
-
-    expect(
-      find.text('The trail survives switching — every point knows its source.'),
-      findsOneWidget,
-    );
-    expect(find.textContaining('Local time'), findsNothing);
-  });
-
-  testWidgets('keeps the rest of the open sheet unchanged while comparing', (
-    tester,
-  ) async {
-    await pumpFlightSheet(tester, showsSourceComparison: true);
-
-    await openSheet(tester);
-
-    expect(find.text('11,278 m'), findsOneWidget);
     expect(
       find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
       findsOneWidget,

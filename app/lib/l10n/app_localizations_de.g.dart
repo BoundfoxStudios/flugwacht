@@ -15,7 +15,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tabMap => 'Karte';
 
   @override
-  String get tabList => 'Liste';
+  String get tabList => 'Flüge';
 
   @override
   String get tabMore => 'Mehr';
@@ -134,6 +134,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listPastSectionTitle => 'Vorbei · weg in 24 h';
 
   @override
+  String get listFlightDeleted => 'Flug gelöscht';
+
+  @override
+  String get listUndoDelete => 'Rückgängig';
+
+  @override
+  String get listDeleteFlight => 'Flug löschen';
+
+  @override
   String get listPlannedDateFormat => 'ccc, d. LLL';
 
   @override
@@ -249,10 +258,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapSheetTryAnotherSource => 'Andere Quelle probieren';
 
   @override
-  String get mapSheetSourceComparison =>
-      'Die Spur bleibt beim Umschalten erhalten — jeder Punkt kennt seine Quelle.';
-
-  @override
   String get flightArrivalLabel => 'Ankunft ca.';
 
   @override
@@ -353,10 +358,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsNotificationLanded => 'Gelandet';
 
   @override
-  String get settingsNotificationsFootnote =>
-      'Lokal auf dem Gerät — kein Konto, kein Server.';
-
-  @override
   String get settingsNotificationsDelivery =>
       'Gestartet und Gelandet erreichen dich nur, solange Flugwacht offen ist. Ankunft bald kommt auch bei geschlossener App — ungefähr zum richtigen Zeitpunkt.';
 
@@ -367,6 +368,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsNotificationsUnavailable =>
       'Auf diesem Gerät ließen sich Mitteilungen nicht einrichten — die Schalter oben bleiben ohne Wirkung.';
+
+  @override
+  String get notificationOfferTitle => 'Mitteilungen einschalten?';
+
+  @override
+  String get notificationOfferBody =>
+      'Flugwacht sagt dir, wann dein Flug gestartet ist, bald ankommt und gelandet ist. Du kannst das jederzeit in den Einstellungen ändern.';
+
+  @override
+  String get notificationOfferAccept => 'Ja, gerne';
+
+  @override
+  String get notificationOfferDecline => 'Nein, danke';
 
   @override
   String get settingsAboutTitle => 'Über Flugwacht';
@@ -408,9 +422,78 @@ class AppLocalizationsDe extends AppLocalizations {
   String get aboutGithub => 'Flugwacht auf GitHub';
 
   @override
-  String settingsDataFootnote(String sources) {
-    return 'Daten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr. Karte © OpenStreetMap.';
-  }
+  String get settingsFaqTitle => 'Häufige Fragen';
+
+  @override
+  String get faqTitle => 'Häufige Fragen';
+
+  @override
+  String get faqOtherServicesQuestion =>
+      'Warum weichen die Daten von FlightRadar24 & Co. ab?';
+
+  @override
+  String get faqOtherServicesAnswer =>
+      'Solche Dienste mischen ADS-B mit MLAT, Satellitenempfang und Flugplandaten der Airlines. Flugwacht zeigt nur, was Community-Empfänger tatsächlich hören — keine Schätzungen aus Flugplänen. Dafür bleiben Lücken, wo niemand mithört.';
+
+  @override
+  String get faqArrivalAccuracyQuestion =>
+      'Warum ist die Ankunftszeit manchmal ungenau?';
+
+  @override
+  String get faqArrivalAccuracyAnswer =>
+      'Sie ist die Restdistanz geteilt durch die aktuelle Geschwindigkeit über Grund. Warteschleifen, Anflugführung, Rollzeit und der Wind auf dem letzten Stück stecken nicht darin. Je näher der Flug kommt, desto genauer wird sie; ein „~“ markiert eine Schätzung auf Basis einer älteren Position.';
+
+  @override
+  String get faqTrailStartQuestion =>
+      'Warum sehe ich die Spur erst ab dem Hinzufügen?';
+
+  @override
+  String get faqTrailStartAnswer =>
+      'Es gibt keine Historie zum Nachladen. Die Quellen melden den aktuellen Zustand, und Flugwacht baut die Spur selbst aus den Punkten, die sie ab diesem Moment sammelt. Ein Flug, den du mitten in der Luft hinzufügst, startet deshalb ohne Spur.';
+
+  @override
+  String get faqFlightNotFoundQuestion => 'Warum finde ich meinen Flug nicht?';
+
+  @override
+  String get faqFlightNotFoundAnswer =>
+      'Ein Flug taucht erst auf, wenn ihn ein Empfänger hört: nicht vor dem Start und nicht in Regionen ohne Abdeckung. Prüfe die Flugnummer so, wie die Airline sie schreibt (LH400, nicht DLH400), oder suche über Registrierung oder Hex-Adresse. Auch eine andere Quelle zu probieren lohnt sich.';
+
+  @override
+  String get faqTrailGapsQuestion => 'Warum hat die Spur Lücken?';
+
+  @override
+  String get faqTrailGapsAnswer =>
+      'ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter.';
+
+  @override
+  String get faqFlightsDisappearQuestion =>
+      'Warum verschwinden Flüge nach der Landung?';
+
+  @override
+  String get faqFlightsDisappearAnswer =>
+      'Flüge räumen sich 24 Stunden nach der Landung selbst auf. So bleibt in der Liste, was noch vor dir liegt.';
+
+  @override
+  String get faqLateNotificationQuestion =>
+      'Warum kommt eine Mitteilung manchmal spät?';
+
+  @override
+  String get faqLateNotificationAnswer =>
+      'Das Betriebssystem entscheidet, wann eine App im Hintergrund laufen darf. Im Energiesparmodus oder wenn du die App selten öffnest, kann die Meldung ein paar Minuten später ankommen.';
+
+  @override
+  String get faqDataOriginQuestion => 'Woher kommen die Daten?';
+
+  @override
+  String get faqDataOriginAnswer =>
+      'Freiwillige betreiben ADS-B-Empfänger und teilen in offenen Netzwerken wie adsb.lol und adsb.fi, was sie hören. Keine Airline, kein offizieller Feed — deshalb ist es kostenlos, und deshalb gibt es keine Gewähr.';
+
+  @override
+  String get faqAccountQuestion => 'Brauche ich ein Konto?';
+
+  @override
+  String get faqAccountAnswer =>
+      'Nein. Kein Konto, kein Server, keine Anmeldung. Flüge und Einstellungen bleiben auf dem Gerät; nach draußen gehen nur die Abfragen an die gewählte Quelle und die Kartenkacheln.';
 
   @override
   String get notificationDepartedBody => 'Der Flug ist gestartet.';

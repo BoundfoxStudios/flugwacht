@@ -13,6 +13,7 @@ import '../data/units_setting.dart';
 import 'app_shell.dart';
 import 'map_selection.dart';
 import 'screens/about_screen.dart';
+import 'screens/faq_screen.dart';
 import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
@@ -81,6 +82,10 @@ GoRouter createAppRouter({
                   packageInfo: packageInfo,
                 ),
                 routes: [
+                  GoRoute(
+                    path: 'faq',
+                    builder: (context, state) => const FaqScreen(),
+                  ),
                   GoRoute(
                     path: 'about',
                     builder: (context, state) =>

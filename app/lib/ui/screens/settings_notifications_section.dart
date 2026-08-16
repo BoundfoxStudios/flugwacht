@@ -52,6 +52,20 @@ class _SettingsNotificationsSectionState
     }
   }
 
+  /// With everything off by default, the first switch that goes on is where the
+  /// permission is still undecided — and nothing would be delivered without it.
+  Future<void> _toggle(
+    FlightNotification kind, {
+    required bool isEnabled,
+  }) async {
+    await widget.notificationSetting.select(kind, isEnabled: isEnabled);
+    if (isEnabled &&
+        widget.notificationService.permission.value ==
+            NotificationPermission.notDetermined) {
+      await widget.notificationService.requestPermission();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -68,9 +82,8 @@ class _SettingsNotificationsSectionState
                 AppSwitchRow(
                   label: notificationLabel(localizations, kind),
                   isEnabled: notificationSetting.isEnabled(kind),
-                  onToggled: (isEnabled) => unawaited(
-                    notificationSetting.select(kind, isEnabled: isEnabled),
-                  ),
+                  onToggled: (isEnabled) =>
+                      unawaited(_toggle(kind, isEnabled: isEnabled)),
                 ),
             ],
           ),
@@ -100,10 +113,6 @@ class _SettingsNotificationsSectionState
                   localizations.settingsNotificationsDelivery,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-        ),
-        Text(
-          localizations.settingsNotificationsFootnote,
-          style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );

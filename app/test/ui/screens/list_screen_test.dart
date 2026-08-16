@@ -281,4 +281,76 @@ void main() {
 
     expect(find.text('new flight screen'), findsOneWidget);
   });
+
+  group('deleting a flight', () {
+    Future<void> swipeAway(WidgetTester tester, Finder target) async {
+      await tester.drag(target, const Offset(-500, 0));
+      await tester.pumpAndSettle();
+    }
+
+    /// Ends the undo window the way a timeout would, without waiting one out.
+    Future<void> dismissSnackBar(WidgetTester tester) async {
+      tester
+          .state<ScaffoldMessengerState>(find.byType(ScaffoldMessenger))
+          .hideCurrentSnackBar();
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a swiped row leaves the list and offers an undo', (
+      tester,
+    ) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight()]);
+      await tester.pump();
+
+      await swipeAway(tester, find.byType(FlightRow));
+
+      expect(find.byType(FlightRow), findsNothing);
+      expect(find.text('Flight deleted'), findsOneWidget);
+      expect(find.text('Undo'), findsOneWidget);
+      expect(repository.deletedFlightIds, isEmpty);
+    });
+
+    testWidgets('undo brings the row back and deletes nothing', (tester) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight()]);
+      await tester.pump();
+      await swipeAway(tester, find.byType(FlightRow));
+
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FlightRow), findsOneWidget);
+      expect(repository.deletedFlightIds, isEmpty);
+    });
+
+    testWidgets('the delete lands once the undo is gone', (tester) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight(id: 7)]);
+      await tester.pump();
+      await swipeAway(tester, find.byType(FlightRow));
+
+      await dismissSnackBar(tester);
+      repository.emit(const []);
+      await tester.pumpAndSettle();
+
+      expect(repository.deletedFlightIds, [7]);
+      expect(find.byType(FlightRow), findsNothing);
+    });
+
+    testWidgets('the hero cell is swiped away the same way', (tester) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight(id: 3, tracking: _seenAt(_today))]);
+      await tester.pump();
+
+      await swipeAway(tester, find.byType(FlightHeroCell));
+
+      expect(find.byType(FlightHeroCell), findsNothing);
+      expect(find.text('Undo'), findsOneWidget);
+
+      await dismissSnackBar(tester);
+
+      expect(repository.deletedFlightIds, [3]);
+    });
+  });
 }

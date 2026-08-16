@@ -148,9 +148,13 @@ class FakeNotificationSetting implements NotificationSetting {
       FlightNotification.arrivingSoon,
       FlightNotification.landed,
     },
+    this.wasOffered = false,
   });
 
   Set<FlightNotification> enabled;
+
+  @override
+  bool wasOffered;
 
   @override
   bool isEnabled(FlightNotification kind) => enabled.contains(kind);
@@ -162,6 +166,12 @@ class FakeNotificationSetting implements NotificationSetting {
   }) async {
     enabled = isEnabled ? {...enabled, kind} : ({...enabled}..remove(kind));
   }
+
+  @override
+  Future<void> enableAll() async => enabled = FlightNotification.values.toSet();
+
+  @override
+  Future<void> rememberOffer() async => wasOffered = true;
 
   @override
   void dispose() {}
@@ -245,6 +255,7 @@ class FakeFlightRepository implements FlightRepository {
   final trailAppends = <(int, FixPosition, SourceId)>[];
   final identityUpdates = <(int, String?, String?)>[];
   final notificationMarks = <(int, FlightNotification)>[];
+  final deletedFlightIds = <int>[];
 
   void emit(List<Flight> flights) => _flights.add(flights);
 
@@ -267,6 +278,10 @@ class FakeFlightRepository implements FlightRepository {
   @override
   Future<void> deleteExpiredFlights(DateTime now) async =>
       expiryChecks.add(now);
+
+  @override
+  Future<void> deleteFlight(int flightId) async =>
+      deletedFlightIds.add(flightId);
 
   @override
   Future<void> updateTracking(int flightId, FlightTracking tracking) async =>

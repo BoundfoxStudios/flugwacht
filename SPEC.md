@@ -212,7 +212,7 @@ handoff README.
 | M13 | Notifications | Local: departed · arriving soon (~30 min) · landed |
 | M14 | Background | Feasibility of background polling (iOS limits) — investigated and declined (#147): no background polling; Live Activity instead |
 | M15 | Polish | About/licenses page, "ended/missed" detail states |
-| M16 | Live Activity | iOS-only Lock Screen / Dynamic Island activity for tracked flights: system-driven countdown, `staleDate` honesty, data refreshes on app opens (#148) |
+| M16 | Live experience | iOS-only Lock Screen / Dynamic Island activity for tracked flights: system-driven countdown, `staleDate` honesty, data refreshes on app opens (#148); Android exact-alarm precision for the pre-scheduled arriving-soon notification (#154) |
 | M17 | Cleanup | Delete `SPEC.md`, the local design handoff folder, and any remaining planning files; check for spike leftovers |
 
 Outside the numbered sequence: the **Backend** milestone (optional expansion

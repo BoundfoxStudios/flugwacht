@@ -377,6 +377,37 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get aboutTitle => 'Über Flugwacht';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutSourcesSectionTitle => 'Daten & Karte';
+
+  @override
+  String aboutSources(String sources) {
+    return 'Flugdaten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr auf Verfügbarkeit oder Aktualität.';
+  }
+
+  @override
+  String get aboutMapAttribution => 'Karte © OpenStreetMap-Mitwirkende.';
+
+  @override
+  String get aboutIconCredit => 'Icons: Font Awesome Pro';
+
+  @override
+  String get aboutLicenses => 'Open-Source-Lizenzen';
+
+  @override
+  String get aboutBoundfox => 'Ein Projekt von Boundfox Studios';
+
+  @override
+  String get aboutGithub => 'Flugwacht auf GitHub';
+
+  @override
   String settingsDataFootnote(String sources) {
     return 'Daten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr. Karte © OpenStreetMap.';
   }

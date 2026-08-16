@@ -378,6 +378,37 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get aboutTitle => 'About Flugwacht';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutSourcesSectionTitle => 'Data & map';
+
+  @override
+  String aboutSources(String sources) {
+    return 'Flight data: $sources — free for private use, community networks without warranty about availability or freshness.';
+  }
+
+  @override
+  String get aboutMapAttribution => 'Map © OpenStreetMap contributors.';
+
+  @override
+  String get aboutIconCredit => 'Icons: Font Awesome Pro';
+
+  @override
+  String get aboutLicenses => 'Open-source licenses';
+
+  @override
+  String get aboutBoundfox => 'A project by Boundfox Studios';
+
+  @override
+  String get aboutGithub => 'Flugwacht on GitHub';
+
+  @override
   String settingsDataFootnote(String sources) {
     return 'Data: $sources — free for private use, community networks without warranty. Map © OpenStreetMap.';
   }

@@ -30,6 +30,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:signals/signals.dart';
+import 'package:url_launcher_platform_interface/link.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 const testAirlinesCsv =
@@ -163,6 +165,29 @@ class FakeNotificationSetting implements NotificationSetting {
 
   @override
   void dispose() {}
+}
+
+/// Records what the app asked the platform to open, so no test leaves the app
+/// for a browser.
+class FakeUrlLauncher extends UrlLauncherPlatform {
+  final launched = <String>[];
+
+  @override
+  LinkDelegate? get linkDelegate => null;
+
+  @override
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
+    launched.add(url);
+    return true;
+  }
+}
+
+FakeUrlLauncher createTestUrlLauncher() {
+  final launcher = FakeUrlLauncher();
+  final previous = UrlLauncherPlatform.instance;
+  UrlLauncherPlatform.instance = launcher;
+  addTearDown(() => UrlLauncherPlatform.instance = previous);
+  return launcher;
 }
 
 FakeNotificationService createTestNotificationService({

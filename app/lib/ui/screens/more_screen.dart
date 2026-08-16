@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../app_icons.dart';
 import '../../data/notification_service.dart';
 import '../../data/notification_setting.dart';
 import '../../data/source_setting.dart';
@@ -89,6 +92,8 @@ class _SettingsHeader extends StatelessWidget {
 class _AboutCard extends StatelessWidget {
   const _AboutCard({required this.version});
 
+  static const _chevronSize = 14.0;
+
   final String version;
 
   @override
@@ -96,20 +101,33 @@ class _AboutCard extends StatelessWidget {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context);
     return SettingsCard(
+      onTap: () => context.push('/more/about'),
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.grid / 2,
+        Row(
+          spacing: AppSpacing.cardPadding,
           children: [
-            Text(
-              localizations.settingsAboutTitle,
-              style: AppTextStyles.bodyLargeEmphasis.copyWith(
-                color: theme.textTheme.bodyMedium?.color,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.grid / 2,
+                children: [
+                  Text(
+                    localizations.settingsAboutTitle,
+                    style: AppTextStyles.bodyLargeEmphasis.copyWith(
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                  Text(
+                    localizations.settingsAboutSubtitle(version),
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
-            Text(
-              localizations.settingsAboutSubtitle(version),
-              style: theme.textTheme.bodySmall,
+            FaIcon(
+              AppIcons.chevronRight,
+              size: _chevronSize,
+              color: theme.textTheme.bodySmall?.color,
             ),
           ],
         ),

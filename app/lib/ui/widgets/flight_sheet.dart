@@ -366,8 +366,8 @@ class _FlightPage extends StatelessWidget {
   }
 }
 
-/// Switches a flight the active source cannot see to the next one; until the
-/// settings of M12 arrive this is the only switch the app offers.
+/// Switches a flight the active source cannot see to the next one, right where
+/// the gap shows up instead of over in the settings.
 class _AnotherSourceLink extends StatelessWidget {
   const _AnotherSourceLink({required this.onTap});
 

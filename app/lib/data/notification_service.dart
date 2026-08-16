@@ -51,8 +51,12 @@ class LocalNotificationService implements NotificationService {
   ) : permission = signal(NotificationPermission.notDetermined);
 
   static const flightChannelId = 'flight_status';
+
+  /// The status bar icon, a drawable the app resolves by name at runtime; the
+  /// resource shrinker only spares it because res/raw/keep.xml says so.
+  static const androidIconResource = 'ic_notification';
+
   static const _hasAskedKey = 'notification_permission_requested';
-  static const _androidIcon = '@mipmap/ic_launcher';
 
   /// Initializes the plugin, creates the Android channel and reads what the
   /// system currently allows.
@@ -63,7 +67,7 @@ class LocalNotificationService implements NotificationService {
     final plugin = FlutterLocalNotificationsPlugin();
     await plugin.initialize(
       settings: const InitializationSettings(
-        android: AndroidInitializationSettings(_androidIcon),
+        android: AndroidInitializationSettings(androidIconResource),
         iOS: DarwinInitializationSettings(
           requestAlertPermission: false,
           requestBadgePermission: false,

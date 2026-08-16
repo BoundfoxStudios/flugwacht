@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:flugwacht/data/notification_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+const _densities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
 
 void main() {
   late String manifest;
@@ -42,4 +45,29 @@ void main() {
       expect(manifest, contains('android.intent.action.BOOT_COMPLETED'));
     },
   );
+
+  /// The release build shrinks resources, and nothing but a Dart string names
+  /// the status bar icon. Once the shrinker drops it, the plugin's icon
+  /// validation fails and the app stops starting — in release only.
+  test('keeps the status bar icon from the resource shrinker', () {
+    final keepRules = File(
+      'android/app/src/main/res/raw/keep.xml',
+    ).readAsStringSync();
+
+    expect(
+      keepRules,
+      contains('@drawable/${LocalNotificationService.androidIconResource}'),
+    );
+  });
+
+  test('ships the status bar icon in every density', () {
+    for (final density in _densities) {
+      final icon = File(
+        'android/app/src/main/res/drawable-$density/'
+        '${LocalNotificationService.androidIconResource}.png',
+      );
+
+      expect(icon.existsSync(), isTrue, reason: density);
+    }
+  });
 }

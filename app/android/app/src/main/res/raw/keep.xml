@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The status bar icon is named from Dart only, so the release build's
+     resource shrinker cannot see that it is used. Losing it fails the plugin's
+     icon validation and the app stops starting. -->
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_notification" />

@@ -1,5 +1,6 @@
 import 'package:flugwacht/main.dart';
 import 'package:flugwacht/ui/screens/about_screen.dart';
+import 'package:flugwacht/ui/screens/faq_screen.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
@@ -63,6 +64,28 @@ void main() {
 
     expect(find.byType(MoreScreen), findsOneWidget);
     expect(find.byType(AboutScreen), findsNothing);
+  });
+
+  testWidgets('the settings card opens the faq screen and comes back', (
+    tester,
+  ) async {
+    final router = await pumpApp(tester);
+
+    await tester.tap(find.text('More'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Frequently asked questions'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Frequently asked questions'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FaqScreen), findsOneWidget);
+    expect(router.state.uri.toString(), '/more/faq');
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MoreScreen), findsOneWidget);
+    expect(find.byType(FaqScreen), findsNothing);
   });
 
   testWidgets('new flight opens without the tab bar and can be closed', (

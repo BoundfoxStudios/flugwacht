@@ -35,38 +35,51 @@ class MoreScreen extends StatelessWidget {
   final PackageInfo packageInfo;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      bottom: false,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: AppSpacing.screenPaddingLarge),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const _SettingsHeader(),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenPadding,
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: AppSpacing.screenPaddingLarge),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _SettingsHeader(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.screenPadding,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: _sectionGap,
+                  children: [
+                    SettingsSourceSection(sourceSetting: sourceSetting),
+                    SettingsUnitsSection(unitsSetting: unitsSetting),
+                    SettingsNotificationsSection(
+                      notificationSetting: notificationSetting,
+                      notificationService: notificationService,
+                    ),
+                    _LinkCard(
+                      title: localizations.settingsFaqTitle,
+                      route: '/more/faq',
+                    ),
+                    _LinkCard(
+                      title: localizations.settingsAboutTitle,
+                      subtitle: localizations.settingsAboutSubtitle(
+                        packageInfo.version,
+                      ),
+                      route: '/more/about',
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: _sectionGap,
-                children: [
-                  SettingsSourceSection(sourceSetting: sourceSetting),
-                  SettingsUnitsSection(unitsSetting: unitsSetting),
-                  SettingsNotificationsSection(
-                    notificationSetting: notificationSetting,
-                    notificationService: notificationService,
-                  ),
-                  _AboutCard(version: packageInfo.version),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _SettingsHeader extends StatelessWidget {
@@ -87,19 +100,22 @@ class _SettingsHeader extends StatelessWidget {
   );
 }
 
-class _AboutCard extends StatelessWidget {
-  const _AboutCard({required this.version});
+/// A card of the More screen that leads to one of its sub-screens.
+class _LinkCard extends StatelessWidget {
+  const _LinkCard({required this.title, required this.route, this.subtitle});
 
   static const _chevronSize = 14.0;
 
-  final String version;
+  final String title;
+  final String route;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final localizations = AppLocalizations.of(context);
+    final subtitle = this.subtitle;
     return SettingsCard(
-      onTap: () => context.push('/more/about'),
+      onTap: () => context.push(route),
       children: [
         Row(
           spacing: AppSpacing.cardPadding,
@@ -110,15 +126,13 @@ class _AboutCard extends StatelessWidget {
                 spacing: AppSpacing.grid / 2,
                 children: [
                   Text(
-                    localizations.settingsAboutTitle,
+                    title,
                     style: AppTextStyles.bodyLargeEmphasis.copyWith(
                       color: theme.textTheme.bodyMedium?.color,
                     ),
                   ),
-                  Text(
-                    localizations.settingsAboutSubtitle(version),
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  if (subtitle != null)
+                    Text(subtitle, style: theme.textTheme.bodySmall),
                 ],
               ),
             ),

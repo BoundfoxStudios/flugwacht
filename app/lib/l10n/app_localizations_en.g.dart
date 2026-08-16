@@ -401,6 +401,80 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutGithub => 'Flugwacht on GitHub';
 
   @override
+  String get settingsFaqTitle => 'Frequently asked questions';
+
+  @override
+  String get faqTitle => 'Frequently asked questions';
+
+  @override
+  String get faqOtherServicesQuestion =>
+      'Why does the data differ from FlightRadar24 and others?';
+
+  @override
+  String get faqOtherServicesAnswer =>
+      'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up — no schedule-based guesses. That is why there are gaps wherever nobody is listening.';
+
+  @override
+  String get faqArrivalAccuracyQuestion =>
+      'Why is the arrival time sometimes inaccurate?';
+
+  @override
+  String get faqArrivalAccuracyAnswer =>
+      'It is the remaining distance divided by the current ground speed. Holding patterns, approach routing, taxi time and the wind on the last leg are not in it. It sharpens the closer the aircraft gets, and a “~” marks an estimate built on an aged position.';
+
+  @override
+  String get faqTrailStartQuestion =>
+      'Why does the trail only start when I add the flight?';
+
+  @override
+  String get faqTrailStartAnswer =>
+      'There is no history to fetch. The sources report the live state, and Flugwacht builds the trail itself from the points it collects from that moment on. A flight you add mid-air therefore starts without a trail.';
+
+  @override
+  String get faqFlightNotFoundQuestion => 'Why can I not find my flight?';
+
+  @override
+  String get faqFlightNotFoundAnswer =>
+      'A flight only shows up once a receiver hears it: not before takeoff, and not in regions without coverage. Check the flight number the way the airline writes it (LH400, not DLH400), or search by registration or hex address. Trying another source is worth it, too.';
+
+  @override
+  String get faqTrailGapsQuestion => 'Why does the trail have gaps?';
+
+  @override
+  String get faqTrailGapsAnswer =>
+      'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.';
+
+  @override
+  String get faqFlightsDisappearQuestion =>
+      'Why do flights disappear after landing?';
+
+  @override
+  String get faqFlightsDisappearAnswer =>
+      'Flights clear themselves 24 hours after landing. That keeps the list to what is still ahead of you.';
+
+  @override
+  String get faqLateNotificationQuestion =>
+      'Why does a notification sometimes arrive late?';
+
+  @override
+  String get faqLateNotificationAnswer =>
+      'The operating system decides when an app may run in the background. In battery saver mode, or when you rarely open the app, the message can arrive a few minutes late.';
+
+  @override
+  String get faqDataOriginQuestion => 'Where does the data come from?';
+
+  @override
+  String get faqDataOriginAnswer =>
+      'Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed — which is why it is free, and why it comes without a guarantee.';
+
+  @override
+  String get faqAccountQuestion => 'Do I need an account?';
+
+  @override
+  String get faqAccountAnswer =>
+      'No. No account, no server, no sign-up. Flights and settings stay on the device; the only things leaving it are the queries to the selected source and the map tiles.';
+
+  @override
   String get notificationDepartedBody => 'The flight has taken off.';
 
   @override

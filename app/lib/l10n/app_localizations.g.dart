@@ -738,6 +738,126 @@ abstract class AppLocalizations {
   /// **'Flugwacht on GitHub'**
   String get aboutGithub;
 
+  /// No description provided for @settingsFaqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently asked questions'**
+  String get settingsFaqTitle;
+
+  /// No description provided for @faqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently asked questions'**
+  String get faqTitle;
+
+  /// No description provided for @faqOtherServicesQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why does the data differ from FlightRadar24 and others?'**
+  String get faqOtherServicesQuestion;
+
+  /// No description provided for @faqOtherServicesAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up — no schedule-based guesses. That is why there are gaps wherever nobody is listening.'**
+  String get faqOtherServicesAnswer;
+
+  /// No description provided for @faqArrivalAccuracyQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why is the arrival time sometimes inaccurate?'**
+  String get faqArrivalAccuracyQuestion;
+
+  /// No description provided for @faqArrivalAccuracyAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'It is the remaining distance divided by the current ground speed. Holding patterns, approach routing, taxi time and the wind on the last leg are not in it. It sharpens the closer the aircraft gets, and a “~” marks an estimate built on an aged position.'**
+  String get faqArrivalAccuracyAnswer;
+
+  /// No description provided for @faqTrailStartQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why does the trail only start when I add the flight?'**
+  String get faqTrailStartQuestion;
+
+  /// No description provided for @faqTrailStartAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no history to fetch. The sources report the live state, and Flugwacht builds the trail itself from the points it collects from that moment on. A flight you add mid-air therefore starts without a trail.'**
+  String get faqTrailStartAnswer;
+
+  /// No description provided for @faqFlightNotFoundQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why can I not find my flight?'**
+  String get faqFlightNotFoundQuestion;
+
+  /// No description provided for @faqFlightNotFoundAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'A flight only shows up once a receiver hears it: not before takeoff, and not in regions without coverage. Check the flight number the way the airline writes it (LH400, not DLH400), or search by registration or hex address. Trying another source is worth it, too.'**
+  String get faqFlightNotFoundAnswer;
+
+  /// No description provided for @faqTrailGapsQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why does the trail have gaps?'**
+  String get faqTrailGapsQuestion;
+
+  /// No description provided for @faqTrailGapsAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.'**
+  String get faqTrailGapsAnswer;
+
+  /// No description provided for @faqFlightsDisappearQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why do flights disappear after landing?'**
+  String get faqFlightsDisappearQuestion;
+
+  /// No description provided for @faqFlightsDisappearAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Flights clear themselves 24 hours after landing. That keeps the list to what is still ahead of you.'**
+  String get faqFlightsDisappearAnswer;
+
+  /// No description provided for @faqLateNotificationQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why does a notification sometimes arrive late?'**
+  String get faqLateNotificationQuestion;
+
+  /// No description provided for @faqLateNotificationAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'The operating system decides when an app may run in the background. In battery saver mode, or when you rarely open the app, the message can arrive a few minutes late.'**
+  String get faqLateNotificationAnswer;
+
+  /// No description provided for @faqDataOriginQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Where does the data come from?'**
+  String get faqDataOriginQuestion;
+
+  /// No description provided for @faqDataOriginAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed — which is why it is free, and why it comes without a guarantee.'**
+  String get faqDataOriginAnswer;
+
+  /// No description provided for @faqAccountQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Do I need an account?'**
+  String get faqAccountQuestion;
+
+  /// No description provided for @faqAccountAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'No. No account, no server, no sign-up. Flights and settings stay on the device; the only things leaving it are the queries to the selected source and the map tiles.'**
+  String get faqAccountAnswer;
+
   /// No description provided for @notificationDepartedBody.
   ///
   /// In en, this message translates to:

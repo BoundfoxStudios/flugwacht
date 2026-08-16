@@ -8,6 +8,8 @@ abstract final class AppIcons {
   static const FaIconData xmark = FontAwesomeIcons.xmark;
   static const FaIconData plus = FontAwesomeIcons.plus;
   static const FaIconData chevronRight = FontAwesomeIcons.chevronRight;
+  static const FaIconData chevronDown = FontAwesomeIcons.chevronDown;
+  static const FaIconData chevronUp = FontAwesomeIcons.chevronUp;
   static const FaIconData map = FontAwesomeIcons.map;
   static const FaIconData planeUp = FontAwesomeIcons.planeUp;
   static const FaIconData ellipsis = FontAwesomeIcons.ellipsis;

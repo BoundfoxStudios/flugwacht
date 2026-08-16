@@ -173,4 +173,13 @@ void main() {
 
     expect(find.textContaining('2.7.0'), findsOneWidget);
   });
+
+  testWidgets('offers the faq above the about entry', (tester) async {
+    await pumpMoreScreen(tester);
+
+    expect(
+      tester.getTopLeft(find.text('Frequently asked questions')).dy,
+      lessThan(tester.getTopLeft(find.text('About Flugwacht')).dy),
+    );
+  });
 }

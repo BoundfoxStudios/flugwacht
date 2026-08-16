@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flugwacht/data/notification_service.dart';
+import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _densities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
@@ -69,5 +70,59 @@ void main() {
 
       expect(icon.existsSync(), isTrue, reason: density);
     }
+  });
+
+  group('unavailable service', () {
+    late UnavailableNotificationService service;
+
+    setUp(() {
+      service = UnavailableNotificationService();
+      addTearDown(service.dispose);
+    });
+
+    test('reports the notifications as unavailable', () {
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
+    test('shows nothing', () async {
+      await service.show(
+        FlightNotification.departed,
+        flightId: 7,
+        title: 'LH400',
+        body: 'departed',
+      );
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
+    test('schedules nothing', () async {
+      await service.schedule(
+        FlightNotification.arrivingSoon,
+        flightId: 7,
+        title: 'LH400',
+        body: 'arriving soon',
+        at: DateTime.utc(2026, 3, 17, 12),
+      );
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
+    test('cancels nothing', () async {
+      await service.cancel(FlightNotification.arrivingSoon, flightId: 7);
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
+    test('keeps a permission request a no-op', () async {
+      await service.requestPermission();
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
+    test('finds nothing to pick up from the system settings', () async {
+      await service.refreshPermission();
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
   });
 }

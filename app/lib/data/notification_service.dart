@@ -6,8 +6,9 @@ import 'package:timezone/timezone.dart' as timezone;
 import '../domain/flight_notification.dart';
 
 /// What the operating system allows; a flight that has never been saved leaves
-/// it undecided, because the app only asks in that moment.
-enum NotificationPermission { notDetermined, granted, denied }
+/// it undecided, because the app only asks in that moment. [unavailable] is not
+/// the user's answer but the device's: the setup itself failed.
+enum NotificationPermission { notDetermined, granted, denied, unavailable }
 
 /// The seam between the app and the notification plugin, so nothing above it
 /// talks to the platform directly.
@@ -59,46 +60,52 @@ class LocalNotificationService implements NotificationService {
   static const _hasAskedKey = 'notification_permission_requested';
 
   /// Initializes the plugin, creates the Android channel and reads what the
-  /// system currently allows.
-  static Future<LocalNotificationService> start({
+  /// system currently allows. A device that fails any of that — a dropped icon
+  /// resource, a broken notification stack — costs the user the notifications
+  /// and gets an [UnavailableNotificationService], never a stalled app.
+  static Future<NotificationService> start({
     required String channelName,
     required String channelDescription,
   }) async {
-    final plugin = FlutterLocalNotificationsPlugin();
-    await plugin.initialize(
-      settings: const InitializationSettings(
-        android: AndroidInitializationSettings(androidIconResource),
-        iOS: DarwinInitializationSettings(
-          requestAlertPermission: false,
-          requestBadgePermission: false,
-          requestSoundPermission: false,
-          defaultPresentSound: false,
-        ),
-      ),
-    );
-    await plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(
-          AndroidNotificationChannel(
-            flightChannelId,
-            channelName,
-            description: channelDescription,
+    try {
+      final plugin = FlutterLocalNotificationsPlugin();
+      await plugin.initialize(
+        settings: const InitializationSettings(
+          android: AndroidInitializationSettings(androidIconResource),
+          iOS: DarwinInitializationSettings(
+            requestAlertPermission: false,
+            requestBadgePermission: false,
+            requestSoundPermission: false,
+            defaultPresentSound: false,
           ),
-        );
-    final preferences = SharedPreferencesAsync();
-    final service = LocalNotificationService._(
-      plugin,
-      preferences,
-      NotificationDetails(
-        android: AndroidNotificationDetails(flightChannelId, channelName),
-        iOS: const DarwinNotificationDetails(presentSound: false),
-      ),
-      await preferences.getBool(_hasAskedKey) ?? false,
-    );
-    await service.refreshPermission();
-    return service;
+        ),
+      );
+      await plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.createNotificationChannel(
+            AndroidNotificationChannel(
+              flightChannelId,
+              channelName,
+              description: channelDescription,
+            ),
+          );
+      final preferences = SharedPreferencesAsync();
+      final service = LocalNotificationService._(
+        plugin,
+        preferences,
+        NotificationDetails(
+          android: AndroidNotificationDetails(flightChannelId, channelName),
+          iOS: const DarwinNotificationDetails(presentSound: false),
+        ),
+        await preferences.getBool(_hasAskedKey) ?? false,
+      );
+      await service.refreshPermission();
+      return service;
+    } on Exception {
+      return UnavailableNotificationService();
+    }
   }
 
   final FlutterLocalNotificationsPlugin _plugin;
@@ -201,4 +208,42 @@ class LocalNotificationService implements NotificationService {
         ?.checkPermissions();
     return options?.isEnabled;
   }
+}
+
+/// Stands in on a device whose notification setup failed, so everything above
+/// keeps the service it depends on — and gets nothing but silence from it.
+class UnavailableNotificationService implements NotificationService {
+  UnavailableNotificationService()
+    : permission = signal(NotificationPermission.unavailable);
+
+  @override
+  final Signal<NotificationPermission> permission;
+
+  @override
+  Future<void> requestPermission() async {}
+
+  @override
+  Future<void> refreshPermission() async {}
+
+  @override
+  Future<void> show(
+    FlightNotification kind, {
+    required int flightId,
+    required String title,
+    required String body,
+  }) async {}
+
+  @override
+  Future<void> schedule(
+    FlightNotification kind, {
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) async {}
+
+  @override
+  Future<void> cancel(FlightNotification kind, {required int flightId}) async {}
+
+  void dispose() => permission.dispose();
 }

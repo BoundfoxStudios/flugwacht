@@ -20,8 +20,8 @@ class MiniMap extends StatefulWidget {
     required this.route,
     required this.trail,
     required this.state,
+    required this.tileSources,
     super.key,
-    this.tileProvider,
   });
 
   static const _fitPadding = EdgeInsets.all(28);
@@ -39,8 +39,7 @@ class MiniMap extends StatefulWidget {
   final List<TrailPoint> trail;
   final FlightState state;
 
-  /// Injectable so tests render without loading tiles over the network.
-  final TileProvider? tileProvider;
+  final MapTileSources tileSources;
 
   @override
   State<MiniMap> createState() => _MiniMapState();
@@ -104,7 +103,7 @@ class _MiniMapState extends State<MiniMap> {
               keepAlive: true,
             ),
             children: [
-              mapTiles(colors: colors, tileProvider: widget.tileProvider),
+              mapTiles(colors: colors, sources: widget.tileSources),
               PolylineLayer(
                 polylines: flightPolylines(
                   colors: colors,

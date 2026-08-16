@@ -41,7 +41,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Persistence | `drift` (SQLite) for flights + trail points |
 | Settings | `shared_preferences` (`SharedPreferencesAsync`) for the active source, later the map style and the units |
 | Routing | `go_router` (tab shell map · list · more + modal "new flight" screen) |
-| Map (OSM raster) | `flutter_map` with OSM tiles |
+| Map (OSM raster) | `flutter_map` with OSM tiles; the tile user agent carries the bundle ID read via `package_info_plus`, caching is flutter_map's built-in tile cache at its defaults |
 | Map (reduced style) | open — decided in its milestone (maplibre_gl / custom style set) |
 | HTTP | `http`, one source adapter behind an interface (sources are field-identical) |
 | Fonts | Bebas Neue + Barlow, bundled at build time — never downloaded at runtime; shipped as assets (plain pubspec `fonts:` or `google_fonts` with local files, decided in M1.3), OFL licenses included |

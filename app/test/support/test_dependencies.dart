@@ -15,6 +15,7 @@ import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/ui/app_router.dart';
+import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,6 +57,13 @@ Future<GoRouter> createTestAppRouter() async => createAppRouter(
   airlineDirectory: createTestAirlineDirectory(),
   routeLookup: FakeRouteLookup(),
   sourceSetting: await createTestSourceSetting(),
+  tileSources: testTileSources(),
+);
+
+/// Tiles from a stub provider under a stand-in package name, so no widget
+/// test loads a tile over the network.
+MapTileSources testTileSources() => MapTileSources(
+  userAgentPackageName: 'com.boundfoxstudios.apps.flugwacht',
   tileProvider: StubTileProvider(),
 );
 

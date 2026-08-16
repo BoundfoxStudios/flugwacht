@@ -55,6 +55,7 @@ dependencies:
   timezone: ^0.11.1
   lat_lng_to_timezone: ^0.2.0
   shared_preferences: ^2.5.5
+  package_info_plus: ^10.2.1
 
 dev_dependencies:
   flutter_test:

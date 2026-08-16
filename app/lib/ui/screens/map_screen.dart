@@ -32,9 +32,9 @@ class MapScreen extends StatefulWidget {
     required this.flightRepository,
     required this.selection,
     required this.sourceSetting,
+    required this.tileSources,
     super.key,
     this.clock = DateTime.now,
-    this.tileProvider,
   });
 
   static const _defaultCenter = LatLng(50, 10);
@@ -69,8 +69,7 @@ class MapScreen extends StatefulWidget {
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
 
-  /// Injectable so tests render without loading tiles over the network.
-  final TileProvider? tileProvider;
+  final MapTileSources tileSources;
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -155,7 +154,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   backgroundColor: colors.mapBackground,
                 ),
                 children: [
-                  mapTiles(colors: colors, tileProvider: widget.tileProvider),
+                  mapTiles(colors: colors, sources: widget.tileSources),
                   if (selected != null && position != null) ...[
                     PolylineLayer(
                       polylines: flightPolylines(

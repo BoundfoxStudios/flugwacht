@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+import '../../support/test_dependencies.dart';
 
 const _route = FlightRoute(
   origin: RouteAirport(
@@ -164,6 +167,44 @@ void main() {
           .having((fit) => fit.bounds.east, 'east', 10)
           .having((fit) => fit.bounds.west, 'west', -73)
           .having((fit) => fit.padding, 'padding', const EdgeInsets.all(40)),
+    );
+  });
+
+  testWidgets('identifies the tile requests with the installed package', (
+    tester,
+  ) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'Flugwacht',
+      packageName: 'com.boundfoxstudios.apps.flugwacht',
+      version: '1.0.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+    final packageInfo = await PackageInfo.fromPlatform();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FlutterMap(
+          options: const MapOptions(),
+          children: [
+            mapTiles(
+              colors: MapColors.light,
+              sources: MapTileSources(
+                userAgentPackageName: packageInfo.packageName,
+                tileProvider: StubTileProvider(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(
+      tester
+          .widget<TileLayer>(find.byType(TileLayer))
+          .tileProvider
+          .headers['User-Agent'],
+      'flutter_map (com.boundfoxstudios.apps.flugwacht)',
     );
   });
 }

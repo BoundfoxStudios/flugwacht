@@ -62,7 +62,7 @@ Future<void> pumpMiniMap(
                 route: route,
                 trail: trail,
                 state: state,
-                tileProvider: StubTileProvider(),
+                tileSources: testTileSources(),
               ),
             ),
           ),

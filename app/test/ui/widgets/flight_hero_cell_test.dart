@@ -96,7 +96,7 @@ Future<void> pumpHeroCell(
                 trail: trail,
                 now: _now,
                 onTap: onTap,
-                tileProvider: StubTileProvider(),
+                tileSources: testTileSources(),
               ),
             ),
           ),

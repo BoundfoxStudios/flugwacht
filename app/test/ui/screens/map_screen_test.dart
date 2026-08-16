@@ -117,7 +117,7 @@ Future<FakeFlightRepository> pumpMapScreen(
         selection: mapSelection,
         sourceSetting: setting,
         clock: () => _now,
-        tileProvider: StubTileProvider(),
+        tileSources: testTileSources(),
       ),
     ),
   );
@@ -166,7 +166,7 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         airlineDirectory: createTestAirlineDirectory(),
         routeLookup: FakeRouteLookup(),
         sourceSetting: await createTestSourceSetting(),
-        tileProvider: StubTileProvider(),
+        tileSources: testTileSources(),
       ),
     ),
   );

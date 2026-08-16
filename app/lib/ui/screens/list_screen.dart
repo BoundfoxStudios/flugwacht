@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
@@ -15,6 +14,7 @@ import '../theme/app_tokens.dart';
 import '../widgets/app_fab.dart';
 import '../widgets/flight_hero_cell.dart';
 import '../widgets/flight_row.dart';
+import '../widgets/map_visuals.dart';
 import 'flight_list.dart';
 import 'list_empty_state.dart';
 import 'list_sections.dart';
@@ -23,9 +23,9 @@ class ListScreen extends StatefulWidget {
   const ListScreen({
     required this.flightRepository,
     required this.mapSelection,
+    required this.tileSources,
     super.key,
     this.clock = DateTime.now,
-    this.tileProvider,
   });
 
   final FlightRepository flightRepository;
@@ -36,8 +36,8 @@ class ListScreen extends StatefulWidget {
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
 
-  /// Handed to the hero cells so tests render without loading map tiles.
-  final TileProvider? tileProvider;
+  /// Handed to the hero cells.
+  final MapTileSources tileSources;
 
   @override
   State<ListScreen> createState() => _ListScreenState();
@@ -69,7 +69,7 @@ class _ListScreenState extends State<ListScreen> {
                 sections: sections,
                 today: _flightList.now.value,
                 repository: widget.flightRepository,
-                tileProvider: widget.tileProvider,
+                tileSources: widget.tileSources,
                 onFlightSelected: (flightId) => _openOnMap(context, flightId),
               );
       },
@@ -97,14 +97,14 @@ class _FlightSections extends StatelessWidget {
     required this.sections,
     required this.today,
     required this.repository,
-    required this.tileProvider,
+    required this.tileSources,
     required this.onFlightSelected,
   });
 
   final FlightListSections sections;
   final DateTime today;
   final FlightRepository repository;
-  final TileProvider? tileProvider;
+  final MapTileSources tileSources;
   final ValueChanged<int> onFlightSelected;
 
   @override
@@ -133,7 +133,7 @@ class _FlightSections extends StatelessWidget {
                 entry: entry,
                 now: today,
                 repository: repository,
-                tileProvider: tileProvider,
+                tileSources: tileSources,
                 onTap: () => onFlightSelected(entry.flight.id),
               ),
             for (final entry in rows) _PaddedRow(entry: entry),
@@ -201,7 +201,7 @@ class _HeroCell extends StatefulWidget {
     required this.entry,
     required this.now,
     required this.repository,
-    required this.tileProvider,
+    required this.tileSources,
     required this.onTap,
     super.key,
   });
@@ -209,7 +209,7 @@ class _HeroCell extends StatefulWidget {
   final FlightListEntry entry;
   final DateTime now;
   final FlightRepository repository;
-  final TileProvider? tileProvider;
+  final MapTileSources tileSources;
   final VoidCallback onTap;
 
   @override
@@ -245,7 +245,7 @@ class _HeroCellState extends State<_HeroCell> {
         trail: _trail.value,
         now: widget.now,
         onTap: widget.onTap,
-        tileProvider: widget.tileProvider,
+        tileSources: widget.tileSources,
       ),
     ),
   );

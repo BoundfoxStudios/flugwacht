@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 
 import '../../domain/flight.dart';
 import '../../domain/flight_state.dart';
@@ -9,6 +8,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'map_visuals.dart';
 import 'mini_map.dart';
 import 'state_timeline.dart';
 
@@ -20,9 +20,9 @@ class FlightHeroCell extends StatefulWidget {
     required this.state,
     required this.trail,
     required this.now,
+    required this.tileSources,
     super.key,
     this.onTap,
-    this.tileProvider,
   });
 
   static const _mapHeight = 150.0;
@@ -42,8 +42,8 @@ class FlightHeroCell extends StatefulWidget {
   /// Opens the flight on the map; without it the cell is not interactive.
   final VoidCallback? onTap;
 
-  /// Handed to the mini map so tests render without loading tiles.
-  final TileProvider? tileProvider;
+  /// Handed to the mini map.
+  final MapTileSources tileSources;
 
   @override
   State<FlightHeroCell> createState() => _FlightHeroCellState();
@@ -122,7 +122,7 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
                         route: route,
                         trail: widget.trail,
                         state: state,
-                        tileProvider: widget.tileProvider,
+                        tileSources: widget.tileSources,
                       ),
                       Positioned(
                         top: FlightHeroCell._badgeInset,

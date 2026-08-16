@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/airline_directory.dart';
 import 'data/database.dart';
@@ -16,6 +17,7 @@ import 'domain/source_id.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
+import 'ui/widgets/map_visuals.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +27,7 @@ Future<void> main() async {
   final flightRepository = FlightRepository(AppDatabase());
   final airlineDirectory = await AirlineDirectory.loadFromAssets();
   final sourceSetting = await SourceSetting.load();
+  final packageInfo = await PackageInfo.fromPlatform();
   PollingEngine(
     repository: flightRepository,
     adapters: {
@@ -41,6 +44,9 @@ Future<void> main() async {
         airlineDirectory: airlineDirectory,
         routeLookup: RouteLookup(client: client),
         sourceSetting: sourceSetting,
+        tileSources: MapTileSources(
+          userAgentPackageName: packageInfo.packageName,
+        ),
       ),
     ),
   );

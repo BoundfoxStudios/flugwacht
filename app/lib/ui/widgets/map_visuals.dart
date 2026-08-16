@@ -47,13 +47,25 @@ CameraFit? cameraFitFor(List<LatLng> points, {required EdgeInsets padding}) {
       : CameraFit.bounds(bounds: bounds, padding: padding);
 }
 
-Widget mapTiles({required MapColors colors, TileProvider? tileProvider}) {
+/// Where the map takes its tiles from and how the app identifies itself while
+/// asking for them — the OSM tile usage policy expects the real bundle ID.
+@immutable
+class MapTileSources {
+  const MapTileSources({required this.userAgentPackageName, this.tileProvider});
+
+  final String userAgentPackageName;
+
+  /// Injectable so tests render without loading tiles over the network.
+  final TileProvider? tileProvider;
+}
+
+Widget mapTiles({required MapColors colors, required MapTileSources sources}) {
   final tiles = TileLayer(
     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    userAgentPackageName: 'de.boundfoxstudios.flugwacht',
+    userAgentPackageName: sources.userAgentPackageName,
     // A fresh instance per build is what TileLayer does by default; it takes
     // ownership and disposes whatever it is handed.
-    tileProvider: tileProvider ?? NetworkTileProvider(),
+    tileProvider: sources.tileProvider ?? NetworkTileProvider(),
   );
   return colors.tileFilter == null
       ? tiles

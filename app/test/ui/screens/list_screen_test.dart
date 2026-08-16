@@ -59,7 +59,7 @@ Future<FakeFlightRepository> pumpListScreen(
           flightRepository: repository,
           mapSelection: mapSelection,
           clock: () => _today,
-          tileProvider: StubTileProvider(),
+          tileSources: testTileSources(),
         ),
       ),
       GoRoute(

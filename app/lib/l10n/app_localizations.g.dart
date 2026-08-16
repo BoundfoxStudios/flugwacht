@@ -666,6 +666,12 @@ abstract class AppLocalizations {
   /// **'Notifications for Flugwacht are switched off in your system settings.'**
   String get settingsNotificationsDenied;
 
+  /// No description provided for @settingsNotificationsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This device could not set notifications up, so the switches above stay without effect.'**
+  String get settingsNotificationsUnavailable;
+
   /// No description provided for @settingsAboutTitle.
   ///
   /// In en, this message translates to:

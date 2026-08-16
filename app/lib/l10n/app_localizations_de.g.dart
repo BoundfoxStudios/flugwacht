@@ -357,6 +357,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'In deinen Systemeinstellungen sind Mitteilungen für Flugwacht ausgeschaltet.';
 
   @override
+  String get settingsNotificationsUnavailable =>
+      'Auf diesem Gerät ließen sich Mitteilungen nicht einrichten — die Schalter oben bleiben ohne Wirkung.';
+
+  @override
   String get settingsAboutTitle => 'Über Flugwacht';
 
   @override

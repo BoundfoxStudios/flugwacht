@@ -154,6 +154,25 @@ void main() {
     expect(find.textContaining('system settings'), findsNothing);
   });
 
+  testWidgets('promises nothing when the device could set none of them up', (
+    tester,
+  ) async {
+    await pumpMoreScreen(
+      tester,
+      permission: NotificationPermission.unavailable,
+    );
+
+    expect(
+      find.textContaining('could not set notifications up'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('system settings'), findsNothing);
+    expect(
+      find.textContaining('only arrive while Flugwacht is open'),
+      findsNothing,
+    );
+  });
+
   testWidgets('names the app version below the about entry', (tester) async {
     await pumpMoreScreen(tester, version: '2.7.0');
 

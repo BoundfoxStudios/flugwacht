@@ -518,6 +518,18 @@ void main() {
     expect(service.permissionRequests, 0);
   });
 
+  testWidgets('asks for nothing a device could not set up', (tester) async {
+    final service = createTestNotificationService(
+      permission: NotificationPermission.unavailable,
+    );
+    await pumpNewFlightScreen(tester, notificationService: service);
+
+    await enterLookupValue(tester, 'LH 400');
+    await submit(tester);
+
+    expect(service.permissionRequests, 0);
+  });
+
   testWidgets('asks no second time once the permission has been decided', (
     tester,
   ) async {

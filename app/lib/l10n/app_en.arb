@@ -359,6 +359,7 @@
   "settingsNotificationsFootnote": "Local on your device — no account, no server.",
   "settingsNotificationsDelivery": "Departed and landed only arrive while Flugwacht is open. Arriving soon also reaches you with the app closed, at roughly the right moment.",
   "settingsNotificationsDenied": "Notifications for Flugwacht are switched off in your system settings.",
+  "settingsNotificationsUnavailable": "This device could not set notifications up, so the switches above stay without effect.",
   "settingsAboutTitle": "About Flugwacht",
   "settingsAboutSubtitle": "Version {version} · Licenses & sources",
   "@settingsAboutSubtitle": {

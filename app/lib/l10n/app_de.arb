@@ -43,6 +43,7 @@
   "flightBadgeLive": "Live",
   "flightBadgeNoSignal": "Kein Signal",
   "mapAttributionOpenStreetMap": "© OpenStreetMap",
+  "mapStyleToggleLabel": "Kartenstil wechseln",
   "mapAttributionOpenMapTiles": "© OpenStreetMap · © OpenMapTiles",
   "mapAttributionWithSource": "{attribution} · Daten: {source}",
   "mapLegendTitle": "SPUR JE QUELLE",

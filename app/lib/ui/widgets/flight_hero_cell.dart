@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../data/map_style_setting.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/trail_point.dart';
@@ -20,6 +21,7 @@ class FlightHeroCell extends StatefulWidget {
     required this.state,
     required this.trail,
     required this.now,
+    required this.mapStyleSetting,
     required this.tileSources,
     super.key,
     this.onTap,
@@ -43,6 +45,7 @@ class FlightHeroCell extends StatefulWidget {
   final VoidCallback? onTap;
 
   /// Handed to the mini map.
+  final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
 
   @override
@@ -122,6 +125,7 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
                         route: route,
                         trail: widget.trail,
                         state: state,
+                        mapStyleSetting: widget.mapStyleSetting,
                         tileSources: widget.tileSources,
                       ),
                       Positioned(

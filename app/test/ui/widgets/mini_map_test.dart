@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:flugwacht/data/map_style_setting.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
@@ -44,7 +46,9 @@ Future<void> pumpMiniMap(
   List<TrailPoint> trail = const [],
   Brightness brightness = Brightness.light,
   bool withVectorTiles = false,
+  MapStyleSetting? mapStyleSetting,
 }) async {
+  final styleSetting = mapStyleSetting ?? await createTestMapStyleSetting();
   await tester.pumpWidget(
     MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -64,6 +68,7 @@ Future<void> pumpMiniMap(
                 route: route,
                 trail: trail,
                 state: state,
+                mapStyleSetting: styleSetting,
                 tileSources: testTileSources(withVectorTiles: withVectorTiles),
               ),
             ),
@@ -165,6 +170,26 @@ void main() {
 
   testWidgets('draws the reduced style', (tester) async {
     await pumpMiniMap(tester, at: position(), withVectorTiles: true);
+
+    expect(find.byType(VectorTileLayer), findsOneWidget);
+  });
+
+  testWidgets('follows the style the map tab settled on', (tester) async {
+    final setting = await createTestMapStyleSetting();
+    await setting.select(MapStyle.rasterOsm);
+
+    await pumpMiniMap(
+      tester,
+      at: position(),
+      withVectorTiles: true,
+      mapStyleSetting: setting,
+    );
+
+    expect(find.byType(VectorTileLayer), findsNothing);
+
+    await setting.select(MapStyle.reduced);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
 
     expect(find.byType(VectorTileLayer), findsOneWidget);
   });

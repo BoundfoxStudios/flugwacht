@@ -360,6 +360,12 @@ abstract class AppLocalizations {
   /// **'© OpenStreetMap'**
   String get mapAttributionOpenStreetMap;
 
+  /// Accessibility label of the button that switches between the reduced and the OpenStreetMap style.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch map style'**
+  String get mapStyleToggleLabel;
+
   /// Credit of the reduced style, whose vector tiles OpenFreeMap serves from OpenMapTiles data.
   ///
   /// In en, this message translates to:

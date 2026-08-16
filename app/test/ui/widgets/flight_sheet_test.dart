@@ -4,6 +4,7 @@ import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_sections.dart';
@@ -124,6 +125,7 @@ Future<List<int>> pumpFlightSheet(
             selectedIndex: selectedIndex,
             onSelected: selections.add,
             sourceSetting: setting,
+            mapStyle: MapStyle.reduced,
             showsSourceComparison: showsSourceComparison,
             clock: clock ?? () => _now,
           ),

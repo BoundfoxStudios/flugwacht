@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/map_style_setting.dart';
 import 'package:flugwacht/data/source_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
@@ -15,6 +16,7 @@ import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight_sheet.dart';
+import 'package:flugwacht/ui/widgets/map_button.dart';
 import 'package:flugwacht/ui/widgets/map_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -99,12 +101,14 @@ Future<FakeFlightRepository> pumpMapScreen(
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
   bool withVectorTiles = false,
+  MapStyleSetting? mapStyleSetting,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
   final mapSelection = selection ?? MapSelection();
   addTearDown(mapSelection.dispose);
   final setting = sourceSetting ?? await createTestSourceSetting();
+  final styleSetting = mapStyleSetting ?? await createTestMapStyleSetting();
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -119,6 +123,7 @@ Future<FakeFlightRepository> pumpMapScreen(
         selection: mapSelection,
         sourceSetting: setting,
         clock: () => _now,
+        mapStyleSetting: styleSetting,
         tileSources: testTileSources(withVectorTiles: withVectorTiles),
       ),
     ),
@@ -172,6 +177,7 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         airlineDirectory: createTestAirlineDirectory(),
         routeLookup: FakeRouteLookup(),
         sourceSetting: await createTestSourceSetting(),
+        mapStyleSetting: await createTestMapStyleSetting(),
         tileSources: testTileSources(),
       ),
     ),
@@ -509,5 +515,41 @@ void main() {
     );
 
     expect(find.byType(VectorTileLayer), findsOneWidget);
+  });
+
+  testWidgets('swaps the tile layer when the style toggle is tapped', (
+    tester,
+  ) async {
+    await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+      withVectorTiles: true,
+    );
+
+    await tester.tap(find.byType(MapButton));
+    await tester.pump();
+
+    expect(find.byType(VectorTileLayer), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is TileLayer && widget.urlTemplate != null,
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('names the style toggle for screen readers', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+
+    expect(find.bySemanticsLabel('Switch map style'), findsOneWidget);
+  });
+
+  testWidgets('credits the tiles the switched style renders', (tester) async {
+    await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
+
+    await tester.tap(find.byType(MapButton));
+    await tester.pump();
+
+    expect(find.text('© OpenStreetMap · Data: adsb.lol'), findsOneWidget);
   });
 }

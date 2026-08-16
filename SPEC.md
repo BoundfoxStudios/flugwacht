@@ -39,7 +39,7 @@ deleted once the app is finished (M16; git history keeps them).
 | Framework | Flutter 3.44.9 (fvm pin in `.fvmrc`), Dart SDK ^3.12.2 |
 | State management | `signals` |
 | Persistence | `drift` (SQLite) for flights + trail points |
-| Settings | `shared_preferences` (`SharedPreferencesAsync`) for the active source, later the map style and the units |
+| Settings | `shared_preferences` (`SharedPreferencesAsync`) for the active source and the map style, later the units |
 | Routing | `go_router` (tab shell map · list · more + modal "new flight" screen) |
 | Map (OSM raster) | `flutter_map` with OSM tiles; the tile user agent carries the bundle ID read via `package_info_plus`, caching is flutter_map's built-in tile cache at its defaults |
 | Map (reduced style) | `vector_map_tiles` renders OpenFreeMap's keyless OpenMapTiles vector tiles with a minimal theme built in Dart from the app tokens (light + dark); the tile template comes from the TileJSON because OpenFreeMap moves it with every weekly planet run |

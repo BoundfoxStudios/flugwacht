@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/flight_repository.dart';
+import '../../data/map_style_setting.dart';
 import '../../domain/trail_point.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../map_selection.dart';
@@ -23,6 +24,7 @@ class ListScreen extends StatefulWidget {
   const ListScreen({
     required this.flightRepository,
     required this.mapSelection,
+    required this.mapStyleSetting,
     required this.tileSources,
     super.key,
     this.clock = DateTime.now,
@@ -37,6 +39,7 @@ class ListScreen extends StatefulWidget {
   final DateTime Function() clock;
 
   /// Handed to the hero cells.
+  final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
 
   @override
@@ -69,6 +72,7 @@ class _ListScreenState extends State<ListScreen> {
                 sections: sections,
                 today: _flightList.now.value,
                 repository: widget.flightRepository,
+                mapStyleSetting: widget.mapStyleSetting,
                 tileSources: widget.tileSources,
                 onFlightSelected: (flightId) => _openOnMap(context, flightId),
               );
@@ -97,6 +101,7 @@ class _FlightSections extends StatelessWidget {
     required this.sections,
     required this.today,
     required this.repository,
+    required this.mapStyleSetting,
     required this.tileSources,
     required this.onFlightSelected,
   });
@@ -104,6 +109,7 @@ class _FlightSections extends StatelessWidget {
   final FlightListSections sections;
   final DateTime today;
   final FlightRepository repository;
+  final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
   final ValueChanged<int> onFlightSelected;
 
@@ -133,6 +139,7 @@ class _FlightSections extends StatelessWidget {
                 entry: entry,
                 now: today,
                 repository: repository,
+                mapStyleSetting: mapStyleSetting,
                 tileSources: tileSources,
                 onTap: () => onFlightSelected(entry.flight.id),
               ),
@@ -201,6 +208,7 @@ class _HeroCell extends StatefulWidget {
     required this.entry,
     required this.now,
     required this.repository,
+    required this.mapStyleSetting,
     required this.tileSources,
     required this.onTap,
     super.key,
@@ -209,6 +217,7 @@ class _HeroCell extends StatefulWidget {
   final FlightListEntry entry;
   final DateTime now;
   final FlightRepository repository;
+  final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
   final VoidCallback onTap;
 
@@ -245,6 +254,7 @@ class _HeroCellState extends State<_HeroCell> {
         trail: _trail.value,
         now: widget.now,
         onTap: widget.onTap,
+        mapStyleSetting: widget.mapStyleSetting,
         tileSources: widget.tileSources,
       ),
     ),

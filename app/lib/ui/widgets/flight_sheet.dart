@@ -29,6 +29,7 @@ class FlightSheet extends StatefulWidget {
     required this.selectedIndex,
     required this.onSelected,
     required this.sourceSetting,
+    required this.mapStyle,
     super.key,
     this.showsSourceComparison = false,
     this.onOpenChanged,
@@ -59,6 +60,10 @@ class FlightSheet extends StatefulWidget {
   final ValueChanged<int> onSelected;
 
   final SourceSetting sourceSetting;
+
+  /// Names the tiles the map behind the sheet renders, which the footer has to
+  /// credit while the sheet covers the map's own attribution.
+  final MapStyle mapStyle;
 
   /// Whether the selected flight's trail carries points of several sources;
   /// its page then explains the colors instead of naming the local time.
@@ -177,6 +182,7 @@ class _FlightSheetState extends State<FlightSheet> {
                                     gap: gap,
                                     now: _now,
                                     sourceSetting: widget.sourceSetting,
+                                    mapStyle: widget.mapStyle,
                                     showsSourceComparison:
                                         widget.showsSourceComparison &&
                                         index == widget.selectedIndex,
@@ -267,6 +273,7 @@ class _FlightPage extends StatelessWidget {
     required this.gap,
     required this.now,
     required this.sourceSetting,
+    required this.mapStyle,
     required this.showsSourceComparison,
   });
 
@@ -276,6 +283,7 @@ class _FlightPage extends StatelessWidget {
   final double gap;
   final DateTime now;
   final SourceSetting sourceSetting;
+  final MapStyle mapStyle;
   final bool showsSourceComparison;
 
   @override
@@ -339,7 +347,7 @@ class _FlightPage extends StatelessWidget {
     final attribution = Text(
       localizations.mapSheetSource(
         activeId.label,
-        mapTileAttribution(localizations, defaultMapStyle),
+        mapTileAttribution(localizations, mapStyle),
       ),
       style: AppTextStyles.caption.copyWith(color: colors.footer),
     );

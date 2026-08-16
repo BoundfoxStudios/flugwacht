@@ -51,6 +51,7 @@ Future<FakeFlightRepository> pumpListScreen(
   addTearDown(repository.dispose);
   final mapSelection = selection ?? MapSelection();
   addTearDown(mapSelection.dispose);
+  final mapStyleSetting = await createTestMapStyleSetting();
   final router = GoRouter(
     routes: [
       GoRoute(
@@ -59,6 +60,7 @@ Future<FakeFlightRepository> pumpListScreen(
           flightRepository: repository,
           mapSelection: mapSelection,
           clock: () => _today,
+          mapStyleSetting: mapStyleSetting,
           tileSources: testTileSources(),
         ),
       ),

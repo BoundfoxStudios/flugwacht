@@ -162,6 +162,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapAttributionOpenStreetMap => '© OpenStreetMap';
 
   @override
+  String get mapStyleToggleLabel => 'Switch map style';
+
+  @override
   String get mapAttributionOpenMapTiles => '© OpenStreetMap · © OpenMapTiles';
 
   @override

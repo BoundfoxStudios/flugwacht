@@ -96,6 +96,7 @@ Future<void> pumpHeroCell(
                 trail: trail,
                 now: _now,
                 onTap: onTap,
+                mapStyleSetting: await createTestMapStyleSetting(),
                 tileSources: testTileSources(),
               ),
             ),

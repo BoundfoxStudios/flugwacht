@@ -6,7 +6,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:signals/signals_flutter.dart';
 
+import '../../app_icons.dart';
 import '../../data/flight_repository.dart';
+import '../../data/map_style_setting.dart';
 import '../../data/source_setting.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/map_style.dart';
@@ -16,6 +18,7 @@ import '../map_selection.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/flight_sheet.dart';
+import '../widgets/map_button.dart';
 import '../widgets/map_visuals.dart';
 import '../widgets/source_legend_card.dart';
 import 'list_sections.dart';
@@ -33,6 +36,7 @@ class MapScreen extends StatefulWidget {
     required this.flightRepository,
     required this.selection,
     required this.sourceSetting,
+    required this.mapStyleSetting,
     required this.tileSources,
     super.key,
     this.clock = DateTime.now,
@@ -62,10 +66,13 @@ class MapScreen extends StatefulWidget {
   static const _comparedTrailWidth = 3.0;
   static const _plannedLegWidth = 2.0;
   static const _plannedLegDash = [7.0, 6.0];
+  static const _buttonTopInset = 7.0;
+  static const _buttonRightInset = 14.0;
 
   final FlightRepository flightRepository;
   final MapSelection selection;
   final SourceSetting sourceSetting;
+  final MapStyleSetting mapStyleSetting;
 
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
@@ -142,6 +149,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           final route = selected?.flight.route;
           final position = selected?.flight.tracking.latestPosition;
           final showsSourceComparison = comparesSources(trail);
+          final mapStyle = widget.mapStyleSetting.style.value;
           return Stack(
             children: [
               FlutterMap(
@@ -157,7 +165,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 children: [
                   mapTiles(
                     colors: colors,
-                    style: defaultMapStyle,
+                    style: mapStyle,
                     sources: widget.tileSources,
                   ),
                   if (selected != null && position != null) ...[
@@ -203,6 +211,19 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
+              Positioned(
+                top: MapScreen._buttonTopInset,
+                right: MapScreen._buttonRightInset,
+                child: SafeArea(
+                  child: MapButton(
+                    icon: AppIcons.layerGroup,
+                    semanticsLabel: AppLocalizations.of(
+                      context,
+                    ).mapStyleToggleLabel,
+                    onPressed: () => unawaited(widget.mapStyleSetting.toggle()),
+                  ),
+                ),
+              ),
               if (showsSourceComparison && !_isSheetOpen)
                 Positioned(
                   left: AppSpacing.cardPadding,
@@ -234,6 +255,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           ),
                           child: _AttributionChip(
                             sourceSetting: widget.sourceSetting,
+                            mapStyle: mapStyle,
                           ),
                         ),
                       ),
@@ -244,6 +266,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         onSelected: (index) => _mapFlights.selectedId.value =
                             entries[index].flight.id,
                         sourceSetting: widget.sourceSetting,
+                        mapStyle: mapStyle,
                         showsSourceComparison: showsSourceComparison,
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
@@ -355,7 +378,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 }
 
 class _AttributionChip extends StatelessWidget {
-  const _AttributionChip({required this.sourceSetting});
+  const _AttributionChip({required this.sourceSetting, required this.mapStyle});
 
   static const _padding = EdgeInsets.symmetric(horizontal: 7, vertical: 2);
   static const _radius = 4.0;
@@ -363,6 +386,7 @@ class _AttributionChip extends StatelessWidget {
   static const _darkBackground = Color(0xd9262626);
 
   final SourceSetting sourceSetting;
+  final MapStyle mapStyle;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -380,7 +404,7 @@ class _AttributionChip extends StatelessWidget {
           final localizations = AppLocalizations.of(context);
           return Text(
             localizations.mapAttributionWithSource(
-              mapTileAttribution(localizations, defaultMapStyle),
+              mapTileAttribution(localizations, mapStyle),
               sourceSetting.activeId.value.label,
             ),
             style: AppTextStyles.attribution.copyWith(

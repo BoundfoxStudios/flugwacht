@@ -35,6 +35,17 @@ void main() {
           greaterThanOrEqualTo(3),
         );
       });
+
+      test('keeps the snackbar action legible on the inverse surface', () {
+        final colorScheme = theme.colorScheme;
+        expect(
+          _contrastRatio(
+            colorScheme.inverseSurface,
+            colorScheme.inversePrimary,
+          ),
+          greaterThanOrEqualTo(4.5),
+        );
+      });
     });
   }
 }

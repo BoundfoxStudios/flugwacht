@@ -85,7 +85,7 @@ class AboutScreen extends StatelessWidget {
 class _IdentityCard extends StatelessWidget {
   const _IdentityCard({required this.version});
 
-  static const _lockupHeight = 40.0;
+  static const _lockupHeight = 56.0;
 
   final String version;
 

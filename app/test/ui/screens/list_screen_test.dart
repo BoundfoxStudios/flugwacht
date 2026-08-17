@@ -387,6 +387,32 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('the delete panel reaches under the rounded card corners', (
+      tester,
+    ) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight()]);
+      await tester.pump();
+
+      final row = tester.getRect(find.byType(FlightRow));
+      final gesture = await tester.startGesture(row.center);
+      await gesture.moveBy(const Offset(-100, 0));
+      await tester.pump();
+
+      final pixels = await renderedPixels(tester, _screenKey);
+      final cornerCutout = Offset(row.right - 100 - 1, row.top + 1);
+      expect(
+        pixels.matches(cornerCutout, AppColors.destructiveLight),
+        isTrue,
+        reason:
+            'the card corner must be cut out of the panel, not the panel '
+            'out of the scaffold',
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('the hero cell is swiped away the same way', (tester) async {
       final repository = await pumpListScreen(tester);
       repository.emit([_flight(id: 3, tracking: _seenAt(_today))]);

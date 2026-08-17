@@ -168,6 +168,7 @@ class _FlightSections extends StatelessWidget {
             ),
             for (final entry in sections.active)
               _SwipeToDelete(
+                key: ValueKey(entry.flight.id),
                 flightId: entry.flight.id,
                 onDeleted: () => onFlightDeleted(entry.flight.id),
                 child: _HeroCell(
@@ -182,6 +183,7 @@ class _FlightSections extends StatelessWidget {
               ),
             for (final entry in rows)
               _SwipeToDelete(
+                key: ValueKey(entry.flight.id),
                 flightId: entry.flight.id,
                 onDeleted: () => onFlightDeleted(entry.flight.id),
                 child: FlightRow(
@@ -194,6 +196,7 @@ class _FlightSections extends StatelessWidget {
               const _PastSectionLabel(),
               for (final entry in sections.past)
                 _SwipeToDelete(
+                  key: ValueKey(entry.flight.id),
                   flightId: entry.flight.id,
                   onDeleted: () => onFlightDeleted(entry.flight.id),
                   child: FlightRow(
@@ -244,11 +247,18 @@ class _ListHeader extends StatelessWidget {
 /// The row padding sits outside the `Dismissible`: its clipper measures the
 /// full widget width, so padding inside would cut the panel off short of the
 /// sliding card and expose the scaffold between the two.
-class _SwipeToDelete extends StatelessWidget {
+///
+/// The panel is stacked behind the whole `Dismissible` rather than handed to
+/// its `background`, because that one is clipped to the strip the card has
+/// already left — the card's rounded trailing corners would cut two notches of
+/// scaffold into the seam. Painting the panel behind the card fills them, which
+/// in turn needs an opaque card: the planned row is only a dashed outline.
+class _SwipeToDelete extends StatefulWidget {
   const _SwipeToDelete({
     required this.flightId,
     required this.onDeleted,
     required this.child,
+    super.key,
   });
 
   static const padding = EdgeInsets.fromLTRB(
@@ -265,37 +275,74 @@ class _SwipeToDelete extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_SwipeToDelete> createState() => _SwipeToDeleteState();
+}
+
+class _SwipeToDeleteState extends State<_SwipeToDelete> {
+  /// Keeps the panel out of the tree — and out of the semantics — while the row
+  /// rests on top of it.
+  var _swiping = false;
+
+  @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cardShape = BorderRadius.circular(AppRadius.card);
     return Padding(
-      padding: padding,
-      child: Dismissible(
-        key: ValueKey(flightId),
-        direction: DismissDirection.endToStart,
-        onDismissed: (_) => onDeleted(),
-        background: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colorScheme.error,
-            borderRadius: BorderRadius.circular(AppRadius.card),
-          ),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                right: AppSpacing.screenPaddingLarge,
-              ),
-              child: FaIcon(
-                AppIcons.trash,
-                size: _iconSize,
-                color: colorScheme.onError,
-                semanticLabel: AppLocalizations.of(context).listDeleteFlight,
+      padding: _SwipeToDelete.padding,
+      child: Stack(
+        fit: StackFit.passthrough,
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: Visibility(
+              visible: _swiping,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error,
+                  borderRadius: cardShape,
+                ),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: AppSpacing.screenPaddingLarge,
+                    ),
+                    child: FaIcon(
+                      AppIcons.trash,
+                      size: _SwipeToDelete._iconSize,
+                      color: theme.colorScheme.onError,
+                      semanticLabel: AppLocalizations.of(
+                        context,
+                      ).listDeleteFlight,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-        child: child,
+          Dismissible(
+            key: ValueKey(widget.flightId),
+            direction: DismissDirection.endToStart,
+            onUpdate: _handleUpdate,
+            onDismissed: (_) => widget.onDeleted(),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                borderRadius: cardShape,
+              ),
+              child: widget.child,
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  void _handleUpdate(DismissUpdateDetails details) {
+    final swiping = details.progress > 0;
+    if (swiping != _swiping) {
+      setState(() => _swiping = swiping);
+    }
   }
 }
 

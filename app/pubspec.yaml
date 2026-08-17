@@ -99,6 +99,7 @@ flutter:
     - assets/logo/lockup-light.svg
     - assets/logo/lockup-dark.svg
     - assets/logo/bfs.svg
+    - assets/logo/github.svg
     - assets/fonts/OFL-BebasNeue.txt
     - assets/fonts/OFL-Barlow.txt
 

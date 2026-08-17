@@ -93,6 +93,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newFlightDepartureTimeFormat => 'HH:mm';
 
   @override
+  String get newFlightDepartureTimeOriginLocal => 'In Ortszeit des Abflugorts';
+
+  @override
+  String get newFlightDepartureTimeDeviceFallback =>
+      'Ohne Route gilt die Zeit als deine Gerätezeit';
+
+  @override
   String get newFlightNoteLabel => 'Notiz (optional)';
 
   @override

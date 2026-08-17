@@ -94,6 +94,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newFlightDepartureTimeFormat => 'h:mm a';
 
   @override
+  String get newFlightDepartureTimeOriginLocal => 'In the origin\'s local time';
+
+  @override
+  String get newFlightDepartureTimeDeviceFallback =>
+      'Without a route the time counts as your device time';
+
+  @override
   String get newFlightNoteLabel => 'Note (optional)';
 
   @override

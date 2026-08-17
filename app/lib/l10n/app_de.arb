@@ -26,6 +26,8 @@
   "newFlightDepartureTimePlaceholder": "Keine Angabe",
   "newFlightDepartureTimeClear": "Abflugzeit löschen",
   "newFlightDepartureTimeFormat": "HH:mm",
+  "newFlightDepartureTimeOriginLocal": "In Ortszeit des Abflugorts",
+  "newFlightDepartureTimeDeviceFallback": "Ohne Route gilt die Zeit als deine Gerätezeit",
   "newFlightNoteLabel": "Notiz (optional)",
   "newFlightNoteHint": "Woran du den Flug erkennst, z. B. Anna & Ben",
   "newFlightSubmit": "Flug eintragen",

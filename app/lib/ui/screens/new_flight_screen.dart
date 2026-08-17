@@ -21,6 +21,7 @@ import '../theme/app_tokens.dart';
 import '../widgets/chrome/notification_offer_dialog.dart';
 import '../widgets/controls/app_primary_button.dart';
 import '../widgets/controls/app_segmented_control.dart';
+import '../widgets/controls/app_switch_row.dart';
 import '../widgets/controls/departure_date_picker.dart';
 import '../widgets/controls/departure_time_picker.dart';
 import '../widgets/flight/flight_labels.dart';
@@ -129,6 +130,9 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                   const SizedBox(height: AppSpacing.cardPaddingLarge),
                   SignalBuilder(
                     builder: (context) => _departureTimeField(localizations),
+                  ),
+                  SignalBuilder(
+                    builder: (context) => _departureTimeZoneRow(localizations),
                   ),
                   const SizedBox(height: AppSpacing.cardPaddingLarge),
                   _LabeledField(
@@ -278,6 +282,29 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     );
   }
 
+  /// How the entered time is read: origin local while the route names an
+  /// origin, otherwise visibly the device clock — never a silent guess.
+  Widget _departureTimeZoneRow(AppLocalizations localizations) {
+    if (_form.departureTime.value == null) {
+      return const SizedBox.shrink();
+    }
+    if (_preview.state.value is! FlightPreviewFound) {
+      return Padding(
+        padding: const EdgeInsets.only(top: AppSpacing.grid * 1.5),
+        child: Text(
+          localizations.newFlightDepartureTimeDeviceFallback,
+          style: AppTextStyles.small.copyWith(color: AppColors.neutral400),
+        ),
+      );
+    }
+    return AppSwitchRow(
+      label: localizations.newFlightDepartureTimeOriginLocal,
+      isEnabled: _form.departureTimeIsOriginLocal.value,
+      onToggled: (isOriginLocal) =>
+          _form.departureTimeIsOriginLocal.value = isOriginLocal,
+    );
+  }
+
   Widget _previewCard() {
     final state = _preview.state.value;
     return AnimatedSwitcher(
@@ -334,6 +361,11 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
           departureDate.day,
         ),
         departureTime: _form.departureTime.value,
+        departureTimeInterpretation:
+            previewState is FlightPreviewFound &&
+                _form.departureTimeIsOriginLocal.value
+            ? DepartureTimeInterpretation.originLocal
+            : DepartureTimeInterpretation.device,
         note: note.isEmpty ? null : note,
         expectedCallsign: switch (previewState) {
           FlightPreviewFound(:final callsign) => callsign,

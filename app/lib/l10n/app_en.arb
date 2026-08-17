@@ -38,6 +38,8 @@
   "@newFlightDepartureTimeFormat": {
     "description": "DateFormat pattern for the departure time field, localized per language."
   },
+  "newFlightDepartureTimeOriginLocal": "In the origin's local time",
+  "newFlightDepartureTimeDeviceFallback": "Without a route the time counts as your device time",
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",

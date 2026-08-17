@@ -254,6 +254,18 @@ abstract class AppLocalizations {
   /// **'h:mm a'**
   String get newFlightDepartureTimeFormat;
 
+  /// No description provided for @newFlightDepartureTimeOriginLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'In the origin\'s local time'**
+  String get newFlightDepartureTimeOriginLocal;
+
+  /// No description provided for @newFlightDepartureTimeDeviceFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Without a route the time counts as your device time'**
+  String get newFlightDepartureTimeDeviceFallback;
+
   /// No description provided for @newFlightNoteLabel.
   ///
   /// In en, this message translates to:

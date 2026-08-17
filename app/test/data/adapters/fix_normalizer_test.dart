@@ -126,6 +126,54 @@ void main() {
     );
 
     test(
+      'falls back to lastPosition when the fresh position fields are gone',
+      () {
+        final position = normalizeByHex('70c07e').position!;
+        expect(position.latitude, 23.588974);
+        expect(position.longitude, 58.281415);
+        expect(
+          position.timestamp,
+          DateTime.fromMillisecondsSinceEpoch(
+            1786712583001 - 623123,
+            isUtc: true,
+          ),
+        );
+      },
+    );
+
+    test(
+      'keeps the stale top-level altitude and velocity out of a lastPosition fix',
+      () {
+        final position = normalizeByHex('70c07e').position!;
+        expect(position.barometricAltitudeFeet, isNull);
+        expect(position.onGround, isNull);
+        expect(position.geometricAltitudeFeet, isNull);
+        expect(position.trackDegrees, isNull);
+        expect(position.trueHeadingDegrees, isNull);
+        expect(position.groundSpeedKnots, isNull);
+        expect(position.indicatedAirspeedKnots, isNull);
+        expect(position.mach, isNull);
+        expect(position.verticalRateFeetPerMinute, isNull);
+      },
+    );
+
+    test('prefers the fresher top-level position over lastPosition', () {
+      final fix = normalizeFix(
+        {
+          'hex': 'abc123',
+          'lat': 50.0,
+          'lon': 8.0,
+          'seen_pos': 1.0,
+          'lastPosition': {'lat': 40.0, 'lon': 9.0, 'seen_pos': 700.0},
+        },
+        serverNowMilliseconds: serverNowMilliseconds,
+        sourceId: SourceId.adsblol,
+      );
+      expect(fix.position!.latitude, 50.0);
+      expect(fix.position!.longitude, 8.0);
+    });
+
+    test(
       'normalizes an entry with lat and lon but no velocity data with null velocity fields',
       () {
         final position = normalizeByHex('3d2461').position!;

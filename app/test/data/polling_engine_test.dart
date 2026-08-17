@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:flugwacht/data/flight_notifier.dart';
-import 'package:flugwacht/data/lookup_result.dart';
-import 'package:flugwacht/data/notification_service.dart';
+import 'package:flugwacht/data/adapters/lookup_result.dart';
+import 'package:flugwacht/data/adapters/readsb_source_adapter.dart';
+import 'package:flugwacht/data/notifications/flight_notifier.dart';
+import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/polling_engine.dart';
-import 'package:flugwacht/data/readsb_source_adapter.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';

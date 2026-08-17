@@ -10,8 +10,8 @@ import '../../app_icons.dart';
 import '../../domain/source_id.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_tokens.dart';
-import '../widgets/flugwacht_lockup.dart';
-import '../widgets/settings_card.dart';
+import '../widgets/branding/flugwacht_lockup.dart';
+import '../widgets/chrome/settings_card.dart';
 
 const _boundfoxUrl = 'https://boundfoxstudios.com';
 const _repositoryUrl = 'https://github.com/BoundfoxStudios/flugwacht';

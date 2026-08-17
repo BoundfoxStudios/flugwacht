@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:signals/signals.dart';
 
-import '../../data/airline_directory.dart';
-import '../../data/route_lookup.dart';
+import '../../data/lookup/airline_directory.dart';
+import '../../data/lookup/route_lookup.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_number.dart';
 import '../../domain/flight_route.dart';

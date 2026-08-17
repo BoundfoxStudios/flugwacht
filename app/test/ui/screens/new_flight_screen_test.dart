@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:flugwacht/data/flight_repository.dart';
-import 'package:flugwacht/data/notification_service.dart';
-import 'package:flugwacht/data/notification_setting.dart';
-import 'package:flugwacht/data/route_lookup.dart';
+import 'package:flugwacht/data/lookup/route_lookup.dart';
+import 'package:flugwacht/data/notifications/notification_service.dart';
+import 'package:flugwacht/data/persistence/flight_repository.dart';
+import 'package:flugwacht/data/settings/notification_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/flight.dart';
@@ -13,8 +13,8 @@ import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/new_flight_preview_card.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
-import 'package:flugwacht/ui/widgets/app_primary_button.dart';
-import 'package:flugwacht/ui/widgets/app_segmented_control.dart';
+import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
+import 'package:flugwacht/ui/widgets/controls/app_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

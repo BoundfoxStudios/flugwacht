@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/notification_service.dart';
-import '../../data/notification_setting.dart';
+import '../../data/notifications/notification_service.dart';
+import '../../data/settings/notification_setting.dart';
 import '../../domain/flight_notification.dart';
 import '../../l10n/app_localizations.g.dart';
-import '../widgets/app_switch_row.dart';
-import '../widgets/settings_card.dart';
+import '../widgets/chrome/settings_card.dart';
+import '../widgets/controls/app_switch_row.dart';
 
 /// Picks the moments the app notifies about; the notifications themselves stay
 /// local on the device.

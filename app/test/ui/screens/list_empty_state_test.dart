@@ -1,8 +1,8 @@
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
-import 'package:flugwacht/ui/widgets/app_primary_button.dart';
-import 'package:flugwacht/ui/widgets/radar_eye_logo.dart';
+import 'package:flugwacht/ui/widgets/branding/radar_eye_logo.dart';
+import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

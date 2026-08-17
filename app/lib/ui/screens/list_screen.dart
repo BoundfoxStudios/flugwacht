@@ -103,6 +103,10 @@ class _ListScreenState extends State<ListScreen> {
         .showSnackBar(
           SnackBar(
             content: Text(localizations.listFlightDeleted),
+            duration: const Duration(seconds: 6),
+            // A snackbar with an action persists by default, but here the
+            // timeout is what commits the delete — it must keep running.
+            persist: false,
             action: SnackBarAction(
               label: localizations.listUndoDelete,
               onPressed: () {},

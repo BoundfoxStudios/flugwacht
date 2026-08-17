@@ -345,6 +345,24 @@ void main() {
       expect(find.byType(FlightRow), findsNothing);
     });
 
+    testWidgets('commits the delete when the undo snackbar times out', (
+      tester,
+    ) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight(id: 7)]);
+      await tester.pump();
+      await swipeAway(tester, find.byType(FlightRow));
+
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text('Flight deleted'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Flight deleted'), findsNothing);
+      expect(repository.deletedFlightIds, [7]);
+    });
+
     testWidgets('keeps the delete panel flush with the swiped card', (
       tester,
     ) async {

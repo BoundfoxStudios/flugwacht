@@ -180,7 +180,11 @@ class _FlightSections extends StatelessWidget {
               _SwipeToDelete(
                 flightId: entry.flight.id,
                 onDeleted: () => onFlightDeleted(entry.flight.id),
-                child: _PaddedRow(entry: entry, now: today),
+                child: FlightRow(
+                  flight: entry.flight,
+                  state: entry.state,
+                  now: today,
+                ),
               ),
             if (sections.past.isNotEmpty) ...[
               const _PastSectionLabel(),
@@ -188,7 +192,11 @@ class _FlightSections extends StatelessWidget {
                 _SwipeToDelete(
                   flightId: entry.flight.id,
                   onDeleted: () => onFlightDeleted(entry.flight.id),
-                  child: _PaddedRow(entry: entry, now: today),
+                  child: FlightRow(
+                    flight: entry.flight,
+                    state: entry.state,
+                    now: today,
+                  ),
                 ),
             ],
           ],
@@ -228,12 +236,23 @@ class _ListHeader extends StatelessWidget {
 
 /// Swiping a flight to the left reveals the delete behind it and hands the row
 /// over; nothing is asked, because the undo in the snackbar is the way back.
+///
+/// The row padding sits outside the `Dismissible`: its clipper measures the
+/// full widget width, so padding inside would cut the panel off short of the
+/// sliding card and expose the scaffold between the two.
 class _SwipeToDelete extends StatelessWidget {
   const _SwipeToDelete({
     required this.flightId,
     required this.onDeleted,
     required this.child,
   });
+
+  static const padding = EdgeInsets.fromLTRB(
+    AppSpacing.screenPadding,
+    0,
+    AppSpacing.screenPadding,
+    AppSpacing.cardPadding,
+  );
 
   static const _iconSize = 18.0;
 
@@ -244,13 +263,13 @@ class _SwipeToDelete extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Dismissible(
-      key: ValueKey(flightId),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) => onDeleted(),
-      background: Padding(
-        padding: _PaddedRow.padding,
-        child: DecoratedBox(
+    return Padding(
+      padding: padding,
+      child: Dismissible(
+        key: ValueKey(flightId),
+        direction: DismissDirection.endToStart,
+        onDismissed: (_) => onDeleted(),
+        background: DecoratedBox(
           decoration: BoxDecoration(
             color: colorScheme.error,
             borderRadius: BorderRadius.circular(AppRadius.card),
@@ -270,30 +289,10 @@ class _SwipeToDelete extends StatelessWidget {
             ),
           ),
         ),
+        child: child,
       ),
-      child: child,
     );
   }
-}
-
-class _PaddedRow extends StatelessWidget {
-  const _PaddedRow({required this.entry, required this.now});
-
-  static const padding = EdgeInsets.fromLTRB(
-    AppSpacing.screenPadding,
-    0,
-    AppSpacing.screenPadding,
-    AppSpacing.cardPadding,
-  );
-
-  final FlightListEntry entry;
-  final DateTime now;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: padding,
-    child: FlightRow(flight: entry.flight, state: entry.state, now: now),
-  );
 }
 
 /// Feeds the hero cell of one airborne flight with its stored trail.
@@ -339,18 +338,15 @@ class _HeroCellState extends State<_HeroCell> {
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: _PaddedRow.padding,
-    child: SignalBuilder(
-      builder: (context) => FlightHeroCell(
-        flight: widget.entry.flight,
-        state: widget.entry.state,
-        trail: _trail.value,
-        now: widget.now,
-        onTap: widget.onTap,
-        mapStyleSetting: widget.mapStyleSetting,
-        tileSources: widget.tileSources,
-      ),
+  Widget build(BuildContext context) => SignalBuilder(
+    builder: (context) => FlightHeroCell(
+      flight: widget.entry.flight,
+      state: widget.entry.state,
+      trail: _trail.value,
+      now: widget.now,
+      onTap: widget.onTap,
+      mapStyleSetting: widget.mapStyleSetting,
+      tileSources: widget.tileSources,
     ),
   );
 }

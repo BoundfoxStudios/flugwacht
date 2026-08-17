@@ -6,6 +6,7 @@ import 'package:flugwacht/ui/map_selection.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
+import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/chrome/app_fab.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_row.dart';
@@ -13,7 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';
+
+const _screenKey = ValueKey('screen');
 
 final _today = DateTime(2026, 8, 12, 9, 30);
 
@@ -77,12 +81,15 @@ Future<FakeFlightRepository> pumpListScreen(
   );
   addTearDown(router.dispose);
   await tester.pumpWidget(
-    MaterialApp.router(
-      locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: buildLightTheme(),
-      routerConfig: router,
+    RepaintBoundary(
+      key: _screenKey,
+      child: MaterialApp.router(
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: buildLightTheme(),
+        routerConfig: router,
+      ),
     ),
   );
   return repository;
@@ -336,6 +343,30 @@ void main() {
 
       expect(repository.deletedFlightIds, [7]);
       expect(find.byType(FlightRow), findsNothing);
+    });
+
+    testWidgets('keeps the delete panel flush with the swiped card', (
+      tester,
+    ) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight()]);
+      await tester.pump();
+
+      final row = tester.getRect(find.byType(FlightRow));
+      final gesture = await tester.startGesture(row.center);
+      await gesture.moveBy(const Offset(-100, 0));
+      await tester.pump();
+
+      final pixels = await renderedPixels(tester, _screenKey);
+      final behindCardEdge = Offset(row.right - 100 + 4, row.center.dy);
+      expect(
+        pixels.matches(behindCardEdge, AppColors.destructiveLight),
+        isTrue,
+        reason: 'the delete panel must meet the card edge without a gap',
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
     });
 
     testWidgets('the hero cell is swiped away the same way', (tester) async {

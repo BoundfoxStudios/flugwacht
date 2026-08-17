@@ -272,7 +272,7 @@ enum MapColors {
     brightness: Brightness.light,
     mapBackground: AppColors.white,
     trail: AppColors.neutral700,
-    airplanesTrail: AppColors.neutral500,
+    adsblolTrail: AppColors.blue,
     plannedLeg: AppColors.neutral400,
     plannedLegNoSignal: AppColors.neutral300,
     airportDot: AppColors.neutral700,
@@ -287,7 +287,7 @@ enum MapColors {
     brightness: Brightness.dark,
     mapBackground: AppColors.neutral800,
     trail: AppColors.neutral300,
-    airplanesTrail: AppColors.neutral300,
+    adsblolTrail: AppColors.skyBlue,
     plannedLeg: AppColors.neutral500,
     plannedLegNoSignal: AppColors.neutral600,
     airportDot: AppColors.neutral300,
@@ -304,7 +304,7 @@ enum MapColors {
     required this.brightness,
     required this.mapBackground,
     required this.trail,
-    required this.airplanesTrail,
+    required this.adsblolTrail,
     required this.plannedLeg,
     required this.plannedLegNoSignal,
     required this.airportDot,
@@ -324,17 +324,18 @@ enum MapColors {
       };
 
   /// The trail color of a source, telling the segments of a comparison apart;
-  /// only airplanes.live needs a color of its own per theme.
+  /// only the blue of adsb.lol needs a lighter variant to carry on the dark
+  /// ground.
   Color trailOf(SourceId sourceId) => switch (sourceId) {
-    SourceId.adsblol => AppColors.amber,
-    SourceId.adsbfi => AppColors.orange,
-    SourceId.airplanes => airplanesTrail,
+    SourceId.adsblol => adsblolTrail,
+    SourceId.adsbfi => AppColors.vermillion,
+    SourceId.airplanes => AppColors.bluishGreen,
   };
 
   final Brightness brightness;
   final Color mapBackground;
   final Color trail;
-  final Color airplanesTrail;
+  final Color adsblolTrail;
   final Color plannedLeg;
   final Color plannedLegNoSignal;
   final Color airportDot;

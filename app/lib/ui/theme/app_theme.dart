@@ -26,6 +26,10 @@ ThemeData buildLightTheme() => _themeFrom(
     surfaceContainerHighest: AppColors.neutral100,
     inverseSurface: AppColors.neutral800,
     onInverseSurface: AppColors.neutral50,
+    // Paints on inverseSurface, so it takes the accent of the other theme.
+    // Left out, Material falls back to onPrimary and the snackbar action ends
+    // up near-black on near-black.
+    inversePrimary: AppColors.linkDark,
   ),
   scaffoldBackground: AppColors.neutral50,
   textTheme: _textThemeFrom(
@@ -62,6 +66,7 @@ ThemeData buildDarkTheme() => _themeFrom(
     surfaceContainerHighest: AppColors.neutral800,
     inverseSurface: AppColors.neutral50,
     onInverseSurface: AppColors.neutral800,
+    inversePrimary: AppColors.linkLight,
   ),
   scaffoldBackground: AppColors.neutral900,
   textTheme: _textThemeFrom(

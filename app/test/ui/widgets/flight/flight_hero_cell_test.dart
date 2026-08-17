@@ -11,6 +11,7 @@ import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/state_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 import '../../../support/rendered_pixels.dart';
 import '../../../support/test_dependencies.dart';
@@ -221,8 +222,15 @@ void main() {
       width: _wideCellWidth,
     );
 
-    expect(find.text('12:51 PM'), findsOneWidget);
-    expect(find.text('Approx. arrival · 4 h 51 min left'), findsOneWidget);
+    final arrival = _positionTime.add(const Duration(seconds: 17496));
+    expect(
+      find.text(DateFormat('h:mm a', 'en').format(arrival.toLocal())),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Approx. arrival, your time · 4 h 51 min left'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('freezes the arrival of a flight without signal', (tester) async {
@@ -234,8 +242,12 @@ void main() {
       width: _wideCellWidth,
     );
 
-    expect(find.text('~12:51'), findsOneWidget);
-    expect(find.text('Ankunft ca. · Stand: vor 3 s'), findsOneWidget);
+    final arrival = _positionTime.add(const Duration(seconds: 17496));
+    expect(
+      find.text('~${DateFormat('HH:mm', 'de').format(arrival.toLocal())}'),
+      findsOneWidget,
+    );
+    expect(find.text('Ankunft ca. bei dir · Stand: vor 3 s'), findsOneWidget);
   });
 
   testWidgets('fills the live badge and leaves it without a border', (

@@ -10,9 +10,14 @@ import 'package:flugwacht/ui/widgets/flight/flight_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 const _rowKey = ValueKey('row');
 const _rowWidth = 320.0;
+
+/// The test font renders every glyph a full em wide, so the two-clock
+/// accessory needs more room here than the design gives it on a phone.
+const _wideRowWidth = 640.0;
 
 const _route = FlightRoute(
   origin: RouteAirport(
@@ -31,18 +36,38 @@ const _route = FlightRoute(
   ),
 );
 
+const _taipeiRoute = FlightRoute(
+  origin: RouteAirport(
+    icaoCode: 'RCTP',
+    iataCode: 'TPE',
+    name: 'Taiwan Taoyuan',
+    latitude: 25.0777,
+    longitude: 121.2328,
+  ),
+  destination: RouteAirport(
+    icaoCode: 'WIII',
+    iataCode: 'CGK',
+    name: 'Jakarta Soekarno-Hatta',
+    latitude: -6.1256,
+    longitude: 106.6558,
+  ),
+);
+
 Flight flight({
   String lookupValue = 'EW594',
   String? note,
   FlightRoute? route = _route,
   CalendarDate date = const CalendarDate(2026, 8, 15),
   DayTime? time,
+  DepartureTimeInterpretation interpretation =
+      DepartureTimeInterpretation.device,
 }) => Flight(
   id: 1,
   lookupKind: FlightLookupKind.flightNumber,
   lookupValue: lookupValue,
   departureDate: date,
   departureTime: time,
+  departureTimeInterpretation: interpretation,
   note: note,
   route: route,
 );
@@ -54,6 +79,7 @@ Future<void> pumpRow(
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
   DateTime? now,
+  double width = _rowWidth,
 }) => tester.pumpWidget(
   MaterialApp(
     locale: locale,
@@ -68,7 +94,7 @@ Future<void> pumpRow(
         child: RepaintBoundary(
           key: _rowKey,
           child: SizedBox(
-            width: _rowWidth,
+            width: width,
             child: ColoredBox(
               color: switch (brightness) {
                 Brightness.light => AppColors.neutral50,
@@ -139,6 +165,25 @@ void main() {
 
     expect(find.text('from 4:10 PM'), findsOneWidget);
     expect(find.text('today'), findsNothing);
+  });
+
+  testWidgets('shows an origin-local departure in both clocks', (tester) async {
+    await pumpRow(
+      tester,
+      state: FlightState.waiting,
+      width: _wideRowWidth,
+      row: flight(
+        time: const DayTime(16, 10),
+        interpretation: DepartureTimeInterpretation.originLocal,
+        route: _taipeiRoute,
+      ),
+    );
+
+    final deviceTime = DateFormat(
+      'h:mm a',
+      'en',
+    ).format(DateTime.utc(2026, 8, 15, 8, 10).toLocal());
+    expect(find.text('from $deviceTime · 4:10 PM local'), findsOneWidget);
   });
 
   testWidgets('keeps the plain date on a planned row with a time', (

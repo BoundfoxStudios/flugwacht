@@ -50,14 +50,20 @@ DateTime? airportInstantOf(
     airport.longitude,
   );
   try {
-    return TZDateTime(
+    final wallClock = TZDateTime(
       getLocation(zone),
       date.year,
       date.month,
       date.day,
       time.hour,
       time.minute,
-    ).toUtc();
+    );
+    // A plain DateTime, not the TZDateTime: its toLocal converts to the
+    // package's own local location instead of the device zone.
+    return DateTime.fromMillisecondsSinceEpoch(
+      wallClock.millisecondsSinceEpoch,
+      isUtc: true,
+    );
   } on LocationNotFoundException {
     return null;
   }

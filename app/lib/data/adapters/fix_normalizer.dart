@@ -28,7 +28,7 @@ FixPosition? _normalizePosition(
   final longitude = aircraft['lon'];
   final seenPositionSeconds = aircraft['seen_pos'];
   if (latitude is! num || longitude is! num || seenPositionSeconds is! num) {
-    return null;
+    return _normalizeLastPosition(aircraft, serverNowMilliseconds);
   }
   final barometricAltitude = aircraft['alt_baro'];
   return FixPosition(
@@ -51,6 +51,33 @@ FixPosition? _normalizePosition(
     indicatedAirspeedKnots: _doubleOrNull(aircraft['ias']),
     mach: _doubleOrNull(aircraft['mach']),
     verticalRateFeetPerMinute: _doubleOrNull(aircraft['baro_rate']),
+  );
+}
+
+/// readsb drops the top-level position once it ages out (~60 s) and keeps it
+/// in `lastPosition`; only the coordinates travel along, the remaining
+/// top-level fields are staler than the position and stay out.
+FixPosition? _normalizeLastPosition(
+  Map<String, dynamic> aircraft,
+  num serverNowMilliseconds,
+) {
+  final lastPosition = aircraft['lastPosition'];
+  if (lastPosition is! Map<String, dynamic>) {
+    return null;
+  }
+  final latitude = lastPosition['lat'];
+  final longitude = lastPosition['lon'];
+  final seenPositionSeconds = lastPosition['seen_pos'];
+  if (latitude is! num || longitude is! num || seenPositionSeconds is! num) {
+    return null;
+  }
+  return FixPosition(
+    latitude: latitude.toDouble(),
+    longitude: longitude.toDouble(),
+    timestamp: DateTime.fromMillisecondsSinceEpoch(
+      (serverNowMilliseconds - seenPositionSeconds * 1000).round(),
+      isUtc: true,
+    ),
   );
 }
 

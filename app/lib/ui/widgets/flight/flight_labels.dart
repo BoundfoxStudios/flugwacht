@@ -72,13 +72,14 @@ class ArrivalDisplay {
 
   final String label;
 
-  /// The arrival in the destination's local time, marked as frozen while the
-  /// flight has no signal.
+  /// The arrival on the viewer's clock, marked as frozen while the flight has
+  /// no signal.
   final String time;
 
   /// What is left of the flight, or how old the frozen arrival is.
   final String detail;
 
+  /// The same arrival in the destination's local time, labelled as such.
   final String localTime;
 }
 
@@ -106,7 +107,7 @@ ArrivalDisplay? arrivalDisplayOf(
   }
   final localizations = AppLocalizations.of(context);
   final pattern = localizations.flightArrivalTimeFormat;
-  final time = formatTime(context, pattern, localArrival);
+  final time = formatTime(context, pattern, estimate.arrivesAt.toLocal());
   return ArrivalDisplay(
     label: localizations.flightArrivalLabel,
     time: isLive ? time : localizations.flightArrivalFrozenTime(time),
@@ -123,7 +124,7 @@ ArrivalDisplay? arrivalDisplayOf(
           ),
     localTime: localizations.flightArrivalLocalTime(
       destination.location ?? destination.name,
-      formatTime(context, pattern, estimate.arrivesAt.toLocal()),
+      formatTime(context, pattern, localArrival),
     ),
   );
 }

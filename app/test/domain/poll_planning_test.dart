@@ -3,6 +3,7 @@ import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
+import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/poll_planning.dart';
 import 'package:flugwacht/domain/source_id.dart';
@@ -17,6 +18,9 @@ void main() {
     FlightLookupKind lookupKind = FlightLookupKind.flightNumber,
     String lookupValue = 'LH400',
     DayTime? departureTime,
+    DepartureTimeInterpretation departureTimeInterpretation =
+        DepartureTimeInterpretation.device,
+    FlightRoute? route,
     String? hexAddress,
     String? expectedCallsign,
     FixPosition? latestPosition,
@@ -26,9 +30,38 @@ void main() {
     lookupValue: lookupValue,
     departureDate: departureDate,
     departureTime: departureTime,
+    departureTimeInterpretation: departureTimeInterpretation,
+    route: route,
     hexAddress: hexAddress,
     expectedCallsign: expectedCallsign,
     tracking: FlightTracking(latestPosition: latestPosition),
+  );
+
+  FlightRoute routeFrom(RouteAirport origin) => FlightRoute(
+    origin: origin,
+    destination: const RouteAirport(
+      icaoCode: 'EDDF',
+      iataCode: 'FRA',
+      name: 'Frankfurt am Main',
+      latitude: 50.0379,
+      longitude: 8.5622,
+    ),
+  );
+
+  const taoyuan = RouteAirport(
+    icaoCode: 'RCTP',
+    iataCode: 'TPE',
+    name: 'Taiwan Taoyuan',
+    latitude: 25.0777,
+    longitude: 121.2328,
+  );
+
+  const losAngeles = RouteAirport(
+    icaoCode: 'KLAX',
+    iataCode: 'LAX',
+    name: 'Los Angeles',
+    latitude: 33.9425,
+    longitude: -118.4081,
   );
 
   FixPosition positionAt(DateTime timestamp, {bool? onGround = false}) =>
@@ -91,6 +124,47 @@ void main() {
       expect(
         searchStartsAt(flightWith(departureTime: const DayTime(23, 55))),
         DateTime(2026, 3, 17, 21, 55),
+      );
+    });
+
+    test('anchors an origin-local departure east of the device early', () {
+      expect(
+        searchStartsAt(
+          flightWith(
+            departureTime: const DayTime(23, 55),
+            departureTimeInterpretation:
+                DepartureTimeInterpretation.originLocal,
+            route: routeFrom(taoyuan),
+          ),
+        ),
+        DateTime.utc(2026, 3, 17, 13, 55),
+      );
+    });
+
+    test('anchors an origin-local departure west of the device late', () {
+      expect(
+        searchStartsAt(
+          flightWith(
+            departureTime: const DayTime(9, 0),
+            departureTimeInterpretation:
+                DepartureTimeInterpretation.originLocal,
+            route: routeFrom(losAngeles),
+          ),
+        ),
+        DateTime.utc(2026, 3, 17, 14, 0),
+      );
+    });
+
+    test('reads an origin-local departure without a route as device time', () {
+      expect(
+        searchStartsAt(
+          flightWith(
+            departureTime: const DayTime(16, 10),
+            departureTimeInterpretation:
+                DepartureTimeInterpretation.originLocal,
+          ),
+        ),
+        DateTime(2026, 3, 17, 14, 10),
       );
     });
 

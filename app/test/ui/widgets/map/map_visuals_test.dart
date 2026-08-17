@@ -5,7 +5,6 @@ import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations_en.g.dart';
-import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/theme/reduced_map_theme.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flutter/material.dart';
@@ -131,9 +130,9 @@ void main() {
       ]);
 
       expect(polylines.map((polyline) => polyline.color), [
-        AppColors.amber,
-        AppColors.orange,
-        AppColors.amber,
+        MapColors.light.trailOf(SourceId.adsblol),
+        MapColors.light.trailOf(SourceId.adsbfi),
+        MapColors.light.trailOf(SourceId.adsblol),
       ]);
       expect(polylines[1].points, const [
         LatLng(49, 2),
@@ -150,11 +149,47 @@ void main() {
 
       expect(polylines.last.points.last, const LatLng(48.5, -20));
     });
+  });
 
-    test('colors airplanes.live for the theme it draws on', () {
-      expect(MapColors.light.trailOf(SourceId.airplanes), AppColors.neutral500);
-      expect(MapColors.dark.trailOf(SourceId.airplanes), AppColors.neutral300);
-    });
+  group('trail palette', () {
+    double contrastRatio(Color first, Color second) {
+      final firstLuminance = first.computeLuminance();
+      final secondLuminance = second.computeLuminance();
+      final lighter = firstLuminance > secondLuminance
+          ? firstLuminance
+          : secondLuminance;
+      final darker = firstLuminance > secondLuminance
+          ? secondLuminance
+          : firstLuminance;
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    for (final colors in MapColors.values) {
+      test('keeps the ${colors.name} source colours apart from each other', () {
+        final sourceColors = SourceId.values.map(colors.trailOf).toSet();
+        expect(sourceColors, hasLength(SourceId.values.length));
+      });
+
+      test('keeps the ${colors.name} source colours off the aircraft fill', () {
+        for (final sourceId in SourceId.values) {
+          expect(colors.trailOf(sourceId), isNot(colors.aircraftFill));
+        }
+      });
+
+      test('keeps every ${colors.name} trail legible on its map ground', () {
+        final trailColors = [
+          colors.trail,
+          for (final sourceId in SourceId.values) colors.trailOf(sourceId),
+        ];
+        for (final trailColor in trailColors) {
+          expect(
+            contrastRatio(trailColor, colors.mapBackground),
+            greaterThanOrEqualTo(3),
+            reason: '$trailColor on ${colors.mapBackground}',
+          );
+        }
+      });
+    }
   });
 
   test('fits the bounds of points that span a distance', () {

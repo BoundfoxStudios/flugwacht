@@ -151,26 +151,24 @@ void main() {
   ) async {
     await pumpFlightSheet(tester);
 
+    final arrival = _positionTime.add(_timeToDestination);
     expect(find.text('LH401 · Anna & Ben'), findsOneWidget);
     expect(find.byType(FlightStateBadge), findsOneWidget);
-    expect(find.text('12:51 PM'), findsOneWidget);
+    expect(find.text(_deviceTime(arrival)), findsOneWidget);
     expect(find.byType(StateTimeline), findsNothing);
     expect(find.text('Altitude'), findsNothing);
   });
 
-  testWidgets('arrives in destination local time, next to the viewer own', (
+  testWidgets('arrives in the viewer time, next to destination local time', (
     tester,
   ) async {
     await pumpFlightSheet(tester);
 
     final arrival = _positionTime.add(_timeToDestination);
-    expect(find.text('12:51 PM'), findsOneWidget);
-    expect(find.text('Approx. arrival'), findsOneWidget);
+    expect(find.text(_deviceTime(arrival)), findsOneWidget);
+    expect(find.text('Approx. arrival, your time'), findsOneWidget);
     expect(find.text('4 h 51 min left'), findsOneWidget);
-    expect(
-      find.text('Local time New York · your time ${_deviceTime(arrival)}'),
-      findsOneWidget,
-    );
+    expect(find.text('Local time New York · 12:51 PM'), findsOneWidget);
   });
 
   testWidgets('names the destination airport when it has no city', (
@@ -199,7 +197,8 @@ void main() {
       entry: _entry(state: FlightState.noSignal, positionTime: positionTime),
     );
 
-    expect(find.text('~12:09 PM'), findsOneWidget);
+    final frozenArrival = positionTime.add(_timeToDestination);
+    expect(find.text('~${_deviceTime(frozenArrival)}'), findsOneWidget);
     expect(find.text('As of 42 min ago'), findsOneWidget);
     expect(find.textContaining('left'), findsNothing);
     expect(find.textContaining('Local time New York · '), findsOneWidget);
@@ -211,7 +210,7 @@ void main() {
     await pumpFlightSheet(tester, entry: _entry(route: null));
 
     expect(find.text('–:–'), findsOneWidget);
-    expect(find.text('Approx. arrival'), findsNothing);
+    expect(find.text('Approx. arrival, your time'), findsNothing);
     expect(find.textContaining('Local time'), findsNothing);
   });
 
@@ -221,23 +220,20 @@ void main() {
     await pumpFlightSheet(tester, entry: _entry(speedKnots: 30));
 
     expect(find.text('–:–'), findsOneWidget);
-    expect(find.text('Approx. arrival'), findsNothing);
+    expect(find.text('Approx. arrival, your time'), findsNothing);
   });
 
   testWidgets('arrives in german copy and clock format', (tester) async {
     await pumpFlightSheet(tester, locale: const Locale('de'));
 
     final arrival = _positionTime.add(_timeToDestination);
-    expect(find.text('12:51'), findsOneWidget);
-    expect(find.text('Ankunft ca.'), findsOneWidget);
-    expect(find.text('noch 4 Std 51 Min'), findsOneWidget);
     expect(
-      find.text(
-        'Ortszeit New York · bei dir '
-        '${_deviceTime(arrival, pattern: 'HH:mm', locale: 'de')}',
-      ),
+      find.text(_deviceTime(arrival, pattern: 'HH:mm', locale: 'de')),
       findsOneWidget,
     );
+    expect(find.text('Ankunft ca. bei dir'), findsOneWidget);
+    expect(find.text('noch 4 Std 51 Min'), findsOneWidget);
+    expect(find.text('Ortszeit New York · 12:51'), findsOneWidget);
   });
 
   testWidgets('opens on a drag and closes again', (tester) async {

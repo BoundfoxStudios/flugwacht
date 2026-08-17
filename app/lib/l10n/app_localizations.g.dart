@@ -254,6 +254,18 @@ abstract class AppLocalizations {
   /// **'h:mm a'**
   String get newFlightDepartureTimeFormat;
 
+  /// No description provided for @newFlightDepartureTimeOriginLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'In the origin\'s local time'**
+  String get newFlightDepartureTimeOriginLocal;
+
+  /// No description provided for @newFlightDepartureTimeDeviceFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Without a route the time counts as your device time'**
+  String get newFlightDepartureTimeDeviceFallback;
+
   /// No description provided for @newFlightNoteLabel.
   ///
   /// In en, this message translates to:
@@ -513,7 +525,7 @@ abstract class AppLocalizations {
   /// No description provided for @flightArrivalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Approx. arrival'**
+  /// **'Approx. arrival, your time'**
   String get flightArrivalLabel;
 
   /// DateFormat pattern for the estimated arrival, localized per language.
@@ -555,7 +567,7 @@ abstract class AppLocalizations {
   /// No description provided for @flightArrivalLocalTime.
   ///
   /// In en, this message translates to:
-  /// **'Local time {city} · your time {time}'**
+  /// **'Local time {city} · {time}'**
   String flightArrivalLocalTime(String city, String time);
 
   /// Joins the arrival label and its detail into the hero cell's single line.
@@ -599,6 +611,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'h:mm a'**
   String get flightRowDepartureTimeFormat;
+
+  /// No description provided for @flightRowDepartureTimeWithLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'from {deviceTime} · {localTime} local'**
+  String flightRowDepartureTimeWithLocal(String deviceTime, String localTime);
 
   /// No description provided for @flightRowLanded.
   ///

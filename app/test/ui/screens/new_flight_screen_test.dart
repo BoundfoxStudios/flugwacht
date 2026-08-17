@@ -306,6 +306,90 @@ void main() {
     expect(flight.departureTime, const DayTime(16, 10));
   });
 
+  testWidgets('saves a picked time as origin local when the route is known', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup(const RouteFound('DLH400', _route)),
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await settleRouteLookup(tester);
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+
+    expect(find.text("In the origin's local time"), findsOneWidget);
+
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(
+      flight.departureTimeInterpretation,
+      DepartureTimeInterpretation.originLocal,
+    );
+  });
+
+  testWidgets('saves a picked time as device time when switched off', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup(const RouteFound('DLH400', _route)),
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await settleRouteLookup(tester);
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+    await tester.tap(find.text("In the origin's local time"));
+    await tester.pumpAndSettle();
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(
+      flight.departureTimeInterpretation,
+      DepartureTimeInterpretation.device,
+    );
+  });
+
+  testWidgets('falls back to device time visibly while the route is unknown', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(tester);
+
+    await enterLookupValue(tester, 'LH 400');
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+
+    expect(find.text("In the origin's local time"), findsNothing);
+    expect(
+      find.text('Without a route the time counts as your device time'),
+      findsOneWidget,
+    );
+
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(
+      flight.departureTimeInterpretation,
+      DepartureTimeInterpretation.device,
+    );
+  });
+
+  testWidgets('shows no time zone row while no time is picked', (tester) async {
+    await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup(const RouteFound('DLH400', _route)),
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await settleRouteLookup(tester);
+
+    expect(find.text("In the origin's local time"), findsNothing);
+    expect(
+      find.text('Without a route the time counts as your device time'),
+      findsNothing,
+    );
+  });
+
   testWidgets('saves no departure time while the field stays empty', (
     tester,
   ) async {

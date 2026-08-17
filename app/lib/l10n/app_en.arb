@@ -38,6 +38,8 @@
   "@newFlightDepartureTimeFormat": {
     "description": "DateFormat pattern for the departure time field, localized per language."
   },
+  "newFlightDepartureTimeOriginLocal": "In the origin's local time",
+  "newFlightDepartureTimeDeviceFallback": "Without a route the time counts as your device time",
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",
@@ -259,7 +261,7 @@
   "@mapSheetTryAnotherSource": {
     "description": "Link in the sheet of a flight without signal that switches to the next source."
   },
-  "flightArrivalLabel": "Approx. arrival",
+  "flightArrivalLabel": "Approx. arrival, your time",
   "flightArrivalTimeFormat": "h:mm a",
   "@flightArrivalTimeFormat": {
     "description": "DateFormat pattern for the estimated arrival, localized per language."
@@ -309,7 +311,7 @@
       }
     }
   },
-  "flightArrivalLocalTime": "Local time {city} · your time {time}",
+  "flightArrivalLocalTime": "Local time {city} · {time}",
   "@flightArrivalLocalTime": {
     "placeholders": {
       "city": {
@@ -357,6 +359,17 @@
   "flightRowDepartureTimeFormat": "h:mm a",
   "@flightRowDepartureTimeFormat": {
     "description": "DateFormat pattern for the departure time on a waiting row, localized per language."
+  },
+  "flightRowDepartureTimeWithLocal": "from {deviceTime} · {localTime} local",
+  "@flightRowDepartureTimeWithLocal": {
+    "placeholders": {
+      "deviceTime": {
+        "type": "String"
+      },
+      "localTime": {
+        "type": "String"
+      }
+    }
   },
   "flightRowLanded": "landed ✓",
   "flightRowMissed": "missed",

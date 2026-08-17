@@ -30,8 +30,6 @@ class MiniMap extends StatefulWidget {
   static const _fitPadding = EdgeInsets.all(28);
   static const _markerSize = 40.0;
   static const _silhouetteScale = 0.5;
-  static const _ringRadius = 14.0;
-  static const _ringWidth = 1.4;
   static const _airportDotRadius = 4.0;
   static const _trailWidth = 2.2;
   static const _plannedLegWidth = 1.8;
@@ -174,15 +172,6 @@ class _MiniMapState extends State<MiniMap> {
           state: widget.state,
           trackDegrees: widget.position.trackDegrees ?? 0,
           silhouetteScale: MiniMap._silhouetteScale,
-          rings: [
-            AircraftRing(
-              radius: MiniMap._ringRadius,
-              opacity: widget.state == FlightState.noSignal
-                  ? 1
-                  : colors.pingOpacity,
-              width: MiniMap._ringWidth,
-            ),
-          ],
         ),
       ),
     ),

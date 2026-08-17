@@ -1,3 +1,4 @@
+import 'departure_time.dart';
 import 'fix.dart';
 import 'flight.dart';
 import 'flight_day_window.dart';
@@ -22,18 +23,11 @@ const searchLeadTime = Duration(hours: 2);
 /// so a daily rotation of the same callsign is not adopted at midnight.
 DateTime searchStartsAt(Flight flight) {
   final window = FlightDayWindow.forDepartureDate(flight.departureDate);
-  final departureTime = flight.departureTime;
-  if (departureTime == null) {
+  final departureInstant = departureInstantOf(flight);
+  if (departureInstant == null) {
     return window.start;
   }
-  final departureDate = flight.departureDate;
-  final anchor = DateTime(
-    departureDate.year,
-    departureDate.month,
-    departureDate.day,
-    departureTime.hour,
-    departureTime.minute,
-  ).subtract(searchLeadTime);
+  final anchor = departureInstant.subtract(searchLeadTime);
   return anchor.isBefore(window.start) ? window.start : anchor;
 }
 

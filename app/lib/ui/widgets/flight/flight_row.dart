@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../domain/departure_time.dart';
 import '../../../domain/flight.dart';
 import '../../../domain/flight_state.dart';
 import '../../../domain/relative_day.dart';
@@ -166,13 +167,21 @@ class FlightRow extends StatelessWidget {
     if (departureTime == null) {
       return localizations.flightRowToday;
     }
-    return localizations.flightRowDepartureTime(
-      formatDayTime(
-        context,
-        localizations.flightRowDepartureTimeFormat,
-        departureTime,
-      ),
+    final pattern = localizations.flightRowDepartureTimeFormat;
+    final deviceTime = formatTime(
+      context,
+      pattern,
+      departureInstantOf(flight)!.toLocal(),
     );
+    if (flight.departureTimeInterpretation ==
+            DepartureTimeInterpretation.originLocal &&
+        flight.route != null) {
+      return localizations.flightRowDepartureTimeWithLocal(
+        deviceTime,
+        formatDayTime(context, pattern, departureTime),
+      );
+    }
+    return localizations.flightRowDepartureTime(deviceTime);
   }
 }
 

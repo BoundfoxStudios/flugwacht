@@ -6,8 +6,13 @@ abstract final class AppColors {
   static const orange = Color(0xffffa726);
   static const linkLight = Color(0xffa16207);
   static const linkDark = amber;
-  static const errorLight = Color(0xffb3261e);
-  static const errorDark = Color(0xfff2b8b5);
+  static const destructiveLight = Color(0xffe53935);
+  static const destructiveDark = Color(0xffef5350);
+  // Okabe–Ito hues: they stay apart for every kind of colour vision.
+  static const blue = Color(0xff0072b2);
+  static const skyBlue = Color(0xff56b4e9);
+  static const vermillion = Color(0xffd55e00);
+  static const bluishGreen = Color(0xff009e73);
   static const white = Color(0xffffffff);
   static const neutral50 = Color(0xfffafafa);
   static const neutral100 = Color(0xfff5f5f5);

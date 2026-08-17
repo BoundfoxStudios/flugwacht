@@ -1,7 +1,7 @@
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
-import 'package:flugwacht/ui/theme/app_tokens.dart';
+import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flugwacht/ui/widgets/map/source_legend_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,19 +100,24 @@ void main() {
       trailSourceIds: {SourceId.adsblol, SourceId.adsbfi, SourceId.airplanes},
     );
 
-    expect(paintsSwatch(tester, AppColors.amber), isTrue);
-    expect(paintsSwatch(tester, AppColors.orange), isTrue);
-    expect(paintsSwatch(tester, AppColors.neutral500), isTrue);
+    for (final sourceId in SourceId.values) {
+      expect(paintsSwatch(tester, MapColors.light.trailOf(sourceId)), isTrue);
+    }
   });
 
-  testWidgets('paints airplanes.live for the dark theme', (tester) async {
+  testWidgets('paints the dark variant of adsb.lol for the dark theme', (
+    tester,
+  ) async {
     await pumpLegendCard(
       tester,
       trailSourceIds: {SourceId.adsblol, SourceId.airplanes},
       brightness: Brightness.dark,
     );
 
-    expect(paintsSwatch(tester, AppColors.neutral300), isTrue);
+    expect(
+      paintsSwatch(tester, MapColors.dark.trailOf(SourceId.adsblol)),
+      isTrue,
+    );
   });
 
   testWidgets('titles and marks the active source in German as well', (

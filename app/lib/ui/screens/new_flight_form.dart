@@ -17,6 +17,7 @@ class NewFlightForm {
   final lookupKind = signal(FlightLookupKind.flightNumber);
   final note = signal('');
   final departureTime = signal<DayTime?>(null);
+  final departureTimeIsOriginLocal = signal(true);
   late final Signal<DateTime> departureDate;
 
   final _inputs = {
@@ -61,6 +62,7 @@ class NewFlightForm {
     note.dispose();
     departureDate.dispose();
     departureTime.dispose();
+    departureTimeIsOriginLocal.dispose();
     isValid.dispose();
     showsLowCostCarrierHint.dispose();
   }

@@ -136,7 +136,11 @@ is tested — focused on the domain, where the known pitfalls live:
 - Search anchor: a flight that has never been seen is only searched for from
   its scheduled departure minus 2 h (clamped to the window start), so the
   previous day's rotation of a daily callsign is not adopted at midnight;
-  without a stored time the search starts with the window
+  without a stored time the search starts with the window. The departure time
+  is read in its stored interpretation — origin local time (the new-flight
+  default while a route is known) or device time — while the flight-day window
+  deliberately stays device-local: its 48 h width absorbs the offsets the
+  anchor has to be exact about
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
 - Arrival estimate: remaining great-circle distance / ground speed, anchored
   on the fix timestamp so a position that stops coming in freezes its

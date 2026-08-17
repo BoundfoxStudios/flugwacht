@@ -94,6 +94,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newFlightDepartureTimeFormat => 'h:mm a';
 
   @override
+  String get newFlightDepartureTimeOriginLocal => 'In the origin\'s local time';
+
+  @override
+  String get newFlightDepartureTimeDeviceFallback =>
+      'Without a route the time counts as your device time';
+
+  @override
   String get newFlightNoteLabel => 'Note (optional)';
 
   @override
@@ -259,7 +266,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapSheetTryAnotherSource => 'Try another source';
 
   @override
-  String get flightArrivalLabel => 'Approx. arrival';
+  String get flightArrivalLabel => 'Approx. arrival, your time';
 
   @override
   String get flightArrivalTimeFormat => 'h:mm a';
@@ -291,7 +298,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String flightArrivalLocalTime(String city, String time) {
-    return 'Local time $city · your time $time';
+    return 'Local time $city · $time';
   }
 
   @override
@@ -320,6 +327,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flightRowDepartureTimeFormat => 'h:mm a';
+
+  @override
+  String flightRowDepartureTimeWithLocal(String deviceTime, String localTime) {
+    return 'from $deviceTime · $localTime local';
+  }
 
   @override
   String get flightRowLanded => 'landed ✓';

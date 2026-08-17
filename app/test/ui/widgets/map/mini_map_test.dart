@@ -129,9 +129,7 @@ void main() {
     expectGrayAircraft(await renderedPixels(tester, _mapKey));
   });
 
-  testWidgets('rings a live aircraft solid and a silent one dashed', (
-    tester,
-  ) async {
+  testWidgets('draws the aircraft without a ring around it', (tester) async {
     await pumpMiniMap(tester, at: position());
     final live = ringCoverage(
       await renderedPixels(tester, _mapKey),
@@ -144,8 +142,8 @@ void main() {
       AppColors.white,
     );
 
-    expect(live, greaterThan(noSignal));
-    expect(noSignal, greaterThan(0));
+    expect(live, 0);
+    expect(noSignal, 0);
   });
 
   testWidgets('follows a route-less flight when its position moves', (

@@ -30,6 +30,8 @@ class FlightRepository {
     required String lookupValue,
     required CalendarDate departureDate,
     DayTime? departureTime,
+    DepartureTimeInterpretation departureTimeInterpretation =
+        DepartureTimeInterpretation.device,
     String? note,
     String? hexAddress,
     String? expectedCallsign,
@@ -45,6 +47,7 @@ class FlightRepository {
             departureMinutesSinceMidnight: Value(
               departureTime?.minutesSinceMidnight,
             ),
+            departureTimeInterpretation: departureTimeInterpretation,
             note: Value(note),
             hexAddress: Value(hexAddress),
             expectedCallsign: Value(expectedCallsign),
@@ -179,6 +182,7 @@ Flight _toFlight(FlightRow row) => Flight(
   lookupValue: row.lookupValue,
   departureDate: _toCalendarDate(row.departureDate),
   departureTime: _toDayTime(row.departureMinutesSinceMidnight),
+  departureTimeInterpretation: row.departureTimeInterpretation,
   note: row.note,
   hexAddress: row.hexAddress,
   expectedCallsign: row.expectedCallsign,

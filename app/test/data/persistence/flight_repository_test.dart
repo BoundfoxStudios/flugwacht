@@ -129,67 +129,30 @@ void main() {
       expect(stored.departureTime, isNull);
     });
 
-    test('reads a flight stored before departure times existed', () async {
-      final legacyDatabase = AppDatabase(
-        DatabaseConnection(
-          NativeDatabase.memory(
-            setup: (rawDatabase) {
-              rawDatabase
-                ..execute(_flightsTableBeforeDepartureTimes)
-                ..execute(_trailPointsTableBeforeDepartureTimes)
-                ..execute(
-                  'INSERT INTO flights (lookup_kind, lookup_value, '
-                  'departure_date) VALUES (\'flightNumber\', \'LH433\', '
-                  '\'2026-03-17\')',
-                )
-                ..execute('PRAGMA user_version = 1');
-            },
-          ),
-          closeStreamsSynchronously: true,
-        ),
+    test('round-trips an origin-local departure interpretation', () async {
+      await repository.addFlight(
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH433',
+        departureDate: const CalendarDate(2026, 3, 17),
+        departureTime: const DayTime(16, 10),
+        departureTimeInterpretation: DepartureTimeInterpretation.originLocal,
       );
-      addTearDown(legacyDatabase.close);
 
-      final migrated = await FlightRepository(
-        legacyDatabase,
-      ).watchFlights().first;
-
-      expect(migrated.single.lookupValue, 'LH433');
-      expect(migrated.single.departureTime, isNull);
+      final stored = (await repository.watchFlights().first).single;
+      expect(
+        stored.departureTimeInterpretation,
+        DepartureTimeInterpretation.originLocal,
+      );
     });
 
-    test('reads a flight stored before notification markers existed', () async {
-      final legacyDatabase = AppDatabase(
-        DatabaseConnection(
-          NativeDatabase.memory(
-            setup: (rawDatabase) {
-              rawDatabase
-                ..execute(_flightsTableBeforeNotificationMarkers)
-                ..execute(_trailPointsTableBeforeDepartureTimes)
-                ..execute(
-                  'INSERT INTO flights (lookup_kind, lookup_value, '
-                  'departure_date) VALUES (\'flightNumber\', \'LH433\', '
-                  '\'2026-03-17\')',
-                )
-                ..execute('PRAGMA user_version = 2');
-            },
-          ),
-          closeStreamsSynchronously: true,
-        ),
+    test('stores a flight without an interpretation as device time', () async {
+      await addFlightAt(const DayTime(16, 10));
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(
+        stored.departureTimeInterpretation,
+        DepartureTimeInterpretation.device,
       );
-      addTearDown(legacyDatabase.close);
-
-      final migrated = await FlightRepository(
-        legacyDatabase,
-      ).watchFlights().first;
-
-      for (final kind in FlightNotification.values) {
-        expect(
-          migrated.single.notifications.deliveredAt(kind),
-          isNull,
-          reason: kind.name,
-        );
-      }
     });
   });
 
@@ -697,12 +660,3 @@ void main() {
     });
   });
 }
-
-const _flightsTableBeforeDepartureTimes =
-    'CREATE TABLE "flights" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "lookup_kind" TEXT NOT NULL, "lookup_value" TEXT NOT NULL, "departure_date" TEXT NOT NULL, "note" TEXT NULL, "hex_address" TEXT NULL, "expected_callsign" TEXT NULL, "origin_icao_code" TEXT NULL, "origin_iata_code" TEXT NULL, "origin_name" TEXT NULL, "origin_location" TEXT NULL, "origin_latitude" REAL NULL, "origin_longitude" REAL NULL, "destination_icao_code" TEXT NULL, "destination_iata_code" TEXT NULL, "destination_name" TEXT NULL, "destination_location" TEXT NULL, "destination_latitude" REAL NULL, "destination_longitude" REAL NULL, "has_been_airborne" INTEGER NOT NULL DEFAULT 0 CHECK ("has_been_airborne" IN (0, 1)), "last_known_on_ground" INTEGER NULL CHECK ("last_known_on_ground" IN (0, 1)), "latest_latitude" REAL NULL, "latest_longitude" REAL NULL, "latest_timestamp" INTEGER NULL, "latest_barometric_altitude_feet" REAL NULL, "latest_on_ground" INTEGER NULL CHECK ("latest_on_ground" IN (0, 1)), "latest_geometric_altitude_feet" REAL NULL, "latest_track_degrees" REAL NULL, "latest_true_heading_degrees" REAL NULL, "latest_ground_speed_knots" REAL NULL, "latest_indicated_airspeed_knots" REAL NULL, "latest_mach" REAL NULL, "latest_vertical_rate_feet_per_minute" REAL NULL)';
-
-const _flightsTableBeforeNotificationMarkers =
-    'CREATE TABLE "flights" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "lookup_kind" TEXT NOT NULL, "lookup_value" TEXT NOT NULL, "departure_date" TEXT NOT NULL, "departure_minutes_since_midnight" INTEGER NULL, "note" TEXT NULL, "hex_address" TEXT NULL, "expected_callsign" TEXT NULL, "origin_icao_code" TEXT NULL, "origin_iata_code" TEXT NULL, "origin_name" TEXT NULL, "origin_location" TEXT NULL, "origin_latitude" REAL NULL, "origin_longitude" REAL NULL, "destination_icao_code" TEXT NULL, "destination_iata_code" TEXT NULL, "destination_name" TEXT NULL, "destination_location" TEXT NULL, "destination_latitude" REAL NULL, "destination_longitude" REAL NULL, "has_been_airborne" INTEGER NOT NULL DEFAULT 0 CHECK ("has_been_airborne" IN (0, 1)), "last_known_on_ground" INTEGER NULL CHECK ("last_known_on_ground" IN (0, 1)), "latest_latitude" REAL NULL, "latest_longitude" REAL NULL, "latest_timestamp" INTEGER NULL, "latest_barometric_altitude_feet" REAL NULL, "latest_on_ground" INTEGER NULL CHECK ("latest_on_ground" IN (0, 1)), "latest_geometric_altitude_feet" REAL NULL, "latest_track_degrees" REAL NULL, "latest_true_heading_degrees" REAL NULL, "latest_ground_speed_knots" REAL NULL, "latest_indicated_airspeed_knots" REAL NULL, "latest_mach" REAL NULL, "latest_vertical_rate_feet_per_minute" REAL NULL)';
-
-const _trailPointsTableBeforeDepartureTimes =
-    'CREATE TABLE "trail_points" ("flight_id" INTEGER NOT NULL REFERENCES flights (id) ON DELETE CASCADE, "timestamp" INTEGER NOT NULL, "latitude" REAL NOT NULL, "longitude" REAL NOT NULL, "source_id" TEXT NOT NULL, PRIMARY KEY ("flight_id", "timestamp"))';

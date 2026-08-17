@@ -13,6 +13,8 @@ class Flights extends Table {
   TextColumn get lookupValue => text()();
   TextColumn get departureDate => text()();
   IntColumn get departureMinutesSinceMidnight => integer().nullable()();
+  TextColumn get departureTimeInterpretation =>
+      textEnum<DepartureTimeInterpretation>()();
   TextColumn get note => text().nullable()();
   TextColumn get hexAddress => text().nullable()();
   TextColumn get expectedCallsign => text().nullable()();
@@ -67,23 +69,10 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'flugwacht'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: (migrator, from, to) async {
-      if (from < 2) {
-        await migrator.addColumn(
-          flights,
-          flights.departureMinutesSinceMidnight,
-        );
-      }
-      if (from < 3) {
-        await migrator.addColumn(flights, flights.departedNotifiedAt);
-        await migrator.addColumn(flights, flights.arrivingSoonNotifiedAt);
-        await migrator.addColumn(flights, flights.landedNotifiedAt);
-      }
-    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },

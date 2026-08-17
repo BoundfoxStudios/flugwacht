@@ -63,6 +63,21 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         type: DriftSqlType.int,
         requiredDuringInsert: false,
       );
+  @override
+  late final GeneratedColumnWithTypeConverter<
+    DepartureTimeInterpretation,
+    String
+  >
+  departureTimeInterpretation =
+      GeneratedColumn<String>(
+        'departure_time_interpretation',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DepartureTimeInterpretation>(
+        $FlightsTable.$converterdepartureTimeInterpretation,
+      );
   static const VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
@@ -428,6 +443,7 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     lookupValue,
     departureDate,
     departureMinutesSinceMidnight,
+    departureTimeInterpretation,
     note,
     hexAddress,
     expectedCallsign,
@@ -814,6 +830,14 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.int,
         data['${effectivePrefix}departure_minutes_since_midnight'],
       ),
+      departureTimeInterpretation: $FlightsTable
+          .$converterdepartureTimeInterpretation
+          .fromSql(
+            attachedDatabase.typeMapping.read(
+              DriftSqlType.string,
+              data['${effectivePrefix}departure_time_interpretation'],
+            )!,
+          ),
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note'],
@@ -954,6 +978,11 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
   $converterlookupKind = const EnumNameConverter<FlightLookupKind>(
     FlightLookupKind.values,
   );
+  static JsonTypeConverter2<DepartureTimeInterpretation, String, String>
+  $converterdepartureTimeInterpretation =
+      const EnumNameConverter<DepartureTimeInterpretation>(
+        DepartureTimeInterpretation.values,
+      );
 }
 
 class FlightRow extends DataClass implements Insertable<FlightRow> {
@@ -962,6 +991,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final String lookupValue;
   final String departureDate;
   final int? departureMinutesSinceMidnight;
+  final DepartureTimeInterpretation departureTimeInterpretation;
   final String? note;
   final String? hexAddress;
   final String? expectedCallsign;
@@ -1000,6 +1030,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     required this.lookupValue,
     required this.departureDate,
     this.departureMinutesSinceMidnight,
+    required this.departureTimeInterpretation,
     this.note,
     this.hexAddress,
     this.expectedCallsign,
@@ -1047,6 +1078,13 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     if (!nullToAbsent || departureMinutesSinceMidnight != null) {
       map['departure_minutes_since_midnight'] = Variable<int>(
         departureMinutesSinceMidnight,
+      );
+    }
+    {
+      map['departure_time_interpretation'] = Variable<String>(
+        $FlightsTable.$converterdepartureTimeInterpretation.toSql(
+          departureTimeInterpretation,
+        ),
       );
     }
     if (!nullToAbsent || note != null) {
@@ -1168,6 +1206,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           departureMinutesSinceMidnight == null && nullToAbsent
           ? const Value.absent()
           : Value(departureMinutesSinceMidnight),
+      departureTimeInterpretation: Value(departureTimeInterpretation),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       hexAddress: hexAddress == null && nullToAbsent
           ? const Value.absent()
@@ -1282,6 +1321,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       departureMinutesSinceMidnight: serializer.fromJson<int?>(
         json['departureMinutesSinceMidnight'],
       ),
+      departureTimeInterpretation: $FlightsTable
+          .$converterdepartureTimeInterpretation
+          .fromJson(
+            serializer.fromJson<String>(json['departureTimeInterpretation']),
+          ),
       note: serializer.fromJson<String?>(json['note']),
       hexAddress: serializer.fromJson<String?>(json['hexAddress']),
       expectedCallsign: serializer.fromJson<String?>(json['expectedCallsign']),
@@ -1355,6 +1399,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'departureMinutesSinceMidnight': serializer.toJson<int?>(
         departureMinutesSinceMidnight,
       ),
+      'departureTimeInterpretation': serializer.toJson<String>(
+        $FlightsTable.$converterdepartureTimeInterpretation.toJson(
+          departureTimeInterpretation,
+        ),
+      ),
       'note': serializer.toJson<String?>(note),
       'hexAddress': serializer.toJson<String?>(hexAddress),
       'expectedCallsign': serializer.toJson<String?>(expectedCallsign),
@@ -1408,6 +1457,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     String? lookupValue,
     String? departureDate,
     Value<int?> departureMinutesSinceMidnight = const Value.absent(),
+    DepartureTimeInterpretation? departureTimeInterpretation,
     Value<String?> note = const Value.absent(),
     Value<String?> hexAddress = const Value.absent(),
     Value<String?> expectedCallsign = const Value.absent(),
@@ -1448,6 +1498,8 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     departureMinutesSinceMidnight: departureMinutesSinceMidnight.present
         ? departureMinutesSinceMidnight.value
         : this.departureMinutesSinceMidnight,
+    departureTimeInterpretation:
+        departureTimeInterpretation ?? this.departureTimeInterpretation,
     note: note.present ? note.value : this.note,
     hexAddress: hexAddress.present ? hexAddress.value : this.hexAddress,
     expectedCallsign: expectedCallsign.present
@@ -1550,6 +1602,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       departureMinutesSinceMidnight: data.departureMinutesSinceMidnight.present
           ? data.departureMinutesSinceMidnight.value
           : this.departureMinutesSinceMidnight,
+      departureTimeInterpretation: data.departureTimeInterpretation.present
+          ? data.departureTimeInterpretation.value
+          : this.departureTimeInterpretation,
       note: data.note.present ? data.note.value : this.note,
       hexAddress: data.hexAddress.present
           ? data.hexAddress.value
@@ -1658,6 +1713,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write(
             'departureMinutesSinceMidnight: $departureMinutesSinceMidnight, ',
           )
+          ..write('departureTimeInterpretation: $departureTimeInterpretation, ')
           ..write('note: $note, ')
           ..write('hexAddress: $hexAddress, ')
           ..write('expectedCallsign: $expectedCallsign, ')
@@ -1707,6 +1763,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     lookupValue,
     departureDate,
     departureMinutesSinceMidnight,
+    departureTimeInterpretation,
     note,
     hexAddress,
     expectedCallsign,
@@ -1750,6 +1807,8 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.departureDate == this.departureDate &&
           other.departureMinutesSinceMidnight ==
               this.departureMinutesSinceMidnight &&
+          other.departureTimeInterpretation ==
+              this.departureTimeInterpretation &&
           other.note == this.note &&
           other.hexAddress == this.hexAddress &&
           other.expectedCallsign == this.expectedCallsign &&
@@ -1794,6 +1853,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<String> lookupValue;
   final Value<String> departureDate;
   final Value<int?> departureMinutesSinceMidnight;
+  final Value<DepartureTimeInterpretation> departureTimeInterpretation;
   final Value<String?> note;
   final Value<String?> hexAddress;
   final Value<String?> expectedCallsign;
@@ -1832,6 +1892,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.lookupValue = const Value.absent(),
     this.departureDate = const Value.absent(),
     this.departureMinutesSinceMidnight = const Value.absent(),
+    this.departureTimeInterpretation = const Value.absent(),
     this.note = const Value.absent(),
     this.hexAddress = const Value.absent(),
     this.expectedCallsign = const Value.absent(),
@@ -1871,6 +1932,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     required String lookupValue,
     required String departureDate,
     this.departureMinutesSinceMidnight = const Value.absent(),
+    required DepartureTimeInterpretation departureTimeInterpretation,
     this.note = const Value.absent(),
     this.hexAddress = const Value.absent(),
     this.expectedCallsign = const Value.absent(),
@@ -1905,13 +1967,15 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.landedNotifiedAt = const Value.absent(),
   }) : lookupKind = Value(lookupKind),
        lookupValue = Value(lookupValue),
-       departureDate = Value(departureDate);
+       departureDate = Value(departureDate),
+       departureTimeInterpretation = Value(departureTimeInterpretation);
   static Insertable<FlightRow> custom({
     Expression<int>? id,
     Expression<String>? lookupKind,
     Expression<String>? lookupValue,
     Expression<String>? departureDate,
     Expression<int>? departureMinutesSinceMidnight,
+    Expression<String>? departureTimeInterpretation,
     Expression<String>? note,
     Expression<String>? hexAddress,
     Expression<String>? expectedCallsign,
@@ -1952,6 +2016,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (departureDate != null) 'departure_date': departureDate,
       if (departureMinutesSinceMidnight != null)
         'departure_minutes_since_midnight': departureMinutesSinceMidnight,
+      if (departureTimeInterpretation != null)
+        'departure_time_interpretation': departureTimeInterpretation,
       if (note != null) 'note': note,
       if (hexAddress != null) 'hex_address': hexAddress,
       if (expectedCallsign != null) 'expected_callsign': expectedCallsign,
@@ -2007,6 +2073,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<String>? lookupValue,
     Value<String>? departureDate,
     Value<int?>? departureMinutesSinceMidnight,
+    Value<DepartureTimeInterpretation>? departureTimeInterpretation,
     Value<String?>? note,
     Value<String?>? hexAddress,
     Value<String?>? expectedCallsign,
@@ -2047,6 +2114,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       departureDate: departureDate ?? this.departureDate,
       departureMinutesSinceMidnight:
           departureMinutesSinceMidnight ?? this.departureMinutesSinceMidnight,
+      departureTimeInterpretation:
+          departureTimeInterpretation ?? this.departureTimeInterpretation,
       note: note ?? this.note,
       hexAddress: hexAddress ?? this.hexAddress,
       expectedCallsign: expectedCallsign ?? this.expectedCallsign,
@@ -2110,6 +2179,13 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     if (departureMinutesSinceMidnight.present) {
       map['departure_minutes_since_midnight'] = Variable<int>(
         departureMinutesSinceMidnight.value,
+      );
+    }
+    if (departureTimeInterpretation.present) {
+      map['departure_time_interpretation'] = Variable<String>(
+        $FlightsTable.$converterdepartureTimeInterpretation.toSql(
+          departureTimeInterpretation.value,
+        ),
       );
     }
     if (note.present) {
@@ -2241,6 +2317,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write(
             'departureMinutesSinceMidnight: $departureMinutesSinceMidnight, ',
           )
+          ..write('departureTimeInterpretation: $departureTimeInterpretation, ')
           ..write('note: $note, ')
           ..write('hexAddress: $hexAddress, ')
           ..write('expectedCallsign: $expectedCallsign, ')
@@ -2689,6 +2766,7 @@ typedef $$FlightsTableCreateCompanionBuilder =
       required String lookupValue,
       required String departureDate,
       Value<int?> departureMinutesSinceMidnight,
+      required DepartureTimeInterpretation departureTimeInterpretation,
       Value<String?> note,
       Value<String?> hexAddress,
       Value<String?> expectedCallsign,
@@ -2729,6 +2807,7 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<String> lookupValue,
       Value<String> departureDate,
       Value<int?> departureMinutesSinceMidnight,
+      Value<DepartureTimeInterpretation> departureTimeInterpretation,
       Value<String?> note,
       Value<String?> hexAddress,
       Value<String?> expectedCallsign,
@@ -2819,6 +2898,16 @@ class $$FlightsTableFilterComposer
   ColumnFilters<int> get departureMinutesSinceMidnight => $composableBuilder(
     column: $table.departureMinutesSinceMidnight,
     builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<
+    DepartureTimeInterpretation,
+    DepartureTimeInterpretation,
+    String
+  >
+  get departureTimeInterpretation => $composableBuilder(
+    column: $table.departureTimeInterpretation,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<String> get note => $composableBuilder(
@@ -3042,6 +3131,11 @@ class $$FlightsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get departureTimeInterpretation => $composableBuilder(
+    column: $table.departureTimeInterpretation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get note => $composableBuilder(
     column: $table.note,
     builder: (column) => ColumnOrderings(column),
@@ -3236,6 +3330,12 @@ class $$FlightsTableAnnotationComposer
 
   GeneratedColumn<int> get departureMinutesSinceMidnight => $composableBuilder(
     column: $table.departureMinutesSinceMidnight,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<DepartureTimeInterpretation, String>
+  get departureTimeInterpretation => $composableBuilder(
+    column: $table.departureTimeInterpretation,
     builder: (column) => column,
   );
 
@@ -3460,6 +3560,8 @@ class $$FlightsTableTableManager
                 Value<String> departureDate = const Value.absent(),
                 Value<int?> departureMinutesSinceMidnight =
                     const Value.absent(),
+                Value<DepartureTimeInterpretation> departureTimeInterpretation =
+                    const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> hexAddress = const Value.absent(),
                 Value<String?> expectedCallsign = const Value.absent(),
@@ -3502,6 +3604,7 @@ class $$FlightsTableTableManager
                 lookupValue: lookupValue,
                 departureDate: departureDate,
                 departureMinutesSinceMidnight: departureMinutesSinceMidnight,
+                departureTimeInterpretation: departureTimeInterpretation,
                 note: note,
                 hexAddress: hexAddress,
                 expectedCallsign: expectedCallsign,
@@ -3544,6 +3647,8 @@ class $$FlightsTableTableManager
                 required String departureDate,
                 Value<int?> departureMinutesSinceMidnight =
                     const Value.absent(),
+                required DepartureTimeInterpretation
+                departureTimeInterpretation,
                 Value<String?> note = const Value.absent(),
                 Value<String?> hexAddress = const Value.absent(),
                 Value<String?> expectedCallsign = const Value.absent(),
@@ -3586,6 +3691,7 @@ class $$FlightsTableTableManager
                 lookupValue: lookupValue,
                 departureDate: departureDate,
                 departureMinutesSinceMidnight: departureMinutesSinceMidnight,
+                departureTimeInterpretation: departureTimeInterpretation,
                 note: note,
                 hexAddress: hexAddress,
                 expectedCallsign: expectedCallsign,

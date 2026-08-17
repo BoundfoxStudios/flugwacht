@@ -7,6 +7,10 @@ import 'flight_route.dart';
 
 enum FlightLookupKind { flightNumber, registration, hexAddress }
 
+/// Which clock the entered departure time belongs to: the origin airport's
+/// local time — what the ticket says — or the device's own time.
+enum DepartureTimeInterpretation { originLocal, device }
+
 class Flight {
   const Flight({
     required this.id,
@@ -14,6 +18,7 @@ class Flight {
     required this.lookupValue,
     required this.departureDate,
     this.departureTime,
+    this.departureTimeInterpretation = DepartureTimeInterpretation.device,
     this.note,
     this.hexAddress,
     this.expectedCallsign,
@@ -27,6 +32,7 @@ class Flight {
   final String lookupValue;
   final CalendarDate departureDate;
   final DayTime? departureTime;
+  final DepartureTimeInterpretation departureTimeInterpretation;
   final String? note;
   final String? hexAddress;
   final String? expectedCallsign;
@@ -40,6 +46,7 @@ class Flight {
     String? lookupValue,
     CalendarDate? departureDate,
     DayTime? departureTime,
+    DepartureTimeInterpretation? departureTimeInterpretation,
     String? note,
     String? hexAddress,
     String? expectedCallsign,
@@ -52,6 +59,8 @@ class Flight {
     lookupValue: lookupValue ?? this.lookupValue,
     departureDate: departureDate ?? this.departureDate,
     departureTime: departureTime ?? this.departureTime,
+    departureTimeInterpretation:
+        departureTimeInterpretation ?? this.departureTimeInterpretation,
     note: note ?? this.note,
     hexAddress: hexAddress ?? this.hexAddress,
     expectedCallsign: expectedCallsign ?? this.expectedCallsign,

@@ -42,17 +42,19 @@ class PollingEngine with WidgetsBindingObserver {
   final _lastPollStarts = <int, DateTime>{};
   final _runningLookups = <int>{};
   var _flights = const <Flight>[];
+  var _wantsPolling = false;
   StreamSubscription<List<Flight>>? _subscription;
   Timer? _scheduler;
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
     _subscription = _repository.watchFlights().listen(_onFlights);
-    _startScheduler();
+    _resumePolling();
   }
 
   void stop() {
     WidgetsBinding.instance.removeObserver(this);
+    _wantsPolling = false;
     _stopScheduler();
     unawaited(_subscription?.cancel());
     _subscription = null;
@@ -61,10 +63,25 @@ class PollingEngine with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      unawaited(_notifier.reconcileDeliveredReminders());
-      _startScheduler();
+      _resumePolling();
     } else {
+      _wantsPolling = false;
       _stopScheduler();
+    }
+  }
+
+  /// Whatever the system delivered while the app was away goes on record
+  /// first: a poll that ran before that would plan around notifications the
+  /// user has already had.
+  void _resumePolling() {
+    _wantsPolling = true;
+    unawaited(_reconcileThenPoll());
+  }
+
+  Future<void> _reconcileThenPoll() async {
+    await _notifier.reconcileDeliveredReminders();
+    if (_wantsPolling) {
+      _startScheduler();
     }
   }
 

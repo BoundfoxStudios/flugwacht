@@ -255,7 +255,12 @@ class FakeFlightRepository implements FlightRepository {
   final trailAppends = <(int, FixPosition, SourceId)>[];
   final identityUpdates = <(int, String?, String?)>[];
   final notificationMarks = <(int, FlightNotification)>[];
+  final arrivingSoonSchedules = <int, DateTime>{};
   final deletedFlightIds = <int>[];
+
+  /// Holds up the reconcile, so a test can watch what runs while it is still
+  /// in flight.
+  Completer<void>? pendingReconcile;
 
   void emit(List<Flight> flights) => _flights.add(flights);
 
@@ -302,11 +307,45 @@ class FakeFlightRepository implements FlightRepository {
   }) async => identityUpdates.add((flightId, hexAddress, expectedCallsign));
 
   @override
-  Future<void> markNotificationDelivered(
+  Future<bool> claimNotification(
     int flightId,
     FlightNotification kind,
     DateTime deliveredAt,
-  ) async => notificationMarks.add((flightId, kind));
+  ) async {
+    if (notificationMarks.contains((flightId, kind))) {
+      return false;
+    }
+    notificationMarks.add((flightId, kind));
+    if (kind == FlightNotification.arrivingSoon) {
+      arrivingSoonSchedules.remove(flightId);
+    }
+    return true;
+  }
+
+  @override
+  Future<void> setArrivingSoonSchedule(int flightId, DateTime? at) async {
+    if (at == null) {
+      arrivingSoonSchedules.remove(flightId);
+    } else {
+      arrivingSoonSchedules[flightId] = at;
+    }
+  }
+
+  @override
+  Future<void> markDueRemindersDelivered(DateTime now) async {
+    await pendingReconcile?.future;
+    final due = arrivingSoonSchedules.entries
+        .where((entry) => !now.isBefore(entry.value))
+        .map((entry) => entry.key)
+        .toList();
+    for (final flightId in due) {
+      await claimNotification(
+        flightId,
+        FlightNotification.arrivingSoon,
+        arrivingSoonSchedules[flightId]!,
+      );
+    }
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();

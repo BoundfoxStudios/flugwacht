@@ -86,8 +86,12 @@ void main() {
     FakeSourceAdapter adapter,
     FakeNotificationService notifications,
   })
-  startEngine(FakeAsync async, List<Flight> flights) {
-    final repository = FakeFlightRepository();
+  startEngine(
+    FakeAsync async,
+    List<Flight> flights, {
+    FakeFlightRepository? withRepository,
+  }) {
+    final repository = withRepository ?? FakeFlightRepository();
     final adapter = FakeSourceAdapter();
     final notifications = createTestNotificationService();
     final engine = PollingEngine(
@@ -769,6 +773,29 @@ void main() {
       expect(started.repository.notificationMarks, [
         (1, FlightNotification.departed),
       ]);
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  test('polls only once the delivered reminders are on record', () {
+    fakeAsync((async) {
+      final repository = FakeFlightRepository()
+        ..pendingReconcile = Completer<void>();
+      final started = startEngine(async, [
+        flightWith(hexAddress: '3c64c6', expectedCallsign: 'DLH400'),
+      ], withRepository: repository);
+
+      async
+        ..flushMicrotasks()
+        ..elapse(const Duration(seconds: 30));
+      expect(started.adapter.hexAddressRequests, isEmpty);
+
+      repository.pendingReconcile!.complete();
+      async.flushMicrotasks();
+
+      expect(started.adapter.hexAddressRequests, hasLength(1));
 
       started.engine.stop();
       started.repository.dispose();

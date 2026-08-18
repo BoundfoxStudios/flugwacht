@@ -109,23 +109,60 @@ class FlightRepository {
     );
   }
 
-  /// Remembers that a notification of a flight went out, so it never goes out
-  /// a second time.
-  Future<void> markNotificationDelivered(
+  /// Takes a notification of a flight for delivery and reports whether this
+  /// call is the one that got it. The marker is written in the same statement
+  /// that checks it, so a caller working from an older copy of the flight
+  /// cannot put the same notification in front of the user a second time.
+  Future<bool> claimNotification(
     int flightId,
     FlightNotification kind,
     DateTime deliveredAt,
   ) async {
     final at = Value(deliveredAt.millisecondsSinceEpoch);
-    await (_database.update(
-      _database.flights,
-    )..where((row) => row.id.equals(flightId))).write(switch (kind) {
+    final update = _database.update(_database.flights)
+      ..where((row) => row.id.equals(flightId) & _markerOf(row, kind).isNull());
+    final rows = await update.write(switch (kind) {
       FlightNotification.departed => FlightsCompanion(departedNotifiedAt: at),
+      // The pending moment goes with it: what has been delivered is no longer
+      // waiting on the system.
       FlightNotification.arrivingSoon => FlightsCompanion(
         arrivingSoonNotifiedAt: at,
+        arrivingSoonScheduledFor: const Value(null),
       ),
       FlightNotification.landed => FlightsCompanion(landedNotifiedAt: at),
     });
+    return rows > 0;
+  }
+
+  /// Remembers when the system is due to deliver a flight's arrival reminder,
+  /// so a later run still knows about a reminder it did not schedule itself.
+  Future<void> setArrivingSoonSchedule(int flightId, DateTime? at) async {
+    await (_database.update(
+      _database.flights,
+    )..where((row) => row.id.equals(flightId))).write(
+      FlightsCompanion(
+        arrivingSoonScheduledFor: Value(at?.millisecondsSinceEpoch),
+      ),
+    );
+  }
+
+  /// Writes off the reminders whose moment has passed: the system delivered
+  /// them, whether or not the app was running at the time.
+  Future<void> markDueRemindersDelivered(DateTime now) async {
+    final due =
+        await (_database.select(_database.flights)..where(
+              (row) => row.arrivingSoonScheduledFor.isSmallerOrEqualValue(
+                now.millisecondsSinceEpoch,
+              ),
+            ))
+            .get();
+    for (final row in due) {
+      await claimNotification(
+        row.id,
+        FlightNotification.arrivingSoon,
+        _toUtcInstant(row.arrivingSoonScheduledFor!),
+      );
+    }
   }
 
   Future<void> appendTrailPoint(
@@ -176,6 +213,13 @@ class FlightRepository {
   }
 }
 
+GeneratedColumn<int> _markerOf($FlightsTable row, FlightNotification kind) =>
+    switch (kind) {
+      FlightNotification.departed => row.departedNotifiedAt,
+      FlightNotification.arrivingSoon => row.arrivingSoonNotifiedAt,
+      FlightNotification.landed => row.landedNotifiedAt,
+    };
+
 Flight _toFlight(FlightRow row) => Flight(
   id: row.id,
   lookupKind: row.lookupKind,
@@ -196,6 +240,7 @@ Flight _toFlight(FlightRow row) => Flight(
     departedAt: _toInstant(row.departedNotifiedAt),
     arrivingSoonAt: _toInstant(row.arrivingSoonNotifiedAt),
     landedAt: _toInstant(row.landedNotifiedAt),
+    arrivingSoonScheduledFor: _toInstant(row.arrivingSoonScheduledFor),
   ),
 );
 

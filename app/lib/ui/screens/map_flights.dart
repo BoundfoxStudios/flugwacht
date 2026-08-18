@@ -59,6 +59,15 @@ class MapFlights {
 
   void _reconcileSelection() {
     final ids = [for (final entry in flights.value) entry.flight.id];
+    final requested = selection.requestedFlightId.value;
+    // A request outlives the loading it arrived during and is spent the moment
+    // its flight can be framed.
+    if (requested != null && ids.contains(requested)) {
+      _knownIds = ids;
+      selection.requestedFlightId.value = null;
+      selectedId.value = requested;
+      return;
+    }
     final next = nextSelectedFlightId(
       previousIds: _knownIds,
       currentIds: ids,

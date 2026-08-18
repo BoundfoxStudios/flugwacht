@@ -5,5 +5,12 @@ import 'package:signals/signals.dart';
 class MapSelection {
   final flightId = signal<int?>(null);
 
-  void dispose() => flightId.dispose();
+  /// A flight the app was asked to frame before the map knows it: a tapped
+  /// notification names its flight while the flights are still loading.
+  final requestedFlightId = signal<int?>(null);
+
+  void dispose() {
+    flightId.dispose();
+    requestedFlightId.dispose();
+  }
 }

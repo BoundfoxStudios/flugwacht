@@ -34,7 +34,7 @@ GoRouter createAppRouter({
 }) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
   final mapSelection = MapSelection();
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/map',
     routes: [
@@ -114,4 +114,13 @@ GoRouter createAppRouter({
       ),
     ],
   );
+  // A notification is about one flight, and the map is where the app shows it.
+  notificationService.tappedFlights.listen((flightId) {
+    mapSelection.requestedFlightId.value = flightId;
+    router.go('/map');
+  });
+  // The tap that started the app arrives before anything listens; the map is
+  // where the app opens anyway.
+  mapSelection.requestedFlightId.value = notificationService.launchFlightId;
+  return router;
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals.dart';
@@ -14,6 +16,14 @@ enum NotificationPermission { notDetermined, granted, denied, unavailable }
 /// talks to the platform directly.
 abstract interface class NotificationService {
   Signal<NotificationPermission> get permission;
+
+  /// The flights whose notification the user tapped while the app was there to
+  /// hear it.
+  Stream<int> get tappedFlights;
+
+  /// The flight whose notification started the app, if one did — a tap the app
+  /// was not yet running to receive.
+  int? get launchFlightId;
 
   /// Shows the system prompt; a second call would never reach the user again,
   /// so callers ask only while the permission is undecided.
@@ -69,6 +79,16 @@ class LocalNotificationService implements NotificationService {
   }) async {
     try {
       final plugin = FlutterLocalNotificationsPlugin();
+      final preferences = SharedPreferencesAsync();
+      final service = LocalNotificationService._(
+        plugin,
+        preferences,
+        NotificationDetails(
+          android: AndroidNotificationDetails(flightChannelId, channelName),
+          iOS: const DarwinNotificationDetails(presentSound: false),
+        ),
+        await preferences.getBool(_hasAskedKey) ?? false,
+      );
       await plugin.initialize(
         settings: const InitializationSettings(
           android: AndroidInitializationSettings(androidIconResource),
@@ -79,6 +99,7 @@ class LocalNotificationService implements NotificationService {
             defaultPresentSound: false,
           ),
         ),
+        onDidReceiveNotificationResponse: service._notificationTapped,
       );
       await plugin
           .resolvePlatformSpecificImplementation<
@@ -91,16 +112,12 @@ class LocalNotificationService implements NotificationService {
               description: channelDescription,
             ),
           );
-      final preferences = SharedPreferencesAsync();
-      final service = LocalNotificationService._(
-        plugin,
-        preferences,
-        NotificationDetails(
-          android: AndroidNotificationDetails(flightChannelId, channelName),
-          iOS: const DarwinNotificationDetails(presentSound: false),
-        ),
-        await preferences.getBool(_hasAskedKey) ?? false,
-      );
+      final launch = await plugin.getNotificationAppLaunchDetails();
+      if (launch != null && launch.didNotificationLaunchApp) {
+        service._launchFlightId = _flightIdOf(
+          launch.notificationResponse?.payload,
+        );
+      }
       await service.refreshPermission();
       return service;
     } on Exception {
@@ -111,10 +128,18 @@ class LocalNotificationService implements NotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
   final SharedPreferencesAsync _preferences;
   final NotificationDetails _details;
+  final _tappedFlights = StreamController<int>.broadcast();
   bool _hasAsked;
+  int? _launchFlightId;
 
   @override
   final Signal<NotificationPermission> permission;
+
+  @override
+  int? get launchFlightId => _launchFlightId;
+
+  @override
+  Stream<int> get tappedFlights => _tappedFlights.stream;
 
   @override
   Future<void> requestPermission() async {
@@ -147,6 +172,7 @@ class LocalNotificationService implements NotificationService {
     title: title,
     body: body,
     notificationDetails: _details,
+    payload: '$flightId',
   );
 
   @override
@@ -162,6 +188,7 @@ class LocalNotificationService implements NotificationService {
     body: body,
     scheduledDate: timezone.TZDateTime.from(at, timezone.UTC),
     notificationDetails: _details,
+    payload: '$flightId',
     // Inexact on purpose: an alarm to the second would need the exact-alarm
     // permission, and the copy promises no more than "about 30 minutes".
     androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -171,12 +198,27 @@ class LocalNotificationService implements NotificationService {
   Future<void> cancel(FlightNotification kind, {required int flightId}) =>
       _plugin.cancel(id: _idOf(kind, flightId));
 
-  void dispose() => permission.dispose();
+  void dispose() {
+    permission.dispose();
+    unawaited(_tappedFlights.close());
+  }
+
+  void _notificationTapped(NotificationResponse response) {
+    final flightId = _flightIdOf(response.payload);
+    if (flightId != null) {
+      _tappedFlights.add(flightId);
+    }
+  }
 
   /// One stable id per flight and kind, so a reminder can be replaced and
   /// cancelled without bookkeeping.
   static int _idOf(FlightNotification kind, int flightId) =>
       flightId * FlightNotification.values.length + kind.index;
+
+  /// The flight a notification carries; every notification of the app names
+  /// one, and nothing else may reach this.
+  static int? _flightIdOf(String? payload) =>
+      payload == null ? null : int.tryParse(payload);
 
   Future<bool?> _requestFromPlatform() async {
     final android = _plugin
@@ -218,6 +260,12 @@ class UnavailableNotificationService implements NotificationService {
 
   @override
   final Signal<NotificationPermission> permission;
+
+  @override
+  Stream<int> get tappedFlights => const Stream.empty();
+
+  @override
+  int? get launchFlightId => null;
 
   @override
   Future<void> requestPermission() async {}

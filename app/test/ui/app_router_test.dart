@@ -88,6 +88,25 @@ void main() {
     expect(find.byType(FaqScreen), findsNothing);
   });
 
+  testWidgets('a tapped notification brings the map back to the front', (
+    tester,
+  ) async {
+    final notifications = createTestNotificationService();
+    final router = await createTestAppRouter(
+      notificationService: notifications,
+    );
+    await tester.pumpWidget(FlugwachtApp(router: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('More'));
+    await tester.pumpAndSettle();
+
+    notifications.tap(7);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MapScreen), findsOneWidget);
+    expect(router.state.uri.toString(), '/map');
+  });
+
   testWidgets('new flight opens without the tab bar and can be closed', (
     tester,
   ) async {

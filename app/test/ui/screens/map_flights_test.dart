@@ -112,6 +112,50 @@ void main() {
     });
   });
 
+  group('a requested flight', () {
+    test('takes the selection once it is on the map', () {
+      _withMapFlights((async, repository, mapFlights) {
+        mapFlights.selection.requestedFlightId.value = 2;
+
+        repository.emit([_airborneFlight(1), _airborneFlight(2)]);
+        async.flushMicrotasks();
+
+        expect(mapFlights.selectedId.value, 2);
+        expect(mapFlights.selection.requestedFlightId.value, isNull);
+      });
+    });
+
+    test('waits instead of settling for another flight', () {
+      _withMapFlights((async, repository, mapFlights) {
+        mapFlights.selection.requestedFlightId.value = 2;
+
+        repository.emit([_airborneFlight(1)]);
+        async.flushMicrotasks();
+        expect(mapFlights.selectedId.value, 1);
+        expect(mapFlights.selection.requestedFlightId.value, 2);
+
+        repository.emit([_airborneFlight(1), _airborneFlight(2)]);
+        async.flushMicrotasks();
+
+        expect(mapFlights.selectedId.value, 2);
+      });
+    });
+
+    test('leaves the choices made after it alone', () {
+      _withMapFlights((async, repository, mapFlights) {
+        mapFlights.selection.requestedFlightId.value = 2;
+        repository.emit([_airborneFlight(1), _airborneFlight(2)]);
+        async.flushMicrotasks();
+
+        mapFlights.selectedId.value = 1;
+        repository.emit([_airborneFlight(1), _airborneFlight(2)]);
+        async.flushMicrotasks();
+
+        expect(mapFlights.selectedId.value, 1);
+      });
+    });
+  });
+
   group('the trail', () {
     test('follows the selected flight', () {
       _withMapFlights((async, repository, mapFlights) {

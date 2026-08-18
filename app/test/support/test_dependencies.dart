@@ -105,6 +105,16 @@ class FakeNotificationService implements NotificationService {
   final shown = <(FlightNotification, int)>[];
   final scheduled = <(FlightNotification, int, DateTime)>[];
   final cancelled = <(FlightNotification, int)>[];
+  final _tappedFlights = StreamController<int>.broadcast();
+
+  @override
+  int? launchFlightId;
+
+  @override
+  Stream<int> get tappedFlights => _tappedFlights.stream;
+
+  /// Stands in for the user tapping the notification of a flight.
+  void tap(int flightId) => _tappedFlights.add(flightId);
 
   @override
   Future<void> requestPermission() async {
@@ -136,7 +146,10 @@ class FakeNotificationService implements NotificationService {
   Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
       cancelled.add((kind, flightId));
 
-  void dispose() => permission.dispose();
+  void dispose() {
+    permission.dispose();
+    unawaited(_tappedFlights.close());
+  }
 }
 
 /// Switch states without a preference store behind them, so a synchronous test
@@ -208,15 +221,18 @@ FakeNotificationService createTestNotificationService({
   return service;
 }
 
-Future<GoRouter> createTestAppRouter() async => createAppRouter(
-  flightRepository: createTestRepository(),
+Future<GoRouter> createTestAppRouter({
+  FlightRepository? flightRepository,
+  NotificationService? notificationService,
+}) async => createAppRouter(
+  flightRepository: flightRepository ?? createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
   routeLookup: FakeRouteLookup(),
   sourceSetting: await createTestSourceSetting(),
   mapStyleSetting: await createTestMapStyleSetting(),
   unitsSetting: await createTestUnitsSetting(),
   notificationSetting: await createTestNotificationSetting(),
-  notificationService: createTestNotificationService(),
+  notificationService: notificationService ?? createTestNotificationService(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );

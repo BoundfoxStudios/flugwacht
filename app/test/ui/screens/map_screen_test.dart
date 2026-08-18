@@ -170,7 +170,10 @@ List<Flight> flightsAirborneNow() {
   ];
 }
 
-Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
+Future<FakeFlightRepository> pumpApp(
+  WidgetTester tester, {
+  FakeNotificationService? notificationService,
+}) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
   await tester.pumpWidget(
@@ -183,7 +186,8 @@ Future<FakeFlightRepository> pumpApp(WidgetTester tester) async {
         mapStyleSetting: await createTestMapStyleSetting(),
         unitsSetting: await createTestUnitsSetting(),
         notificationSetting: await createTestNotificationSetting(),
-        notificationService: createTestNotificationService(),
+        notificationService:
+            notificationService ?? createTestNotificationService(),
         tileSources: testTileSources(),
         packageInfo: testPackageInfo(),
       ),
@@ -401,6 +405,33 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Map'));
     await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
+  testWidgets('frames the flight a tapped notification names', (tester) async {
+    final notifications = createTestNotificationService();
+    await pumpApp(tester, notificationService: notifications);
+
+    notifications.tap(2);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
+  testWidgets('frames the flight whose notification started the app', (
+    tester,
+  ) async {
+    final notifications = createTestNotificationService()..launchFlightId = 2;
+
+    await pumpApp(tester, notificationService: notifications);
 
     expect(
       tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,

@@ -30,10 +30,6 @@ class FlightNotifier {
   final FlightNotificationCopy _copy;
   final DateTime Function() clock;
 
-  /// When the system is due to deliver a flight's arrival reminder, so a
-  /// changed estimate can move it and a landing can call it off.
-  final _pendingArrivingSoonAt = <int, DateTime>{};
-
   Future<void> trackingChanged(Flight flight, FlightTracking tracking) async {
     // A marker says the user was told. Nothing reaches them through a service
     // the device could not set up, so nothing may be marked either.
@@ -44,7 +40,7 @@ class FlightNotifier {
     final plan = planNotifications(
       flight: updated,
       previousTracking: flight.tracking,
-      pendingArrivingSoonAt: _pendingArrivingSoonAt[flight.id],
+      pendingArrivingSoonAt: updated.notifications.arrivingSoonScheduledFor,
       isEnabled: _setting.isEnabled,
       now: clock(),
     );
@@ -55,11 +51,10 @@ class FlightNotifier {
   }
 
   /// Takes the reminders of flights that are gone off the system's hands —
-  /// unconditionally, because a reminder scheduled in an earlier run outlives
-  /// what this one remembers.
+  /// unconditionally, because their rows, and with them everything the app
+  /// knew about their reminders, are already deleted.
   Future<void> flightsRemoved(Iterable<int> flightIds) async {
     for (final flightId in flightIds) {
-      _pendingArrivingSoonAt.remove(flightId);
       await _service.cancel(
         FlightNotification.arrivingSoon,
         flightId: flightId,
@@ -69,23 +64,21 @@ class FlightNotifier {
 
   /// A reminder whose moment passed while the app was away reached the user
   /// through the system, so it counts as delivered.
-  Future<void> reconcileDeliveredReminders() async {
-    final now = clock();
-    final delivered = _pendingArrivingSoonAt.entries
-        .where((entry) => !now.isBefore(entry.value))
-        .map((entry) => entry.key)
-        .toList();
-    for (final flightId in delivered) {
-      _pendingArrivingSoonAt.remove(flightId);
-      await _repository.markNotificationDelivered(
-        flightId,
-        FlightNotification.arrivingSoon,
-        now,
-      );
-    }
-  }
+  Future<void> reconcileDeliveredReminders() =>
+      _repository.markDueRemindersDelivered(clock());
 
+  /// Claims the notification before showing it: a poll that started with an
+  /// older copy of the flight still carries the open marker, and only the call
+  /// that closes it may reach the user.
   Future<void> _deliver(FlightNotification kind, Flight flight) async {
+    final isClaimed = await _repository.claimNotification(
+      flight.id,
+      kind,
+      clock(),
+    );
+    if (!isClaimed) {
+      return;
+    }
     final text = _copy(kind, flight);
     await _service.show(
       kind,
@@ -93,7 +86,6 @@ class FlightNotifier {
       title: text.title,
       body: text.body,
     );
-    await _repository.markNotificationDelivered(flight.id, kind, clock());
   }
 
   Future<void> _applySchedule(
@@ -104,13 +96,13 @@ class FlightNotifier {
       case KeepArrivingSoonSchedule():
         return;
       case CancelArrivingSoonSchedule():
-        _pendingArrivingSoonAt.remove(flight.id);
+        await _repository.setArrivingSoonSchedule(flight.id, null);
         await _service.cancel(
           FlightNotification.arrivingSoon,
           flightId: flight.id,
         );
       case SetArrivingSoonSchedule(:final at):
-        _pendingArrivingSoonAt[flight.id] = at;
+        await _repository.setArrivingSoonSchedule(flight.id, at);
         final text = _copy(FlightNotification.arrivingSoon, flight);
         await _service.schedule(
           FlightNotification.arrivingSoon,

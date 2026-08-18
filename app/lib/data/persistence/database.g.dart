@@ -436,6 +436,17 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _arrivingSoonScheduledForMeta =
+      const VerificationMeta('arrivingSoonScheduledFor');
+  @override
+  late final GeneratedColumn<int> arrivingSoonScheduledFor =
+      GeneratedColumn<int>(
+        'arriving_soon_scheduled_for',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -476,6 +487,7 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     departedNotifiedAt,
     arrivingSoonNotifiedAt,
     landedNotifiedAt,
+    arrivingSoonScheduledFor,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -799,6 +811,15 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         ),
       );
     }
+    if (data.containsKey('arriving_soon_scheduled_for')) {
+      context.handle(
+        _arrivingSoonScheduledForMeta,
+        arrivingSoonScheduledFor.isAcceptableOrUnknown(
+          data['arriving_soon_scheduled_for']!,
+          _arrivingSoonScheduledForMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -966,6 +987,10 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.int,
         data['${effectivePrefix}landed_notified_at'],
       ),
+      arrivingSoonScheduledFor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}arriving_soon_scheduled_for'],
+      ),
     );
   }
 
@@ -1024,6 +1049,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final int? departedNotifiedAt;
   final int? arrivingSoonNotifiedAt;
   final int? landedNotifiedAt;
+  final int? arrivingSoonScheduledFor;
   const FlightRow({
     required this.id,
     required this.lookupKind,
@@ -1063,6 +1089,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.departedNotifiedAt,
     this.arrivingSoonNotifiedAt,
     this.landedNotifiedAt,
+    this.arrivingSoonScheduledFor,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1193,6 +1220,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     if (!nullToAbsent || landedNotifiedAt != null) {
       map['landed_notified_at'] = Variable<int>(landedNotifiedAt);
     }
+    if (!nullToAbsent || arrivingSoonScheduledFor != null) {
+      map['arriving_soon_scheduled_for'] = Variable<int>(
+        arrivingSoonScheduledFor,
+      );
+    }
     return map;
   }
 
@@ -1303,6 +1335,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       landedNotifiedAt: landedNotifiedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(landedNotifiedAt),
+      arrivingSoonScheduledFor: arrivingSoonScheduledFor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(arrivingSoonScheduledFor),
     );
   }
 
@@ -1384,6 +1419,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
         json['arrivingSoonNotifiedAt'],
       ),
       landedNotifiedAt: serializer.fromJson<int?>(json['landedNotifiedAt']),
+      arrivingSoonScheduledFor: serializer.fromJson<int?>(
+        json['arrivingSoonScheduledFor'],
+      ),
     );
   }
   @override
@@ -1448,6 +1486,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'departedNotifiedAt': serializer.toJson<int?>(departedNotifiedAt),
       'arrivingSoonNotifiedAt': serializer.toJson<int?>(arrivingSoonNotifiedAt),
       'landedNotifiedAt': serializer.toJson<int?>(landedNotifiedAt),
+      'arrivingSoonScheduledFor': serializer.toJson<int?>(
+        arrivingSoonScheduledFor,
+      ),
     };
   }
 
@@ -1490,6 +1531,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<int?> departedNotifiedAt = const Value.absent(),
     Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
     Value<int?> landedNotifiedAt = const Value.absent(),
+    Value<int?> arrivingSoonScheduledFor = const Value.absent(),
   }) => FlightRow(
     id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
@@ -1586,6 +1628,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     landedNotifiedAt: landedNotifiedAt.present
         ? landedNotifiedAt.value
         : this.landedNotifiedAt,
+    arrivingSoonScheduledFor: arrivingSoonScheduledFor.present
+        ? arrivingSoonScheduledFor.value
+        : this.arrivingSoonScheduledFor,
   );
   FlightRow copyWithCompanion(FlightsCompanion data) {
     return FlightRow(
@@ -1700,6 +1745,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       landedNotifiedAt: data.landedNotifiedAt.present
           ? data.landedNotifiedAt.value
           : this.landedNotifiedAt,
+      arrivingSoonScheduledFor: data.arrivingSoonScheduledFor.present
+          ? data.arrivingSoonScheduledFor.value
+          : this.arrivingSoonScheduledFor,
     );
   }
 
@@ -1751,7 +1799,8 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           )
           ..write('departedNotifiedAt: $departedNotifiedAt, ')
           ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
-          ..write('landedNotifiedAt: $landedNotifiedAt')
+          ..write('landedNotifiedAt: $landedNotifiedAt, ')
+          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor')
           ..write(')'))
         .toString();
   }
@@ -1796,6 +1845,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     departedNotifiedAt,
     arrivingSoonNotifiedAt,
     landedNotifiedAt,
+    arrivingSoonScheduledFor,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1844,7 +1894,8 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
               this.latestVerticalRateFeetPerMinute &&
           other.departedNotifiedAt == this.departedNotifiedAt &&
           other.arrivingSoonNotifiedAt == this.arrivingSoonNotifiedAt &&
-          other.landedNotifiedAt == this.landedNotifiedAt);
+          other.landedNotifiedAt == this.landedNotifiedAt &&
+          other.arrivingSoonScheduledFor == this.arrivingSoonScheduledFor);
 }
 
 class FlightsCompanion extends UpdateCompanion<FlightRow> {
@@ -1886,6 +1937,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<int?> departedNotifiedAt;
   final Value<int?> arrivingSoonNotifiedAt;
   final Value<int?> landedNotifiedAt;
+  final Value<int?> arrivingSoonScheduledFor;
   const FlightsCompanion({
     this.id = const Value.absent(),
     this.lookupKind = const Value.absent(),
@@ -1925,6 +1977,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.departedNotifiedAt = const Value.absent(),
     this.arrivingSoonNotifiedAt = const Value.absent(),
     this.landedNotifiedAt = const Value.absent(),
+    this.arrivingSoonScheduledFor = const Value.absent(),
   });
   FlightsCompanion.insert({
     this.id = const Value.absent(),
@@ -1965,6 +2018,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.departedNotifiedAt = const Value.absent(),
     this.arrivingSoonNotifiedAt = const Value.absent(),
     this.landedNotifiedAt = const Value.absent(),
+    this.arrivingSoonScheduledFor = const Value.absent(),
   }) : lookupKind = Value(lookupKind),
        lookupValue = Value(lookupValue),
        departureDate = Value(departureDate),
@@ -2008,6 +2062,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<int>? departedNotifiedAt,
     Expression<int>? arrivingSoonNotifiedAt,
     Expression<int>? landedNotifiedAt,
+    Expression<int>? arrivingSoonScheduledFor,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2064,6 +2119,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (arrivingSoonNotifiedAt != null)
         'arriving_soon_notified_at': arrivingSoonNotifiedAt,
       if (landedNotifiedAt != null) 'landed_notified_at': landedNotifiedAt,
+      if (arrivingSoonScheduledFor != null)
+        'arriving_soon_scheduled_for': arrivingSoonScheduledFor,
     });
   }
 
@@ -2106,6 +2163,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<int?>? departedNotifiedAt,
     Value<int?>? arrivingSoonNotifiedAt,
     Value<int?>? landedNotifiedAt,
+    Value<int?>? arrivingSoonScheduledFor,
   }) {
     return FlightsCompanion(
       id: id ?? this.id,
@@ -2156,6 +2214,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       arrivingSoonNotifiedAt:
           arrivingSoonNotifiedAt ?? this.arrivingSoonNotifiedAt,
       landedNotifiedAt: landedNotifiedAt ?? this.landedNotifiedAt,
+      arrivingSoonScheduledFor:
+          arrivingSoonScheduledFor ?? this.arrivingSoonScheduledFor,
     );
   }
 
@@ -2304,6 +2364,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     if (landedNotifiedAt.present) {
       map['landed_notified_at'] = Variable<int>(landedNotifiedAt.value);
     }
+    if (arrivingSoonScheduledFor.present) {
+      map['arriving_soon_scheduled_for'] = Variable<int>(
+        arrivingSoonScheduledFor.value,
+      );
+    }
     return map;
   }
 
@@ -2355,7 +2420,8 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           )
           ..write('departedNotifiedAt: $departedNotifiedAt, ')
           ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
-          ..write('landedNotifiedAt: $landedNotifiedAt')
+          ..write('landedNotifiedAt: $landedNotifiedAt, ')
+          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor')
           ..write(')'))
         .toString();
   }
@@ -2799,6 +2865,7 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<int?> departedNotifiedAt,
       Value<int?> arrivingSoonNotifiedAt,
       Value<int?> landedNotifiedAt,
+      Value<int?> arrivingSoonScheduledFor,
     });
 typedef $$FlightsTableUpdateCompanionBuilder =
     FlightsCompanion Function({
@@ -2840,6 +2907,7 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<int?> departedNotifiedAt,
       Value<int?> arrivingSoonNotifiedAt,
       Value<int?> landedNotifiedAt,
+      Value<int?> arrivingSoonScheduledFor,
     });
 
 final class $$FlightsTableReferences
@@ -3071,6 +3139,11 @@ class $$FlightsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get arrivingSoonScheduledFor => $composableBuilder(
+    column: $table.arrivingSoonScheduledFor,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> trailPointsRefs(
     Expression<bool> Function($$TrailPointsTableFilterComposer f) f,
   ) {
@@ -3298,6 +3371,11 @@ class $$FlightsTableOrderingComposer
     column: $table.landedNotifiedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get arrivingSoonScheduledFor => $composableBuilder(
+    column: $table.arrivingSoonScheduledFor,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FlightsTableAnnotationComposer
@@ -3500,6 +3578,11 @@ class $$FlightsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get arrivingSoonScheduledFor => $composableBuilder(
+    column: $table.arrivingSoonScheduledFor,
+    builder: (column) => column,
+  );
+
   Expression<T> trailPointsRefs<T extends Object>(
     Expression<T> Function($$TrailPointsTableAnnotationComposer a) f,
   ) {
@@ -3598,6 +3681,7 @@ class $$FlightsTableTableManager
                 Value<int?> departedNotifiedAt = const Value.absent(),
                 Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
                 Value<int?> landedNotifiedAt = const Value.absent(),
+                Value<int?> arrivingSoonScheduledFor = const Value.absent(),
               }) => FlightsCompanion(
                 id: id,
                 lookupKind: lookupKind,
@@ -3638,6 +3722,7 @@ class $$FlightsTableTableManager
                 departedNotifiedAt: departedNotifiedAt,
                 arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
                 landedNotifiedAt: landedNotifiedAt,
+                arrivingSoonScheduledFor: arrivingSoonScheduledFor,
               ),
           createCompanionCallback:
               ({
@@ -3685,6 +3770,7 @@ class $$FlightsTableTableManager
                 Value<int?> departedNotifiedAt = const Value.absent(),
                 Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
                 Value<int?> landedNotifiedAt = const Value.absent(),
+                Value<int?> arrivingSoonScheduledFor = const Value.absent(),
               }) => FlightsCompanion.insert(
                 id: id,
                 lookupKind: lookupKind,
@@ -3725,6 +3811,7 @@ class $$FlightsTableTableManager
                 departedNotifiedAt: departedNotifiedAt,
                 arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
                 landedNotifiedAt: landedNotifiedAt,
+                arrivingSoonScheduledFor: arrivingSoonScheduledFor,
               ),
           withReferenceMapper: (p0) => p0
               .map(

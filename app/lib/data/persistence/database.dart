@@ -48,6 +48,7 @@ class Flights extends Table {
   IntColumn get departedNotifiedAt => integer().nullable()();
   IntColumn get arrivingSoonNotifiedAt => integer().nullable()();
   IntColumn get landedNotifiedAt => integer().nullable()();
+  IntColumn get arrivingSoonScheduledFor => integer().nullable()();
 }
 
 @DataClassName('TrailPointRow')

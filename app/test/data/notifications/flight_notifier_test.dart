@@ -146,7 +146,12 @@ void main() {
     await notifier.trackingChanged(_flight, airborne);
 
     await notifier.trackingChanged(
-      _flight.copyWith(tracking: airborne),
+      _flight.copyWith(
+        tracking: airborne,
+        notifications: NotificationMarkers(
+          arrivingSoonScheduledFor: service.scheduled.single.$3,
+        ),
+      ),
       FlightTracking(
         latestPosition: _position(groundSpeedKnots: 10, onGround: true),
         hasBeenAirborne: true,
@@ -156,6 +161,18 @@ void main() {
 
     expect(service.shown, contains((FlightNotification.landed, 7)));
     expect(service.cancelled, [(FlightNotification.arrivingSoon, 7)]);
+  });
+
+  test('shows nothing twice when a poll carries an older flight', () async {
+    final airborne = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 30),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(_flight, airborne);
+
+    await notifier.trackingChanged(_flight, airborne);
+
+    expect(service.shown, [(FlightNotification.departed, 7)]);
   });
 
   test('takes the reminder of a flight that is gone back', () async {
@@ -183,6 +200,31 @@ void main() {
     now = service.scheduled.single.$3.add(const Duration(minutes: 1));
 
     await notifier.reconcileDeliveredReminders();
+
+    expect(
+      repository.notificationMarks,
+      contains((7, FlightNotification.arrivingSoon)),
+    );
+  });
+
+  test('counts the reminder an earlier run scheduled as delivered', () async {
+    await notifier.trackingChanged(
+      _flight,
+      FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 180),
+        hasBeenAirborne: true,
+      ),
+    );
+    now = service.scheduled.single.$3.add(const Duration(minutes: 1));
+    final afterRestart = FlightNotifier(
+      repository: repository,
+      service: service,
+      setting: setting,
+      copy: (kind, flight) => (title: flight.lookupValue, body: kind.name),
+      clock: () => now,
+    );
+
+    await afterRestart.reconcileDeliveredReminders();
 
     expect(
       repository.notificationMarks,

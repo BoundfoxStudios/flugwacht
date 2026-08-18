@@ -161,7 +161,7 @@ void main() {
       final flight = await addFlight();
       final deliveredAt = DateTime.utc(2026, 3, 17, 14, 30);
 
-      await repository.markNotificationDelivered(
+      await repository.claimNotification(
         flight.id,
         FlightNotification.departed,
         deliveredAt,
@@ -177,7 +177,7 @@ void main() {
       final flight = await addFlight();
 
       for (final kind in FlightNotification.values) {
-        await repository.markNotificationDelivered(
+        await repository.claimNotification(
           flight.id,
           kind,
           DateTime.utc(2026, 3, 17, 14, 30),
@@ -200,6 +200,92 @@ void main() {
       expect(flight.notifications.departedAt, isNull);
       expect(flight.notifications.arrivingSoonAt, isNull);
       expect(flight.notifications.landedAt, isNull);
+      expect(flight.notifications.arrivingSoonScheduledFor, isNull);
+    });
+
+    test('grants a notification to the first claim only', () async {
+      final flight = await addFlight();
+      final deliveredAt = DateTime.utc(2026, 3, 17, 14, 30);
+
+      final first = await repository.claimNotification(
+        flight.id,
+        FlightNotification.departed,
+        deliveredAt,
+      );
+      final second = await repository.claimNotification(
+        flight.id,
+        FlightNotification.departed,
+        deliveredAt.add(const Duration(minutes: 5)),
+      );
+
+      expect(first, isTrue);
+      expect(second, isFalse);
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.notifications.departedAt, deliveredAt);
+    });
+
+    test('leaves the flights it was not asked about alone', () async {
+      final flight = await addFlight();
+      final other = await addFlight();
+
+      await repository.claimNotification(
+        flight.id,
+        FlightNotification.departed,
+        DateTime.utc(2026, 3, 17, 14, 30),
+      );
+
+      final stored = await repository.watchFlights().first;
+      final untouched = stored.firstWhere((row) => row.id == other.id);
+      expect(untouched.notifications.departedAt, isNull);
+    });
+  });
+
+  group('pending arrival reminders', () {
+    final scheduledFor = DateTime.utc(2026, 3, 17, 15);
+
+    test('remembers when the system is due to deliver a reminder', () async {
+      final flight = await addFlight();
+
+      await repository.setArrivingSoonSchedule(flight.id, scheduledFor);
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.notifications.arrivingSoonScheduledFor, scheduledFor);
+    });
+
+    test('takes a reminder back off the record', () async {
+      final flight = await addFlight();
+      await repository.setArrivingSoonSchedule(flight.id, scheduledFor);
+
+      await repository.setArrivingSoonSchedule(flight.id, null);
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.notifications.arrivingSoonScheduledFor, isNull);
+    });
+
+    test('counts a reminder whose moment has passed as delivered', () async {
+      final flight = await addFlight();
+      await repository.setArrivingSoonSchedule(flight.id, scheduledFor);
+
+      await repository.markDueRemindersDelivered(
+        scheduledFor.add(const Duration(minutes: 1)),
+      );
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.notifications.arrivingSoonAt, scheduledFor);
+      expect(stored.notifications.arrivingSoonScheduledFor, isNull);
+    });
+
+    test('leaves a reminder that is still ahead pending', () async {
+      final flight = await addFlight();
+      await repository.setArrivingSoonSchedule(flight.id, scheduledFor);
+
+      await repository.markDueRemindersDelivered(
+        scheduledFor.subtract(const Duration(minutes: 1)),
+      );
+
+      final stored = (await repository.watchFlights().first).single;
+      expect(stored.notifications.arrivingSoonAt, isNull);
+      expect(stored.notifications.arrivingSoonScheduledFor, scheduledFor);
     });
   });
 

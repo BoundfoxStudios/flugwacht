@@ -63,6 +63,14 @@ class AboutScreen extends StatelessWidget {
                 ),
                 _AboutRow(
                   label: localizations.aboutGithub,
+                  leading: SvgPicture.asset(
+                    'assets/logo/github.svg',
+                    height: _AboutRow.leadingSize,
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurface,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                   onTap: () => unawaited(_openUrl(_repositoryUrl)),
                 ),
               ],
@@ -85,7 +93,7 @@ class AboutScreen extends StatelessWidget {
 class _IdentityCard extends StatelessWidget {
   const _IdentityCard({required this.version});
 
-  static const _lockupHeight = 40.0;
+  static const _lockupHeight = 56.0;
 
   final String version;
 
@@ -137,6 +145,9 @@ class _AboutRow extends StatefulWidget {
   const _AboutRow({required this.label, required this.onTap, this.leading});
 
   static const leadingSize = 20.0;
+  // A slot as wide as the widest logo, so rows with differently proportioned
+  // logos still start their label at the same x.
+  static const _leadingSlotWidth = 24.0;
   static const _chevronSize = 14.0;
 
   final String label;
@@ -168,7 +179,11 @@ class _AboutRowState extends State<_AboutRow> {
             child: Row(
               spacing: AppSpacing.cardPadding,
               children: [
-                ?widget.leading,
+                if (widget.leading case final leading?)
+                  SizedBox(
+                    width: _AboutRow._leadingSlotWidth,
+                    child: Center(child: leading),
+                  ),
                 Expanded(
                   child: Text(widget.label, style: theme.textTheme.bodyLarge),
                 ),

@@ -28,6 +28,10 @@ class FlightPreviewRouteUnknown extends FlightPreviewState {
   const FlightPreviewRouteUnknown();
 }
 
+class FlightPreviewSearching extends FlightPreviewState {
+  const FlightPreviewSearching();
+}
+
 /// Resolves the route of the entered flight number once the typing rests, and
 /// keeps only the result the current input asked for.
 class NewFlightPreview {
@@ -65,10 +69,11 @@ class NewFlightPreview {
         _form.lookupKind.value == FlightLookupKind.flightNumber;
     _requestedInput = input;
     _pendingLookup?.cancel();
-    state.value = const FlightPreviewHidden();
     if (!isFlightNumberKind || FlightNumber.tryParse(input) == null) {
+      state.value = const FlightPreviewHidden();
       return;
     }
+    state.value = const FlightPreviewSearching();
     _pendingLookup = Timer(debounce, () => _lookUpRoute(input));
   }
 

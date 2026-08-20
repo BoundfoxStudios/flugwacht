@@ -100,6 +100,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ohne Route gilt die Zeit als deine Gerätezeit';
 
   @override
+  String get newFlightDepartureTimeSearchingRoute =>
+      'Wartet auf die Route, die die Uhr festlegt';
+
+  @override
   String get newFlightNoteLabel => 'Notiz (optional)';
 
   @override
@@ -117,6 +121,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get newFlightPreviewRouteUnknown => 'Route unbekannt';
+
+  @override
+  String get newFlightPreviewSearching => 'Suche die Route';
 
   @override
   String newFlightPreviewCallsign(String callsign) {

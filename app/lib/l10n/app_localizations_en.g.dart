@@ -101,6 +101,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Without a route the time counts as your device time';
 
   @override
+  String get newFlightDepartureTimeSearchingRoute =>
+      'Waiting for the route to settle the clock';
+
+  @override
   String get newFlightNoteLabel => 'Note (optional)';
 
   @override
@@ -118,6 +122,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newFlightPreviewRouteUnknown => 'Route unknown';
+
+  @override
+  String get newFlightPreviewSearching => 'Looking for the route';
 
   @override
   String newFlightPreviewCallsign(String callsign) {

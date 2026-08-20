@@ -93,6 +93,9 @@ promise.
 - The preview card renders the searching state as its own content: the card's
   existing shape, a short line plus a small progress indicator, so the state
   reads as motion and not as a result.
+- The lookup counts its requests, so an answer that a later request has
+  outdated is dropped even when both asked for the same flight number, and an
+  answer arriving after the screen is gone writes nothing.
 - The save button is disabled while the preview is searching.
 - The departure-time zone row shows a searching hint instead of the device
   fallback line while the lookup runs; the fallback line stays for a resolved
@@ -149,28 +152,29 @@ flight departs.
 
 ### Change
 
-Do not gate the search, gate the adoption.
+Do not gate the search, gate what may be adopted.
 
 - Polling runs for the whole flight day window. `_awaitsAcquisition` in the
   engine is gone.
 - `searchStartsAt` becomes `airborneContactStartsAt`, same body, and decides
-  what may count as a flight's first contact instead of when to look.
-- Before that instant, a flight that has never been seen adopts only an
-  aircraft that reports being on the ground: a flight number only one within
-  `originContactRadiusKilometers` (25 km) of the route's origin, and without a
-  known route not at all, while an entered registration or hex address names
-  the right airframe wherever it stands. An airborne or positionless answer is
-  refused as `PollAwaitsDeparture`, which the engine treats exactly like no
-  data.
-- From the anchor on, and for any flight that has already been acquired,
-  nothing is refused: the gate guards first contact only.
-- Searches before the anchor are spaced `preDepartureSearchInterval` (5 min)
-  apart instead of one minute, so an evening departure is not asked for every
-  minute from midnight on.
+  what an answer may do instead of when to look.
+- Before that instant nothing is tracked at all. The only answer that counts is
+  an aircraft standing within `originContactRadiusKilometers` (25 km) of the
+  flight's known origin, and all it yields is `PollIdentityAdopted`: the hex
+  address the flight is polled by from then on. No tracking update, no trail
+  point, no state change, because an aircraft at its gate is not a flight under
+  way. Everything else is `PollAwaitsDeparture`, which the engine treats like
+  no data. An entered registration or hex address has no route and nothing to
+  gain there: its identity is the query.
+- From the anchor on, nothing is refused.
+- While the gate is up the flight is asked for every
+  `preDepartureSearchInterval` (5 min) instead of every minute, and that check
+  comes before the live cadence, so no pre-departure contact can pull the
+  flight to the 5 s rate.
 
-A wrong entered time therefore no longer costs a flight day. It means the
-flight is adopted on the ground at its origin instead of in the air, and if it
-is never seen on the ground, from the anchor on as before.
+A wrong entered time therefore no longer costs a flight day: the flight is
+polled from the window start, its aircraft is picked up at the origin, and from
+the anchor on everything is taken as before.
 
 `SPEC.md`'s search anchor bullet becomes the departure contact gate in the same
 PR.
@@ -178,12 +182,13 @@ PR.
 ### Acceptance criteria
 
 - A flight whose entered departure time is hours off is polled from the window
-  start, and adopted as soon as its aircraft is seen standing at the origin.
+  start on, at the pre-departure interval.
 - An airborne answer before the anchor is refused and writes nothing.
-- A ground answer far from the route's origin is refused.
-- An entered registration or hex address takes a ground answer anywhere.
-- A flight that has already been acquired takes an airborne answer before the
-  anchor.
+- An aircraft standing at the flight's origin before the anchor yields its
+  identity and nothing else: no tracking update, no trail point.
+- A ground answer far from the origin, or one for a flight without a known
+  route, is refused.
+- Nothing a flight already stores opens the gate early.
 - `SPEC.md` describes the rule that ships.
 
 ### Verification
@@ -211,11 +216,12 @@ leg.
 
 Adopt first, then guard, for registration and hex flights:
 
-- The first applied fix whose trimmed callsign is not empty and that does not
-  report the airframe on the ground pins that callsign as the flight's
-  `expectedCallsign`. Only the callsign is pinned; the stored hex address is
-  left untouched. A standing airframe can still wear the callsign of the leg it
-  just arrived on, which is exactly what the pin must not adopt.
+- The first applied fix whose trimmed callsign is not empty and that positively
+  reports the airframe flying inside the flight day window pins that callsign
+  as the flight's `expectedCallsign`. Only the callsign is pinned; the stored
+  hex address is left untouched. A standing airframe can still wear the
+  callsign of the leg it just arrived on, and an answer that reports neither
+  its altitude nor a position from this flight day proves nothing either.
 - Once a callsign is pinned, a fix whose trimmed callsign differs is rejected
   as `PollIdentityRejected`, the same path the flight-number lookup already
   takes.
@@ -235,7 +241,8 @@ hex case in the same PR.
 - The same holds for a hex-entered flight.
 - A first fix without a callsign is applied and leaves `expectedCallsign` null,
   so a later fix with a callsign can still pin it.
-- A fix that reports the airframe on the ground pins nothing.
+- A fix that reports the airframe on the ground, one that hides whether it
+  flies, and one whose position predates the flight day all pin nothing.
 - A rejection does not clear the flight's stored hex address or lookup value.
 
 ### Verification

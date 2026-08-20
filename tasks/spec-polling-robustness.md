@@ -27,9 +27,9 @@ draws a leg that is not the one the user added.
 | Module id | Responsibility | Depends on | Issue |
 |---|---|---|---|
 | `departure-time-truth` | The new-flight form never stores a clock it did not verify | - | #217 (part 1) |
-| `search-anchor-floor` | The search anchor gets an upper bound | - | #217 (part 2) |
+| `search-anchor-floor` | The scheduled departure gates the first contact instead of the search | - | #217 (part 2) |
 | `identity-pinning` | Registration and hex flights pin their callsign on first contact and guard it afterwards | - | #151 |
-| `waiting-state-affordances` | `waiting` explains itself and offers the source switch | `search-anchor-floor` | #218 |
+| `waiting-state-affordances` | `waiting` explains itself and offers the source switch | - | #218 |
 
 Build order: `departure-time-truth`, `search-anchor-floor`, `identity-pinning`
 (independent of each other) then `waiting-state-affordances`.
@@ -129,62 +129,72 @@ promise.
 
 ### Problem
 
-`searchStartsAt` clamps the anchor upwards to the window start but has no upper
-bound (`poll_planning.dart:20-32`). An entered time that names another zone's
-wall clock, or is simply wrong by more than the two hours of lead time, moves
-the anchor by the full offset and can block every request for the whole flight
-day while the flight sits in `waiting`.
+`searchStartsAt` in `poll_planning.dart` decides whether a flight is polled at
+all. A flight that has never been seen is not looked up before its scheduled
+departure minus two hours, clamped up to the window start. An entered time that
+names another zone's wall clock, or that is simply wrong by more than the lead
+time, moves that instant by the full offset and can block every single request
+for the whole flight day while the flight sits in `waiting`, indistinguishable
+from a flight the source genuinely cannot see.
+
+### The design that was tried and rejected
+
+Capping the anchor at six hours after the window start was implemented first
+and thrown away. It destroys the case the anchor exists for: LH401 JFK to FRA
+departs 18:00 local, and yesterday's leg of the same daily callsign is airborne
+from 00:00 to 07:30 device local on today's departure date. Any cap inside that
+band lets the app adopt yesterday's aircraft, pin its hex, draw its trail and
+mark the flight `ended` when yesterday's leg lands, hours before the user's
+flight departs.
 
 ### Change
 
-The anchor is clamped on both sides:
+Do not gate the search, gate the adoption.
 
-```dart
-const maximumSearchDelay = Duration(hours: 6);
+- Polling runs for the whole flight day window. `_awaitsAcquisition` in the
+  engine is gone.
+- `searchStartsAt` becomes `airborneContactStartsAt`, same body, and decides
+  what may count as a flight's first contact instead of when to look.
+- Before that instant, a flight that has never been seen adopts only an
+  aircraft that reports being on the ground: a flight number only one within
+  `originContactRadiusKilometers` (25 km) of the route's origin, and without a
+  known route not at all, while an entered registration or hex address names
+  the right airframe wherever it stands. An airborne or positionless answer is
+  refused as `PollAwaitsDeparture`, which the engine treats exactly like no
+  data.
+- From the anchor on, and for any flight that has already been acquired,
+  nothing is refused: the gate guards first contact only.
+- Searches before the anchor are spaced `preDepartureSearchInterval` (5 min)
+  apart instead of one minute, so an evening departure is not asked for every
+  minute from midnight on.
 
-DateTime searchStartsAt(Flight flight) {
-  final window = FlightDayWindow.forDepartureDate(flight.departureDate);
-  final departureInstant = departureInstantOf(flight);
-  if (departureInstant == null) {
-    return window.start;
-  }
-  final anchor = departureInstant.subtract(searchLeadTime);
-  final latest = window.start.add(maximumSearchDelay);
-  if (anchor.isBefore(window.start)) {
-    return window.start;
-  }
-  return anchor.isAfter(latest) ? latest : anchor;
-}
-```
+A wrong entered time therefore no longer costs a flight day. It means the
+flight is adopted on the ground at its origin instead of in the air, and if it
+is never seen on the ground, from the anchor on as before.
 
-A flight that has never been seen is therefore searched for from 06:00 device
-local on its departure date at the latest. The lead time keeps its job for a
-correctly entered time; the cap keeps one wrong number from costing a whole
-window.
-
-`SPEC.md`'s search anchor bullet (Testing Strategy) gains the cap in the same
-PR: the anchor is never later than six hours after the window start.
+`SPEC.md`'s search anchor bullet becomes the departure contact gate in the same
+PR.
 
 ### Acceptance criteria
 
-- A departure time that names another zone's wall clock (17:45 at WMKK entered
-  on a device in Europe/Berlin) yields an anchor no later than window start
-  plus six hours.
-- A departure time more than two hours later than the real departure yields the
-  same bound.
-- A flight without a departure time still starts with the window.
-- An anchor before the window start is still clamped up to the window start.
+- A flight whose entered departure time is hours off is polled from the window
+  start, and adopted as soon as its aircraft is seen standing at the origin.
+- An airborne answer before the anchor is refused and writes nothing.
+- A ground answer far from the route's origin is refused.
+- An entered registration or hex address takes a ground answer anywhere.
+- A flight that has already been acquired takes an airborne answer before the
+  anchor.
 - `SPEC.md` describes the rule that ships.
 
 ### Verification
 
-`flutter test test/domain/poll_planning_test.dart`
+`flutter test test/domain/poll_planning_test.dart test/data/polling_engine_test.dart`
 
 ### Files
 
-`lib/domain/poll_planning.dart`, `test/domain/poll_planning_test.dart`, `SPEC.md`
-
----
+`lib/domain/poll_planning.dart`, `lib/data/polling_engine.dart`,
+`test/domain/poll_planning_test.dart`, `test/data/polling_engine_test.dart`,
+`SPEC.md`
 
 ## Module: `identity-pinning` (#151)
 
@@ -201,9 +211,11 @@ leg.
 
 Adopt first, then guard, for registration and hex flights:
 
-- The first applied fix inside the flight's window whose trimmed callsign is
-  not empty pins that callsign as the flight's `expectedCallsign`. Only the
-  callsign is pinned; the stored hex address is left untouched.
+- The first applied fix whose trimmed callsign is not empty and that does not
+  report the airframe on the ground pins that callsign as the flight's
+  `expectedCallsign`. Only the callsign is pinned; the stored hex address is
+  left untouched. A standing airframe can still wear the callsign of the leg it
+  just arrived on, which is exactly what the pin must not adopt.
 - Once a callsign is pinned, a fix whose trimmed callsign differs is rejected
   as `PollIdentityRejected`, the same path the flight-number lookup already
   takes.
@@ -223,6 +235,7 @@ hex case in the same PR.
 - The same holds for a hex-entered flight.
 - A first fix without a callsign is applied and leaves `expectedCallsign` null,
   so a later fix with a callsign can still pin it.
+- A fix that reports the airframe on the ground pins nothing.
 - A rejection does not clear the flight's stored hex address or lookup value.
 
 ### Verification
@@ -250,20 +263,19 @@ the aircraft was genuinely absent from every feeder network.
 ### Change
 
 An open sheet of a `waiting` flight shows an info box in the same shell as
-`NoSignalInfoBox`, with two variants decided by `searchStartsAt(flight)`
-against the clock:
+`NoSignalInfoBox`. It names the identity the app is searching for
+(`flight.lookupValue`, the way every screen names a flight) plus the existing
+reassurance that receivers are often missing for one to two hours.
 
-- Search running: names the identity the app is searching for
-  (`flight.lookupValue`, the way every screen names a flight) and the instant
-  the search started, plus the existing reassurance that receivers are often
-  missing for one to two hours.
-- Search not started yet: names the instant it will start and why, instead of
-  an unexplained wait.
+The footer's source-switch link is offered for every `waiting` flight.
 
-The footer's source-switch link is offered for a `waiting` flight whose search
-is running. A flight whose search has not started yet does not get the link:
-the active source is not the reason it sees nothing, and offering the remedy
-there would point at the wrong cause.
+The issue also asks for the instant the search started and for a variant that
+names when a search still ahead will start. Both fell away with the departure
+contact gate: the app now searches from the window start for every pollable
+flight, so there is no state in which it is not looking, and the only instant
+the app could honestly name would be that window start, which is not when it
+began looking for a flight added later that day. Naming it would be a
+fabrication, so the box states what is true instead.
 
 The list row is unchanged: `flightRowWaitingForSignal` stays one short line.
 
@@ -271,16 +283,12 @@ New copy, English template plus German:
 
 | Key | English |
 |---|---|
-| `mapSheetWaitingInfo` | Searching for {identity} since {time}. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft. |
-| `mapSheetWaitingScheduledInfo` | The search for {identity} starts at {time}. Until then a flight with the same number from yesterday could be mistaken for this one. |
+| `mapSheetWaitingInfo` | Searching for {identity}. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft. |
 
 ### Acceptance criteria
 
-- An open sheet of a `waiting` flight whose search is running states that the
-  app is searching, for which identity and since when, and offers the source
-  switch.
-- An open sheet of a `waiting` flight whose search has not started yet names
-  the instant it will start.
+- An open sheet of a `waiting` flight states that the app is searching, for
+  which identity, and offers the source switch.
 - The list row of a waiting flight still reads as one short line.
 - Nothing changes for `live`, `noSignal`, `planned`, `ended` or `missed`.
 
@@ -339,6 +347,9 @@ their own PR.
 - The save gate blocks for as long as the route lookup runs. Its bound is the
   `RouteLookup` timeout of 10 s per request, and a dead network resolves at the
   first timeout. Accepted as is unless the wait should get its own deadline.
-- The source-switch link is deliberately withheld from a waiting flight whose
-  search has not started yet, which reads the acceptance criterion of #218
-  narrowly. Say so if it should show for every waiting flight.
+- A flight number whose route the standing data does not know cannot be adopted
+  before the anchor at all: without an origin there is nothing to check a
+  ground answer against. It is polled from the window start like every other
+  flight and adopted from the anchor on.
+- The 25 km radius around the origin is a judgement call, wide enough for the
+  largest airports and their satellite fields.

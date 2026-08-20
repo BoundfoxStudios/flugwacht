@@ -55,9 +55,14 @@ class NewFlightPreview {
 
   late final EffectCleanup _stopWatchingForm;
   Timer? _pendingLookup;
-  String _requestedInput = '';
+
+  /// Counts the requests the form asked for, so an answer that a later one has
+  /// outdated is dropped even when both asked for the same flight number.
+  var _requestCount = 0;
+  var _isDisposed = false;
 
   void dispose() {
+    _isDisposed = true;
     _pendingLookup?.cancel();
     _stopWatchingForm();
     state.dispose();
@@ -67,17 +72,18 @@ class NewFlightPreview {
     final input = _form.inputFor(FlightLookupKind.flightNumber).value;
     final isFlightNumberKind =
         _form.lookupKind.value == FlightLookupKind.flightNumber;
-    _requestedInput = input;
+    _requestCount++;
     _pendingLookup?.cancel();
     if (!isFlightNumberKind || FlightNumber.tryParse(input) == null) {
       state.value = const FlightPreviewHidden();
       return;
     }
     state.value = const FlightPreviewSearching();
-    _pendingLookup = Timer(debounce, () => _lookUpRoute(input));
+    final request = _requestCount;
+    _pendingLookup = Timer(debounce, () => _lookUpRoute(input, request));
   }
 
-  Future<void> _lookUpRoute(String input) async {
+  Future<void> _lookUpRoute(String input, int request) async {
     final flightNumber = FlightNumber.tryParse(input);
     if (flightNumber == null) {
       return;
@@ -85,7 +91,7 @@ class NewFlightPreview {
     final result = await _routeLookup.lookup(
       _airlineDirectory.callsignCandidates(flightNumber),
     );
-    if (_requestedInput != input) {
+    if (_isDisposed || request != _requestCount) {
       return;
     }
     state.value = switch (result) {

@@ -246,4 +246,60 @@ void main() {
       disposePreview();
     });
   });
+
+  test('drops a route that an answer of the same number has outdated', () {
+    fakeAsync((async) {
+      createPreview();
+      final stale = Completer<RouteLookupResult>();
+      routeLookup.pendingResult = stale;
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+      final current = Completer<RouteLookupResult>();
+      routeLookup.pendingResult = current;
+      enterFlightNumber('LH 40');
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+
+      current.complete(const RouteFound('DLH400', _route));
+      async.flushMicrotasks();
+      expect(preview.state.value, isA<FlightPreviewFound>());
+
+      stale.complete(const RouteLookupFailure());
+      async.flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewFound>());
+      disposePreview();
+    });
+  });
+
+  test('drops a route that answers after the preview is gone', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.pendingResult = Completer<RouteLookupResult>();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+      disposePreview();
+      routeLookup.pendingResult!.complete(const RouteFound('DLH400', _route));
+
+      expect(async.flushMicrotasks, returnsNormally);
+    });
+  });
+
+  test('drops a route that answers after the lookup kind changed', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.pendingResult = Completer<RouteLookupResult>();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+      form.lookupKind.value = FlightLookupKind.registration;
+      routeLookup.pendingResult!.complete(const RouteFound('DLH400', _route));
+      async.flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewHidden>());
+      disposePreview();
+    });
+  });
 }

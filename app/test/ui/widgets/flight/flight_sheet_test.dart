@@ -1,6 +1,7 @@
 import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
@@ -72,6 +73,7 @@ FlightListEntry _entry({
   double? altitudeFeet = 37000,
   double? speedKnots = 473,
   DateTime? positionTime,
+  DayTime? departureTime,
   bool withoutPosition = false,
 }) => FlightListEntry(
   flight: Flight(
@@ -79,6 +81,7 @@ FlightListEntry _entry({
     lookupKind: FlightLookupKind.flightNumber,
     lookupValue: 'LH40$id',
     departureDate: const CalendarDate(2026, 8, 12),
+    departureTime: departureTime,
     note: 'Anna & Ben',
     route: route,
     tracking: FlightTracking(
@@ -96,6 +99,9 @@ FlightListEntry _entry({
   ),
   state: state,
 );
+
+FlightListEntry _waitingEntry() =>
+    _entry(state: FlightState.waiting, withoutPosition: true);
 
 Future<List<int>> pumpFlightSheet(
   WidgetTester tester, {
@@ -364,12 +370,53 @@ void main() {
     );
   });
 
+  testWidgets('tells a waiting flight what it searches for', (tester) async {
+    await pumpFlightSheet(tester, entry: _waitingEntry());
+
+    await openSheet(tester);
+
+    expect(
+      find.text(
+        'Searching for LH401. Receivers are often missing for one to two '
+        'hours, the trail starts as soon as one sees the aircraft.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('tells a waiting flight what it searches for in german', (
+    tester,
+  ) async {
+    await pumpFlightSheet(
+      tester,
+      locale: const Locale('de'),
+      entry: _waitingEntry(),
+    );
+
+    await openSheet(tester);
+
+    expect(
+      find.text(
+        'Sucht nach LH401. Oft fehlen ein bis zwei Stunden lang Empfänger, '
+        'die Spur beginnt, sobald einer das Flugzeug sieht.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('keeps the waiting explanation out of the peek', (tester) async {
+    await pumpFlightSheet(tester, entry: _waitingEntry());
+
+    expect(find.textContaining('Searching for'), findsNothing);
+  });
+
   testWidgets('explains nothing while the signal is live', (tester) async {
     await pumpFlightSheet(tester);
 
     await openSheet(tester);
 
     expect(find.textContaining('the trail will come back'), findsNothing);
+    expect(find.textContaining('Searching for'), findsNothing);
   });
 
   testWidgets('dashes the signal of a flight without a position', (
@@ -436,6 +483,14 @@ void main() {
       tester,
     ) async {
       await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+      await openSheet(tester);
+
+      expect(find.text('Try another source'), findsOneWidget);
+    });
+
+    testWidgets('offers another source to a waiting flight', (tester) async {
+      await pumpFlightSheet(tester, entry: _waitingEntry());
 
       await openSheet(tester);
 

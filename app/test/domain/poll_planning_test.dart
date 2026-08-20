@@ -650,6 +650,55 @@ void main() {
       expect(applied.adoptedIdentity, isNull);
     });
 
+    test('pins nothing from an airframe standing on the ground', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(
+          callsign: 'DLH8',
+          positionAtTimestamp: airborneAt,
+          onGround: true,
+        ),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
+    test('pins nothing from an answer without a position', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(callsign: 'DLH8'),
+      ]);
+
+      expect((outcome as PollFixApplied).adoptedIdentity, isNull);
+    });
+
+    test('pins nothing while the answer hides whether it flies', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(
+          callsign: 'DLH8',
+          positionAtTimestamp: airborneAt,
+          onGround: null,
+        ),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
+    test('pins nothing from a position older than the flight day', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(
+          callsign: 'DLH8',
+          positionAtTimestamp: window.start.subtract(const Duration(hours: 1)),
+        ),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition, isNull);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
     test('pins nothing while the airframe reports no callsign', () {
       final outcome = apply(hexFlight(), hexQuery, [
         fixWith(positionAtTimestamp: airborneAt),

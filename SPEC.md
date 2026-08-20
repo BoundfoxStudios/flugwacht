@@ -133,9 +133,11 @@ is tested — focused on the domain, where the known pitfalls live:
   deviation from the domain concept, which binds ended to the window end
 - Hex safeguard: callsign cross-check on hex queries, fall back to callsign
   search on mismatch. Registration and hex flights have no callsign of their
-  own, so they pin the one their first fix reports and afterwards reject a fix
-  that reports a different one, which keeps them off the airframe's next
-  rotation; such a rejection leaves the entered identity untouched, there is
+  own, so they pin the one their first fix reports that positively says the
+  airframe flies inside the flight day, never one it wears while standing and
+  never one from an answer that hides its altitude or dates from before the
+  window, and afterwards reject a fix that reports a different one, which keeps
+  them off the airframe's next rotation; such a rejection leaves the entered identity untouched, there is
   nothing to fall back to
 - Departure contact gate: polling runs for the whole flight-day window, the
   scheduled departure gates what may be adopted instead. Before that departure

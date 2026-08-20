@@ -219,11 +219,13 @@ class PollingEngine with WidgetsBindingObserver {
       case PollIdentityAdopted(:final identity):
         await _writeIdentity(flight, identity);
       case PollIdentityRejected():
-        await _repository.updateIdentity(
-          flight.id,
-          hexAddress: null,
-          expectedCallsign: flight.expectedCallsign,
-        );
+        if (flight.lookupKind == FlightLookupKind.flightNumber) {
+          await _repository.updateIdentity(
+            flight.id,
+            hexAddress: null,
+            expectedCallsign: flight.expectedCallsign,
+          );
+        }
       case PollFixApplied(
         :final tracking,
         :final sourceId,
@@ -242,7 +244,7 @@ class PollingEngine with WidgetsBindingObserver {
   Future<void> _writeIdentity(Flight flight, AdoptedIdentity identity) =>
       _repository.updateIdentity(
         flight.id,
-        hexAddress: identity.hexAddress,
+        hexAddress: identity.hexAddress ?? flight.hexAddress,
         expectedCallsign: identity.callsign,
       );
 

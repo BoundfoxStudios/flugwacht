@@ -320,7 +320,7 @@ polling; change the `noSignal` copy that already works.
 
 ## Delivery
 
-Milestone M17 Cleanup, one PR per module in build order. #217 is referenced by
+Milestone M15 Polish, one PR per module in build order. #217 is referenced by
 two PRs (`Refs #217`), the second one closes it; #151 and #218 are closed by
 their own PR.
 

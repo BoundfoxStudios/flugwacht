@@ -1,3 +1,4 @@
+import 'arrival_estimate.dart';
 import 'departure_time.dart';
 import 'fix.dart';
 import 'flight.dart';
@@ -9,19 +10,32 @@ const livePollInterval = Duration(seconds: 5);
 
 const searchPollInterval = Duration(seconds: 60);
 
+/// Wider than the search interval, so an evening departure is not asked for
+/// every minute from midnight on.
+const preDepartureSearchInterval = Duration(minutes: 5);
+
+const originContactRadiusKilometers = 25.0;
+
 bool isPollable(FlightState state) => switch (state) {
   FlightState.waiting || FlightState.live || FlightState.noSignal => true,
   FlightState.planned || FlightState.ended || FlightState.missed => false,
 };
 
-Duration pollInterval(FlightState state) =>
-    state == FlightState.live ? livePollInterval : searchPollInterval;
+Duration pollInterval(Flight flight, FlightState state, DateTime now) {
+  if (state == FlightState.live) {
+    return livePollInterval;
+  }
+  return awaitsDepartureContact(flight, now)
+      ? preDepartureSearchInterval
+      : searchPollInterval;
+}
 
 const searchLeadTime = Duration(hours: 2);
 
-/// The instant a flight that has never been seen may first be searched for,
-/// so a daily rotation of the same callsign is not adopted at midnight.
-DateTime searchStartsAt(Flight flight) {
+/// The instant from which an airborne aircraft may be adopted as a flight's
+/// first contact, so a daily rotation of the same callsign is not adopted at
+/// midnight.
+DateTime airborneContactStartsAt(Flight flight) {
   final window = FlightDayWindow.forDepartureDate(flight.departureDate);
   final departureInstant = departureInstantOf(flight);
   if (departureInstant == null) {
@@ -30,6 +44,14 @@ DateTime searchStartsAt(Flight flight) {
   final anchor = departureInstant.subtract(searchLeadTime);
   return anchor.isBefore(window.start) ? window.start : anchor;
 }
+
+bool hasBeenAcquired(Flight flight) =>
+    flight.lookupKind == FlightLookupKind.flightNumber
+    ? flight.hexAddress != null
+    : flight.tracking.latestPosition != null;
+
+bool awaitsDepartureContact(Flight flight, DateTime now) =>
+    !hasBeenAcquired(flight) && now.isBefore(airborneContactStartsAt(flight));
 
 sealed class PollQuery {
   const PollQuery();
@@ -84,6 +106,10 @@ final class PollIdentityRejected extends PollOutcome {
   const PollIdentityRejected();
 }
 
+final class PollAwaitsDeparture extends PollOutcome {
+  const PollAwaitsDeparture();
+}
+
 final class PollFixApplied extends PollOutcome {
   const PollFixApplied({
     required this.tracking,
@@ -110,6 +136,7 @@ PollOutcome applyLookup({
   required PollQuery query,
   required List<Fix> fixes,
   required FlightDayWindow window,
+  required DateTime now,
 }) {
   final selection = _selectFix(query, fixes);
   if (selection == null) {
@@ -118,6 +145,9 @@ PollOutcome applyLookup({
   final fix = selection.fix;
   if (_rejectsIdentity(flight, query, fix)) {
     return const PollIdentityRejected();
+  }
+  if (awaitsDepartureContact(flight, now) && !_isReadyToDepart(flight, fix)) {
+    return const PollAwaitsDeparture();
   }
   final matchedCallsign = selection.matchedCallsign;
   return PollFixApplied(
@@ -167,6 +197,30 @@ bool _rejectsIdentity(Flight flight, PollQuery query, Fix fix) {
   }
   final callsign = _callsignOf(fix);
   return callsign != null && callsign != flight.expectedCallsign;
+}
+
+/// Yesterday's leg of a daily callsign is still airborne at that hour, so
+/// before the anchor only an aircraft standing at the origin can be the flight
+/// the user entered.
+bool _isReadyToDepart(Flight flight, Fix fix) {
+  final position = fix.position;
+  if (position == null || position.onGround != true) {
+    return false;
+  }
+  final origin = flight.route?.origin;
+  if (origin == null) {
+    // An entered airframe is the right aircraft wherever it stands, while a
+    // callsign on the ground elsewhere is most likely yesterday's leg after
+    // landing.
+    return flight.lookupKind != FlightLookupKind.flightNumber;
+  }
+  return greatCircleDistanceKilometers(
+        position.latitude,
+        position.longitude,
+        origin.latitude,
+        origin.longitude,
+      ) <=
+      originContactRadiusKilometers;
 }
 
 FixPosition? _trailPosition(Flight flight, Fix fix, FlightDayWindow window) {

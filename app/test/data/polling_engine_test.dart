@@ -565,18 +565,55 @@ void main() {
     });
   });
 
-  group('acquisition anchor', () {
-    test('waits for the scheduled departure before the first search', () {
+  group('departure contact gate', () {
+    test('searches before the scheduled departure', () {
       fakeAsync((async) {
         final started = startEngine(async, [
           flightWith(departureTime: const DayTime(15, 0)),
         ]);
 
-        async.elapse(const Duration(minutes: 59, seconds: 59));
-        expect(started.adapter.callsignRequests, isEmpty);
+        async.flushMicrotasks();
+
+        expect(started.adapter.callsignRequests, ['DLH400', 'GEC400']);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('writes nothing for an airborne answer before the departure', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [
+          flightWith(departureTime: const DayTime(15, 0)),
+        ]);
+        started.adapter.results['DLH400'] = successWith(
+          fixWith(callsign: 'DLH400', positionAtTimestamp: noon),
+        );
+
+        async.flushMicrotasks();
+
+        expect(started.repository.trackingUpdates, isEmpty);
+        expect(started.repository.trailAppends, isEmpty);
+        expect(started.repository.identityUpdates, isEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('spaces the searches before the departure five minutes apart', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [
+          flightWith(departureTime: const DayTime(15, 0)),
+        ]);
+        async.flushMicrotasks();
+        expect(started.adapter.callsignRequests, hasLength(2));
+
+        async.elapse(const Duration(minutes: 4, seconds: 59));
+        expect(started.adapter.callsignRequests, hasLength(2));
 
         async.elapse(const Duration(seconds: 1));
-        expect(started.adapter.callsignRequests, hasLength(2));
+        expect(started.adapter.callsignRequests, hasLength(4));
 
         started.engine.stop();
         started.repository.dispose();
@@ -595,7 +632,7 @@ void main() {
       });
     });
 
-    test('ignores the anchor once the flight has been found', () {
+    test('takes an airborne answer once the flight has been found', () {
       fakeAsync((async) {
         final started = startEngine(async, [
           flightWith(
@@ -604,28 +641,38 @@ void main() {
             expectedCallsign: 'DLH400',
           ),
         ]);
+        started.adapter.results['3c64c6'] = successWith(
+          fixWith(callsign: 'DLH400', positionAtTimestamp: noon),
+        );
+
         async.flushMicrotasks();
 
         expect(started.adapter.hexAddressRequests, hasLength(1));
+        expect(started.repository.trackingUpdates, hasLength(1));
 
         started.engine.stop();
         started.repository.dispose();
       });
     });
 
-    test('ignores the anchor for an airframe that was already seen', () {
+    test('takes an airborne answer for an airframe that was already seen', () {
       fakeAsync((async) {
         final started = startEngine(async, [
           flightWith(
             lookupKind: FlightLookupKind.registration,
             lookupValue: 'D-AIXP',
             departureTime: const DayTime(16, 10),
-            latestPosition: positionAt(noon),
+            latestPosition: positionAt(noon.subtract(const Duration(hours: 1))),
           ),
         ]);
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(positionAtTimestamp: noon),
+        );
+
         async.flushMicrotasks();
 
         expect(started.adapter.registrationRequests, hasLength(1));
+        expect(started.repository.trackingUpdates, hasLength(1));
 
         started.engine.stop();
         started.repository.dispose();

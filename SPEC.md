@@ -134,22 +134,19 @@ is tested — focused on the domain, where the known pitfalls live:
 - Hex safeguard: callsign cross-check on hex queries, fall back to callsign
   search on mismatch
 - Departure contact gate: polling runs for the whole flight-day window, the
-  scheduled departure gates the first contact instead. Before that departure
-  minus 2 h (clamped to the window start), a flight that has never been seen
-  adopts only an aircraft that reports being on the ground: a flight number
-  only one within 25 km of the route's origin and without a known route not at
-  all, while an entered registration or hex address names the right airframe
-  wherever it stands. An airborne or positionless answer is refused, because at
-  that hour the previous day's rotation of a daily callsign is the one in the
-  air. From the anchor on, and for a flight already acquired, nothing is
-  refused; acquired means the adopted hex address for a flight number and a
-  flying fix for an entered airframe, so meeting it parked does not open the
-  gate for the rotation it flies before the entered leg. Without a stored time
-  the gate is down from the window start. Searches before the
-  anchor are spaced 5 min apart instead of 1 min, so an evening departure is
-  not asked for every minute from midnight on. The departure time is read in
-  its stored interpretation – origin local time (the new-flight default while
-  a route is known) or device time – while the flight-day window deliberately
+  scheduled departure gates what may be adopted instead. Before that departure
+  minus 2 h (clamped to the window start) nothing is tracked at all: the only
+  answer that counts is an aircraft standing within 25 km of the flight's known
+  origin, and all it gives is the identity, because at that hour the previous
+  day's rotation of a daily callsign is the one in the air and an aircraft at
+  its gate is not a flight under way. An entered registration or hex address
+  has no route and nothing to gain there, its identity is the query. From the
+  anchor on nothing is refused; without a stored departure time the gate is
+  down from the window start. While the gate is up the flight is asked for
+  every 5 min instead of every minute, so an evening departure is not polled
+  from midnight on at the live cadence. The departure time is read in its
+  stored interpretation – origin local time (the new-flight default while a
+  route is known) or device time – while the flight-day window deliberately
   stays device-local: its 48 h width absorbs the offsets the anchor has to be
   exact about
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection

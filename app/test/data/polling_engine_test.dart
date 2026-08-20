@@ -12,6 +12,7 @@ import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
 import 'package:flugwacht/domain/flight_notification.dart';
+import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,12 +37,14 @@ void main() {
     String? expectedCallsign,
     FixPosition? latestPosition,
     bool hasBeenAirborne = false,
+    FlightRoute? route,
   }) => Flight(
     id: id,
     lookupKind: lookupKind,
     lookupValue: lookupValue,
     departureDate: departureDate,
     departureTime: departureTime,
+    route: route,
     hexAddress: hexAddress,
     expectedCallsign: expectedCallsign,
     tracking: FlightTracking(
@@ -50,24 +53,45 @@ void main() {
     ),
   );
 
-  FixPosition positionAt(DateTime timestamp) => FixPosition(
+  FixPosition positionAt(DateTime timestamp, {bool? onGround = false}) =>
+      FixPosition(
+        latitude: 49.875687,
+        longitude: 7.888834,
+        timestamp: timestamp,
+        onGround: onGround,
+      );
+
+  const originAtTheFix = RouteAirport(
+    icaoCode: 'EDDF',
+    iataCode: 'FRA',
+    name: 'Frankfurt am Main',
     latitude: 49.875687,
     longitude: 7.888834,
-    timestamp: timestamp,
-    onGround: false,
+  );
+
+  const routeFromTheFix = FlightRoute(
+    origin: originAtTheFix,
+    destination: RouteAirport(
+      icaoCode: 'KJFK',
+      iataCode: 'JFK',
+      name: 'John F Kennedy',
+      latitude: 40.639447,
+      longitude: -73.779317,
+    ),
   );
 
   Fix fixWith({
     String hexAddress = '3c64c6',
     String? callsign,
     DateTime? positionAtTimestamp,
+    bool? onGround = false,
   }) => Fix(
     hexAddress: hexAddress,
     sourceId: SourceId.adsblol,
     callsign: callsign,
     position: positionAtTimestamp == null
         ? null
-        : positionAt(positionAtTimestamp),
+        : positionAt(positionAtTimestamp, onGround: onGround),
   );
 
   LookupResult successWith(Fix fix) => LookupSuccess([fix]);
@@ -636,7 +660,41 @@ void main() {
       });
     });
 
-    test('takes an airborne answer once the flight has been found', () {
+    test(
+      'stores only the identity of an aircraft met before the departure',
+      () {
+        fakeAsync((async) {
+          final started = startEngine(async, [
+            flightWith(
+              departureTime: const DayTime(16, 10),
+              route: routeFromTheFix,
+            ),
+          ]);
+          started.adapter.results['DLH400'] = successWith(
+            fixWith(
+              callsign: 'DLH400',
+              positionAtTimestamp: noon,
+              onGround: true,
+            ),
+          );
+
+          async.flushMicrotasks();
+
+          expect(started.repository.identityUpdates.single, (
+            1,
+            '3c64c6',
+            'DLH400',
+          ));
+          expect(started.repository.trackingUpdates, isEmpty);
+          expect(started.repository.trailAppends, isEmpty);
+
+          started.engine.stop();
+          started.repository.dispose();
+        });
+      },
+    );
+
+    test('refuses an airborne answer whatever the flight already stores', () {
       fakeAsync((async) {
         final started = startEngine(async, [
           flightWith(
@@ -644,25 +702,8 @@ void main() {
             hexAddress: '3c64c6',
             expectedCallsign: 'DLH400',
           ),
-        ]);
-        started.adapter.results['3c64c6'] = successWith(
-          fixWith(callsign: 'DLH400', positionAtTimestamp: noon),
-        );
-
-        async.flushMicrotasks();
-
-        expect(started.adapter.hexAddressRequests, hasLength(1));
-        expect(started.repository.trackingUpdates, hasLength(1));
-
-        started.engine.stop();
-        started.repository.dispose();
-      });
-    });
-
-    test('takes an airborne answer for an airframe seen flying', () {
-      fakeAsync((async) {
-        final started = startEngine(async, [
           flightWith(
+            id: 2,
             lookupKind: FlightLookupKind.registration,
             lookupValue: 'D-AIXP',
             departureTime: const DayTime(16, 10),
@@ -670,38 +711,19 @@ void main() {
             hasBeenAirborne: true,
           ),
         ]);
+        started.adapter.results['3c64c6'] = successWith(
+          fixWith(callsign: 'DLH400', positionAtTimestamp: noon),
+        );
         started.adapter.results['D-AIXP'] = successWith(
           fixWith(positionAtTimestamp: noon),
         );
 
         async.flushMicrotasks();
 
-        expect(started.adapter.registrationRequests, hasLength(1));
-        expect(started.repository.trackingUpdates, hasLength(1));
-
-        started.engine.stop();
-        started.repository.dispose();
-      });
-    });
-
-    test('refuses an airborne answer for an airframe seen standing', () {
-      fakeAsync((async) {
-        final started = startEngine(async, [
-          flightWith(
-            lookupKind: FlightLookupKind.registration,
-            lookupValue: 'D-AIXP',
-            departureTime: const DayTime(16, 10),
-            latestPosition: positionAt(noon.subtract(const Duration(hours: 1))),
-          ),
-        ]);
-        started.adapter.results['D-AIXP'] = successWith(
-          fixWith(positionAtTimestamp: noon),
-        );
-
-        async.flushMicrotasks();
-
+        expect(started.adapter.hexAddressRequests, hasLength(1));
         expect(started.adapter.registrationRequests, hasLength(1));
         expect(started.repository.trackingUpdates, isEmpty);
+        expect(started.repository.trailAppends, isEmpty);
 
         started.engine.stop();
         started.repository.dispose();

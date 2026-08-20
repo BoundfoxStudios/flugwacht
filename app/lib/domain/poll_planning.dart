@@ -22,12 +22,10 @@ bool isPollable(FlightState state) => switch (state) {
 };
 
 Duration pollInterval(Flight flight, FlightState state, DateTime now) {
-  if (state == FlightState.live) {
-    return livePollInterval;
+  if (awaitsDepartureContact(flight, now)) {
+    return preDepartureSearchInterval;
   }
-  return awaitsDepartureContact(flight, now)
-      ? preDepartureSearchInterval
-      : searchPollInterval;
+  return state == FlightState.live ? livePollInterval : searchPollInterval;
 }
 
 const searchLeadTime = Duration(hours: 2);
@@ -45,16 +43,8 @@ DateTime airborneContactStartsAt(Flight flight) {
   return anchor.isBefore(window.start) ? window.start : anchor;
 }
 
-/// Whether a contact has identified the leg the user entered: the adopted hex
-/// address for a flight number, and for an entered airframe only a flying fix,
-/// because on the ground it may still be sitting out an earlier rotation.
-bool hasBeenAcquired(Flight flight) =>
-    flight.lookupKind == FlightLookupKind.flightNumber
-    ? flight.hexAddress != null
-    : flight.tracking.hasBeenAirborne;
-
 bool awaitsDepartureContact(Flight flight, DateTime now) =>
-    !hasBeenAcquired(flight) && now.isBefore(airborneContactStartsAt(flight));
+    now.isBefore(airborneContactStartsAt(flight));
 
 sealed class PollQuery {
   const PollQuery();
@@ -113,6 +103,14 @@ final class PollAwaitsDeparture extends PollOutcome {
   const PollAwaitsDeparture();
 }
 
+/// An aircraft still standing at its gate is not a flight under way: it says
+/// who it is, it does not say where the flight is.
+final class PollIdentityAdopted extends PollOutcome {
+  const PollIdentityAdopted(this.identity);
+
+  final AdoptedIdentity identity;
+}
+
 final class PollFixApplied extends PollOutcome {
   const PollFixApplied({
     required this.tracking,
@@ -149,21 +147,30 @@ PollOutcome applyLookup({
   if (_rejectsIdentity(flight, query, fix)) {
     return const PollIdentityRejected();
   }
-  if (awaitsDepartureContact(flight, now) && !_isReadyToDepart(flight, fix)) {
-    return const PollAwaitsDeparture();
+  if (awaitsDepartureContact(flight, now)) {
+    final identity = _standsAtItsOrigin(flight, fix)
+        ? _adoptedIdentity(selection)
+        : null;
+    return identity == null
+        ? const PollAwaitsDeparture()
+        : PollIdentityAdopted(identity);
   }
-  final matchedCallsign = selection.matchedCallsign;
   return PollFixApplied(
     tracking: flight.tracking.withFix(fix, window),
     sourceId: fix.sourceId,
     trailPosition: _trailPosition(flight, fix, window),
-    adoptedIdentity: matchedCallsign == null
-        ? null
-        : AdoptedIdentity(
-            hexAddress: fix.hexAddress,
-            callsign: matchedCallsign,
-          ),
+    adoptedIdentity: _adoptedIdentity(selection),
   );
+}
+
+AdoptedIdentity? _adoptedIdentity(_FixSelection selection) {
+  final matchedCallsign = selection.matchedCallsign;
+  return matchedCallsign == null
+      ? null
+      : AdoptedIdentity(
+          hexAddress: selection.fix.hexAddress,
+          callsign: matchedCallsign,
+        );
 }
 
 class _FixSelection {
@@ -204,18 +211,13 @@ bool _rejectsIdentity(Flight flight, PollQuery query, Fix fix) {
 
 /// Yesterday's leg of a daily callsign is still airborne at that hour, so
 /// before the anchor only an aircraft standing at the origin can be the flight
-/// the user entered.
-bool _isReadyToDepart(Flight flight, Fix fix) {
-  final position = fix.position;
-  if (position == null || position.onGround != true) {
-    return false;
-  }
+/// the user entered. An entered airframe has no route and therefore nothing to
+/// gain here: its identity is the query.
+bool _standsAtItsOrigin(Flight flight, Fix fix) {
   final origin = flight.route?.origin;
-  if (origin == null) {
-    // An entered airframe is the right aircraft wherever it stands, while a
-    // callsign on the ground elsewhere is most likely yesterday's leg after
-    // landing.
-    return flight.lookupKind != FlightLookupKind.flightNumber;
+  final position = fix.position;
+  if (origin == null || position == null || position.onGround != true) {
+    return false;
   }
   return greatCircleDistanceKilometers(
         position.latitude,

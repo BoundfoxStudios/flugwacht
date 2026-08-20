@@ -216,6 +216,8 @@ class PollingEngine with WidgetsBindingObserver {
     switch (outcome) {
       case PollNoData() || PollAwaitsDeparture():
         return;
+      case PollIdentityAdopted(:final identity):
+        await _writeIdentity(flight, identity);
       case PollIdentityRejected():
         await _repository.updateIdentity(
           flight.id,
@@ -232,14 +234,17 @@ class PollingEngine with WidgetsBindingObserver {
         await _notifier.trackingChanged(flight, tracking);
         await _appendTrailPoint(flight, trailPosition, sourceId);
         if (adoptedIdentity != null) {
-          await _repository.updateIdentity(
-            flight.id,
-            hexAddress: adoptedIdentity.hexAddress,
-            expectedCallsign: adoptedIdentity.callsign,
-          );
+          await _writeIdentity(flight, adoptedIdentity);
         }
     }
   }
+
+  Future<void> _writeIdentity(Flight flight, AdoptedIdentity identity) =>
+      _repository.updateIdentity(
+        flight.id,
+        hexAddress: identity.hexAddress,
+        expectedCallsign: identity.callsign,
+      );
 
   Future<void> _appendTrailPoint(
     Flight flight,

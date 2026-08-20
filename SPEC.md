@@ -141,9 +141,11 @@ is tested — focused on the domain, where the known pitfalls live:
   all, while an entered registration or hex address names the right airframe
   wherever it stands. An airborne or positionless answer is refused, because at
   that hour the previous day's rotation of a daily callsign is the one in the
-  air. From the anchor on, and
-  for a flight that has already been acquired, nothing is refused; without a
-  stored time the gate is down from the window start. Searches before the
+  air. From the anchor on, and for a flight already acquired, nothing is
+  refused; acquired means the adopted hex address for a flight number and a
+  flying fix for an entered airframe, so meeting it parked does not open the
+  gate for the rotation it flies before the entered leg. Without a stored time
+  the gate is down from the window start. Searches before the
   anchor are spaced 5 min apart instead of 1 min, so an evening departure is
   not asked for every minute from midnight on. The departure time is read in
   its stored interpretation – origin local time (the new-flight default while

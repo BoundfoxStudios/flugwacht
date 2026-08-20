@@ -24,6 +24,7 @@ void main() {
     String? hexAddress,
     String? expectedCallsign,
     FixPosition? latestPosition,
+    bool hasBeenAirborne = false,
   }) => Flight(
     id: 1,
     lookupKind: lookupKind,
@@ -34,7 +35,10 @@ void main() {
     route: route,
     hexAddress: hexAddress,
     expectedCallsign: expectedCallsign,
-    tracking: FlightTracking(latestPosition: latestPosition),
+    tracking: FlightTracking(
+      latestPosition: latestPosition,
+      hasBeenAirborne: hasBeenAirborne,
+    ),
   );
 
   FlightRoute routeFrom(RouteAirport origin) => FlightRoute(
@@ -339,6 +343,39 @@ void main() {
       expect(
         apply(acquired, const HexAddressPollQuery('3c64c6'), [
           originFix(),
+        ], now: beforeAnchor),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('keeps the gate up after an entered airframe was met standing', () {
+      final metStanding = flightWith(
+        lookupKind: FlightLookupKind.registration,
+        lookupValue: 'DABYT',
+        departureTime: departureTime,
+        latestPosition: positionAt(beforeAnchor, onGround: true),
+      );
+
+      expect(
+        apply(metStanding, const RegistrationPollQuery('DABYT'), [
+          fixWith(callsign: 'DLH400', positionAtTimestamp: beforeAnchor),
+        ], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('drops the gate once an entered airframe has been flying', () {
+      final everAirborne = flightWith(
+        lookupKind: FlightLookupKind.registration,
+        lookupValue: 'DABYT',
+        departureTime: departureTime,
+        latestPosition: positionAt(beforeAnchor),
+        hasBeenAirborne: true,
+      );
+
+      expect(
+        apply(everAirborne, const RegistrationPollQuery('DABYT'), [
+          fixWith(callsign: 'DLH400', positionAtTimestamp: beforeAnchor),
         ], now: beforeAnchor),
         isA<PollFixApplied>(),
       );

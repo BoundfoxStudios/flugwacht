@@ -35,6 +35,7 @@ void main() {
     String? hexAddress,
     String? expectedCallsign,
     FixPosition? latestPosition,
+    bool hasBeenAirborne = false,
   }) => Flight(
     id: id,
     lookupKind: lookupKind,
@@ -43,7 +44,10 @@ void main() {
     departureTime: departureTime,
     hexAddress: hexAddress,
     expectedCallsign: expectedCallsign,
-    tracking: FlightTracking(latestPosition: latestPosition),
+    tracking: FlightTracking(
+      latestPosition: latestPosition,
+      hasBeenAirborne: hasBeenAirborne,
+    ),
   );
 
   FixPosition positionAt(DateTime timestamp) => FixPosition(
@@ -655,7 +659,32 @@ void main() {
       });
     });
 
-    test('takes an airborne answer for an airframe that was already seen', () {
+    test('takes an airborne answer for an airframe seen flying', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [
+          flightWith(
+            lookupKind: FlightLookupKind.registration,
+            lookupValue: 'D-AIXP',
+            departureTime: const DayTime(16, 10),
+            latestPosition: positionAt(noon.subtract(const Duration(hours: 1))),
+            hasBeenAirborne: true,
+          ),
+        ]);
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(positionAtTimestamp: noon),
+        );
+
+        async.flushMicrotasks();
+
+        expect(started.adapter.registrationRequests, hasLength(1));
+        expect(started.repository.trackingUpdates, hasLength(1));
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('refuses an airborne answer for an airframe seen standing', () {
       fakeAsync((async) {
         final started = startEngine(async, [
           flightWith(
@@ -672,7 +701,7 @@ void main() {
         async.flushMicrotasks();
 
         expect(started.adapter.registrationRequests, hasLength(1));
-        expect(started.repository.trackingUpdates, hasLength(1));
+        expect(started.repository.trackingUpdates, isEmpty);
 
         started.engine.stop();
         started.repository.dispose();

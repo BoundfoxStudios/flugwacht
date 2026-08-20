@@ -45,10 +45,13 @@ DateTime airborneContactStartsAt(Flight flight) {
   return anchor.isBefore(window.start) ? window.start : anchor;
 }
 
+/// Whether a contact has identified the leg the user entered: the adopted hex
+/// address for a flight number, and for an entered airframe only a flying fix,
+/// because on the ground it may still be sitting out an earlier rotation.
 bool hasBeenAcquired(Flight flight) =>
     flight.lookupKind == FlightLookupKind.flightNumber
     ? flight.hexAddress != null
-    : flight.tracking.latestPosition != null;
+    : flight.tracking.hasBeenAirborne;
 
 bool awaitsDepartureContact(Flight flight, DateTime now) =>
     !hasBeenAcquired(flight) && now.isBefore(airborneContactStartsAt(flight));

@@ -62,6 +62,11 @@ class FlightNotifier {
     }
   }
 
+  /// A disproved contact takes its pending arrival reminder with it, so the
+  /// real leg can schedule its own.
+  Future<void> adoptionDisproved(int flightId) =>
+      _service.cancel(FlightNotification.arrivingSoon, flightId: flightId);
+
   /// A reminder whose moment passed while the app was away reached the user
   /// through the system, so it counts as delivered.
   Future<void> reconcileDeliveredReminders() =>

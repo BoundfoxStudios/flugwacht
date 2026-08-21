@@ -111,6 +111,13 @@ final class PollIdentityAdopted extends PollOutcome {
   final AdoptedIdentity identity;
 }
 
+/// The entered leg cannot land before its scheduled departure, so a landing
+/// before it exposes the tracked contact as the airframe's earlier rotation:
+/// forget it and search again.
+final class PollAdoptionDisproved extends PollOutcome {
+  const PollAdoptionDisproved();
+}
+
 final class PollFixApplied extends PollOutcome {
   const PollFixApplied({
     required this.tracking,
@@ -157,12 +164,29 @@ PollOutcome applyLookup({
         ? const PollAwaitsDeparture()
         : PollIdentityAdopted(identity);
   }
+  if (_disprovesAdoption(flight, fix)) {
+    return const PollAdoptionDisproved();
+  }
   return PollFixApplied(
     tracking: flight.tracking.withFix(fix, window),
     sourceId: fix.sourceId,
     trailPosition: _trailPosition(flight, fix, window),
     adoptedIdentity: _adoptedIdentity(flight, query, selection, window),
   );
+}
+
+bool _disprovesAdoption(Flight flight, Fix fix) {
+  if (flight.lookupKind != FlightLookupKind.registration &&
+      flight.lookupKind != FlightLookupKind.hexAddress) {
+    return false;
+  }
+  final position = fix.position;
+  if (!flight.tracking.hasBeenAirborne || position?.onGround != true) {
+    return false;
+  }
+  final departureInstant = departureInstantOf(flight);
+  return departureInstant != null &&
+      position!.timestamp.isBefore(departureInstant);
 }
 
 AdoptedIdentity? _adoptedIdentity(

@@ -184,6 +184,25 @@ class FlightRepository {
         );
   }
 
+  Future<void> clearTrail(int flightId) async {
+    await (_database.delete(
+      _database.trailPoints,
+    )..where((row) => row.flightId.equals(flightId))).go();
+  }
+
+  Future<void> resetNotificationMarkers(int flightId) async {
+    await (_database.update(
+      _database.flights,
+    )..where((row) => row.id.equals(flightId))).write(
+      const FlightsCompanion(
+        departedNotifiedAt: Value(null),
+        arrivingSoonNotifiedAt: Value(null),
+        landedNotifiedAt: Value(null),
+        arrivingSoonScheduledFor: Value(null),
+      ),
+    );
+  }
+
   Stream<List<TrailPoint>> watchTrail(int flightId) {
     final query = _database.select(_database.trailPoints)
       ..where((row) => row.flightId.equals(flightId))

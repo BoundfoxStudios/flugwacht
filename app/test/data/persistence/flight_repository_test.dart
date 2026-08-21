@@ -224,6 +224,65 @@ void main() {
       expect(stored.notifications.departedAt, deliveredAt);
     });
 
+    test('takes every marker and the pending reminder back off a '
+        'flight', () async {
+      final flight = await addFlight();
+      final other = await addFlight();
+      for (final kind in FlightNotification.values) {
+        await repository.claimNotification(
+          flight.id,
+          kind,
+          DateTime.utc(2026, 3, 17, 14, 30),
+        );
+        await repository.claimNotification(
+          other.id,
+          kind,
+          DateTime.utc(2026, 3, 17, 14, 30),
+        );
+      }
+      await repository.setArrivingSoonSchedule(
+        flight.id,
+        DateTime.utc(2026, 3, 17, 15),
+      );
+
+      await repository.resetNotificationMarkers(flight.id);
+
+      final stored = await repository.watchFlights().first;
+      final reset = stored.firstWhere((row) => row.id == flight.id);
+      expect(reset.notifications.departedAt, isNull);
+      expect(reset.notifications.arrivingSoonAt, isNull);
+      expect(reset.notifications.landedAt, isNull);
+      expect(reset.notifications.arrivingSoonScheduledFor, isNull);
+      final untouched = stored.firstWhere((row) => row.id == other.id);
+      for (final kind in FlightNotification.values) {
+        expect(
+          untouched.notifications.isDelivered(kind),
+          isTrue,
+          reason: kind.name,
+        );
+      }
+    });
+
+    test('grants a notification again after the markers were reset', () async {
+      final flight = await addFlight();
+      await repository.claimNotification(
+        flight.id,
+        FlightNotification.departed,
+        DateTime.utc(2026, 3, 17, 14, 30),
+      );
+
+      await repository.resetNotificationMarkers(flight.id);
+
+      expect(
+        await repository.claimNotification(
+          flight.id,
+          FlightNotification.departed,
+          DateTime.utc(2026, 3, 17, 15, 0),
+        ),
+        isTrue,
+      );
+    });
+
     test('leaves the flights it was not asked about alone', () async {
       final flight = await addFlight();
       final other = await addFlight();
@@ -557,6 +616,27 @@ void main() {
     expect(trail, hasLength(1));
     expect(trail.single.latitude, 49.875687);
     expect(trail.single.sourceId, SourceId.adsblol);
+  });
+
+  test('clears the trail of only the addressed flight', () async {
+    final flight = await addFlight();
+    final other = await addFlight();
+    final timestamp = DateTime.utc(2026, 3, 17, 10, 15);
+    await repository.appendTrailPoint(
+      flight.id,
+      position(timestamp),
+      SourceId.adsblol,
+    );
+    await repository.appendTrailPoint(
+      other.id,
+      position(timestamp),
+      SourceId.adsblol,
+    );
+
+    await repository.clearTrail(flight.id);
+
+    expect(await repository.watchTrail(flight.id).first, isEmpty);
+    expect(await repository.watchTrail(other.id).first, hasLength(1));
   });
 
   test('keeps the trails of other flights apart', () async {

@@ -273,6 +273,8 @@ class FakeFlightRepository implements FlightRepository {
   final notificationMarks = <(int, FlightNotification)>[];
   final arrivingSoonSchedules = <int, DateTime>{};
   final deletedFlightIds = <int>[];
+  final clearedTrails = <int>[];
+  final notificationResets = <int>[];
 
   /// Holds up the reconcile, so a test can watch what runs while it is still
   /// in flight.
@@ -314,6 +316,16 @@ class FakeFlightRepository implements FlightRepository {
     FixPosition position,
     SourceId sourceId,
   ) async => trailAppends.add((flightId, position, sourceId));
+
+  @override
+  Future<void> clearTrail(int flightId) async => clearedTrails.add(flightId);
+
+  @override
+  Future<void> resetNotificationMarkers(int flightId) async {
+    notificationResets.add(flightId);
+    notificationMarks.removeWhere((mark) => mark.$1 == flightId);
+    arrivingSoonSchedules.remove(flightId);
+  }
 
   @override
   Future<void> updateIdentity(

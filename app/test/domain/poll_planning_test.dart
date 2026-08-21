@@ -719,6 +719,120 @@ void main() {
     });
   });
 
+  group('landing before the scheduled departure', () {
+    const registrationQuery = RegistrationPollQuery('D-AIXP');
+    const hexQuery = HexAddressPollQuery('3c64c6');
+    const scheduledDeparture = DayTime(20, 0);
+    final beforeDeparture = DateTime(2026, 3, 17, 19, 5).toUtc();
+    final afterDeparture = DateTime(2026, 3, 17, 20, 30).toUtc();
+    final pollTime = DateTime(2026, 3, 17, 19, 6);
+
+    Flight trackedRegistrationFlight({
+      DayTime? departureTime = scheduledDeparture,
+      bool hasBeenAirborne = true,
+    }) => flightWith(
+      lookupKind: FlightLookupKind.registration,
+      lookupValue: 'D-AIXP',
+      departureTime: departureTime,
+      expectedCallsign: 'DLH8',
+      hasBeenAirborne: hasBeenAirborne,
+    );
+
+    Fix landedFix(DateTime timestamp) => fixWith(
+      callsign: 'DLH8',
+      positionAtTimestamp: timestamp,
+      onGround: true,
+    );
+
+    test('disproves a registration contact that lands before the '
+        'departure', () {
+      expect(
+        apply(trackedRegistrationFlight(), registrationQuery, [
+          landedFix(beforeDeparture),
+        ], now: pollTime),
+        isA<PollAdoptionDisproved>(),
+      );
+    });
+
+    test('disproves an entered hex contact that lands before the '
+        'departure', () {
+      final hexFlight = flightWith(
+        lookupKind: FlightLookupKind.hexAddress,
+        lookupValue: '3c64c6',
+        departureTime: scheduledDeparture,
+        expectedCallsign: 'DLH8',
+        hasBeenAirborne: true,
+      );
+
+      expect(
+        apply(hexFlight, hexQuery, [landedFix(beforeDeparture)], now: pollTime),
+        isA<PollAdoptionDisproved>(),
+      );
+    });
+
+    test('applies a landing after the scheduled departure', () {
+      expect(
+        apply(trackedRegistrationFlight(), registrationQuery, [
+          landedFix(afterDeparture),
+        ], now: DateTime(2026, 3, 17, 20, 31)),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('applies a landing while the flight has no departure time', () {
+      expect(
+        apply(
+          trackedRegistrationFlight(departureTime: null),
+          registrationQuery,
+          [landedFix(beforeDeparture)],
+          now: pollTime,
+        ),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('applies an airborne fix before the scheduled departure', () {
+      expect(
+        apply(trackedRegistrationFlight(), registrationQuery, [
+          fixWith(callsign: 'DLH8', positionAtTimestamp: beforeDeparture),
+        ], now: pollTime),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('applies a landing while the flight has never been airborne', () {
+      expect(
+        apply(
+          trackedRegistrationFlight(hasBeenAirborne: false),
+          registrationQuery,
+          [landedFix(beforeDeparture)],
+          now: pollTime,
+        ),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('never disproves a flight number flight', () {
+      final flightNumberFlight = flightWith(
+        departureTime: scheduledDeparture,
+        hexAddress: '3c64c6',
+        expectedCallsign: 'DLH400',
+        hasBeenAirborne: true,
+      );
+
+      expect(
+        apply(flightNumberFlight, hexQuery, [
+          fixWith(
+            callsign: 'DLH400',
+            positionAtTimestamp: beforeDeparture,
+            onGround: true,
+          ),
+        ], now: pollTime),
+        isA<PollFixApplied>(),
+      );
+    });
+  });
+
   group('trail positions', () {
     const hexQuery = HexAddressPollQuery('3c64c6');
 

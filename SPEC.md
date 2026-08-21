@@ -138,7 +138,10 @@ is tested — focused on the domain, where the known pitfalls live:
   never one from an answer that hides its altitude or dates from before the
   window, and afterwards reject a fix that reports a different one, which keeps
   them off the airframe's next rotation; such a rejection leaves the entered identity untouched, there is
-  nothing to fall back to
+  nothing to fall back to. A landing before the scheduled departure disproves
+  the adopted contact, because the entered leg cannot land before it departs:
+  the app forgets that leg (tracking, pin, trail, notification markers) and
+  searches again
 - Departure contact gate: polling runs for the whole flight-day window, the
   scheduled departure gates what may be adopted instead. Before that departure
   minus 2 h (clamped to the window start) nothing is tracked at all: the only

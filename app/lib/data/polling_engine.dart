@@ -226,6 +226,16 @@ class PollingEngine with WidgetsBindingObserver {
             expectedCallsign: flight.expectedCallsign,
           );
         }
+      case PollAdoptionDisproved():
+        await _repository.updateTracking(flight.id, const FlightTracking());
+        await _repository.updateIdentity(
+          flight.id,
+          hexAddress: flight.hexAddress,
+          expectedCallsign: null,
+        );
+        await _repository.clearTrail(flight.id);
+        await _repository.resetNotificationMarkers(flight.id);
+        await _notifier.adoptionDisproved(flight.id);
       case PollFixApplied(
         :final tracking,
         :final sourceId,

@@ -688,6 +688,106 @@ void main() {
     });
   });
 
+  group('adoption disproof', () {
+    Flight trackedRegistrationFlight() => flightWith(
+      lookupKind: FlightLookupKind.registration,
+      lookupValue: 'D-AIXP',
+      departureTime: const DayTime(13, 0),
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH8YY',
+      latestPosition: positionAt(noon.subtract(const Duration(minutes: 5))),
+      hasBeenAirborne: true,
+    );
+
+    test('forgets everything the disproved leg left behind', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [trackedRegistrationFlight()]);
+        started.repository.notificationMarks.add((
+          1,
+          FlightNotification.departed,
+        ));
+        started.repository.arrivingSoonSchedules[1] = noon.add(
+          const Duration(minutes: 30),
+        );
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(
+            callsign: 'DLH8YY',
+            positionAtTimestamp: noon,
+            onGround: true,
+          ),
+        );
+
+        async.flushMicrotasks();
+
+        final (flightId, tracking) = started.repository.trackingUpdates.single;
+        expect(flightId, 1);
+        expect(tracking.latestPosition, isNull);
+        expect(tracking.hasBeenAirborne, isFalse);
+        expect(tracking.lastKnownOnGround, isNull);
+        expect(started.repository.identityUpdates.single, (1, '3c64c6', null));
+        expect(started.repository.clearedTrails, [1]);
+        expect(started.repository.notificationResets, [1]);
+        expect(started.repository.notificationMarks, isEmpty);
+        expect(started.repository.arrivingSoonSchedules, isEmpty);
+        expect(started.notifications.cancelled, [
+          (FlightNotification.arrivingSoon, 1),
+        ]);
+        expect(started.repository.trailAppends, isEmpty);
+        expect(started.notifications.shown, isEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('adopts and announces the real leg after a disproof', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [trackedRegistrationFlight()]);
+        started.repository.notificationMarks.add((
+          1,
+          FlightNotification.departed,
+        ));
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(
+            callsign: 'DLH8YY',
+            positionAtTimestamp: noon,
+            onGround: true,
+          ),
+        );
+        async.flushMicrotasks();
+
+        started.repository.emit([
+          flightWith(
+            lookupKind: FlightLookupKind.registration,
+            lookupValue: 'D-AIXP',
+            departureTime: const DayTime(13, 0),
+            hexAddress: '3c64c6',
+          ),
+        ]);
+        final realLegAt = noon.add(const Duration(minutes: 1));
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(callsign: 'DLH8XX', positionAtTimestamp: realLegAt),
+        );
+        async.elapse(const Duration(minutes: 1));
+
+        expect(started.repository.trackingUpdates, hasLength(2));
+        final (_, tracking) = started.repository.trackingUpdates.last;
+        expect(tracking.hasBeenAirborne, isTrue);
+        expect(tracking.latestPosition?.timestamp, realLegAt);
+        expect(started.repository.identityUpdates.last, (
+          1,
+          '3c64c6',
+          'DLH8XX',
+        ));
+        expect(started.repository.trailAppends.single.$2.timestamp, realLegAt);
+        expect(started.notifications.shown, [(FlightNotification.departed, 1)]);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+  });
+
   group('departure contact gate', () {
     test('searches before the scheduled departure', () {
       fakeAsync((async) {

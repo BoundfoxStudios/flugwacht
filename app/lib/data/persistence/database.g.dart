@@ -270,6 +270,17 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
       'CHECK ("last_known_on_ground" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _firstAirborneAtMeta = const VerificationMeta(
+    'firstAirborneAt',
+  );
+  @override
+  late final GeneratedColumn<int> firstAirborneAt = GeneratedColumn<int>(
+    'first_airborne_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _latestLatitudeMeta = const VerificationMeta(
     'latestLatitude',
   );
@@ -447,6 +458,43 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         type: DriftSqlType.int,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _liveActivityArmedMeta = const VerificationMeta(
+    'liveActivityArmed',
+  );
+  @override
+  late final GeneratedColumn<bool> liveActivityArmed = GeneratedColumn<bool>(
+    'live_activity_armed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("live_activity_armed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _liveActivityIdMeta = const VerificationMeta(
+    'liveActivityId',
+  );
+  @override
+  late final GeneratedColumn<String> liveActivityId = GeneratedColumn<String>(
+    'live_activity_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _liveActivityReminderScheduledForMeta =
+      const VerificationMeta('liveActivityReminderScheduledFor');
+  @override
+  late final GeneratedColumn<int> liveActivityReminderScheduledFor =
+      GeneratedColumn<int>(
+        'live_activity_reminder_scheduled_for',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -472,6 +520,7 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     destinationLongitude,
     hasBeenAirborne,
     lastKnownOnGround,
+    firstAirborneAt,
     latestLatitude,
     latestLongitude,
     latestTimestamp,
@@ -488,6 +537,9 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     arrivingSoonNotifiedAt,
     landedNotifiedAt,
     arrivingSoonScheduledFor,
+    liveActivityArmed,
+    liveActivityId,
+    liveActivityReminderScheduledFor,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -679,6 +731,15 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         ),
       );
     }
+    if (data.containsKey('first_airborne_at')) {
+      context.handle(
+        _firstAirborneAtMeta,
+        firstAirborneAt.isAcceptableOrUnknown(
+          data['first_airborne_at']!,
+          _firstAirborneAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('latest_latitude')) {
       context.handle(
         _latestLatitudeMeta,
@@ -820,6 +881,33 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         ),
       );
     }
+    if (data.containsKey('live_activity_armed')) {
+      context.handle(
+        _liveActivityArmedMeta,
+        liveActivityArmed.isAcceptableOrUnknown(
+          data['live_activity_armed']!,
+          _liveActivityArmedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('live_activity_id')) {
+      context.handle(
+        _liveActivityIdMeta,
+        liveActivityId.isAcceptableOrUnknown(
+          data['live_activity_id']!,
+          _liveActivityIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('live_activity_reminder_scheduled_for')) {
+      context.handle(
+        _liveActivityReminderScheduledForMeta,
+        liveActivityReminderScheduledFor.isAcceptableOrUnknown(
+          data['live_activity_reminder_scheduled_for']!,
+          _liveActivityReminderScheduledForMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -927,6 +1015,10 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.bool,
         data['${effectivePrefix}last_known_on_ground'],
       ),
+      firstAirborneAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}first_airborne_at'],
+      ),
       latestLatitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}latest_latitude'],
@@ -991,6 +1083,18 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.int,
         data['${effectivePrefix}arriving_soon_scheduled_for'],
       ),
+      liveActivityArmed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}live_activity_armed'],
+      )!,
+      liveActivityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}live_activity_id'],
+      ),
+      liveActivityReminderScheduledFor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}live_activity_reminder_scheduled_for'],
+      ),
     );
   }
 
@@ -1034,6 +1138,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final double? destinationLongitude;
   final bool hasBeenAirborne;
   final bool? lastKnownOnGround;
+  final int? firstAirborneAt;
   final double? latestLatitude;
   final double? latestLongitude;
   final int? latestTimestamp;
@@ -1050,6 +1155,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final int? arrivingSoonNotifiedAt;
   final int? landedNotifiedAt;
   final int? arrivingSoonScheduledFor;
+  final bool liveActivityArmed;
+  final String? liveActivityId;
+  final int? liveActivityReminderScheduledFor;
   const FlightRow({
     required this.id,
     required this.lookupKind,
@@ -1074,6 +1182,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.destinationLongitude,
     required this.hasBeenAirborne,
     this.lastKnownOnGround,
+    this.firstAirborneAt,
     this.latestLatitude,
     this.latestLongitude,
     this.latestTimestamp,
@@ -1090,6 +1199,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.arrivingSoonNotifiedAt,
     this.landedNotifiedAt,
     this.arrivingSoonScheduledFor,
+    required this.liveActivityArmed,
+    this.liveActivityId,
+    this.liveActivityReminderScheduledFor,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1163,6 +1275,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     if (!nullToAbsent || lastKnownOnGround != null) {
       map['last_known_on_ground'] = Variable<bool>(lastKnownOnGround);
     }
+    if (!nullToAbsent || firstAirborneAt != null) {
+      map['first_airborne_at'] = Variable<int>(firstAirborneAt);
+    }
     if (!nullToAbsent || latestLatitude != null) {
       map['latest_latitude'] = Variable<double>(latestLatitude);
     }
@@ -1223,6 +1338,15 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     if (!nullToAbsent || arrivingSoonScheduledFor != null) {
       map['arriving_soon_scheduled_for'] = Variable<int>(
         arrivingSoonScheduledFor,
+      );
+    }
+    map['live_activity_armed'] = Variable<bool>(liveActivityArmed);
+    if (!nullToAbsent || liveActivityId != null) {
+      map['live_activity_id'] = Variable<String>(liveActivityId);
+    }
+    if (!nullToAbsent || liveActivityReminderScheduledFor != null) {
+      map['live_activity_reminder_scheduled_for'] = Variable<int>(
+        liveActivityReminderScheduledFor,
       );
     }
     return map;
@@ -1286,6 +1410,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       lastKnownOnGround: lastKnownOnGround == null && nullToAbsent
           ? const Value.absent()
           : Value(lastKnownOnGround),
+      firstAirborneAt: firstAirborneAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstAirborneAt),
       latestLatitude: latestLatitude == null && nullToAbsent
           ? const Value.absent()
           : Value(latestLatitude),
@@ -1338,6 +1465,14 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       arrivingSoonScheduledFor: arrivingSoonScheduledFor == null && nullToAbsent
           ? const Value.absent()
           : Value(arrivingSoonScheduledFor),
+      liveActivityArmed: Value(liveActivityArmed),
+      liveActivityId: liveActivityId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveActivityId),
+      liveActivityReminderScheduledFor:
+          liveActivityReminderScheduledFor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveActivityReminderScheduledFor),
     );
   }
 
@@ -1388,6 +1523,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       ),
       hasBeenAirborne: serializer.fromJson<bool>(json['hasBeenAirborne']),
       lastKnownOnGround: serializer.fromJson<bool?>(json['lastKnownOnGround']),
+      firstAirborneAt: serializer.fromJson<int?>(json['firstAirborneAt']),
       latestLatitude: serializer.fromJson<double?>(json['latestLatitude']),
       latestLongitude: serializer.fromJson<double?>(json['latestLongitude']),
       latestTimestamp: serializer.fromJson<int?>(json['latestTimestamp']),
@@ -1421,6 +1557,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       landedNotifiedAt: serializer.fromJson<int?>(json['landedNotifiedAt']),
       arrivingSoonScheduledFor: serializer.fromJson<int?>(
         json['arrivingSoonScheduledFor'],
+      ),
+      liveActivityArmed: serializer.fromJson<bool>(json['liveActivityArmed']),
+      liveActivityId: serializer.fromJson<String?>(json['liveActivityId']),
+      liveActivityReminderScheduledFor: serializer.fromJson<int?>(
+        json['liveActivityReminderScheduledFor'],
       ),
     );
   }
@@ -1459,6 +1600,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'destinationLongitude': serializer.toJson<double?>(destinationLongitude),
       'hasBeenAirborne': serializer.toJson<bool>(hasBeenAirborne),
       'lastKnownOnGround': serializer.toJson<bool?>(lastKnownOnGround),
+      'firstAirborneAt': serializer.toJson<int?>(firstAirborneAt),
       'latestLatitude': serializer.toJson<double?>(latestLatitude),
       'latestLongitude': serializer.toJson<double?>(latestLongitude),
       'latestTimestamp': serializer.toJson<int?>(latestTimestamp),
@@ -1489,6 +1631,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'arrivingSoonScheduledFor': serializer.toJson<int?>(
         arrivingSoonScheduledFor,
       ),
+      'liveActivityArmed': serializer.toJson<bool>(liveActivityArmed),
+      'liveActivityId': serializer.toJson<String?>(liveActivityId),
+      'liveActivityReminderScheduledFor': serializer.toJson<int?>(
+        liveActivityReminderScheduledFor,
+      ),
     };
   }
 
@@ -1516,6 +1663,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<double?> destinationLongitude = const Value.absent(),
     bool? hasBeenAirborne,
     Value<bool?> lastKnownOnGround = const Value.absent(),
+    Value<int?> firstAirborneAt = const Value.absent(),
     Value<double?> latestLatitude = const Value.absent(),
     Value<double?> latestLongitude = const Value.absent(),
     Value<int?> latestTimestamp = const Value.absent(),
@@ -1532,6 +1680,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
     Value<int?> landedNotifiedAt = const Value.absent(),
     Value<int?> arrivingSoonScheduledFor = const Value.absent(),
+    bool? liveActivityArmed,
+    Value<String?> liveActivityId = const Value.absent(),
+    Value<int?> liveActivityReminderScheduledFor = const Value.absent(),
   }) => FlightRow(
     id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
@@ -1585,6 +1736,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     lastKnownOnGround: lastKnownOnGround.present
         ? lastKnownOnGround.value
         : this.lastKnownOnGround,
+    firstAirborneAt: firstAirborneAt.present
+        ? firstAirborneAt.value
+        : this.firstAirborneAt,
     latestLatitude: latestLatitude.present
         ? latestLatitude.value
         : this.latestLatitude,
@@ -1631,6 +1785,13 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     arrivingSoonScheduledFor: arrivingSoonScheduledFor.present
         ? arrivingSoonScheduledFor.value
         : this.arrivingSoonScheduledFor,
+    liveActivityArmed: liveActivityArmed ?? this.liveActivityArmed,
+    liveActivityId: liveActivityId.present
+        ? liveActivityId.value
+        : this.liveActivityId,
+    liveActivityReminderScheduledFor: liveActivityReminderScheduledFor.present
+        ? liveActivityReminderScheduledFor.value
+        : this.liveActivityReminderScheduledFor,
   );
   FlightRow copyWithCompanion(FlightsCompanion data) {
     return FlightRow(
@@ -1699,6 +1860,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       lastKnownOnGround: data.lastKnownOnGround.present
           ? data.lastKnownOnGround.value
           : this.lastKnownOnGround,
+      firstAirborneAt: data.firstAirborneAt.present
+          ? data.firstAirborneAt.value
+          : this.firstAirborneAt,
       latestLatitude: data.latestLatitude.present
           ? data.latestLatitude.value
           : this.latestLatitude,
@@ -1748,6 +1912,16 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       arrivingSoonScheduledFor: data.arrivingSoonScheduledFor.present
           ? data.arrivingSoonScheduledFor.value
           : this.arrivingSoonScheduledFor,
+      liveActivityArmed: data.liveActivityArmed.present
+          ? data.liveActivityArmed.value
+          : this.liveActivityArmed,
+      liveActivityId: data.liveActivityId.present
+          ? data.liveActivityId.value
+          : this.liveActivityId,
+      liveActivityReminderScheduledFor:
+          data.liveActivityReminderScheduledFor.present
+          ? data.liveActivityReminderScheduledFor.value
+          : this.liveActivityReminderScheduledFor,
     );
   }
 
@@ -1779,6 +1953,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write('destinationLongitude: $destinationLongitude, ')
           ..write('hasBeenAirborne: $hasBeenAirborne, ')
           ..write('lastKnownOnGround: $lastKnownOnGround, ')
+          ..write('firstAirborneAt: $firstAirborneAt, ')
           ..write('latestLatitude: $latestLatitude, ')
           ..write('latestLongitude: $latestLongitude, ')
           ..write('latestTimestamp: $latestTimestamp, ')
@@ -1800,7 +1975,12 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write('departedNotifiedAt: $departedNotifiedAt, ')
           ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
           ..write('landedNotifiedAt: $landedNotifiedAt, ')
-          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor')
+          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor, ')
+          ..write('liveActivityArmed: $liveActivityArmed, ')
+          ..write('liveActivityId: $liveActivityId, ')
+          ..write(
+            'liveActivityReminderScheduledFor: $liveActivityReminderScheduledFor',
+          )
           ..write(')'))
         .toString();
   }
@@ -1830,6 +2010,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     destinationLongitude,
     hasBeenAirborne,
     lastKnownOnGround,
+    firstAirborneAt,
     latestLatitude,
     latestLongitude,
     latestTimestamp,
@@ -1846,6 +2027,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     arrivingSoonNotifiedAt,
     landedNotifiedAt,
     arrivingSoonScheduledFor,
+    liveActivityArmed,
+    liveActivityId,
+    liveActivityReminderScheduledFor,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1876,6 +2060,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.destinationLongitude == this.destinationLongitude &&
           other.hasBeenAirborne == this.hasBeenAirborne &&
           other.lastKnownOnGround == this.lastKnownOnGround &&
+          other.firstAirborneAt == this.firstAirborneAt &&
           other.latestLatitude == this.latestLatitude &&
           other.latestLongitude == this.latestLongitude &&
           other.latestTimestamp == this.latestTimestamp &&
@@ -1895,7 +2080,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.departedNotifiedAt == this.departedNotifiedAt &&
           other.arrivingSoonNotifiedAt == this.arrivingSoonNotifiedAt &&
           other.landedNotifiedAt == this.landedNotifiedAt &&
-          other.arrivingSoonScheduledFor == this.arrivingSoonScheduledFor);
+          other.arrivingSoonScheduledFor == this.arrivingSoonScheduledFor &&
+          other.liveActivityArmed == this.liveActivityArmed &&
+          other.liveActivityId == this.liveActivityId &&
+          other.liveActivityReminderScheduledFor ==
+              this.liveActivityReminderScheduledFor);
 }
 
 class FlightsCompanion extends UpdateCompanion<FlightRow> {
@@ -1922,6 +2111,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<double?> destinationLongitude;
   final Value<bool> hasBeenAirborne;
   final Value<bool?> lastKnownOnGround;
+  final Value<int?> firstAirborneAt;
   final Value<double?> latestLatitude;
   final Value<double?> latestLongitude;
   final Value<int?> latestTimestamp;
@@ -1938,6 +2128,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<int?> arrivingSoonNotifiedAt;
   final Value<int?> landedNotifiedAt;
   final Value<int?> arrivingSoonScheduledFor;
+  final Value<bool> liveActivityArmed;
+  final Value<String?> liveActivityId;
+  final Value<int?> liveActivityReminderScheduledFor;
   const FlightsCompanion({
     this.id = const Value.absent(),
     this.lookupKind = const Value.absent(),
@@ -1962,6 +2155,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.destinationLongitude = const Value.absent(),
     this.hasBeenAirborne = const Value.absent(),
     this.lastKnownOnGround = const Value.absent(),
+    this.firstAirborneAt = const Value.absent(),
     this.latestLatitude = const Value.absent(),
     this.latestLongitude = const Value.absent(),
     this.latestTimestamp = const Value.absent(),
@@ -1978,6 +2172,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.arrivingSoonNotifiedAt = const Value.absent(),
     this.landedNotifiedAt = const Value.absent(),
     this.arrivingSoonScheduledFor = const Value.absent(),
+    this.liveActivityArmed = const Value.absent(),
+    this.liveActivityId = const Value.absent(),
+    this.liveActivityReminderScheduledFor = const Value.absent(),
   });
   FlightsCompanion.insert({
     this.id = const Value.absent(),
@@ -2003,6 +2200,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.destinationLongitude = const Value.absent(),
     this.hasBeenAirborne = const Value.absent(),
     this.lastKnownOnGround = const Value.absent(),
+    this.firstAirborneAt = const Value.absent(),
     this.latestLatitude = const Value.absent(),
     this.latestLongitude = const Value.absent(),
     this.latestTimestamp = const Value.absent(),
@@ -2019,6 +2217,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.arrivingSoonNotifiedAt = const Value.absent(),
     this.landedNotifiedAt = const Value.absent(),
     this.arrivingSoonScheduledFor = const Value.absent(),
+    this.liveActivityArmed = const Value.absent(),
+    this.liveActivityId = const Value.absent(),
+    this.liveActivityReminderScheduledFor = const Value.absent(),
   }) : lookupKind = Value(lookupKind),
        lookupValue = Value(lookupValue),
        departureDate = Value(departureDate),
@@ -2047,6 +2248,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<double>? destinationLongitude,
     Expression<bool>? hasBeenAirborne,
     Expression<bool>? lastKnownOnGround,
+    Expression<int>? firstAirborneAt,
     Expression<double>? latestLatitude,
     Expression<double>? latestLongitude,
     Expression<int>? latestTimestamp,
@@ -2063,6 +2265,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<int>? arrivingSoonNotifiedAt,
     Expression<int>? landedNotifiedAt,
     Expression<int>? arrivingSoonScheduledFor,
+    Expression<bool>? liveActivityArmed,
+    Expression<String>? liveActivityId,
+    Expression<int>? liveActivityReminderScheduledFor,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2095,6 +2300,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
         'destination_longitude': destinationLongitude,
       if (hasBeenAirborne != null) 'has_been_airborne': hasBeenAirborne,
       if (lastKnownOnGround != null) 'last_known_on_ground': lastKnownOnGround,
+      if (firstAirborneAt != null) 'first_airborne_at': firstAirborneAt,
       if (latestLatitude != null) 'latest_latitude': latestLatitude,
       if (latestLongitude != null) 'latest_longitude': latestLongitude,
       if (latestTimestamp != null) 'latest_timestamp': latestTimestamp,
@@ -2121,6 +2327,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (landedNotifiedAt != null) 'landed_notified_at': landedNotifiedAt,
       if (arrivingSoonScheduledFor != null)
         'arriving_soon_scheduled_for': arrivingSoonScheduledFor,
+      if (liveActivityArmed != null) 'live_activity_armed': liveActivityArmed,
+      if (liveActivityId != null) 'live_activity_id': liveActivityId,
+      if (liveActivityReminderScheduledFor != null)
+        'live_activity_reminder_scheduled_for':
+            liveActivityReminderScheduledFor,
     });
   }
 
@@ -2148,6 +2359,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<double?>? destinationLongitude,
     Value<bool>? hasBeenAirborne,
     Value<bool?>? lastKnownOnGround,
+    Value<int?>? firstAirborneAt,
     Value<double?>? latestLatitude,
     Value<double?>? latestLongitude,
     Value<int?>? latestTimestamp,
@@ -2164,6 +2376,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<int?>? arrivingSoonNotifiedAt,
     Value<int?>? landedNotifiedAt,
     Value<int?>? arrivingSoonScheduledFor,
+    Value<bool>? liveActivityArmed,
+    Value<String?>? liveActivityId,
+    Value<int?>? liveActivityReminderScheduledFor,
   }) {
     return FlightsCompanion(
       id: id ?? this.id,
@@ -2191,6 +2406,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       destinationLongitude: destinationLongitude ?? this.destinationLongitude,
       hasBeenAirborne: hasBeenAirborne ?? this.hasBeenAirborne,
       lastKnownOnGround: lastKnownOnGround ?? this.lastKnownOnGround,
+      firstAirborneAt: firstAirborneAt ?? this.firstAirborneAt,
       latestLatitude: latestLatitude ?? this.latestLatitude,
       latestLongitude: latestLongitude ?? this.latestLongitude,
       latestTimestamp: latestTimestamp ?? this.latestTimestamp,
@@ -2216,6 +2432,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       landedNotifiedAt: landedNotifiedAt ?? this.landedNotifiedAt,
       arrivingSoonScheduledFor:
           arrivingSoonScheduledFor ?? this.arrivingSoonScheduledFor,
+      liveActivityArmed: liveActivityArmed ?? this.liveActivityArmed,
+      liveActivityId: liveActivityId ?? this.liveActivityId,
+      liveActivityReminderScheduledFor:
+          liveActivityReminderScheduledFor ??
+          this.liveActivityReminderScheduledFor,
     );
   }
 
@@ -2305,6 +2526,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     if (lastKnownOnGround.present) {
       map['last_known_on_ground'] = Variable<bool>(lastKnownOnGround.value);
     }
+    if (firstAirborneAt.present) {
+      map['first_airborne_at'] = Variable<int>(firstAirborneAt.value);
+    }
     if (latestLatitude.present) {
       map['latest_latitude'] = Variable<double>(latestLatitude.value);
     }
@@ -2369,6 +2593,17 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
         arrivingSoonScheduledFor.value,
       );
     }
+    if (liveActivityArmed.present) {
+      map['live_activity_armed'] = Variable<bool>(liveActivityArmed.value);
+    }
+    if (liveActivityId.present) {
+      map['live_activity_id'] = Variable<String>(liveActivityId.value);
+    }
+    if (liveActivityReminderScheduledFor.present) {
+      map['live_activity_reminder_scheduled_for'] = Variable<int>(
+        liveActivityReminderScheduledFor.value,
+      );
+    }
     return map;
   }
 
@@ -2400,6 +2635,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write('destinationLongitude: $destinationLongitude, ')
           ..write('hasBeenAirborne: $hasBeenAirborne, ')
           ..write('lastKnownOnGround: $lastKnownOnGround, ')
+          ..write('firstAirborneAt: $firstAirborneAt, ')
           ..write('latestLatitude: $latestLatitude, ')
           ..write('latestLongitude: $latestLongitude, ')
           ..write('latestTimestamp: $latestTimestamp, ')
@@ -2421,7 +2657,12 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write('departedNotifiedAt: $departedNotifiedAt, ')
           ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
           ..write('landedNotifiedAt: $landedNotifiedAt, ')
-          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor')
+          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor, ')
+          ..write('liveActivityArmed: $liveActivityArmed, ')
+          ..write('liveActivityId: $liveActivityId, ')
+          ..write(
+            'liveActivityReminderScheduledFor: $liveActivityReminderScheduledFor',
+          )
           ..write(')'))
         .toString();
   }
@@ -2850,6 +3091,7 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<double?> destinationLongitude,
       Value<bool> hasBeenAirborne,
       Value<bool?> lastKnownOnGround,
+      Value<int?> firstAirborneAt,
       Value<double?> latestLatitude,
       Value<double?> latestLongitude,
       Value<int?> latestTimestamp,
@@ -2866,6 +3108,9 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<int?> arrivingSoonNotifiedAt,
       Value<int?> landedNotifiedAt,
       Value<int?> arrivingSoonScheduledFor,
+      Value<bool> liveActivityArmed,
+      Value<String?> liveActivityId,
+      Value<int?> liveActivityReminderScheduledFor,
     });
 typedef $$FlightsTableUpdateCompanionBuilder =
     FlightsCompanion Function({
@@ -2892,6 +3137,7 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<double?> destinationLongitude,
       Value<bool> hasBeenAirborne,
       Value<bool?> lastKnownOnGround,
+      Value<int?> firstAirborneAt,
       Value<double?> latestLatitude,
       Value<double?> latestLongitude,
       Value<int?> latestTimestamp,
@@ -2908,6 +3154,9 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<int?> arrivingSoonNotifiedAt,
       Value<int?> landedNotifiedAt,
       Value<int?> arrivingSoonScheduledFor,
+      Value<bool> liveActivityArmed,
+      Value<String?> liveActivityId,
+      Value<int?> liveActivityReminderScheduledFor,
     });
 
 final class $$FlightsTableReferences
@@ -3063,6 +3312,11 @@ class $$FlightsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get firstAirborneAt => $composableBuilder(
+    column: $table.firstAirborneAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<double> get latestLatitude => $composableBuilder(
     column: $table.latestLatitude,
     builder: (column) => ColumnFilters(column),
@@ -3141,6 +3395,21 @@ class $$FlightsTableFilterComposer
 
   ColumnFilters<int> get arrivingSoonScheduledFor => $composableBuilder(
     column: $table.arrivingSoonScheduledFor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get liveActivityArmed => $composableBuilder(
+    column: $table.liveActivityArmed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get liveActivityId => $composableBuilder(
+    column: $table.liveActivityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get liveActivityReminderScheduledFor => $composableBuilder(
+    column: $table.liveActivityReminderScheduledFor,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3294,6 +3563,11 @@ class $$FlightsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get firstAirborneAt => $composableBuilder(
+    column: $table.firstAirborneAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get latestLatitude => $composableBuilder(
     column: $table.latestLatitude,
     builder: (column) => ColumnOrderings(column),
@@ -3376,6 +3650,22 @@ class $$FlightsTableOrderingComposer
     column: $table.arrivingSoonScheduledFor,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get liveActivityArmed => $composableBuilder(
+    column: $table.liveActivityArmed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get liveActivityId => $composableBuilder(
+    column: $table.liveActivityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get liveActivityReminderScheduledFor =>
+      $composableBuilder(
+        column: $table.liveActivityReminderScheduledFor,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$FlightsTableAnnotationComposer
@@ -3500,6 +3790,11 @@ class $$FlightsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get firstAirborneAt => $composableBuilder(
+    column: $table.firstAirborneAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get latestLatitude => $composableBuilder(
     column: $table.latestLatitude,
     builder: (column) => column,
@@ -3583,6 +3878,22 @@ class $$FlightsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get liveActivityArmed => $composableBuilder(
+    column: $table.liveActivityArmed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get liveActivityId => $composableBuilder(
+    column: $table.liveActivityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get liveActivityReminderScheduledFor =>
+      $composableBuilder(
+        column: $table.liveActivityReminderScheduledFor,
+        builder: (column) => column,
+      );
+
   Expression<T> trailPointsRefs<T extends Object>(
     Expression<T> Function($$TrailPointsTableAnnotationComposer a) f,
   ) {
@@ -3662,6 +3973,7 @@ class $$FlightsTableTableManager
                 Value<double?> destinationLongitude = const Value.absent(),
                 Value<bool> hasBeenAirborne = const Value.absent(),
                 Value<bool?> lastKnownOnGround = const Value.absent(),
+                Value<int?> firstAirborneAt = const Value.absent(),
                 Value<double?> latestLatitude = const Value.absent(),
                 Value<double?> latestLongitude = const Value.absent(),
                 Value<int?> latestTimestamp = const Value.absent(),
@@ -3682,6 +3994,10 @@ class $$FlightsTableTableManager
                 Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
                 Value<int?> landedNotifiedAt = const Value.absent(),
                 Value<int?> arrivingSoonScheduledFor = const Value.absent(),
+                Value<bool> liveActivityArmed = const Value.absent(),
+                Value<String?> liveActivityId = const Value.absent(),
+                Value<int?> liveActivityReminderScheduledFor =
+                    const Value.absent(),
               }) => FlightsCompanion(
                 id: id,
                 lookupKind: lookupKind,
@@ -3706,6 +4022,7 @@ class $$FlightsTableTableManager
                 destinationLongitude: destinationLongitude,
                 hasBeenAirborne: hasBeenAirborne,
                 lastKnownOnGround: lastKnownOnGround,
+                firstAirborneAt: firstAirborneAt,
                 latestLatitude: latestLatitude,
                 latestLongitude: latestLongitude,
                 latestTimestamp: latestTimestamp,
@@ -3723,6 +4040,10 @@ class $$FlightsTableTableManager
                 arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
                 landedNotifiedAt: landedNotifiedAt,
                 arrivingSoonScheduledFor: arrivingSoonScheduledFor,
+                liveActivityArmed: liveActivityArmed,
+                liveActivityId: liveActivityId,
+                liveActivityReminderScheduledFor:
+                    liveActivityReminderScheduledFor,
               ),
           createCompanionCallback:
               ({
@@ -3751,6 +4072,7 @@ class $$FlightsTableTableManager
                 Value<double?> destinationLongitude = const Value.absent(),
                 Value<bool> hasBeenAirborne = const Value.absent(),
                 Value<bool?> lastKnownOnGround = const Value.absent(),
+                Value<int?> firstAirborneAt = const Value.absent(),
                 Value<double?> latestLatitude = const Value.absent(),
                 Value<double?> latestLongitude = const Value.absent(),
                 Value<int?> latestTimestamp = const Value.absent(),
@@ -3771,6 +4093,10 @@ class $$FlightsTableTableManager
                 Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
                 Value<int?> landedNotifiedAt = const Value.absent(),
                 Value<int?> arrivingSoonScheduledFor = const Value.absent(),
+                Value<bool> liveActivityArmed = const Value.absent(),
+                Value<String?> liveActivityId = const Value.absent(),
+                Value<int?> liveActivityReminderScheduledFor =
+                    const Value.absent(),
               }) => FlightsCompanion.insert(
                 id: id,
                 lookupKind: lookupKind,
@@ -3795,6 +4121,7 @@ class $$FlightsTableTableManager
                 destinationLongitude: destinationLongitude,
                 hasBeenAirborne: hasBeenAirborne,
                 lastKnownOnGround: lastKnownOnGround,
+                firstAirborneAt: firstAirborneAt,
                 latestLatitude: latestLatitude,
                 latestLongitude: latestLongitude,
                 latestTimestamp: latestTimestamp,
@@ -3812,6 +4139,10 @@ class $$FlightsTableTableManager
                 arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
                 landedNotifiedAt: landedNotifiedAt,
                 arrivingSoonScheduledFor: arrivingSoonScheduledFor,
+                liveActivityArmed: liveActivityArmed,
+                liveActivityId: liveActivityId,
+                liveActivityReminderScheduledFor:
+                    liveActivityReminderScheduledFor,
               ),
           withReferenceMapper: (p0) => p0
               .map(

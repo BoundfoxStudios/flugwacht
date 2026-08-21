@@ -33,6 +33,7 @@ class Flights extends Table {
   BoolColumn get hasBeenAirborne =>
       boolean().withDefault(const Constant(false))();
   BoolColumn get lastKnownOnGround => boolean().nullable()();
+  IntColumn get firstAirborneAt => integer().nullable()();
   RealColumn get latestLatitude => real().nullable()();
   RealColumn get latestLongitude => real().nullable()();
   IntColumn get latestTimestamp => integer().nullable()();
@@ -49,6 +50,10 @@ class Flights extends Table {
   IntColumn get arrivingSoonNotifiedAt => integer().nullable()();
   IntColumn get landedNotifiedAt => integer().nullable()();
   IntColumn get arrivingSoonScheduledFor => integer().nullable()();
+  BoolColumn get liveActivityArmed =>
+      boolean().withDefault(const Constant(false))();
+  TextColumn get liveActivityId => text().nullable()();
+  IntColumn get liveActivityReminderScheduledFor => integer().nullable()();
 }
 
 @DataClassName('TrailPointRow')

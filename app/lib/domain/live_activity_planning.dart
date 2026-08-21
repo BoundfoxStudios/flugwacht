@@ -112,7 +112,9 @@ LiveActivityReminderSchedule planLiveActivityReminder({
         ? const KeepLiveActivityReminder()
         : const CancelLiveActivityReminder();
   }
-  return pendingAt == remindAt
+  // Compared as moments: what comes back from storage carries UTC, while the
+  // departure the reminder is derived from is a local wall clock.
+  return pendingAt != null && pendingAt.isAtSameMomentAs(remindAt)
       ? const KeepLiveActivityReminder()
       : SetLiveActivityReminder(remindAt);
 }

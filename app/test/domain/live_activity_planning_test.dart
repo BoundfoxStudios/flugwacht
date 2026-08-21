@@ -196,6 +196,17 @@ void main() {
       );
     });
 
+    test('leaves a reminder that is pending in another time zone', () {
+      final schedule = _reminder(
+        flight: _flight(
+          departureTime: const DayTime(10, 0),
+          reminderScheduledFor: DateTime(2026, 3, 17, 8).toUtc(),
+        ),
+        now: _beforeFlightDay,
+      );
+      expect(schedule, isA<KeepLiveActivityReminder>());
+    });
+
     test('leaves a reminder that is already scheduled for that moment', () {
       final schedule = _reminder(
         flight: _flight(

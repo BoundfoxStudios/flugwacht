@@ -3,6 +3,7 @@ import '../../domain/departure_time.dart';
 import '../../domain/flight.dart';
 import '../../domain/flight_day_window.dart';
 import '../../domain/flight_state.dart';
+import 'live_activity_url.dart';
 
 /// How long the card keeps its numbers after the moment they counted down to;
 /// past that the data behind them is old enough to say so.
@@ -15,6 +16,7 @@ Map<String, dynamic> liveActivityPayloadOf(Flight flight, DateTime now) {
   final route = flight.route;
   final tracking = flight.tracking;
   return {
+    'url': liveActivityUrlOf(flight.id),
     'designator': flight.lookupValue,
     if (flight.note case final note?) 'note': note,
     'state': resolveFlightState(flight, now).name,

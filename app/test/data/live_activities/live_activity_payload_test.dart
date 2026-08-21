@@ -58,6 +58,11 @@ Flight _flight({
 
 void main() {
   group('payload', () {
+    test('carries the url that opens the app on the flight', () {
+      final payload = liveActivityPayloadOf(_flight(), _onFlightDay);
+      expect(payload['url'], 'flugwacht://flight/1');
+    });
+
     test('names the flight by its lookup value and note', () {
       final payload = liveActivityPayloadOf(
         _flight(note: 'Papa'),

@@ -18,12 +18,17 @@ class FlightLiveActivities {
   final LiveActivityService _service;
   final DateTime Function() clock;
 
+  /// The card this app run put up for a flight. The stored id only catches up
+  /// once the write has travelled back through the flight stream, and a second
+  /// pass in between would put a second card on the Lock Screen.
+  final _activityIds = <int, String>{};
+
   Future<void> flightsChanged(List<Flight> flights) async {
+    // Asked once: the answer holds for the whole pass, and asking per flight
+    // would leave room for two of them to start the same card.
+    final canStart = await _service.areActivitiesEnabled();
     for (final flight in flights) {
-      await _apply(
-        planLiveActivityAction(flight: flight, now: clock()),
-        flight,
-      );
+      await _apply(flight, canStart: canStart);
     }
   }
 
@@ -32,7 +37,8 @@ class FlightLiveActivities {
   /// deleted.
   Future<void> flightsRemoved(Iterable<Flight> flights) async {
     for (final flight in flights) {
-      if (flight.liveActivityId case final activityId?) {
+      if (_runningActivityOf(flight) case final activityId?) {
+        _activityIds.remove(flight.id);
         await _service.end(activityId);
       }
     }
@@ -43,24 +49,31 @@ class FlightLiveActivities {
   Future<void> reconcile(List<Flight> flights) async {
     final running = await _service.runningActivityIds();
     for (final flight in flights) {
-      final activityId = flight.liveActivityId;
+      final activityId = _runningActivityOf(flight);
       if (activityId != null && !running.contains(activityId)) {
+        _activityIds.remove(flight.id);
         await _repository.setLiveActivityId(flight.id, null);
       }
     }
   }
 
-  Future<void> _apply(LiveActivityAction action, Flight flight) async {
+  Future<void> _apply(Flight flight, {required bool canStart}) async {
+    final known = _runningActivityOf(flight);
+    final action = planLiveActivityAction(
+      flight: known == null ? flight : flight.copyWith(liveActivityId: known),
+      now: clock(),
+    );
     switch (action) {
       case KeepLiveActivity():
         return;
       case StartLiveActivity():
         // A card the system would refuse leaves the flight without one, and
         // the app must not remember an activity that never appeared.
-        if (!await _service.areActivitiesEnabled()) {
+        if (!canStart) {
           return;
         }
         final activityId = _activityIdOf(flight);
+        _activityIds[flight.id] = activityId;
         await _put(activityId, flight);
         await _repository.setLiveActivityId(flight.id, activityId);
       case UpdateLiveActivity(:final activityId):
@@ -69,6 +82,7 @@ class FlightLiveActivities {
         final dismissAt = dismissAfter > Duration.zero
             ? clock().add(dismissAfter)
             : null;
+        _activityIds.remove(flight.id);
         // A card that stays a while shows what became of the flight first.
         if (dismissAt != null) {
           await _put(activityId, flight);
@@ -77,6 +91,9 @@ class FlightLiveActivities {
         await _repository.setLiveActivityId(flight.id, null);
     }
   }
+
+  String? _runningActivityOf(Flight flight) =>
+      _activityIds[flight.id] ?? flight.liveActivityId;
 
   Future<void> _put(String activityId, Flight flight) async {
     final now = clock();

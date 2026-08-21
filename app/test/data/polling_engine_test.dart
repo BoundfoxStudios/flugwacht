@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:flugwacht/data/adapters/lookup_result.dart';
 import 'package:flugwacht/data/adapters/readsb_source_adapter.dart';
+import 'package:flugwacht/data/live_activities/flight_live_activities.dart';
 import 'package:flugwacht/data/notifications/flight_notifier.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/polling_engine.dart';
@@ -38,6 +39,7 @@ void main() {
     FixPosition? latestPosition,
     bool hasBeenAirborne = false,
     FlightRoute? route,
+    bool isArmed = false,
   }) => Flight(
     id: id,
     lookupKind: lookupKind,
@@ -51,6 +53,7 @@ void main() {
       latestPosition: latestPosition,
       hasBeenAirborne: hasBeenAirborne,
     ),
+    liveActivityArmed: isArmed,
   );
 
   FixPosition positionAt(DateTime timestamp, {bool? onGround = false}) =>
@@ -113,6 +116,7 @@ void main() {
     FakeFlightRepository repository,
     FakeSourceAdapter adapter,
     FakeNotificationService notifications,
+    FakeLiveActivityService liveActivities,
   })
   startEngine(
     FakeAsync async,
@@ -122,12 +126,18 @@ void main() {
     final repository = withRepository ?? FakeFlightRepository();
     final adapter = FakeSourceAdapter();
     final notifications = createTestNotificationService();
+    final liveActivities = FakeLiveActivityService();
     final engine = PollingEngine(
       repository: repository,
       adapters: {SourceId.adsblol: adapter},
       activeSourceId: () => SourceId.adsblol,
       airlineDirectory: createTestAirlineDirectory(),
       notifier: notifierFor(async, repository, notifications),
+      liveActivities: FlightLiveActivities(
+        repository: repository,
+        service: liveActivities,
+        clock: () => noon.add(async.elapsed),
+      ),
       clock: () => noon.add(async.elapsed),
     )..start();
     repository.emit(flights);
@@ -136,6 +146,7 @@ void main() {
       repository: repository,
       adapter: adapter,
       notifications: notifications,
+      liveActivities: liveActivities,
     );
   }
 
@@ -956,6 +967,11 @@ void main() {
           repository,
           createTestNotificationService(),
         ),
+        liveActivities: FlightLiveActivities(
+          repository: repository,
+          service: FakeLiveActivityService(),
+          clock: () => noon.add(async.elapsed),
+        ),
         clock: () => noon.add(async.elapsed),
       )..start();
       repository.emit(flights);
@@ -1109,6 +1125,75 @@ void main() {
 
       started.engine.stop();
       started.repository.dispose();
+    });
+  });
+
+  group('live activities', () {
+    test('starts one card for an armed flight it learns about', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        async.flushMicrotasks();
+
+        expect(
+          started.liveActivities.puts.map((put) => put.activityId).toSet(),
+          hasLength(1),
+        );
+        expect(started.repository.liveActivityIds[1], isNotNull);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('starts none for a flight nobody armed', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith()]);
+        async.flushMicrotasks();
+
+        expect(started.liveActivities.puts, isEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('takes the card of a deleted flight off the lock screen', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        async.flushMicrotasks();
+        final activityId = started.liveActivities.puts.first.activityId;
+
+        started.repository.emit(const []);
+        async.flushMicrotasks();
+
+        expect(started.liveActivities.ends.single.activityId, activityId);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('starts a fresh card after the system ended the old one', () {
+      fakeAsync((async) {
+        final repository = FakeFlightRepository();
+        final started = startEngine(async, [
+          flightWith(isArmed: true),
+        ], withRepository: repository);
+        async.flushMicrotasks();
+        final activityId = repository.liveActivityIds[1];
+
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.paused);
+        async.elapse(const Duration(minutes: 5));
+        started.liveActivities.running = const [];
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        async.flushMicrotasks();
+
+        expect(activityId, isNotNull);
+        expect(repository.liveActivityIds[1], isNot(activityId));
+
+        started.engine.stop();
+        repository.dispose();
+      });
     });
   });
 }

@@ -11,6 +11,7 @@ import '../domain/poll_planning.dart';
 import '../domain/source_id.dart';
 import 'adapters/lookup_result.dart';
 import 'adapters/source_adapter.dart';
+import 'live_activities/flight_live_activities.dart';
 import 'lookup/airline_directory.dart';
 import 'notifications/flight_notifier.dart';
 import 'persistence/flight_repository.dart';
@@ -24,6 +25,7 @@ class PollingEngine with WidgetsBindingObserver {
     required this._activeSourceId,
     required this._airlineDirectory,
     required this._notifier,
+    required this._liveActivities,
     this.clock = DateTime.now,
   });
 
@@ -37,6 +39,7 @@ class PollingEngine with WidgetsBindingObserver {
   final SourceId Function() _activeSourceId;
   final AirlineDirectory _airlineDirectory;
   final FlightNotifier _notifier;
+  final FlightLiveActivities _liveActivities;
   final DateTime Function() clock;
 
   final _lastPollStarts = <int, DateTime>{};
@@ -80,6 +83,10 @@ class PollingEngine with WidgetsBindingObserver {
 
   Future<void> _reconcileThenPoll() async {
     await _notifier.reconcileDeliveredReminders();
+    // iOS ends a card on its own once it hits the runtime limit, and this app
+    // run is the first chance to learn that and put a fresh one up.
+    await _liveActivities.reconcile(_flights);
+    await _liveActivities.flightsChanged(_flights);
     if (_wantsPolling) {
       _startScheduler();
     }
@@ -99,13 +106,17 @@ class PollingEngine with WidgetsBindingObserver {
   bool get _isPolling => _scheduler != null;
 
   void _onFlights(List<Flight> flights) {
-    final goneIds = _flights
-        .map((flight) => flight.id)
-        .where((flightId) => !flights.any((flight) => flight.id == flightId));
+    final gone = _flights
+        .where((flight) => !flights.any((stored) => stored.id == flight.id))
+        .toList();
     _flights = flights;
     final storedIds = flights.map((flight) => flight.id).toSet();
     _lastPollStarts.removeWhere((flightId, _) => !storedIds.contains(flightId));
-    unawaited(_notifier.flightsRemoved(goneIds.toList()));
+    unawaited(
+      _notifier.flightsRemoved(gone.map((flight) => flight.id).toList()),
+    );
+    unawaited(_liveActivities.flightsRemoved(gone));
+    unawaited(_liveActivities.flightsChanged(flights));
     if (_scheduler != null) {
       _pollDueFlights();
     }

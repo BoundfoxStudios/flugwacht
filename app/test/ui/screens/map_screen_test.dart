@@ -173,6 +173,7 @@ List<Flight> flightsAirborneNow() {
 Future<FakeFlightRepository> pumpApp(
   WidgetTester tester, {
   FakeNotificationService? notificationService,
+  FakeLiveActivityService? liveActivityService,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
@@ -188,6 +189,8 @@ Future<FakeFlightRepository> pumpApp(
         notificationSetting: await createTestNotificationSetting(),
         notificationService:
             notificationService ?? createTestNotificationService(),
+        liveActivityService:
+            liveActivityService ?? createTestLiveActivityService(),
         tileSources: testTileSources(),
         packageInfo: testPackageInfo(),
       ),
@@ -417,6 +420,20 @@ void main() {
     await pumpApp(tester, notificationService: notifications);
 
     notifications.tap(2);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
+  testWidgets('frames the flight a tapped live activity names', (tester) async {
+    final liveActivities = createTestLiveActivityService();
+    await pumpApp(tester, liveActivityService: liveActivities);
+
+    liveActivities.tap(2);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 

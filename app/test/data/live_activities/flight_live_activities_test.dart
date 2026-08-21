@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/live_activities/flight_live_activities.dart';
-import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/persistence/database.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
@@ -10,40 +9,12 @@ import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/live_activity_planning.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-typedef _Put = ({String activityId, Map<String, dynamic> data});
-typedef _End = ({String activityId, DateTime? dismissAt});
-
-class _FakeLiveActivityService implements LiveActivityService {
-  final puts = <_Put>[];
-  final ends = <_End>[];
-  var isEnabled = true;
-  var running = const <String>[];
-
-  @override
-  Stream<int> get tappedFlights => const Stream.empty();
-
-  @override
-  Future<bool> areActivitiesEnabled() async => isEnabled;
-
-  @override
-  Future<void> put(
-    String activityId, {
-    required Map<String, dynamic> data,
-    required Duration staleIn,
-  }) async => puts.add((activityId: activityId, data: data));
-
-  @override
-  Future<void> end(String activityId, {DateTime? dismissAt}) async =>
-      ends.add((activityId: activityId, dismissAt: dismissAt));
-
-  @override
-  Future<List<String>> runningActivityIds() async => running;
-}
+import '../../support/test_dependencies.dart';
 
 void main() {
   late AppDatabase database;
   late FlightRepository repository;
-  late _FakeLiveActivityService service;
+  late FakeLiveActivityService service;
   late FlightLiveActivities activities;
 
   final onFlightDay = DateTime(2026, 3, 17, 12);
@@ -56,7 +27,7 @@ void main() {
       ),
     );
     repository = FlightRepository(database);
-    service = _FakeLiveActivityService();
+    service = FakeLiveActivityService();
     activities = FlightLiveActivities(
       repository: repository,
       service: service,

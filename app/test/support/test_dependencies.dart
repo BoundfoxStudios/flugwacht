@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/adapters/lookup_result.dart';
 import 'package:flugwacht/data/adapters/source_adapter.dart';
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/lookup/airline_directory.dart';
 import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
@@ -221,6 +222,12 @@ FakeNotificationService createTestNotificationService({
   return service;
 }
 
+FakeLiveActivityService createTestLiveActivityService() {
+  final service = FakeLiveActivityService();
+  addTearDown(service.dispose);
+  return service;
+}
+
 Future<GoRouter> createTestAppRouter({
   FlightRepository? flightRepository,
   NotificationService? notificationService,
@@ -233,6 +240,7 @@ Future<GoRouter> createTestAppRouter({
   unitsSetting: await createTestUnitsSetting(),
   notificationSetting: await createTestNotificationSetting(),
   notificationService: notificationService ?? createTestNotificationService(),
+  liveActivityService: createTestLiveActivityService(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );
@@ -262,6 +270,43 @@ MapTileSources testTileSources({
   tileProvider: StubTileProvider(),
 );
 
+typedef LiveActivityPut = ({String activityId, Map<String, dynamic> data});
+typedef LiveActivityEnd = ({String activityId, DateTime? dismissAt});
+
+class FakeLiveActivityService implements LiveActivityService {
+  final puts = <LiveActivityPut>[];
+  final ends = <LiveActivityEnd>[];
+  var isEnabled = true;
+  var running = const <String>[];
+
+  final _tappedFlights = StreamController<int>.broadcast();
+
+  @override
+  Stream<int> get tappedFlights => _tappedFlights.stream;
+
+  /// Stands in for the user tapping the card of a flight.
+  void tap(int flightId) => _tappedFlights.add(flightId);
+
+  void dispose() => unawaited(_tappedFlights.close());
+
+  @override
+  Future<bool> areActivitiesEnabled() async => isEnabled;
+
+  @override
+  Future<void> put(
+    String activityId, {
+    required Map<String, dynamic> data,
+    required Duration staleIn,
+  }) async => puts.add((activityId: activityId, data: data));
+
+  @override
+  Future<void> end(String activityId, {DateTime? dismissAt}) async =>
+      ends.add((activityId: activityId, dismissAt: dismissAt));
+
+  @override
+  Future<List<String>> runningActivityIds() async => running;
+}
+
 class FakeFlightRepository implements FlightRepository {
   final _flights = StreamController<List<Flight>>.broadcast();
   final _trails = StreamController<List<TrailPoint>>.broadcast();
@@ -275,6 +320,7 @@ class FakeFlightRepository implements FlightRepository {
   final deletedFlightIds = <int>[];
   final clearedTrails = <int>[];
   final notificationResets = <int>[];
+  final liveActivityIds = <int, String>{};
 
   /// Holds up the reconcile, so a test can watch what runs while it is still
   /// in flight.
@@ -356,6 +402,15 @@ class FakeFlightRepository implements FlightRepository {
       arrivingSoonSchedules.remove(flightId);
     } else {
       arrivingSoonSchedules[flightId] = at;
+    }
+  }
+
+  @override
+  Future<void> setLiveActivityId(int flightId, String? activityId) async {
+    if (activityId == null) {
+      liveActivityIds.remove(flightId);
+    } else {
+      liveActivityIds[flightId] = activityId;
     }
   }
 

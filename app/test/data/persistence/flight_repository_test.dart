@@ -392,10 +392,12 @@ void main() {
   test('persists the latched tracking facts and the full position', () async {
     final flight = await addFlight();
     final timestamp = DateTime.utc(2026, 3, 17, 9, 41, 12, 345);
+    final firstAirborneAt = DateTime.utc(2026, 3, 17, 8, 12);
     final tracking = FlightTracking(
       latestPosition: position(timestamp, onGround: true),
       hasBeenAirborne: true,
       lastKnownOnGround: true,
+      firstAirborneAt: firstAirborneAt,
     );
 
     await repository.updateTracking(flight.id, tracking);
@@ -403,6 +405,7 @@ void main() {
     final stored = (await repository.watchFlights().first).single;
     expect(stored.tracking.hasBeenAirborne, isTrue);
     expect(stored.tracking.lastKnownOnGround, isTrue);
+    expect(stored.tracking.firstAirborneAt, firstAirborneAt);
 
     final storedPosition = stored.tracking.latestPosition!;
     expect(storedPosition.timestamp, timestamp);

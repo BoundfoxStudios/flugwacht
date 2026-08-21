@@ -92,6 +92,69 @@ void main() {
     expect(withoutGroundState.lastKnownOnGround, isTrue);
   });
 
+  test('records the moment of the first airborne fix', () {
+    final tracking = const FlightTracking().withFix(
+      positionFix(afterWindowStart(const Duration(hours: 2)), onGround: false),
+      window,
+    );
+    expect(
+      tracking.firstAirborneAt,
+      afterWindowStart(const Duration(hours: 2)),
+    );
+  });
+
+  test('keeps the first airborne moment while the flight stays airborne', () {
+    final tracking = const FlightTracking()
+        .withFix(
+          positionFix(
+            afterWindowStart(const Duration(hours: 2)),
+            onGround: false,
+          ),
+          window,
+        )
+        .withFix(
+          positionFix(
+            afterWindowStart(const Duration(hours: 3)),
+            onGround: false,
+          ),
+          window,
+        );
+    expect(
+      tracking.firstAirborneAt,
+      afterWindowStart(const Duration(hours: 2)),
+    );
+  });
+
+  test('keeps the first airborne moment after the flight has landed', () {
+    final tracking = const FlightTracking()
+        .withFix(
+          positionFix(
+            afterWindowStart(const Duration(hours: 2)),
+            onGround: false,
+          ),
+          window,
+        )
+        .withFix(
+          positionFix(
+            afterWindowStart(const Duration(hours: 8)),
+            onGround: true,
+          ),
+          window,
+        );
+    expect(
+      tracking.firstAirborneAt,
+      afterWindowStart(const Duration(hours: 2)),
+    );
+  });
+
+  test('records no airborne moment while the flight sits on the ground', () {
+    final tracking = const FlightTracking().withFix(
+      positionFix(afterWindowStart(const Duration(hours: 1)), onGround: true),
+      window,
+    );
+    expect(tracking.firstAirborneAt, isNull);
+  });
+
   test('copies a flight with new tracking and keeps every other field', () {
     const flight = Flight(
       id: 1,

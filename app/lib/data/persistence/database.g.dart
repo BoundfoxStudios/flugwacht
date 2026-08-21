@@ -270,6 +270,17 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
       'CHECK ("last_known_on_ground" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _firstAirborneAtMeta = const VerificationMeta(
+    'firstAirborneAt',
+  );
+  @override
+  late final GeneratedColumn<int> firstAirborneAt = GeneratedColumn<int>(
+    'first_airborne_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _latestLatitudeMeta = const VerificationMeta(
     'latestLatitude',
   );
@@ -472,6 +483,7 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     destinationLongitude,
     hasBeenAirborne,
     lastKnownOnGround,
+    firstAirborneAt,
     latestLatitude,
     latestLongitude,
     latestTimestamp,
@@ -676,6 +688,15 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         lastKnownOnGround.isAcceptableOrUnknown(
           data['last_known_on_ground']!,
           _lastKnownOnGroundMeta,
+        ),
+      );
+    }
+    if (data.containsKey('first_airborne_at')) {
+      context.handle(
+        _firstAirborneAtMeta,
+        firstAirborneAt.isAcceptableOrUnknown(
+          data['first_airborne_at']!,
+          _firstAirborneAtMeta,
         ),
       );
     }
@@ -927,6 +948,10 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.bool,
         data['${effectivePrefix}last_known_on_ground'],
       ),
+      firstAirborneAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}first_airborne_at'],
+      ),
       latestLatitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}latest_latitude'],
@@ -1034,6 +1059,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final double? destinationLongitude;
   final bool hasBeenAirborne;
   final bool? lastKnownOnGround;
+  final int? firstAirborneAt;
   final double? latestLatitude;
   final double? latestLongitude;
   final int? latestTimestamp;
@@ -1074,6 +1100,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.destinationLongitude,
     required this.hasBeenAirborne,
     this.lastKnownOnGround,
+    this.firstAirborneAt,
     this.latestLatitude,
     this.latestLongitude,
     this.latestTimestamp,
@@ -1162,6 +1189,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     map['has_been_airborne'] = Variable<bool>(hasBeenAirborne);
     if (!nullToAbsent || lastKnownOnGround != null) {
       map['last_known_on_ground'] = Variable<bool>(lastKnownOnGround);
+    }
+    if (!nullToAbsent || firstAirborneAt != null) {
+      map['first_airborne_at'] = Variable<int>(firstAirborneAt);
     }
     if (!nullToAbsent || latestLatitude != null) {
       map['latest_latitude'] = Variable<double>(latestLatitude);
@@ -1286,6 +1316,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       lastKnownOnGround: lastKnownOnGround == null && nullToAbsent
           ? const Value.absent()
           : Value(lastKnownOnGround),
+      firstAirborneAt: firstAirborneAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstAirborneAt),
       latestLatitude: latestLatitude == null && nullToAbsent
           ? const Value.absent()
           : Value(latestLatitude),
@@ -1388,6 +1421,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       ),
       hasBeenAirborne: serializer.fromJson<bool>(json['hasBeenAirborne']),
       lastKnownOnGround: serializer.fromJson<bool?>(json['lastKnownOnGround']),
+      firstAirborneAt: serializer.fromJson<int?>(json['firstAirborneAt']),
       latestLatitude: serializer.fromJson<double?>(json['latestLatitude']),
       latestLongitude: serializer.fromJson<double?>(json['latestLongitude']),
       latestTimestamp: serializer.fromJson<int?>(json['latestTimestamp']),
@@ -1459,6 +1493,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'destinationLongitude': serializer.toJson<double?>(destinationLongitude),
       'hasBeenAirborne': serializer.toJson<bool>(hasBeenAirborne),
       'lastKnownOnGround': serializer.toJson<bool?>(lastKnownOnGround),
+      'firstAirborneAt': serializer.toJson<int?>(firstAirborneAt),
       'latestLatitude': serializer.toJson<double?>(latestLatitude),
       'latestLongitude': serializer.toJson<double?>(latestLongitude),
       'latestTimestamp': serializer.toJson<int?>(latestTimestamp),
@@ -1516,6 +1551,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<double?> destinationLongitude = const Value.absent(),
     bool? hasBeenAirborne,
     Value<bool?> lastKnownOnGround = const Value.absent(),
+    Value<int?> firstAirborneAt = const Value.absent(),
     Value<double?> latestLatitude = const Value.absent(),
     Value<double?> latestLongitude = const Value.absent(),
     Value<int?> latestTimestamp = const Value.absent(),
@@ -1585,6 +1621,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     lastKnownOnGround: lastKnownOnGround.present
         ? lastKnownOnGround.value
         : this.lastKnownOnGround,
+    firstAirborneAt: firstAirborneAt.present
+        ? firstAirborneAt.value
+        : this.firstAirborneAt,
     latestLatitude: latestLatitude.present
         ? latestLatitude.value
         : this.latestLatitude,
@@ -1699,6 +1738,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       lastKnownOnGround: data.lastKnownOnGround.present
           ? data.lastKnownOnGround.value
           : this.lastKnownOnGround,
+      firstAirborneAt: data.firstAirborneAt.present
+          ? data.firstAirborneAt.value
+          : this.firstAirborneAt,
       latestLatitude: data.latestLatitude.present
           ? data.latestLatitude.value
           : this.latestLatitude,
@@ -1779,6 +1821,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write('destinationLongitude: $destinationLongitude, ')
           ..write('hasBeenAirborne: $hasBeenAirborne, ')
           ..write('lastKnownOnGround: $lastKnownOnGround, ')
+          ..write('firstAirborneAt: $firstAirborneAt, ')
           ..write('latestLatitude: $latestLatitude, ')
           ..write('latestLongitude: $latestLongitude, ')
           ..write('latestTimestamp: $latestTimestamp, ')
@@ -1830,6 +1873,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     destinationLongitude,
     hasBeenAirborne,
     lastKnownOnGround,
+    firstAirborneAt,
     latestLatitude,
     latestLongitude,
     latestTimestamp,
@@ -1876,6 +1920,7 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.destinationLongitude == this.destinationLongitude &&
           other.hasBeenAirborne == this.hasBeenAirborne &&
           other.lastKnownOnGround == this.lastKnownOnGround &&
+          other.firstAirborneAt == this.firstAirborneAt &&
           other.latestLatitude == this.latestLatitude &&
           other.latestLongitude == this.latestLongitude &&
           other.latestTimestamp == this.latestTimestamp &&
@@ -1922,6 +1967,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<double?> destinationLongitude;
   final Value<bool> hasBeenAirborne;
   final Value<bool?> lastKnownOnGround;
+  final Value<int?> firstAirborneAt;
   final Value<double?> latestLatitude;
   final Value<double?> latestLongitude;
   final Value<int?> latestTimestamp;
@@ -1962,6 +2008,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.destinationLongitude = const Value.absent(),
     this.hasBeenAirborne = const Value.absent(),
     this.lastKnownOnGround = const Value.absent(),
+    this.firstAirborneAt = const Value.absent(),
     this.latestLatitude = const Value.absent(),
     this.latestLongitude = const Value.absent(),
     this.latestTimestamp = const Value.absent(),
@@ -2003,6 +2050,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.destinationLongitude = const Value.absent(),
     this.hasBeenAirborne = const Value.absent(),
     this.lastKnownOnGround = const Value.absent(),
+    this.firstAirborneAt = const Value.absent(),
     this.latestLatitude = const Value.absent(),
     this.latestLongitude = const Value.absent(),
     this.latestTimestamp = const Value.absent(),
@@ -2047,6 +2095,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<double>? destinationLongitude,
     Expression<bool>? hasBeenAirborne,
     Expression<bool>? lastKnownOnGround,
+    Expression<int>? firstAirborneAt,
     Expression<double>? latestLatitude,
     Expression<double>? latestLongitude,
     Expression<int>? latestTimestamp,
@@ -2095,6 +2144,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
         'destination_longitude': destinationLongitude,
       if (hasBeenAirborne != null) 'has_been_airborne': hasBeenAirborne,
       if (lastKnownOnGround != null) 'last_known_on_ground': lastKnownOnGround,
+      if (firstAirborneAt != null) 'first_airborne_at': firstAirborneAt,
       if (latestLatitude != null) 'latest_latitude': latestLatitude,
       if (latestLongitude != null) 'latest_longitude': latestLongitude,
       if (latestTimestamp != null) 'latest_timestamp': latestTimestamp,
@@ -2148,6 +2198,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<double?>? destinationLongitude,
     Value<bool>? hasBeenAirborne,
     Value<bool?>? lastKnownOnGround,
+    Value<int?>? firstAirborneAt,
     Value<double?>? latestLatitude,
     Value<double?>? latestLongitude,
     Value<int?>? latestTimestamp,
@@ -2191,6 +2242,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       destinationLongitude: destinationLongitude ?? this.destinationLongitude,
       hasBeenAirborne: hasBeenAirborne ?? this.hasBeenAirborne,
       lastKnownOnGround: lastKnownOnGround ?? this.lastKnownOnGround,
+      firstAirborneAt: firstAirborneAt ?? this.firstAirborneAt,
       latestLatitude: latestLatitude ?? this.latestLatitude,
       latestLongitude: latestLongitude ?? this.latestLongitude,
       latestTimestamp: latestTimestamp ?? this.latestTimestamp,
@@ -2305,6 +2357,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     if (lastKnownOnGround.present) {
       map['last_known_on_ground'] = Variable<bool>(lastKnownOnGround.value);
     }
+    if (firstAirborneAt.present) {
+      map['first_airborne_at'] = Variable<int>(firstAirborneAt.value);
+    }
     if (latestLatitude.present) {
       map['latest_latitude'] = Variable<double>(latestLatitude.value);
     }
@@ -2400,6 +2455,7 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write('destinationLongitude: $destinationLongitude, ')
           ..write('hasBeenAirborne: $hasBeenAirborne, ')
           ..write('lastKnownOnGround: $lastKnownOnGround, ')
+          ..write('firstAirborneAt: $firstAirborneAt, ')
           ..write('latestLatitude: $latestLatitude, ')
           ..write('latestLongitude: $latestLongitude, ')
           ..write('latestTimestamp: $latestTimestamp, ')
@@ -2850,6 +2906,7 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<double?> destinationLongitude,
       Value<bool> hasBeenAirborne,
       Value<bool?> lastKnownOnGround,
+      Value<int?> firstAirborneAt,
       Value<double?> latestLatitude,
       Value<double?> latestLongitude,
       Value<int?> latestTimestamp,
@@ -2892,6 +2949,7 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<double?> destinationLongitude,
       Value<bool> hasBeenAirborne,
       Value<bool?> lastKnownOnGround,
+      Value<int?> firstAirborneAt,
       Value<double?> latestLatitude,
       Value<double?> latestLongitude,
       Value<int?> latestTimestamp,
@@ -3060,6 +3118,11 @@ class $$FlightsTableFilterComposer
 
   ColumnFilters<bool> get lastKnownOnGround => $composableBuilder(
     column: $table.lastKnownOnGround,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get firstAirborneAt => $composableBuilder(
+    column: $table.firstAirborneAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3294,6 +3357,11 @@ class $$FlightsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get firstAirborneAt => $composableBuilder(
+    column: $table.firstAirborneAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get latestLatitude => $composableBuilder(
     column: $table.latestLatitude,
     builder: (column) => ColumnOrderings(column),
@@ -3500,6 +3568,11 @@ class $$FlightsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get firstAirborneAt => $composableBuilder(
+    column: $table.firstAirborneAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get latestLatitude => $composableBuilder(
     column: $table.latestLatitude,
     builder: (column) => column,
@@ -3662,6 +3735,7 @@ class $$FlightsTableTableManager
                 Value<double?> destinationLongitude = const Value.absent(),
                 Value<bool> hasBeenAirborne = const Value.absent(),
                 Value<bool?> lastKnownOnGround = const Value.absent(),
+                Value<int?> firstAirborneAt = const Value.absent(),
                 Value<double?> latestLatitude = const Value.absent(),
                 Value<double?> latestLongitude = const Value.absent(),
                 Value<int?> latestTimestamp = const Value.absent(),
@@ -3706,6 +3780,7 @@ class $$FlightsTableTableManager
                 destinationLongitude: destinationLongitude,
                 hasBeenAirborne: hasBeenAirborne,
                 lastKnownOnGround: lastKnownOnGround,
+                firstAirborneAt: firstAirborneAt,
                 latestLatitude: latestLatitude,
                 latestLongitude: latestLongitude,
                 latestTimestamp: latestTimestamp,
@@ -3751,6 +3826,7 @@ class $$FlightsTableTableManager
                 Value<double?> destinationLongitude = const Value.absent(),
                 Value<bool> hasBeenAirborne = const Value.absent(),
                 Value<bool?> lastKnownOnGround = const Value.absent(),
+                Value<int?> firstAirborneAt = const Value.absent(),
                 Value<double?> latestLatitude = const Value.absent(),
                 Value<double?> latestLongitude = const Value.absent(),
                 Value<int?> latestTimestamp = const Value.absent(),
@@ -3795,6 +3871,7 @@ class $$FlightsTableTableManager
                 destinationLongitude: destinationLongitude,
                 hasBeenAirborne: hasBeenAirborne,
                 lastKnownOnGround: lastKnownOnGround,
+                firstAirborneAt: firstAirborneAt,
                 latestLatitude: latestLatitude,
                 latestLongitude: latestLongitude,
                 latestTimestamp: latestTimestamp,

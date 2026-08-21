@@ -33,6 +33,7 @@ class Flights extends Table {
   BoolColumn get hasBeenAirborne =>
       boolean().withDefault(const Constant(false))();
   BoolColumn get lastKnownOnGround => boolean().nullable()();
+  IntColumn get firstAirborneAt => integer().nullable()();
   RealColumn get latestLatitude => real().nullable()();
   RealColumn get latestLongitude => real().nullable()();
   IntColumn get latestTimestamp => integer().nullable()();

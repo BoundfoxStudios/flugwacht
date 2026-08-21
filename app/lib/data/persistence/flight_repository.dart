@@ -76,6 +76,9 @@ class FlightRepository {
       FlightsCompanion(
         hasBeenAirborne: Value(tracking.hasBeenAirborne),
         lastKnownOnGround: Value(tracking.lastKnownOnGround),
+        firstAirborneAt: Value(
+          tracking.firstAirborneAt?.millisecondsSinceEpoch,
+        ),
         latestLatitude: Value(position?.latitude),
         latestLongitude: Value(position?.longitude),
         latestTimestamp: Value(position?.timestamp.millisecondsSinceEpoch),
@@ -254,6 +257,7 @@ Flight _toFlight(FlightRow row) => Flight(
     latestPosition: _toPosition(row),
     hasBeenAirborne: row.hasBeenAirborne,
     lastKnownOnGround: row.lastKnownOnGround,
+    firstAirborneAt: _toInstant(row.firstAirborneAt),
   ),
   notifications: NotificationMarkers(
     departedAt: _toInstant(row.departedNotifiedAt),

@@ -75,11 +75,16 @@ class FlightTracking {
     this.latestPosition,
     this.hasBeenAirborne = false,
     this.lastKnownOnGround,
+    this.firstAirborneAt,
   });
 
   final FixPosition? latestPosition;
   final bool hasBeenAirborne;
   final bool? lastKnownOnGround;
+
+  /// When the flight was first seen off the ground, the anchor a progress bar
+  /// runs from.
+  final DateTime? firstAirborneAt;
 
   FlightTracking withFix(Fix fix, FlightDayWindow window) {
     final position = fix.position;
@@ -90,6 +95,9 @@ class FlightTracking {
       latestPosition: position,
       hasBeenAirborne: hasBeenAirborne || position.onGround == false,
       lastKnownOnGround: position.onGround ?? lastKnownOnGround,
+      firstAirborneAt:
+          firstAirborneAt ??
+          (position.onGround == false ? position.timestamp : null),
     );
   }
 }

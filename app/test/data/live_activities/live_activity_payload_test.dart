@@ -1,0 +1,230 @@
+import 'package:flugwacht/data/live_activities/live_activity_payload.dart';
+import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
+import 'package:flugwacht/domain/fix.dart';
+import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/domain/flight_route.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+const _departureDate = CalendarDate(2026, 3, 17);
+
+/// Frankfurt to Munich, so a position over Frankfurt is a known distance out.
+const _route = FlightRoute(
+  origin: RouteAirport(
+    icaoCode: 'EDDF',
+    iataCode: 'FRA',
+    name: 'Frankfurt am Main',
+    latitude: 50.026402,
+    longitude: 8.543130,
+  ),
+  destination: RouteAirport(
+    icaoCode: 'EDDM',
+    iataCode: 'MUC',
+    name: 'München',
+    latitude: 48.353802,
+    longitude: 11.786100,
+  ),
+);
+
+final _onFlightDay = DateTime(2026, 3, 17, 12);
+
+FixPosition _position({
+  DateTime? timestamp,
+  bool onGround = false,
+  double groundSpeedKnots = 420,
+}) => FixPosition(
+  latitude: 50.026402,
+  longitude: 8.543130,
+  timestamp: timestamp ?? _onFlightDay,
+  onGround: onGround,
+  groundSpeedKnots: groundSpeedKnots,
+);
+
+Flight _flight({
+  String? note,
+  DayTime? departureTime,
+  FlightRoute? route = _route,
+  FlightTracking tracking = const FlightTracking(),
+}) => Flight(
+  id: 1,
+  lookupKind: FlightLookupKind.flightNumber,
+  lookupValue: 'LH433',
+  departureDate: _departureDate,
+  departureTime: departureTime,
+  note: note,
+  route: route,
+  tracking: tracking,
+);
+
+void main() {
+  group('payload', () {
+    test('names the flight by its lookup value and note', () {
+      final payload = liveActivityPayloadOf(
+        _flight(note: 'Papa'),
+        _onFlightDay,
+      );
+      expect(payload['designator'], 'LH433');
+      expect(payload['note'], 'Papa');
+    });
+
+    test('leaves out a note the flight does not carry', () {
+      final payload = liveActivityPayloadOf(_flight(), _onFlightDay);
+      expect(payload.containsKey('note'), isFalse);
+    });
+
+    test('carries the state the app shows for the flight', () {
+      final payload = liveActivityPayloadOf(
+        _flight(tracking: FlightTracking(latestPosition: _position())),
+        _onFlightDay,
+      );
+      expect(payload['state'], 'live');
+    });
+
+    test('carries the route in iata codes', () {
+      final payload = liveActivityPayloadOf(_flight(), _onFlightDay);
+      expect(payload['originCode'], 'FRA');
+      expect(payload['destinationCode'], 'MUC');
+    });
+
+    test('falls back to the icao code of an airport without an iata one', () {
+      final payload = liveActivityPayloadOf(
+        _flight(
+          route: const FlightRoute(
+            origin: RouteAirport(
+              icaoCode: 'EDDF',
+              name: 'Frankfurt am Main',
+              latitude: 50.026402,
+              longitude: 8.543130,
+            ),
+            destination: RouteAirport(
+              icaoCode: 'EDDM',
+              name: 'München',
+              latitude: 48.353802,
+              longitude: 11.786100,
+            ),
+          ),
+        ),
+        _onFlightDay,
+      );
+      expect(payload['originCode'], 'EDDF');
+      expect(payload['destinationCode'], 'EDDM');
+    });
+
+    test('leaves out the codes of a flight without a route', () {
+      final payload = liveActivityPayloadOf(_flight(route: null), _onFlightDay);
+      expect(payload.containsKey('originCode'), isFalse);
+      expect(payload.containsKey('destinationCode'), isFalse);
+    });
+
+    test('carries the scheduled departure as epoch milliseconds', () {
+      final payload = liveActivityPayloadOf(
+        _flight(departureTime: const DayTime(10, 0)),
+        _onFlightDay,
+      );
+      expect(
+        payload['departureAt'],
+        DateTime(2026, 3, 17, 10).millisecondsSinceEpoch,
+      );
+    });
+
+    test('carries the estimated arrival of a tracked flight', () {
+      final payload = liveActivityPayloadOf(
+        _flight(tracking: FlightTracking(latestPosition: _position())),
+        _onFlightDay,
+      );
+      expect(payload['estimatedArrivalAt'], isA<int>());
+    });
+
+    test('leaves out an arrival the flight gives no basis for', () {
+      final payload = liveActivityPayloadOf(
+        _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(groundSpeedKnots: 20),
+          ),
+        ),
+        _onFlightDay,
+      );
+      expect(payload.containsKey('estimatedArrivalAt'), isFalse);
+    });
+
+    test('carries the anchor the progress bar runs from', () {
+      final airborneAt = DateTime(2026, 3, 17, 10, 30);
+      final payload = liveActivityPayloadOf(
+        _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(),
+            firstAirborneAt: airborneAt,
+          ),
+        ),
+        _onFlightDay,
+      );
+      expect(payload['firstAirborneAt'], airborneAt.millisecondsSinceEpoch);
+    });
+
+    test('carries the arrival of a flight that has landed', () {
+      final landedAt = DateTime(2026, 3, 17, 11, 45);
+      final payload = liveActivityPayloadOf(
+        _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(timestamp: landedAt, onGround: true),
+            hasBeenAirborne: true,
+            lastKnownOnGround: true,
+          ),
+        ),
+        _onFlightDay,
+      );
+      expect(payload['state'], 'ended');
+      expect(payload['landedAt'], landedAt.millisecondsSinceEpoch);
+    });
+
+    test('leaves out an arrival while the flight is still up', () {
+      final payload = liveActivityPayloadOf(
+        _flight(tracking: FlightTracking(latestPosition: _position())),
+        _onFlightDay,
+      );
+      expect(payload.containsKey('landedAt'), isFalse);
+    });
+  });
+
+  group('stale date', () {
+    test('outlives the estimated arrival by the grace period', () {
+      final flight = _flight(
+        tracking: FlightTracking(latestPosition: _position()),
+      );
+      final arrivesAt =
+          liveActivityPayloadOf(flight, _onFlightDay)['estimatedArrivalAt']!
+              as int;
+
+      expect(
+        _onFlightDay
+            .add(liveActivityStaleIn(flight, _onFlightDay))
+            .millisecondsSinceEpoch,
+        arrivesAt + liveActivityStaleGrace.inMilliseconds,
+      );
+    });
+
+    test('outlives the scheduled departure before the flight is up', () {
+      final flight = _flight(departureTime: const DayTime(14, 0));
+      expect(
+        _onFlightDay.add(liveActivityStaleIn(flight, _onFlightDay)),
+        DateTime(2026, 3, 17, 14).add(liveActivityStaleGrace),
+      );
+    });
+
+    test('falls back to the end of the flight day', () {
+      final flight = _flight();
+      expect(
+        _onFlightDay.add(liveActivityStaleIn(flight, _onFlightDay)),
+        DateTime(2026, 3, 19),
+      );
+    });
+
+    test('falls back to the flight day once the departure has passed', () {
+      final flight = _flight(departureTime: const DayTime(6, 0));
+      expect(
+        _onFlightDay.add(liveActivityStaleIn(flight, _onFlightDay)),
+        DateTime(2026, 3, 19),
+      );
+    });
+  });
+}

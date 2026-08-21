@@ -6,6 +6,7 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/settings/source_setting.dart';
 import '../../../data/settings/units_setting.dart';
+import '../../../domain/flight.dart';
 import '../../../domain/flight_state.dart';
 import '../../../domain/map_style.dart';
 import '../../../domain/signal_age.dart';
@@ -20,6 +21,7 @@ import '../map/map_visuals.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
 import 'no_signal_info_box.dart';
+import 'sheet_info_box.dart';
 import 'state_timeline.dart';
 
 /// The sheet over the map: peeking it names the flight and its arrival, opened
@@ -335,6 +337,10 @@ class _FlightPage extends StatelessWidget {
             SizedBox(height: gap),
             NoSignalInfoBox(age: signalAge),
           ],
+          if (entry.state == FlightState.waiting) ...[
+            SizedBox(height: gap),
+            _WaitingInfoBox(flight: entry.flight),
+          ],
           SizedBox(height: gap),
           SignalBuilder(builder: (context) => _footer(localizations)),
         ],
@@ -351,7 +357,7 @@ class _FlightPage extends StatelessWidget {
       ),
       style: AppTextStyles.caption.copyWith(color: colors.footer),
     );
-    if (entry.state != FlightState.noSignal) {
+    if (!_offersAnotherSource) {
       return attribution;
     }
     return Row(
@@ -364,6 +370,25 @@ class _FlightPage extends StatelessWidget {
       ],
     );
   }
+
+  bool get _offersAnotherSource => switch (entry.state) {
+    FlightState.noSignal || FlightState.waiting => true,
+    FlightState.live ||
+    FlightState.planned ||
+    FlightState.ended ||
+    FlightState.missed => false,
+  };
+}
+
+class _WaitingInfoBox extends StatelessWidget {
+  const _WaitingInfoBox({required this.flight});
+
+  final Flight flight;
+
+  @override
+  Widget build(BuildContext context) => SheetInfoBox(
+    text: AppLocalizations.of(context).mapSheetWaitingInfo(flight.lookupValue),
+  );
 }
 
 /// Switches a flight the active source cannot see to the next one, right where

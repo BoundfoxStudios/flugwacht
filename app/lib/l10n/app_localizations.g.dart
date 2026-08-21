@@ -498,6 +498,12 @@ abstract class AppLocalizations {
   /// **'Last signal {age}. Over oceans there are often no receivers for 1–2 hours — the trail will come back.'**
   String mapSheetNoSignalInfo(String age);
 
+  /// Explains what a flight without a first signal is being searched for.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for {identity}. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft.'**
+  String mapSheetWaitingInfo(String identity);
+
   /// No description provided for @mapSheetAltitudeValue.
   ///
   /// In en, this message translates to:

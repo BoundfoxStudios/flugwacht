@@ -245,6 +245,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String mapSheetWaitingInfo(String identity) {
+    return 'Searching for $identity. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft.';
+  }
+
+  @override
   String mapSheetAltitudeValue(String value) {
     return '$value m';
   }

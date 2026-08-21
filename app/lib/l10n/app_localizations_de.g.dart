@@ -244,6 +244,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String mapSheetWaitingInfo(String identity) {
+    return 'Sucht nach $identity. Oft fehlen ein bis zwei Stunden lang Empfänger, die Spur beginnt, sobald einer das Flugzeug sieht.';
+  }
+
+  @override
   String mapSheetAltitudeValue(String value) {
     return '$value m';
   }

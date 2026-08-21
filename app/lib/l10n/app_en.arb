@@ -215,6 +215,15 @@
       }
     }
   },
+  "mapSheetWaitingInfo": "Searching for {identity}. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft.",
+  "@mapSheetWaitingInfo": {
+    "description": "Explains what a flight without a first signal is being searched for.",
+    "placeholders": {
+      "identity": {
+        "type": "String"
+      }
+    }
+  },
   "mapSheetAltitudeValue": "{value} m",
   "@mapSheetAltitudeValue": {
     "placeholders": {

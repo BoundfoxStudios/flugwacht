@@ -192,6 +192,7 @@ Future<FakeFlightRepository> pumpApp(
             notificationService ?? createTestNotificationService(),
         liveActivityService:
             liveActivityService ?? createTestLiveActivityService(),
+        liveActivitySetting: await createTestLiveActivitySetting(),
         tileSources: testTileSources(),
         packageInfo: testPackageInfo(),
       ),

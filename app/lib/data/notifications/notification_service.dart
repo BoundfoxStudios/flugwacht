@@ -51,6 +51,17 @@ abstract interface class NotificationService {
   });
 
   Future<void> cancel(FlightNotification kind, {required int flightId});
+
+  /// Hands the system the offer to start a flight's Live Activity on its
+  /// flight day — the app's own offer, not one of the flight's moments.
+  Future<void> scheduleLiveActivityReminder({
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  });
+
+  Future<void> cancelLiveActivityReminder({required int flightId});
 }
 
 class LocalNotificationService implements NotificationService {
@@ -198,6 +209,26 @@ class LocalNotificationService implements NotificationService {
   Future<void> cancel(FlightNotification kind, {required int flightId}) =>
       _plugin.cancel(id: _idOf(kind, flightId));
 
+  @override
+  Future<void> scheduleLiveActivityReminder({
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) => _plugin.zonedSchedule(
+    id: _reminderIdOf(flightId),
+    title: title,
+    body: body,
+    scheduledDate: timezone.TZDateTime.from(at, timezone.UTC),
+    notificationDetails: _details,
+    payload: '$flightId',
+    androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+  );
+
+  @override
+  Future<void> cancelLiveActivityReminder({required int flightId}) =>
+      _plugin.cancel(id: _reminderIdOf(flightId));
+
   void dispose() {
     permission.dispose();
     unawaited(_tappedFlights.close());
@@ -212,8 +243,15 @@ class LocalNotificationService implements NotificationService {
 
   /// One stable id per flight and kind, so a reminder can be replaced and
   /// cancelled without bookkeeping.
+  /// One slot per notification a flight can have: its own moments plus the
+  /// flight-day reminder, which takes the slot behind them.
+  static final _idsPerFlight = FlightNotification.values.length + 1;
+
   static int _idOf(FlightNotification kind, int flightId) =>
-      flightId * FlightNotification.values.length + kind.index;
+      flightId * _idsPerFlight + kind.index;
+
+  static int _reminderIdOf(int flightId) =>
+      flightId * _idsPerFlight + FlightNotification.values.length;
 
   /// The flight a notification carries; every notification of the app names
   /// one, and nothing else may reach this.
@@ -292,6 +330,17 @@ class UnavailableNotificationService implements NotificationService {
 
   @override
   Future<void> cancel(FlightNotification kind, {required int flightId}) async {}
+
+  @override
+  Future<void> scheduleLiveActivityReminder({
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) async {}
+
+  @override
+  Future<void> cancelLiveActivityReminder({required int flightId}) async {}
 
   void dispose() => permission.dispose();
 }

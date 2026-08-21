@@ -2,9 +2,12 @@ import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/live_activities/flight_live_activities.dart';
 import 'package:flugwacht/data/live_activities/live_activity_service.dart';
+import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/persistence/database.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
+import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/live_activity_planning.dart';
@@ -16,11 +19,16 @@ void main() {
   late AppDatabase database;
   late FlightRepository repository;
   late FakeLiveActivityService service;
+  late FakeNotificationService notifications;
+  late LiveActivitySetting setting;
   late FlightLiveActivities activities;
 
   final onFlightDay = DateTime(2026, 3, 17, 12);
+  final beforeFlightDay = DateTime(2026, 3, 16, 12);
+  var now = onFlightDay;
 
-  setUp(() {
+  setUp(() async {
+    now = onFlightDay;
     database = AppDatabase(
       DatabaseConnection(
         NativeDatabase.memory(),
@@ -29,21 +37,30 @@ void main() {
     );
     repository = FlightRepository(database);
     service = FakeLiveActivityService();
+    notifications = createTestNotificationService(
+      permission: NotificationPermission.granted,
+    );
+    setting = await createTestLiveActivitySetting();
     activities = FlightLiveActivities(
       repository: repository,
       service: service,
-      clock: () => onFlightDay,
+      notifications: notifications,
+      setting: setting,
+      copy: (flight) => (title: 'Live Activity', body: flight.lookupValue),
+      clock: () => now,
     );
   });
 
   tearDown(() => database.close());
 
-  Future<Flight> addFlight({bool isArmed = true}) => repository.addFlight(
-    lookupKind: FlightLookupKind.flightNumber,
-    lookupValue: 'LH433',
-    departureDate: const CalendarDate(2026, 3, 17),
-    liveActivityArmed: isArmed,
-  );
+  Future<Flight> addFlight({bool isArmed = true, DayTime? departureTime}) =>
+      repository.addFlight(
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH433',
+        departureDate: const CalendarDate(2026, 3, 17),
+        departureTime: departureTime,
+        liveActivityArmed: isArmed,
+      );
 
   Future<List<Flight>> storedFlights() => repository.watchFlights().first;
 
@@ -212,5 +229,81 @@ void main() {
     await activities.flightsChanged(await storedFlights());
 
     expect(service.puts.map((put) => put.activityId).toSet(), hasLength(2));
+  });
+
+  group('flight day reminder', () {
+    test('schedules it two hours before the departure', () async {
+      now = beforeFlightDay;
+      await addFlight(departureTime: const DayTime(10, 0));
+
+      await activities.flightsChanged(await storedFlights());
+
+      expect(notifications.scheduledReminders, [(1, DateTime(2026, 3, 17, 8))]);
+    });
+
+    test('remembers the moment the system is due to deliver it', () async {
+      now = beforeFlightDay;
+      await addFlight(departureTime: const DayTime(10, 0));
+
+      await activities.flightsChanged(await storedFlights());
+
+      expect(
+        (await storedFlight()).liveActivityReminderScheduledFor,
+        DateTime(2026, 3, 17, 8).toUtc(),
+      );
+    });
+
+    test('leaves a reminder that already sits on that moment alone', () async {
+      now = beforeFlightDay;
+      await addFlight(departureTime: const DayTime(10, 0));
+      await activities.flightsChanged(await storedFlights());
+
+      await activities.flightsChanged(await storedFlights());
+
+      expect(notifications.scheduledReminders, hasLength(1));
+    });
+
+    test('schedules none while the setting is off', () async {
+      now = beforeFlightDay;
+      await setting.selectReminder(isEnabled: false);
+      await addFlight(departureTime: const DayTime(10, 0));
+
+      await activities.flightsChanged(await storedFlights());
+
+      expect(notifications.scheduledReminders, isEmpty);
+    });
+
+    test('schedules none without the permission to notify', () async {
+      now = beforeFlightDay;
+      notifications.permission.value = NotificationPermission.denied;
+      await addFlight(departureTime: const DayTime(10, 0));
+
+      await activities.flightsChanged(await storedFlights());
+
+      expect(notifications.scheduledReminders, isEmpty);
+    });
+
+    test('takes the reminder of a flight that was disarmed back', () async {
+      now = beforeFlightDay;
+      final flight = await addFlight(departureTime: const DayTime(10, 0));
+      await activities.flightsChanged(await storedFlights());
+      await repository.setLiveActivityArmed(flight.id, isArmed: false);
+
+      await activities.flightsChanged(await storedFlights());
+
+      expect(notifications.cancelledReminders, [flight.id]);
+      expect((await storedFlight()).liveActivityReminderScheduledFor, isNull);
+    });
+
+    test('takes the reminder of a flight that is gone back', () async {
+      now = beforeFlightDay;
+      await addFlight(departureTime: const DayTime(10, 0));
+      await activities.flightsChanged(await storedFlights());
+      final gone = await storedFlight();
+
+      await activities.flightsRemoved([gone]);
+
+      expect(notifications.cancelledReminders, [gone.id]);
+    });
   });
 }

@@ -272,6 +272,36 @@ abstract class AppLocalizations {
   /// **'Waiting for the route to settle the clock'**
   String get newFlightDepartureTimeSearchingRoute;
 
+  /// No description provided for @liveActivityReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activity available'**
+  String get liveActivityReminderTitle;
+
+  /// No description provided for @liveActivityReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow {flight} on your Lock Screen today. Tap to start.'**
+  String liveActivityReminderBody(String flight);
+
+  /// No description provided for @settingsLiveActivitySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activities'**
+  String get settingsLiveActivitySectionTitle;
+
+  /// No description provided for @settingsLiveActivityReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me on the flight day'**
+  String get settingsLiveActivityReminder;
+
+  /// No description provided for @settingsLiveActivityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You arm a Live Activity per flight; iOS can switch them off for Flugwacht entirely.'**
+  String get settingsLiveActivityHint;
+
   /// No description provided for @liveActivityArmLabel.
   ///
   /// In en, this message translates to:

@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
@@ -113,6 +114,8 @@ Future<List<int>> pumpFlightSheet(
   DateTime Function()? clock,
   SourceSetting? sourceSetting,
   UnitsSetting? unitsSetting,
+  LiveActivityService? liveActivityService,
+  void Function(Flight flight, {required bool isArmed})? onLiveActivityArmed,
 }) async {
   final setting = sourceSetting ?? await createTestSourceSetting();
   final units = unitsSetting ?? await createTestUnitsSetting();
@@ -136,6 +139,10 @@ Future<List<int>> pumpFlightSheet(
             sourceSetting: setting,
             unitsSetting: units,
             mapStyle: MapStyle.reduced,
+            liveActivityService:
+                liveActivityService ?? createTestLiveActivityService(),
+            onLiveActivityArmed:
+                onLiveActivityArmed ?? (flight, {required isArmed}) {},
             clock: clock ?? () => _now,
           ),
         ),
@@ -609,5 +616,33 @@ void main() {
     );
 
     expect(tester.widget<PagerDots>(find.byType(PagerDots)).activeIndex, 1);
+  });
+
+  group('live activity', () {
+    testWidgets('offers no switch where the device shows no activities', (
+      tester,
+    ) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.unsupported;
+      await pumpFlightSheet(tester, liveActivityService: service);
+      await openSheet(tester);
+
+      expect(find.text('Live Activity on flight day'), findsNothing);
+    });
+
+    testWidgets('arms the flight the sheet shows', (tester) async {
+      final armings = <(int, bool)>[];
+      await pumpFlightSheet(
+        tester,
+        onLiveActivityArmed: (flight, {required isArmed}) =>
+            armings.add((flight.id, isArmed)),
+      );
+      await openSheet(tester);
+
+      await tester.tap(find.text('Live Activity on flight day'));
+      await tester.pumpAndSettle();
+
+      expect(armings, [(1, true)]);
+    });
   });
 }

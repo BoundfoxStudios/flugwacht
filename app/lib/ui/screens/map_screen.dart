@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:signals/signals_flutter.dart';
 
 import '../../app_icons.dart';
+import '../../data/live_activities/live_activity_service.dart';
 import '../../data/persistence/flight_repository.dart';
 import '../../data/settings/map_style_setting.dart';
 import '../../data/settings/source_setting.dart';
@@ -39,6 +40,7 @@ class MapScreen extends StatefulWidget {
     required this.sourceSetting,
     required this.unitsSetting,
     required this.mapStyleSetting,
+    required this.liveActivityService,
     required this.tileSources,
     super.key,
     this.clock = DateTime.now,
@@ -76,6 +78,7 @@ class MapScreen extends StatefulWidget {
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
   final MapStyleSetting mapStyleSetting;
+  final LiveActivityService liveActivityService;
 
   /// Reads the current time; injectable so the minute ticker stays testable.
   final DateTime Function() clock;
@@ -284,6 +287,14 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         sourceSetting: widget.sourceSetting,
                         unitsSetting: widget.unitsSetting,
                         mapStyle: mapStyle,
+                        liveActivityService: widget.liveActivityService,
+                        onLiveActivityArmed: (flight, {required isArmed}) =>
+                            unawaited(
+                              widget.flightRepository.setLiveActivityArmed(
+                                flight.id,
+                                isArmed: isArmed,
+                              ),
+                            ),
                         onOpenChanged: (isOpen) =>
                             setState(() => _isSheetOpen = isOpen),
                         clock: widget.clock,

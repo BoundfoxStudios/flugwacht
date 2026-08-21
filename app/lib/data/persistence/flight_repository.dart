@@ -36,6 +36,7 @@ class FlightRepository {
     String? hexAddress,
     String? expectedCallsign,
     FlightRoute? route,
+    bool liveActivityArmed = false,
   }) async {
     final row = await _database
         .into(_database.flights)
@@ -63,6 +64,7 @@ class FlightRepository {
             destinationLocation: Value(route?.destination.location),
             destinationLatitude: Value(route?.destination.latitude),
             destinationLongitude: Value(route?.destination.longitude),
+            liveActivityArmed: Value(liveActivityArmed),
           ),
         );
     return _toFlight(row);
@@ -135,6 +137,37 @@ class FlightRepository {
       FlightNotification.landed => FlightsCompanion(landedNotifiedAt: at),
     });
     return rows > 0;
+  }
+
+  /// Whether the user wants a Live Activity for this flight on its flight day.
+  Future<void> setLiveActivityArmed(
+    int flightId, {
+    required bool isArmed,
+  }) async {
+    await (_database.update(_database.flights)
+          ..where((row) => row.id.equals(flightId)))
+        .write(FlightsCompanion(liveActivityArmed: Value(isArmed)));
+  }
+
+  /// Remembers the activity the system runs for a flight, so a later app run
+  /// updates that one instead of stacking a second card on the Lock Screen.
+  Future<void> setLiveActivityId(int flightId, String? activityId) async {
+    await (_database.update(_database.flights)
+          ..where((row) => row.id.equals(flightId)))
+        .write(FlightsCompanion(liveActivityId: Value(activityId)));
+  }
+
+  Future<void> setLiveActivityReminderSchedule(
+    int flightId,
+    DateTime? at,
+  ) async {
+    await (_database.update(
+      _database.flights,
+    )..where((row) => row.id.equals(flightId))).write(
+      FlightsCompanion(
+        liveActivityReminderScheduledFor: Value(at?.millisecondsSinceEpoch),
+      ),
+    );
   }
 
   /// Remembers when the system is due to deliver a flight's arrival reminder,
@@ -264,6 +297,11 @@ Flight _toFlight(FlightRow row) => Flight(
     arrivingSoonAt: _toInstant(row.arrivingSoonNotifiedAt),
     landedAt: _toInstant(row.landedNotifiedAt),
     arrivingSoonScheduledFor: _toInstant(row.arrivingSoonScheduledFor),
+  ),
+  liveActivityArmed: row.liveActivityArmed,
+  liveActivityId: row.liveActivityId,
+  liveActivityReminderScheduledFor: _toInstant(
+    row.liveActivityReminderScheduledFor,
   ),
 );
 

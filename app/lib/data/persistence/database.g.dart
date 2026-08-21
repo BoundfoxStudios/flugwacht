@@ -458,6 +458,43 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         type: DriftSqlType.int,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _liveActivityArmedMeta = const VerificationMeta(
+    'liveActivityArmed',
+  );
+  @override
+  late final GeneratedColumn<bool> liveActivityArmed = GeneratedColumn<bool>(
+    'live_activity_armed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("live_activity_armed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _liveActivityIdMeta = const VerificationMeta(
+    'liveActivityId',
+  );
+  @override
+  late final GeneratedColumn<String> liveActivityId = GeneratedColumn<String>(
+    'live_activity_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _liveActivityReminderScheduledForMeta =
+      const VerificationMeta('liveActivityReminderScheduledFor');
+  @override
+  late final GeneratedColumn<int> liveActivityReminderScheduledFor =
+      GeneratedColumn<int>(
+        'live_activity_reminder_scheduled_for',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -500,6 +537,9 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
     arrivingSoonNotifiedAt,
     landedNotifiedAt,
     arrivingSoonScheduledFor,
+    liveActivityArmed,
+    liveActivityId,
+    liveActivityReminderScheduledFor,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -841,6 +881,33 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         ),
       );
     }
+    if (data.containsKey('live_activity_armed')) {
+      context.handle(
+        _liveActivityArmedMeta,
+        liveActivityArmed.isAcceptableOrUnknown(
+          data['live_activity_armed']!,
+          _liveActivityArmedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('live_activity_id')) {
+      context.handle(
+        _liveActivityIdMeta,
+        liveActivityId.isAcceptableOrUnknown(
+          data['live_activity_id']!,
+          _liveActivityIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('live_activity_reminder_scheduled_for')) {
+      context.handle(
+        _liveActivityReminderScheduledForMeta,
+        liveActivityReminderScheduledFor.isAcceptableOrUnknown(
+          data['live_activity_reminder_scheduled_for']!,
+          _liveActivityReminderScheduledForMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1016,6 +1083,18 @@ class $FlightsTable extends Flights with TableInfo<$FlightsTable, FlightRow> {
         DriftSqlType.int,
         data['${effectivePrefix}arriving_soon_scheduled_for'],
       ),
+      liveActivityArmed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}live_activity_armed'],
+      )!,
+      liveActivityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}live_activity_id'],
+      ),
+      liveActivityReminderScheduledFor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}live_activity_reminder_scheduled_for'],
+      ),
     );
   }
 
@@ -1076,6 +1155,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
   final int? arrivingSoonNotifiedAt;
   final int? landedNotifiedAt;
   final int? arrivingSoonScheduledFor;
+  final bool liveActivityArmed;
+  final String? liveActivityId;
+  final int? liveActivityReminderScheduledFor;
   const FlightRow({
     required this.id,
     required this.lookupKind,
@@ -1117,6 +1199,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     this.arrivingSoonNotifiedAt,
     this.landedNotifiedAt,
     this.arrivingSoonScheduledFor,
+    required this.liveActivityArmed,
+    this.liveActivityId,
+    this.liveActivityReminderScheduledFor,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1255,6 +1340,15 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
         arrivingSoonScheduledFor,
       );
     }
+    map['live_activity_armed'] = Variable<bool>(liveActivityArmed);
+    if (!nullToAbsent || liveActivityId != null) {
+      map['live_activity_id'] = Variable<String>(liveActivityId);
+    }
+    if (!nullToAbsent || liveActivityReminderScheduledFor != null) {
+      map['live_activity_reminder_scheduled_for'] = Variable<int>(
+        liveActivityReminderScheduledFor,
+      );
+    }
     return map;
   }
 
@@ -1371,6 +1465,14 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       arrivingSoonScheduledFor: arrivingSoonScheduledFor == null && nullToAbsent
           ? const Value.absent()
           : Value(arrivingSoonScheduledFor),
+      liveActivityArmed: Value(liveActivityArmed),
+      liveActivityId: liveActivityId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveActivityId),
+      liveActivityReminderScheduledFor:
+          liveActivityReminderScheduledFor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveActivityReminderScheduledFor),
     );
   }
 
@@ -1456,6 +1558,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       arrivingSoonScheduledFor: serializer.fromJson<int?>(
         json['arrivingSoonScheduledFor'],
       ),
+      liveActivityArmed: serializer.fromJson<bool>(json['liveActivityArmed']),
+      liveActivityId: serializer.fromJson<String?>(json['liveActivityId']),
+      liveActivityReminderScheduledFor: serializer.fromJson<int?>(
+        json['liveActivityReminderScheduledFor'],
+      ),
     );
   }
   @override
@@ -1524,6 +1631,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       'arrivingSoonScheduledFor': serializer.toJson<int?>(
         arrivingSoonScheduledFor,
       ),
+      'liveActivityArmed': serializer.toJson<bool>(liveActivityArmed),
+      'liveActivityId': serializer.toJson<String?>(liveActivityId),
+      'liveActivityReminderScheduledFor': serializer.toJson<int?>(
+        liveActivityReminderScheduledFor,
+      ),
     };
   }
 
@@ -1568,6 +1680,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
     Value<int?> landedNotifiedAt = const Value.absent(),
     Value<int?> arrivingSoonScheduledFor = const Value.absent(),
+    bool? liveActivityArmed,
+    Value<String?> liveActivityId = const Value.absent(),
+    Value<int?> liveActivityReminderScheduledFor = const Value.absent(),
   }) => FlightRow(
     id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
@@ -1670,6 +1785,13 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     arrivingSoonScheduledFor: arrivingSoonScheduledFor.present
         ? arrivingSoonScheduledFor.value
         : this.arrivingSoonScheduledFor,
+    liveActivityArmed: liveActivityArmed ?? this.liveActivityArmed,
+    liveActivityId: liveActivityId.present
+        ? liveActivityId.value
+        : this.liveActivityId,
+    liveActivityReminderScheduledFor: liveActivityReminderScheduledFor.present
+        ? liveActivityReminderScheduledFor.value
+        : this.liveActivityReminderScheduledFor,
   );
   FlightRow copyWithCompanion(FlightsCompanion data) {
     return FlightRow(
@@ -1790,6 +1912,16 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
       arrivingSoonScheduledFor: data.arrivingSoonScheduledFor.present
           ? data.arrivingSoonScheduledFor.value
           : this.arrivingSoonScheduledFor,
+      liveActivityArmed: data.liveActivityArmed.present
+          ? data.liveActivityArmed.value
+          : this.liveActivityArmed,
+      liveActivityId: data.liveActivityId.present
+          ? data.liveActivityId.value
+          : this.liveActivityId,
+      liveActivityReminderScheduledFor:
+          data.liveActivityReminderScheduledFor.present
+          ? data.liveActivityReminderScheduledFor.value
+          : this.liveActivityReminderScheduledFor,
     );
   }
 
@@ -1843,7 +1975,12 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           ..write('departedNotifiedAt: $departedNotifiedAt, ')
           ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
           ..write('landedNotifiedAt: $landedNotifiedAt, ')
-          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor')
+          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor, ')
+          ..write('liveActivityArmed: $liveActivityArmed, ')
+          ..write('liveActivityId: $liveActivityId, ')
+          ..write(
+            'liveActivityReminderScheduledFor: $liveActivityReminderScheduledFor',
+          )
           ..write(')'))
         .toString();
   }
@@ -1890,6 +2027,9 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
     arrivingSoonNotifiedAt,
     landedNotifiedAt,
     arrivingSoonScheduledFor,
+    liveActivityArmed,
+    liveActivityId,
+    liveActivityReminderScheduledFor,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1940,7 +2080,11 @@ class FlightRow extends DataClass implements Insertable<FlightRow> {
           other.departedNotifiedAt == this.departedNotifiedAt &&
           other.arrivingSoonNotifiedAt == this.arrivingSoonNotifiedAt &&
           other.landedNotifiedAt == this.landedNotifiedAt &&
-          other.arrivingSoonScheduledFor == this.arrivingSoonScheduledFor);
+          other.arrivingSoonScheduledFor == this.arrivingSoonScheduledFor &&
+          other.liveActivityArmed == this.liveActivityArmed &&
+          other.liveActivityId == this.liveActivityId &&
+          other.liveActivityReminderScheduledFor ==
+              this.liveActivityReminderScheduledFor);
 }
 
 class FlightsCompanion extends UpdateCompanion<FlightRow> {
@@ -1984,6 +2128,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
   final Value<int?> arrivingSoonNotifiedAt;
   final Value<int?> landedNotifiedAt;
   final Value<int?> arrivingSoonScheduledFor;
+  final Value<bool> liveActivityArmed;
+  final Value<String?> liveActivityId;
+  final Value<int?> liveActivityReminderScheduledFor;
   const FlightsCompanion({
     this.id = const Value.absent(),
     this.lookupKind = const Value.absent(),
@@ -2025,6 +2172,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.arrivingSoonNotifiedAt = const Value.absent(),
     this.landedNotifiedAt = const Value.absent(),
     this.arrivingSoonScheduledFor = const Value.absent(),
+    this.liveActivityArmed = const Value.absent(),
+    this.liveActivityId = const Value.absent(),
+    this.liveActivityReminderScheduledFor = const Value.absent(),
   });
   FlightsCompanion.insert({
     this.id = const Value.absent(),
@@ -2067,6 +2217,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     this.arrivingSoonNotifiedAt = const Value.absent(),
     this.landedNotifiedAt = const Value.absent(),
     this.arrivingSoonScheduledFor = const Value.absent(),
+    this.liveActivityArmed = const Value.absent(),
+    this.liveActivityId = const Value.absent(),
+    this.liveActivityReminderScheduledFor = const Value.absent(),
   }) : lookupKind = Value(lookupKind),
        lookupValue = Value(lookupValue),
        departureDate = Value(departureDate),
@@ -2112,6 +2265,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Expression<int>? arrivingSoonNotifiedAt,
     Expression<int>? landedNotifiedAt,
     Expression<int>? arrivingSoonScheduledFor,
+    Expression<bool>? liveActivityArmed,
+    Expression<String>? liveActivityId,
+    Expression<int>? liveActivityReminderScheduledFor,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2171,6 +2327,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       if (landedNotifiedAt != null) 'landed_notified_at': landedNotifiedAt,
       if (arrivingSoonScheduledFor != null)
         'arriving_soon_scheduled_for': arrivingSoonScheduledFor,
+      if (liveActivityArmed != null) 'live_activity_armed': liveActivityArmed,
+      if (liveActivityId != null) 'live_activity_id': liveActivityId,
+      if (liveActivityReminderScheduledFor != null)
+        'live_activity_reminder_scheduled_for':
+            liveActivityReminderScheduledFor,
     });
   }
 
@@ -2215,6 +2376,9 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
     Value<int?>? arrivingSoonNotifiedAt,
     Value<int?>? landedNotifiedAt,
     Value<int?>? arrivingSoonScheduledFor,
+    Value<bool>? liveActivityArmed,
+    Value<String?>? liveActivityId,
+    Value<int?>? liveActivityReminderScheduledFor,
   }) {
     return FlightsCompanion(
       id: id ?? this.id,
@@ -2268,6 +2432,11 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
       landedNotifiedAt: landedNotifiedAt ?? this.landedNotifiedAt,
       arrivingSoonScheduledFor:
           arrivingSoonScheduledFor ?? this.arrivingSoonScheduledFor,
+      liveActivityArmed: liveActivityArmed ?? this.liveActivityArmed,
+      liveActivityId: liveActivityId ?? this.liveActivityId,
+      liveActivityReminderScheduledFor:
+          liveActivityReminderScheduledFor ??
+          this.liveActivityReminderScheduledFor,
     );
   }
 
@@ -2424,6 +2593,17 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
         arrivingSoonScheduledFor.value,
       );
     }
+    if (liveActivityArmed.present) {
+      map['live_activity_armed'] = Variable<bool>(liveActivityArmed.value);
+    }
+    if (liveActivityId.present) {
+      map['live_activity_id'] = Variable<String>(liveActivityId.value);
+    }
+    if (liveActivityReminderScheduledFor.present) {
+      map['live_activity_reminder_scheduled_for'] = Variable<int>(
+        liveActivityReminderScheduledFor.value,
+      );
+    }
     return map;
   }
 
@@ -2477,7 +2657,12 @@ class FlightsCompanion extends UpdateCompanion<FlightRow> {
           ..write('departedNotifiedAt: $departedNotifiedAt, ')
           ..write('arrivingSoonNotifiedAt: $arrivingSoonNotifiedAt, ')
           ..write('landedNotifiedAt: $landedNotifiedAt, ')
-          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor')
+          ..write('arrivingSoonScheduledFor: $arrivingSoonScheduledFor, ')
+          ..write('liveActivityArmed: $liveActivityArmed, ')
+          ..write('liveActivityId: $liveActivityId, ')
+          ..write(
+            'liveActivityReminderScheduledFor: $liveActivityReminderScheduledFor',
+          )
           ..write(')'))
         .toString();
   }
@@ -2923,6 +3108,9 @@ typedef $$FlightsTableCreateCompanionBuilder =
       Value<int?> arrivingSoonNotifiedAt,
       Value<int?> landedNotifiedAt,
       Value<int?> arrivingSoonScheduledFor,
+      Value<bool> liveActivityArmed,
+      Value<String?> liveActivityId,
+      Value<int?> liveActivityReminderScheduledFor,
     });
 typedef $$FlightsTableUpdateCompanionBuilder =
     FlightsCompanion Function({
@@ -2966,6 +3154,9 @@ typedef $$FlightsTableUpdateCompanionBuilder =
       Value<int?> arrivingSoonNotifiedAt,
       Value<int?> landedNotifiedAt,
       Value<int?> arrivingSoonScheduledFor,
+      Value<bool> liveActivityArmed,
+      Value<String?> liveActivityId,
+      Value<int?> liveActivityReminderScheduledFor,
     });
 
 final class $$FlightsTableReferences
@@ -3207,6 +3398,21 @@ class $$FlightsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get liveActivityArmed => $composableBuilder(
+    column: $table.liveActivityArmed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get liveActivityId => $composableBuilder(
+    column: $table.liveActivityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get liveActivityReminderScheduledFor => $composableBuilder(
+    column: $table.liveActivityReminderScheduledFor,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> trailPointsRefs(
     Expression<bool> Function($$TrailPointsTableFilterComposer f) f,
   ) {
@@ -3444,6 +3650,22 @@ class $$FlightsTableOrderingComposer
     column: $table.arrivingSoonScheduledFor,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get liveActivityArmed => $composableBuilder(
+    column: $table.liveActivityArmed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get liveActivityId => $composableBuilder(
+    column: $table.liveActivityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get liveActivityReminderScheduledFor =>
+      $composableBuilder(
+        column: $table.liveActivityReminderScheduledFor,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$FlightsTableAnnotationComposer
@@ -3656,6 +3878,22 @@ class $$FlightsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get liveActivityArmed => $composableBuilder(
+    column: $table.liveActivityArmed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get liveActivityId => $composableBuilder(
+    column: $table.liveActivityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get liveActivityReminderScheduledFor =>
+      $composableBuilder(
+        column: $table.liveActivityReminderScheduledFor,
+        builder: (column) => column,
+      );
+
   Expression<T> trailPointsRefs<T extends Object>(
     Expression<T> Function($$TrailPointsTableAnnotationComposer a) f,
   ) {
@@ -3756,6 +3994,10 @@ class $$FlightsTableTableManager
                 Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
                 Value<int?> landedNotifiedAt = const Value.absent(),
                 Value<int?> arrivingSoonScheduledFor = const Value.absent(),
+                Value<bool> liveActivityArmed = const Value.absent(),
+                Value<String?> liveActivityId = const Value.absent(),
+                Value<int?> liveActivityReminderScheduledFor =
+                    const Value.absent(),
               }) => FlightsCompanion(
                 id: id,
                 lookupKind: lookupKind,
@@ -3798,6 +4040,10 @@ class $$FlightsTableTableManager
                 arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
                 landedNotifiedAt: landedNotifiedAt,
                 arrivingSoonScheduledFor: arrivingSoonScheduledFor,
+                liveActivityArmed: liveActivityArmed,
+                liveActivityId: liveActivityId,
+                liveActivityReminderScheduledFor:
+                    liveActivityReminderScheduledFor,
               ),
           createCompanionCallback:
               ({
@@ -3847,6 +4093,10 @@ class $$FlightsTableTableManager
                 Value<int?> arrivingSoonNotifiedAt = const Value.absent(),
                 Value<int?> landedNotifiedAt = const Value.absent(),
                 Value<int?> arrivingSoonScheduledFor = const Value.absent(),
+                Value<bool> liveActivityArmed = const Value.absent(),
+                Value<String?> liveActivityId = const Value.absent(),
+                Value<int?> liveActivityReminderScheduledFor =
+                    const Value.absent(),
               }) => FlightsCompanion.insert(
                 id: id,
                 lookupKind: lookupKind,
@@ -3889,6 +4139,10 @@ class $$FlightsTableTableManager
                 arrivingSoonNotifiedAt: arrivingSoonNotifiedAt,
                 landedNotifiedAt: landedNotifiedAt,
                 arrivingSoonScheduledFor: arrivingSoonScheduledFor,
+                liveActivityArmed: liveActivityArmed,
+                liveActivityId: liveActivityId,
+                liveActivityReminderScheduledFor:
+                    liveActivityReminderScheduledFor,
               ),
           withReferenceMapper: (p0) => p0
               .map(

@@ -769,6 +769,81 @@ void main() {
     expect(emissions.map((flights) => flights.length), [1, 0]);
   });
 
+  group('live activity', () {
+    test('starts a flight disarmed and without an activity', () async {
+      final flight = await addFlight();
+      expect(flight.liveActivityArmed, isFalse);
+      expect(flight.liveActivityId, isNull);
+      expect(flight.liveActivityReminderScheduledFor, isNull);
+    });
+
+    test('stores a flight armed right away', () async {
+      final flight = await repository.addFlight(
+        lookupKind: FlightLookupKind.flightNumber,
+        lookupValue: 'LH433',
+        departureDate: const CalendarDate(2026, 3, 17),
+        liveActivityArmed: true,
+      );
+      expect(flight.liveActivityArmed, isTrue);
+
+      final reread = (await repository.watchFlights().first).single;
+      expect(reread.liveActivityArmed, isTrue);
+    });
+
+    test('arms and disarms a stored flight', () async {
+      final flight = await addFlight();
+
+      await repository.setLiveActivityArmed(flight.id, isArmed: true);
+      expect(
+        (await repository.watchFlights().first).single.liveActivityArmed,
+        isTrue,
+      );
+
+      await repository.setLiveActivityArmed(flight.id, isArmed: false);
+      expect(
+        (await repository.watchFlights().first).single.liveActivityArmed,
+        isFalse,
+      );
+    });
+
+    test('remembers and forgets the running activity', () async {
+      final flight = await addFlight();
+
+      await repository.setLiveActivityId(flight.id, 'activity-1');
+      expect(
+        (await repository.watchFlights().first).single.liveActivityId,
+        'activity-1',
+      );
+
+      await repository.setLiveActivityId(flight.id, null);
+      expect(
+        (await repository.watchFlights().first).single.liveActivityId,
+        isNull,
+      );
+    });
+
+    test('remembers and forgets the reminder moment', () async {
+      final flight = await addFlight();
+      final remindAt = DateTime.utc(2026, 3, 17, 6, 30);
+
+      await repository.setLiveActivityReminderSchedule(flight.id, remindAt);
+      expect(
+        (await repository.watchFlights().first)
+            .single
+            .liveActivityReminderScheduledFor,
+        remindAt,
+      );
+
+      await repository.setLiveActivityReminderSchedule(flight.id, null);
+      expect(
+        (await repository.watchFlights().first)
+            .single
+            .liveActivityReminderScheduledFor,
+        isNull,
+      );
+    });
+  });
+
   group('route', () {
     const route = FlightRoute(
       origin: RouteAirport(

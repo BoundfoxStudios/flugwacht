@@ -25,6 +25,9 @@ class Flight {
     this.route,
     this.tracking = const FlightTracking(),
     this.notifications = const NotificationMarkers(),
+    this.liveActivityArmed = false,
+    this.liveActivityId,
+    this.liveActivityReminderScheduledFor,
   });
 
   final int id;
@@ -40,6 +43,14 @@ class Flight {
   final FlightTracking tracking;
   final NotificationMarkers notifications;
 
+  /// Whether the user wants this flight on the Lock Screen on its flight day.
+  final bool liveActivityArmed;
+
+  /// The activity the system currently shows for this flight, if one runs.
+  final String? liveActivityId;
+
+  final DateTime? liveActivityReminderScheduledFor;
+
   Flight copyWith({
     int? id,
     FlightLookupKind? lookupKind,
@@ -53,6 +64,9 @@ class Flight {
     FlightRoute? route,
     FlightTracking? tracking,
     NotificationMarkers? notifications,
+    bool? liveActivityArmed,
+    String? liveActivityId,
+    DateTime? liveActivityReminderScheduledFor,
   }) => Flight(
     id: id ?? this.id,
     lookupKind: lookupKind ?? this.lookupKind,
@@ -67,6 +81,11 @@ class Flight {
     route: route ?? this.route,
     tracking: tracking ?? this.tracking,
     notifications: notifications ?? this.notifications,
+    liveActivityArmed: liveActivityArmed ?? this.liveActivityArmed,
+    liveActivityId: liveActivityId ?? this.liveActivityId,
+    liveActivityReminderScheduledFor:
+        liveActivityReminderScheduledFor ??
+        this.liveActivityReminderScheduledFor,
   );
 }
 

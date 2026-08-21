@@ -563,14 +563,14 @@ void main() {
       expect(started.adapter.registrationRequests, ['D-AIXP']);
       expect(started.adapter.callsignRequests, isEmpty);
       expect(started.repository.trackingUpdates, hasLength(1));
-      expect(started.repository.identityUpdates, isEmpty);
+      expect(started.repository.identityUpdates.single, (1, null, 'DLH8'));
 
       started.engine.stop();
       started.repository.dispose();
     });
   });
 
-  test('queries an entered hex address without adopting an identity', () {
+  test('queries an entered hex address without adopting the answered one', () {
     fakeAsync((async) {
       final started = startEngine(async, [
         flightWith(
@@ -579,17 +579,212 @@ void main() {
         ),
       ]);
       started.adapter.results['3c64c6'] = successWith(
-        fixWith(callsign: 'DLH8', positionAtTimestamp: noon),
+        fixWith(
+          hexAddress: '4b1a1f',
+          callsign: 'DLH8',
+          positionAtTimestamp: noon,
+        ),
       );
 
       async.flushMicrotasks();
 
       expect(started.adapter.hexAddressRequests, ['3c64c6']);
       expect(started.repository.trackingUpdates, hasLength(1));
-      expect(started.repository.identityUpdates, isEmpty);
+      expect(started.repository.identityUpdates.single, (1, null, 'DLH8'));
 
       started.engine.stop();
       started.repository.dispose();
+    });
+  });
+
+  test(
+    'pins the callsign of a registration flight without its hex address',
+    () {
+      fakeAsync((async) {
+        final started = startEngine(async, [
+          flightWith(
+            lookupKind: FlightLookupKind.registration,
+            lookupValue: 'D-AIXP',
+            hexAddress: '3c64c6',
+          ),
+        ]);
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(
+            hexAddress: '4b1a1f',
+            callsign: 'DLH8',
+            positionAtTimestamp: noon,
+          ),
+        );
+
+        async.flushMicrotasks();
+
+        expect(started.repository.identityUpdates.single, (
+          1,
+          '3c64c6',
+          'DLH8',
+        ));
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    },
+  );
+
+  test('keeps the stored identity of a rejected registration flight', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(
+          lookupKind: FlightLookupKind.registration,
+          lookupValue: 'D-AIXP',
+          hexAddress: '3c64c6',
+          expectedCallsign: 'DLH8',
+          latestPosition: positionAt(noon),
+        ),
+      ]);
+      started.adapter.results['D-AIXP'] = successWith(
+        fixWith(
+          callsign: 'DLH400',
+          positionAtTimestamp: noon.add(const Duration(minutes: 5)),
+        ),
+      );
+
+      async.flushMicrotasks();
+
+      expect(started.repository.identityUpdates, isEmpty);
+      expect(started.repository.trackingUpdates, isEmpty);
+      expect(started.repository.trailAppends, isEmpty);
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  test('keeps the stored identity of a rejected entered hex address', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(
+          lookupKind: FlightLookupKind.hexAddress,
+          lookupValue: '3c64c6',
+          hexAddress: '3c64c6',
+          expectedCallsign: 'DLH8',
+          latestPosition: positionAt(noon),
+        ),
+      ]);
+      started.adapter.results['3c64c6'] = successWith(
+        fixWith(
+          callsign: 'DLH400',
+          positionAtTimestamp: noon.add(const Duration(minutes: 5)),
+        ),
+      );
+
+      async.flushMicrotasks();
+
+      expect(started.repository.identityUpdates, isEmpty);
+      expect(started.repository.trackingUpdates, isEmpty);
+      expect(started.repository.trailAppends, isEmpty);
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  group('adoption disproof', () {
+    Flight trackedRegistrationFlight() => flightWith(
+      lookupKind: FlightLookupKind.registration,
+      lookupValue: 'D-AIXP',
+      departureTime: const DayTime(13, 0),
+      hexAddress: '3c64c6',
+      expectedCallsign: 'DLH8YY',
+      latestPosition: positionAt(noon.subtract(const Duration(minutes: 5))),
+      hasBeenAirborne: true,
+    );
+
+    test('forgets everything the disproved leg left behind', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [trackedRegistrationFlight()]);
+        started.repository.notificationMarks.add((
+          1,
+          FlightNotification.departed,
+        ));
+        started.repository.arrivingSoonSchedules[1] = noon.add(
+          const Duration(minutes: 30),
+        );
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(
+            callsign: 'DLH8YY',
+            positionAtTimestamp: noon,
+            onGround: true,
+          ),
+        );
+
+        async.flushMicrotasks();
+
+        final (flightId, tracking) = started.repository.trackingUpdates.single;
+        expect(flightId, 1);
+        expect(tracking.latestPosition, isNull);
+        expect(tracking.hasBeenAirborne, isFalse);
+        expect(tracking.lastKnownOnGround, isNull);
+        expect(started.repository.identityUpdates.single, (1, '3c64c6', null));
+        expect(started.repository.clearedTrails, [1]);
+        expect(started.repository.notificationResets, [1]);
+        expect(started.repository.notificationMarks, isEmpty);
+        expect(started.repository.arrivingSoonSchedules, isEmpty);
+        expect(started.notifications.cancelled, [
+          (FlightNotification.arrivingSoon, 1),
+        ]);
+        expect(started.repository.trailAppends, isEmpty);
+        expect(started.notifications.shown, isEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('adopts and announces the real leg after a disproof', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [trackedRegistrationFlight()]);
+        started.repository.notificationMarks.add((
+          1,
+          FlightNotification.departed,
+        ));
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(
+            callsign: 'DLH8YY',
+            positionAtTimestamp: noon,
+            onGround: true,
+          ),
+        );
+        async.flushMicrotasks();
+
+        started.repository.emit([
+          flightWith(
+            lookupKind: FlightLookupKind.registration,
+            lookupValue: 'D-AIXP',
+            departureTime: const DayTime(13, 0),
+            hexAddress: '3c64c6',
+          ),
+        ]);
+        final realLegAt = noon.add(const Duration(minutes: 1));
+        started.adapter.results['D-AIXP'] = successWith(
+          fixWith(callsign: 'DLH8XX', positionAtTimestamp: realLegAt),
+        );
+        async.elapse(const Duration(minutes: 1));
+
+        expect(started.repository.trackingUpdates, hasLength(2));
+        final (_, tracking) = started.repository.trackingUpdates.last;
+        expect(tracking.hasBeenAirborne, isTrue);
+        expect(tracking.latestPosition?.timestamp, realLegAt);
+        expect(started.repository.identityUpdates.last, (
+          1,
+          '3c64c6',
+          'DLH8XX',
+        ));
+        expect(started.repository.trailAppends.single.$2.timestamp, realLegAt);
+        expect(started.notifications.shown, [(FlightNotification.departed, 1)]);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
     });
   });
 

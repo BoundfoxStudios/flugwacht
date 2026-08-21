@@ -132,7 +132,16 @@ is tested — focused on the domain, where the known pitfalls live:
   a flight early (ever airborne + last known on ground → ended), an approved
   deviation from the domain concept, which binds ended to the window end
 - Hex safeguard: callsign cross-check on hex queries, fall back to callsign
-  search on mismatch
+  search on mismatch. Registration and hex flights have no callsign of their
+  own, so they pin the one their first fix reports that positively says the
+  airframe flies inside the flight day, never one it wears while standing and
+  never one from an answer that hides its altitude or dates from before the
+  window, and afterwards reject a fix that reports a different one, which keeps
+  them off the airframe's next rotation; such a rejection leaves the entered identity untouched, there is
+  nothing to fall back to. A landing before the scheduled departure disproves
+  the adopted contact, because the entered leg cannot land before it departs:
+  the app forgets that leg (tracking, pin, trail, notification markers) and
+  searches again
 - Departure contact gate: polling runs for the whole flight-day window, the
   scheduled departure gates what may be adopted instead. Before that departure
   minus 2 h (clamped to the window start) nothing is tracked at all: the only

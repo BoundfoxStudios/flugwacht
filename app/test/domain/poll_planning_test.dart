@@ -567,38 +567,269 @@ void main() {
       expect(outcome, isA<PollFixApplied>());
     });
 
-    test('never cross-checks a hex address the user entered', () {
-      final outcome = apply(
-        flightWith(
-          lookupKind: FlightLookupKind.hexAddress,
-          lookupValue: '3c64c6',
-        ),
-        hexQuery,
-        [fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt)],
-      );
-
-      final applied = outcome as PollFixApplied;
-      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
-      expect(applied.adoptedIdentity, isNull);
-    });
-
-    test('never cross-checks a registration flight', () {
-      final outcome = apply(
-        flightWith(
-          lookupKind: FlightLookupKind.registration,
-          lookupValue: 'D-AIXP',
-        ),
-        const RegistrationPollQuery('D-AIXP'),
-        [fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt)],
-      );
-
-      final applied = outcome as PollFixApplied;
-      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
-      expect(applied.adoptedIdentity, isNull);
-    });
-
     test('reports no data for an empty hex response', () {
       expect(apply(foundFlight, hexQuery, const []), isA<PollNoData>());
+    });
+  });
+
+  group('entered identity pinning', () {
+    const hexQuery = HexAddressPollQuery('3c64c6');
+    const registrationQuery = RegistrationPollQuery('D-AIXP');
+
+    Flight hexFlight({String? expectedCallsign}) => flightWith(
+      lookupKind: FlightLookupKind.hexAddress,
+      lookupValue: '3c64c6',
+      expectedCallsign: expectedCallsign,
+    );
+
+    Flight registrationFlight({String? expectedCallsign}) => flightWith(
+      lookupKind: FlightLookupKind.registration,
+      lookupValue: 'D-AIXP',
+      expectedCallsign: expectedCallsign,
+    );
+
+    test('pins the callsign of the first fix of a registration flight', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity?.callsign, 'DLH8');
+    });
+
+    test('pins the callsign of the first fix of an entered hex address', () {
+      final outcome = apply(hexFlight(), hexQuery, [
+        fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity?.callsign, 'DLH8');
+    });
+
+    test('names no hex address while it pins a callsign', () {
+      final outcome = apply(hexFlight(), hexQuery, [
+        fixWith(
+          hexAddress: '4b1a1f',
+          callsign: 'DLH8',
+          positionAtTimestamp: airborneAt,
+        ),
+      ]);
+
+      expect((outcome as PollFixApplied).adoptedIdentity?.hexAddress, isNull);
+    });
+
+    test('rejects another callsign on the pinned registration flight', () {
+      final outcome = apply(
+        registrationFlight(expectedCallsign: 'DLH8'),
+        registrationQuery,
+        [fixWith(callsign: 'DLH400', positionAtTimestamp: airborneAt)],
+      );
+
+      expect(outcome, isA<PollIdentityRejected>());
+    });
+
+    test('rejects another callsign on the pinned hex address', () {
+      final outcome = apply(hexFlight(expectedCallsign: 'DLH8'), hexQuery, [
+        fixWith(callsign: 'DLH400', positionAtTimestamp: airborneAt),
+      ]);
+
+      expect(outcome, isA<PollIdentityRejected>());
+    });
+
+    test('applies a fix that reports the pinned callsign padded', () {
+      final outcome = apply(
+        registrationFlight(expectedCallsign: 'DLH8'),
+        registrationQuery,
+        [fixWith(callsign: ' DLH8 ', positionAtTimestamp: airborneAt)],
+      );
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
+    test('pins nothing from an airframe standing on the ground', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(
+          callsign: 'DLH8',
+          positionAtTimestamp: airborneAt,
+          onGround: true,
+        ),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
+    test('pins nothing from an answer without a position', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(callsign: 'DLH8'),
+      ]);
+
+      expect((outcome as PollFixApplied).adoptedIdentity, isNull);
+    });
+
+    test('pins nothing while the answer hides whether it flies', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(
+          callsign: 'DLH8',
+          positionAtTimestamp: airborneAt,
+          onGround: null,
+        ),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
+    test('pins nothing from a position older than the flight day', () {
+      final outcome = apply(registrationFlight(), registrationQuery, [
+        fixWith(
+          callsign: 'DLH8',
+          positionAtTimestamp: window.start.subtract(const Duration(hours: 1)),
+        ),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition, isNull);
+      expect(applied.adoptedIdentity, isNull);
+    });
+
+    test('pins nothing while the airframe reports no callsign', () {
+      final outcome = apply(hexFlight(), hexQuery, [
+        fixWith(positionAtTimestamp: airborneAt),
+      ]);
+
+      final applied = outcome as PollFixApplied;
+      expect(applied.tracking.latestPosition?.timestamp, airborneAt);
+      expect(applied.adoptedIdentity, isNull);
+      expect(
+        (apply(hexFlight(), hexQuery, [
+                  fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt),
+                ])
+                as PollFixApplied)
+            .adoptedIdentity
+            ?.callsign,
+        'DLH8',
+      );
+    });
+  });
+
+  group('landing before the scheduled departure', () {
+    const registrationQuery = RegistrationPollQuery('D-AIXP');
+    const hexQuery = HexAddressPollQuery('3c64c6');
+    const scheduledDeparture = DayTime(20, 0);
+    final beforeDeparture = DateTime(2026, 3, 17, 19, 5).toUtc();
+    final afterDeparture = DateTime(2026, 3, 17, 20, 30).toUtc();
+    final pollTime = DateTime(2026, 3, 17, 19, 6);
+
+    Flight trackedRegistrationFlight({
+      DayTime? departureTime = scheduledDeparture,
+      bool hasBeenAirborne = true,
+    }) => flightWith(
+      lookupKind: FlightLookupKind.registration,
+      lookupValue: 'D-AIXP',
+      departureTime: departureTime,
+      expectedCallsign: 'DLH8',
+      hasBeenAirborne: hasBeenAirborne,
+    );
+
+    Fix landedFix(DateTime timestamp) => fixWith(
+      callsign: 'DLH8',
+      positionAtTimestamp: timestamp,
+      onGround: true,
+    );
+
+    test('disproves a registration contact that lands before the '
+        'departure', () {
+      expect(
+        apply(trackedRegistrationFlight(), registrationQuery, [
+          landedFix(beforeDeparture),
+        ], now: pollTime),
+        isA<PollAdoptionDisproved>(),
+      );
+    });
+
+    test('disproves an entered hex contact that lands before the '
+        'departure', () {
+      final hexFlight = flightWith(
+        lookupKind: FlightLookupKind.hexAddress,
+        lookupValue: '3c64c6',
+        departureTime: scheduledDeparture,
+        expectedCallsign: 'DLH8',
+        hasBeenAirborne: true,
+      );
+
+      expect(
+        apply(hexFlight, hexQuery, [landedFix(beforeDeparture)], now: pollTime),
+        isA<PollAdoptionDisproved>(),
+      );
+    });
+
+    test('applies a landing after the scheduled departure', () {
+      expect(
+        apply(trackedRegistrationFlight(), registrationQuery, [
+          landedFix(afterDeparture),
+        ], now: DateTime(2026, 3, 17, 20, 31)),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('applies a landing while the flight has no departure time', () {
+      expect(
+        apply(
+          trackedRegistrationFlight(departureTime: null),
+          registrationQuery,
+          [landedFix(beforeDeparture)],
+          now: pollTime,
+        ),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('applies an airborne fix before the scheduled departure', () {
+      expect(
+        apply(trackedRegistrationFlight(), registrationQuery, [
+          fixWith(callsign: 'DLH8', positionAtTimestamp: beforeDeparture),
+        ], now: pollTime),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('applies a landing while the flight has never been airborne', () {
+      expect(
+        apply(
+          trackedRegistrationFlight(hasBeenAirborne: false),
+          registrationQuery,
+          [landedFix(beforeDeparture)],
+          now: pollTime,
+        ),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('never disproves a flight number flight', () {
+      final flightNumberFlight = flightWith(
+        departureTime: scheduledDeparture,
+        hexAddress: '3c64c6',
+        expectedCallsign: 'DLH400',
+        hasBeenAirborne: true,
+      );
+
+      expect(
+        apply(flightNumberFlight, hexQuery, [
+          fixWith(
+            callsign: 'DLH400',
+            positionAtTimestamp: beforeDeparture,
+            onGround: true,
+          ),
+        ], now: pollTime),
+        isA<PollFixApplied>(),
+      );
     });
   });
 

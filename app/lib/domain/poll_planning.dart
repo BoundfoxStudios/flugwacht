@@ -111,6 +111,13 @@ final class PollIdentityAdopted extends PollOutcome {
   final AdoptedIdentity identity;
 }
 
+/// The entered leg cannot land before its scheduled departure, so a landing
+/// before it exposes the tracked contact as the airframe's earlier rotation:
+/// forget it and search again.
+final class PollAdoptionDisproved extends PollOutcome {
+  const PollAdoptionDisproved();
+}
+
 final class PollFixApplied extends PollOutcome {
   const PollFixApplied({
     required this.tracking,
@@ -128,7 +135,9 @@ final class PollFixApplied extends PollOutcome {
 final class AdoptedIdentity {
   const AdoptedIdentity({required this.hexAddress, required this.callsign});
 
-  final String hexAddress;
+  /// Null keeps the hex address the flight already stores.
+  final String? hexAddress;
+
   final String callsign;
 }
 
@@ -149,28 +158,66 @@ PollOutcome applyLookup({
   }
   if (awaitsDepartureContact(flight, now)) {
     final identity = _standsAtItsOrigin(flight, fix)
-        ? _adoptedIdentity(selection)
+        ? _adoptedIdentity(flight, query, selection, window)
         : null;
     return identity == null
         ? const PollAwaitsDeparture()
         : PollIdentityAdopted(identity);
   }
+  if (_disprovesAdoption(flight, fix)) {
+    return const PollAdoptionDisproved();
+  }
   return PollFixApplied(
     tracking: flight.tracking.withFix(fix, window),
     sourceId: fix.sourceId,
     trailPosition: _trailPosition(flight, fix, window),
-    adoptedIdentity: _adoptedIdentity(selection),
+    adoptedIdentity: _adoptedIdentity(flight, query, selection, window),
   );
 }
 
-AdoptedIdentity? _adoptedIdentity(_FixSelection selection) {
+bool _disprovesAdoption(Flight flight, Fix fix) {
+  if (flight.lookupKind != FlightLookupKind.registration &&
+      flight.lookupKind != FlightLookupKind.hexAddress) {
+    return false;
+  }
+  final position = fix.position;
+  if (!flight.tracking.hasBeenAirborne || position?.onGround != true) {
+    return false;
+  }
+  final departureInstant = departureInstantOf(flight);
+  return departureInstant != null &&
+      position!.timestamp.isBefore(departureInstant);
+}
+
+AdoptedIdentity? _adoptedIdentity(
+  Flight flight,
+  PollQuery query,
+  _FixSelection selection,
+  FlightDayWindow window,
+) {
   final matchedCallsign = selection.matchedCallsign;
-  return matchedCallsign == null
+  if (matchedCallsign != null) {
+    return AdoptedIdentity(
+      hexAddress: selection.fix.hexAddress,
+      callsign: matchedCallsign,
+    );
+  }
+  final position = selection.fix.position;
+  // A standing airframe can still wear the callsign of the leg it just arrived
+  // on, and an answer that neither reports its altitude nor a position from
+  // this flight day proves nothing either, so only a fix that positively
+  // reports flight names this one.
+  if (!_pinsFirstCallsign(flight, query) ||
+      flight.expectedCallsign != null ||
+      position == null ||
+      position.onGround != false ||
+      position.timestamp.isBefore(window.start)) {
+    return null;
+  }
+  final callsign = _callsignOf(selection.fix);
+  return callsign == null
       ? null
-      : AdoptedIdentity(
-          hexAddress: selection.fix.hexAddress,
-          callsign: matchedCallsign,
-        );
+      : AdoptedIdentity(hexAddress: null, callsign: callsign);
 }
 
 class _FixSelection {
@@ -201,12 +248,15 @@ Fix _preferringPosition(List<Fix> fixes) =>
     fixes.firstWhere((fix) => fix.position != null, orElse: () => fixes.first);
 
 bool _rejectsIdentity(Flight flight, PollQuery query, Fix fix) {
-  if (query is! HexAddressPollQuery ||
-      flight.lookupKind != FlightLookupKind.flightNumber) {
+  final callsign = _callsignOf(fix);
+  if (callsign == null || callsign == flight.expectedCallsign) {
     return false;
   }
-  final callsign = _callsignOf(fix);
-  return callsign != null && callsign != flight.expectedCallsign;
+  if (_pinsFirstCallsign(flight, query)) {
+    return flight.expectedCallsign != null;
+  }
+  return query is HexAddressPollQuery &&
+      flight.lookupKind == FlightLookupKind.flightNumber;
 }
 
 /// Yesterday's leg of a daily callsign is still airborne at that hour, so
@@ -227,6 +277,11 @@ bool _standsAtItsOrigin(Flight flight, Fix fix) {
       ) <=
       originContactRadiusKilometers;
 }
+
+bool _pinsFirstCallsign(Flight flight, PollQuery query) =>
+    (query is HexAddressPollQuery || query is RegistrationPollQuery) &&
+    (flight.lookupKind == FlightLookupKind.registration ||
+        flight.lookupKind == FlightLookupKind.hexAddress);
 
 FixPosition? _trailPosition(Flight flight, Fix fix, FlightDayWindow window) {
   final position = fix.position;

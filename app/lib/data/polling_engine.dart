@@ -119,25 +119,17 @@ class PollingEngine with WidgetsBindingObserver {
         _lastPollStarts.remove(flight.id);
         continue;
       }
-      if (_runningLookups.contains(flight.id) ||
-          _awaitsAcquisition(flight, now)) {
+      if (_runningLookups.contains(flight.id)) {
         continue;
       }
       final lastPollStart = _lastPollStarts[flight.id];
       if (lastPollStart != null &&
-          now.difference(lastPollStart) < pollInterval(state)) {
+          now.difference(lastPollStart) < pollInterval(flight, state, now)) {
         continue;
       }
       _lastPollStarts[flight.id] = now;
       unawaited(_pollFlight(flight));
     }
-  }
-
-  bool _awaitsAcquisition(Flight flight, DateTime now) {
-    final acquired = flight.lookupKind == FlightLookupKind.flightNumber
-        ? flight.hexAddress != null
-        : flight.tracking.latestPosition != null;
-    return !acquired && now.isBefore(searchStartsAt(flight));
   }
 
   Future<void> _pollFlight(Flight flight) async {
@@ -177,10 +169,11 @@ class PollingEngine with WidgetsBindingObserver {
               CallsignSearchPollQuery([candidate]),
               window,
             );
-            if (outcome is! PollNoData) {
-              await _applyOutcome(flight, outcome);
-              return;
+            if (outcome is PollNoData || outcome is PollAwaitsDeparture) {
+              continue;
             }
+            await _applyOutcome(flight, outcome);
+            return;
           }
       }
     } finally {
@@ -209,6 +202,7 @@ class PollingEngine with WidgetsBindingObserver {
       query: query,
       fixes: fixes,
       window: window,
+      now: clock(),
     ),
     LookupNetworkFailure() ||
     LookupStatusFailure() ||
@@ -220,8 +214,10 @@ class PollingEngine with WidgetsBindingObserver {
       return;
     }
     switch (outcome) {
-      case PollNoData():
+      case PollNoData() || PollAwaitsDeparture():
         return;
+      case PollIdentityAdopted(:final identity):
+        await _writeIdentity(flight, identity);
       case PollIdentityRejected():
         await _repository.updateIdentity(
           flight.id,
@@ -238,14 +234,17 @@ class PollingEngine with WidgetsBindingObserver {
         await _notifier.trackingChanged(flight, tracking);
         await _appendTrailPoint(flight, trailPosition, sourceId);
         if (adoptedIdentity != null) {
-          await _repository.updateIdentity(
-            flight.id,
-            hexAddress: adoptedIdentity.hexAddress,
-            expectedCallsign: adoptedIdentity.callsign,
-          );
+          await _writeIdentity(flight, adoptedIdentity);
         }
     }
   }
+
+  Future<void> _writeIdentity(Flight flight, AdoptedIdentity identity) =>
+      _repository.updateIdentity(
+        flight.id,
+        hexAddress: identity.hexAddress,
+        expectedCallsign: identity.callsign,
+      );
 
   Future<void> _appendTrailPoint(
     Flight flight,

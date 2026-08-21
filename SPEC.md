@@ -133,14 +133,22 @@ is tested — focused on the domain, where the known pitfalls live:
   deviation from the domain concept, which binds ended to the window end
 - Hex safeguard: callsign cross-check on hex queries, fall back to callsign
   search on mismatch
-- Search anchor: a flight that has never been seen is only searched for from
-  its scheduled departure minus 2 h (clamped to the window start), so the
-  previous day's rotation of a daily callsign is not adopted at midnight;
-  without a stored time the search starts with the window. The departure time
-  is read in its stored interpretation — origin local time (the new-flight
-  default while a route is known) or device time — while the flight-day window
-  deliberately stays device-local: its 48 h width absorbs the offsets the
-  anchor has to be exact about
+- Departure contact gate: polling runs for the whole flight-day window, the
+  scheduled departure gates what may be adopted instead. Before that departure
+  minus 2 h (clamped to the window start) nothing is tracked at all: the only
+  answer that counts is an aircraft standing within 25 km of the flight's known
+  origin, and all it gives is the identity, because at that hour the previous
+  day's rotation of a daily callsign is the one in the air and an aircraft at
+  its gate is not a flight under way. An entered registration or hex address
+  has no route and nothing to gain there, its identity is the query. From the
+  anchor on nothing is refused; without a stored departure time the gate is
+  down from the window start. While the gate is up the flight is asked for
+  every 5 min instead of every minute, so an evening departure is not polled
+  from midnight on at the live cadence. The departure time is read in its
+  stored interpretation – origin local time (the new-flight default while a
+  route is known) or device time – while the flight-day window deliberately
+  stays device-local: its 48 h width absorbs the offsets the anchor has to be
+  exact about
 - IATA→ICAO mapping including Ryanair/Wizz/easyJet detection
 - Arrival estimate: remaining great-circle distance / ground speed, anchored
   on the fix timestamp so a position that stops coming in freezes its

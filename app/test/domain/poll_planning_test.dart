@@ -24,6 +24,7 @@ void main() {
     String? hexAddress,
     String? expectedCallsign,
     FixPosition? latestPosition,
+    bool hasBeenAirborne = false,
   }) => Flight(
     id: 1,
     lookupKind: lookupKind,
@@ -34,7 +35,10 @@ void main() {
     route: route,
     hexAddress: hexAddress,
     expectedCallsign: expectedCallsign,
-    tracking: FlightTracking(latestPosition: latestPosition),
+    tracking: FlightTracking(
+      latestPosition: latestPosition,
+      hasBeenAirborne: hasBeenAirborne,
+    ),
   );
 
   FlightRoute routeFrom(RouteAirport origin) => FlightRoute(
@@ -64,29 +68,51 @@ void main() {
     longitude: -118.4081,
   );
 
-  FixPosition positionAt(DateTime timestamp, {bool? onGround = false}) =>
-      FixPosition(
-        latitude: 49.875687,
-        longitude: 7.888834,
-        timestamp: timestamp,
-        onGround: onGround,
-      );
+  FixPosition positionAt(
+    DateTime timestamp, {
+    bool? onGround = false,
+    double latitude = 49.875687,
+    double longitude = 7.888834,
+  }) => FixPosition(
+    latitude: latitude,
+    longitude: longitude,
+    timestamp: timestamp,
+    onGround: onGround,
+  );
 
   Fix fixWith({
     String hexAddress = '3c64c6',
     String? callsign,
     DateTime? positionAtTimestamp,
+    bool? onGround = false,
+    double latitude = 49.875687,
+    double longitude = 7.888834,
   }) => Fix(
     hexAddress: hexAddress,
     sourceId: SourceId.adsblol,
     callsign: callsign,
     position: positionAtTimestamp == null
         ? null
-        : positionAt(positionAtTimestamp),
+        : positionAt(
+            positionAtTimestamp,
+            onGround: onGround,
+            latitude: latitude,
+            longitude: longitude,
+          ),
   );
 
-  PollOutcome apply(Flight flight, PollQuery query, List<Fix> fixes) =>
-      applyLookup(flight: flight, query: query, fixes: fixes, window: window);
+  PollOutcome apply(
+    Flight flight,
+    PollQuery query,
+    List<Fix> fixes, {
+    DateTime? now,
+  }) => applyLookup(
+    flight: flight,
+    query: query,
+    fixes: fixes,
+    window: window,
+    now: now ?? airborneAt,
+  );
 
   group('poll cadence', () {
     test('polls only the states that can still produce a fix', () {
@@ -99,37 +125,50 @@ void main() {
     });
 
     test('polls a live flight every five seconds', () {
-      expect(pollInterval(FlightState.live), const Duration(seconds: 5));
+      expect(
+        pollInterval(flightWith(), FlightState.live, airborneAt),
+        const Duration(seconds: 5),
+      );
     });
 
     test('polls a searching flight every minute', () {
-      expect(pollInterval(FlightState.waiting), const Duration(seconds: 60));
-      expect(pollInterval(FlightState.noSignal), const Duration(seconds: 60));
+      expect(
+        pollInterval(flightWith(), FlightState.waiting, airborneAt),
+        const Duration(seconds: 60),
+      );
+      expect(
+        pollInterval(flightWith(), FlightState.noSignal, airborneAt),
+        const Duration(seconds: 60),
+      );
     });
   });
 
-  group('search anchor', () {
+  group('airborne contact anchor', () {
     test('starts the search when the flight day window opens', () {
-      expect(searchStartsAt(flightWith()), window.start);
+      expect(airborneContactStartsAt(flightWith()), window.start);
     });
 
     test('starts the search two hours before a scheduled departure', () {
       expect(
-        searchStartsAt(flightWith(departureTime: const DayTime(16, 10))),
+        airborneContactStartsAt(
+          flightWith(departureTime: const DayTime(16, 10)),
+        ),
         DateTime(2026, 3, 17, 14, 10),
       );
     });
 
     test('anchors an evening departure on its own departure day', () {
       expect(
-        searchStartsAt(flightWith(departureTime: const DayTime(23, 55))),
+        airborneContactStartsAt(
+          flightWith(departureTime: const DayTime(23, 55)),
+        ),
         DateTime(2026, 3, 17, 21, 55),
       );
     });
 
     test('anchors an origin-local departure east of the device early', () {
       expect(
-        searchStartsAt(
+        airborneContactStartsAt(
           flightWith(
             departureTime: const DayTime(23, 55),
             departureTimeInterpretation:
@@ -143,7 +182,7 @@ void main() {
 
     test('anchors an origin-local departure west of the device late', () {
       expect(
-        searchStartsAt(
+        airborneContactStartsAt(
           flightWith(
             departureTime: const DayTime(9, 0),
             departureTimeInterpretation:
@@ -157,7 +196,7 @@ void main() {
 
     test('reads an origin-local departure without a route as device time', () {
       expect(
-        searchStartsAt(
+        airborneContactStartsAt(
           flightWith(
             departureTime: const DayTime(16, 10),
             departureTimeInterpretation:
@@ -170,16 +209,169 @@ void main() {
 
     test('never starts the search before the window opens', () {
       expect(
-        searchStartsAt(flightWith(departureTime: const DayTime(0, 30))),
+        airborneContactStartsAt(
+          flightWith(departureTime: const DayTime(0, 30)),
+        ),
         window.start,
       );
       expect(
-        searchStartsAt(flightWith(departureTime: const DayTime(1, 0))),
+        airborneContactStartsAt(flightWith(departureTime: const DayTime(1, 0))),
         window.start,
       );
       expect(
-        searchStartsAt(flightWith(departureTime: const DayTime(2, 0))),
+        airborneContactStartsAt(flightWith(departureTime: const DayTime(2, 0))),
         window.start,
+      );
+    });
+  });
+
+  group('departure contact gate', () {
+    const search = CallsignSearchPollQuery(['DLH400', 'GEC400']);
+    const departureTime = DayTime(16, 10);
+    final beforeAnchor = DateTime(2026, 3, 17, 12, 0);
+    final atAnchor = DateTime(2026, 3, 17, 14, 10);
+    final afterAnchor = DateTime(2026, 3, 17, 15, 30);
+    final routedFlight = flightWith(
+      departureTime: departureTime,
+      route: routeFrom(losAngeles),
+    );
+
+    Fix originFix({bool? onGround}) => fixWith(
+      callsign: 'DLH400',
+      positionAtTimestamp: beforeAnchor,
+      onGround: onGround,
+      latitude: losAngeles.latitude,
+      longitude: losAngeles.longitude,
+    );
+
+    test('refuses an airborne aircraft before the anchor', () {
+      expect(
+        apply(routedFlight, search, [originFix()], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('refuses an aircraft without a position before the anchor', () {
+      expect(
+        apply(routedFlight, search, [
+          fixWith(callsign: 'DLH400'),
+        ], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('takes only the identity of an aircraft standing at the origin', () {
+      final outcome = apply(routedFlight, search, [
+        originFix(onGround: true),
+      ], now: beforeAnchor);
+
+      final adopted = outcome as PollIdentityAdopted;
+      expect(adopted.identity.hexAddress, '3c64c6');
+      expect(adopted.identity.callsign, 'DLH400');
+    });
+
+    test('refuses an aircraft on the ground far from the origin', () {
+      expect(
+        apply(routedFlight, search, [
+          fixWith(
+            callsign: 'DLH400',
+            positionAtTimestamp: beforeAnchor,
+            onGround: true,
+          ),
+        ], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('refuses a callsign on the ground without a known route', () {
+      expect(
+        apply(flightWith(departureTime: departureTime), search, [
+          fixWith(
+            callsign: 'DLH400',
+            positionAtTimestamp: beforeAnchor,
+            onGround: true,
+          ),
+        ], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('adopts nothing for an entered airframe before the anchor', () {
+      final registrationFlight = flightWith(
+        lookupKind: FlightLookupKind.registration,
+        lookupValue: 'DABYT',
+        departureTime: departureTime,
+      );
+
+      expect(
+        apply(
+          registrationFlight,
+          const RegistrationPollQuery('DABYT'),
+          [
+            fixWith(
+              callsign: 'DLH400',
+              positionAtTimestamp: beforeAnchor,
+              onGround: true,
+            ),
+          ],
+          now: beforeAnchor,
+        ),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('takes an airborne aircraft from the anchor on', () {
+      expect(
+        apply(routedFlight, search, [originFix()], now: atAnchor),
+        isA<PollFixApplied>(),
+      );
+      expect(
+        apply(routedFlight, search, [originFix()], now: afterAnchor),
+        isA<PollFixApplied>(),
+      );
+    });
+
+    test('refuses an airborne aircraft whatever the flight stores', () {
+      final withHexAddress = flightWith(
+        departureTime: departureTime,
+        route: routeFrom(losAngeles),
+        hexAddress: '3c64c6',
+        expectedCallsign: 'DLH400',
+      );
+      final everAirborne = flightWith(
+        lookupKind: FlightLookupKind.registration,
+        lookupValue: 'DABYT',
+        departureTime: departureTime,
+        latestPosition: positionAt(beforeAnchor),
+        hasBeenAirborne: true,
+      );
+
+      expect(
+        apply(withHexAddress, const HexAddressPollQuery('3c64c6'), [
+          originFix(),
+        ], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+      expect(
+        apply(everAirborne, const RegistrationPollQuery('DABYT'), [
+          fixWith(callsign: 'DLH400', positionAtTimestamp: beforeAnchor),
+        ], now: beforeAnchor),
+        isA<PollAwaitsDeparture>(),
+      );
+    });
+
+    test('spaces the searches wider while the gate is up', () {
+      expect(
+        pollInterval(routedFlight, FlightState.waiting, beforeAnchor),
+        const Duration(minutes: 5),
+      );
+      expect(
+        pollInterval(routedFlight, FlightState.live, beforeAnchor),
+        const Duration(minutes: 5),
+      );
+      expect(
+        pollInterval(routedFlight, FlightState.waiting, atAnchor),
+        const Duration(seconds: 60),
       );
     });
   });

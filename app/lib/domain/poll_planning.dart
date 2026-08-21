@@ -1,3 +1,4 @@
+import 'arrival_estimate.dart';
 import 'departure_time.dart';
 import 'fix.dart';
 import 'flight.dart';
@@ -9,19 +10,30 @@ const livePollInterval = Duration(seconds: 5);
 
 const searchPollInterval = Duration(seconds: 60);
 
+/// Wider than the search interval, so an evening departure is not asked for
+/// every minute from midnight on.
+const preDepartureSearchInterval = Duration(minutes: 5);
+
+const originContactRadiusKilometers = 25.0;
+
 bool isPollable(FlightState state) => switch (state) {
   FlightState.waiting || FlightState.live || FlightState.noSignal => true,
   FlightState.planned || FlightState.ended || FlightState.missed => false,
 };
 
-Duration pollInterval(FlightState state) =>
-    state == FlightState.live ? livePollInterval : searchPollInterval;
+Duration pollInterval(Flight flight, FlightState state, DateTime now) {
+  if (awaitsDepartureContact(flight, now)) {
+    return preDepartureSearchInterval;
+  }
+  return state == FlightState.live ? livePollInterval : searchPollInterval;
+}
 
 const searchLeadTime = Duration(hours: 2);
 
-/// The instant a flight that has never been seen may first be searched for,
-/// so a daily rotation of the same callsign is not adopted at midnight.
-DateTime searchStartsAt(Flight flight) {
+/// The instant from which an airborne aircraft may be adopted as a flight's
+/// first contact, so a daily rotation of the same callsign is not adopted at
+/// midnight.
+DateTime airborneContactStartsAt(Flight flight) {
   final window = FlightDayWindow.forDepartureDate(flight.departureDate);
   final departureInstant = departureInstantOf(flight);
   if (departureInstant == null) {
@@ -30,6 +42,9 @@ DateTime searchStartsAt(Flight flight) {
   final anchor = departureInstant.subtract(searchLeadTime);
   return anchor.isBefore(window.start) ? window.start : anchor;
 }
+
+bool awaitsDepartureContact(Flight flight, DateTime now) =>
+    now.isBefore(airborneContactStartsAt(flight));
 
 sealed class PollQuery {
   const PollQuery();
@@ -84,6 +99,18 @@ final class PollIdentityRejected extends PollOutcome {
   const PollIdentityRejected();
 }
 
+final class PollAwaitsDeparture extends PollOutcome {
+  const PollAwaitsDeparture();
+}
+
+/// An aircraft still standing at its gate is not a flight under way: it says
+/// who it is, it does not say where the flight is.
+final class PollIdentityAdopted extends PollOutcome {
+  const PollIdentityAdopted(this.identity);
+
+  final AdoptedIdentity identity;
+}
+
 final class PollFixApplied extends PollOutcome {
   const PollFixApplied({
     required this.tracking,
@@ -110,6 +137,7 @@ PollOutcome applyLookup({
   required PollQuery query,
   required List<Fix> fixes,
   required FlightDayWindow window,
+  required DateTime now,
 }) {
   final selection = _selectFix(query, fixes);
   if (selection == null) {
@@ -119,18 +147,30 @@ PollOutcome applyLookup({
   if (_rejectsIdentity(flight, query, fix)) {
     return const PollIdentityRejected();
   }
-  final matchedCallsign = selection.matchedCallsign;
+  if (awaitsDepartureContact(flight, now)) {
+    final identity = _standsAtItsOrigin(flight, fix)
+        ? _adoptedIdentity(selection)
+        : null;
+    return identity == null
+        ? const PollAwaitsDeparture()
+        : PollIdentityAdopted(identity);
+  }
   return PollFixApplied(
     tracking: flight.tracking.withFix(fix, window),
     sourceId: fix.sourceId,
     trailPosition: _trailPosition(flight, fix, window),
-    adoptedIdentity: matchedCallsign == null
-        ? null
-        : AdoptedIdentity(
-            hexAddress: fix.hexAddress,
-            callsign: matchedCallsign,
-          ),
+    adoptedIdentity: _adoptedIdentity(selection),
   );
+}
+
+AdoptedIdentity? _adoptedIdentity(_FixSelection selection) {
+  final matchedCallsign = selection.matchedCallsign;
+  return matchedCallsign == null
+      ? null
+      : AdoptedIdentity(
+          hexAddress: selection.fix.hexAddress,
+          callsign: matchedCallsign,
+        );
 }
 
 class _FixSelection {
@@ -167,6 +207,25 @@ bool _rejectsIdentity(Flight flight, PollQuery query, Fix fix) {
   }
   final callsign = _callsignOf(fix);
   return callsign != null && callsign != flight.expectedCallsign;
+}
+
+/// Yesterday's leg of a daily callsign is still airborne at that hour, so
+/// before the anchor only an aircraft standing at the origin can be the flight
+/// the user entered. An entered airframe has no route and therefore nothing to
+/// gain here: its identity is the query.
+bool _standsAtItsOrigin(Flight flight, Fix fix) {
+  final origin = flight.route?.origin;
+  final position = fix.position;
+  if (origin == null || position == null || position.onGround != true) {
+    return false;
+  }
+  return greatCircleDistanceKilometers(
+        position.latitude,
+        position.longitude,
+        origin.latitude,
+        origin.longitude,
+      ) <=
+      originContactRadiusKilometers;
 }
 
 FixPosition? _trailPosition(Flight flight, Fix fix, FlightDayWindow window) {

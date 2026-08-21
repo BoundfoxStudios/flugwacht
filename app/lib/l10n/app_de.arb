@@ -29,6 +29,8 @@
   "newFlightDepartureTimeOriginLocal": "In Ortszeit des Abflugorts",
   "newFlightDepartureTimeDeviceFallback": "Ohne Route gilt die Zeit als deine Gerätezeit",
   "newFlightDepartureTimeSearchingRoute": "Wartet auf die Route, die die Uhr festlegt",
+  "liveActivityArmLabel": "Live-Aktivität am Flugtag",
+  "liveActivityDisabledHint": "Live-Aktivitäten sind für Flugwacht in den Systemeinstellungen ausgeschaltet",
   "newFlightNoteLabel": "Notiz (optional)",
   "newFlightNoteHint": "Woran du den Flug erkennst, z. B. Anna & Ben",
   "newFlightSubmit": "Flug eintragen",

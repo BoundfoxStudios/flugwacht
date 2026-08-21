@@ -105,6 +105,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Waiting for the route to settle the clock';
 
   @override
+  String get liveActivityArmLabel => 'Live Activity on flight day';
+
+  @override
+  String get liveActivityDisabledHint =>
+      'Live Activities are switched off for Flugwacht in the system settings';
+
+  @override
   String get newFlightNoteLabel => 'Note (optional)';
 
   @override

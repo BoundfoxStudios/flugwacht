@@ -18,21 +18,19 @@ Map<String, dynamic> liveActivityPayloadOf(Flight flight, DateTime now) {
   return {
     'url': liveActivityUrlOf(flight.id),
     'designator': flight.lookupValue,
-    if (flight.note case final note?) 'note': note,
+    'note': ?flight.note,
     'state': resolveFlightState(flight, now).name,
     if (route != null) ...{
       'originCode': route.origin.iataCode ?? route.origin.icaoCode,
       'destinationCode':
           route.destination.iataCode ?? route.destination.icaoCode,
     },
-    if (departureInstantOf(flight) case final departure?)
-      'departureAt': departure.millisecondsSinceEpoch,
-    if (arrivalEstimateOf(flight) case final estimate?)
-      'estimatedArrivalAt': estimate.arrivesAt.millisecondsSinceEpoch,
-    if (tracking.firstAirborneAt case final airborneAt?)
-      'firstAirborneAt': airborneAt.millisecondsSinceEpoch,
-    if (_landingOf(tracking) case final landedAt?)
-      'landedAt': landedAt.millisecondsSinceEpoch,
+    'departureAt': ?departureInstantOf(flight)?.millisecondsSinceEpoch,
+    'estimatedArrivalAt': ?arrivalEstimateOf(
+      flight,
+    )?.arrivesAt.millisecondsSinceEpoch,
+    'firstAirborneAt': ?tracking.firstAirborneAt?.millisecondsSinceEpoch,
+    'landedAt': ?_landingOf(tracking)?.millisecondsSinceEpoch,
   };
 }
 

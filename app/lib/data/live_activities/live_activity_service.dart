@@ -1,0 +1,119 @@
+import 'dart:io';
+
+import 'package:live_activities/live_activities.dart';
+
+import 'live_activity_url.dart';
+
+/// The App Group the app and the widget extension share; the plugin moves the
+/// card's data through its user defaults.
+const liveActivityAppGroupId = 'group.com.boundfoxstudios.apps.flugwacht';
+
+/// The seam between the app and the Live Activity plugin, so nothing above it
+/// talks to the platform directly.
+abstract interface class LiveActivityService {
+  /// The flights whose card the user tapped.
+  Stream<int> get tappedFlights;
+
+  /// Whether iOS lets this app put a card on the Lock Screen at all; the user
+  /// can switch Live Activities off for the app entirely.
+  Future<bool> areActivitiesEnabled();
+
+  /// Puts the flight's facts on its card, starting the activity when none runs
+  /// under [activityId] yet. Past [staleIn] the card tells the viewer that its
+  /// numbers are no longer backed by fresh data.
+  Future<void> put(
+    String activityId, {
+    required Map<String, dynamic> data,
+    required Duration staleIn,
+  });
+
+  /// Takes the card away — at [dismissAt] when the user should still get to
+  /// look at it, right away otherwise.
+  Future<void> end(String activityId, {DateTime? dismissAt});
+
+  /// The activities the system still runs, which outlive nothing the app
+  /// remembers: iOS ends them on its own once they hit its runtime limit.
+  Future<List<String>> runningActivityIds();
+}
+
+class PluginLiveActivityService implements LiveActivityService {
+  PluginLiveActivityService._(this._plugin);
+
+  /// Sets the plugin up for the App Group both targets share. Live Activities
+  /// are an iOS feature here (#149 parks Android), and a device that fails the
+  /// setup costs the user the cards, never a stalled app.
+  static Future<LiveActivityService> start() async {
+    if (!Platform.isIOS) {
+      return UnavailableLiveActivityService();
+    }
+    try {
+      final plugin = LiveActivities();
+      await plugin.init(
+        appGroupId: liveActivityAppGroupId,
+        urlScheme: liveActivityUrlScheme,
+      );
+      return PluginLiveActivityService._(plugin);
+    } on Exception {
+      return UnavailableLiveActivityService();
+    }
+  }
+
+  final LiveActivities _plugin;
+
+  @override
+  Stream<int> get tappedFlights => _plugin
+      .urlSchemeStream()
+      .map((data) => flightIdFromLiveActivityUrl(data.url ?? ''))
+      .where((flightId) => flightId != null)
+      .cast<int>();
+
+  @override
+  Future<bool> areActivitiesEnabled() => _plugin.areActivitiesEnabled();
+
+  @override
+  Future<void> put(
+    String activityId, {
+    required Map<String, dynamic> data,
+    required Duration staleIn,
+  }) => _plugin.createOrUpdateActivity(
+    activityId,
+    data,
+    // The card belongs to the flight, not to the app run: it keeps counting
+    // down while the app is closed, and the system clears it on its own.
+    removeWhenAppIsKilled: false,
+    iOSEnableRemoteUpdates: false,
+    staleIn: staleIn,
+  );
+
+  @override
+  Future<void> end(String activityId, {DateTime? dismissAt}) =>
+      dismissAt == null
+      ? _plugin.endActivity(activityId)
+      : _plugin.scheduleEnd(activityId, at: dismissAt);
+
+  @override
+  Future<List<String>> runningActivityIds() => _plugin.getAllActivitiesIds();
+}
+
+/// What a device without Live Activities gets: every call is a no-op, so
+/// nothing above has to ask whether the platform can do this.
+class UnavailableLiveActivityService implements LiveActivityService {
+  @override
+  Stream<int> get tappedFlights => const Stream.empty();
+
+  @override
+  Future<bool> areActivitiesEnabled() async => false;
+
+  @override
+  Future<void> put(
+    String activityId, {
+    required Map<String, dynamic> data,
+    required Duration staleIn,
+  }) async {}
+
+  @override
+  Future<void> end(String activityId, {DateTime? dismissAt}) async {}
+
+  @override
+  Future<List<String>> runningActivityIds() async => const [];
+}

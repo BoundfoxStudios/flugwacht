@@ -7,8 +7,13 @@ void main() {
 
     setUp(() => service = UnavailableLiveActivityService());
 
-    test('reports the activities as switched off', () async {
-      expect(await service.areActivitiesEnabled(), isFalse);
+    test('reports the activities as unsupported', () {
+      expect(service.availability.value, LiveActivityAvailability.unsupported);
+    });
+
+    test('finds nothing to pick up from the system settings', () async {
+      await service.refreshAvailability();
+      expect(service.availability.value, LiveActivityAvailability.unsupported);
     });
 
     test('starts nothing', () async {

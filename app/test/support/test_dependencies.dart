@@ -276,8 +276,11 @@ typedef LiveActivityEnd = ({String activityId, DateTime? dismissAt});
 class FakeLiveActivityService implements LiveActivityService {
   final puts = <LiveActivityPut>[];
   final ends = <LiveActivityEnd>[];
-  var isEnabled = true;
   var running = const <String>[];
+  var availabilityRefreshes = 0;
+
+  @override
+  final availability = signal(LiveActivityAvailability.enabled);
 
   final _tappedFlights = StreamController<int>.broadcast();
 
@@ -287,10 +290,13 @@ class FakeLiveActivityService implements LiveActivityService {
   /// Stands in for the user tapping the card of a flight.
   void tap(int flightId) => _tappedFlights.add(flightId);
 
-  void dispose() => unawaited(_tappedFlights.close());
+  void dispose() {
+    availability.dispose();
+    unawaited(_tappedFlights.close());
+  }
 
   @override
-  Future<bool> areActivitiesEnabled() async => isEnabled;
+  Future<void> refreshAvailability() async => availabilityRefreshes++;
 
   @override
   Future<void> put(

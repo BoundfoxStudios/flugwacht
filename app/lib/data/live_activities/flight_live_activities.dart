@@ -23,12 +23,11 @@ class FlightLiveActivities {
   /// pass in between would put a second card on the Lock Screen.
   final _activityIds = <int, String>{};
 
+  Future<void> refreshAvailability() => _service.refreshAvailability();
+
   Future<void> flightsChanged(List<Flight> flights) async {
-    // Asked once: the answer holds for the whole pass, and asking per flight
-    // would leave room for two of them to start the same card.
-    final canStart = await _service.areActivitiesEnabled();
     for (final flight in flights) {
-      await _apply(flight, canStart: canStart);
+      await _apply(flight);
     }
   }
 
@@ -57,7 +56,7 @@ class FlightLiveActivities {
     }
   }
 
-  Future<void> _apply(Flight flight, {required bool canStart}) async {
+  Future<void> _apply(Flight flight) async {
     final known = _runningActivityOf(flight);
     final action = planLiveActivityAction(
       flight: known == null ? flight : flight.copyWith(liveActivityId: known),
@@ -69,7 +68,7 @@ class FlightLiveActivities {
       case StartLiveActivity():
         // A card the system would refuse leaves the flight without one, and
         // the app must not remember an activity that never appeared.
-        if (!canStart) {
+        if (_service.availability.value != LiveActivityAvailability.enabled) {
           return;
         }
         final activityId = _activityIdOf(flight);

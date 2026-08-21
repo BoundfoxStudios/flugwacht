@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/live_activities/flight_live_activities.dart';
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/persistence/database.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
@@ -69,7 +70,7 @@ void main() {
   });
 
   test('starts nothing while iOS has live activities switched off', () async {
-    service.isEnabled = false;
+    service.availability.value = LiveActivityAvailability.disabled;
     await addFlight();
 
     await activities.flightsChanged(await storedFlights());

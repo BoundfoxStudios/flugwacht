@@ -1173,6 +1173,26 @@ void main() {
       });
     });
 
+    test('picks up the system setting on the way back', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        async.flushMicrotasks();
+        final refreshes = started.liveActivities.availabilityRefreshes;
+
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.paused);
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        async.flushMicrotasks();
+
+        expect(
+          started.liveActivities.availabilityRefreshes,
+          greaterThan(refreshes),
+        );
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
     test('starts a fresh card after the system ended the old one', () {
       fakeAsync((async) {
         final repository = FakeFlightRepository();

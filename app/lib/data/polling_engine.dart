@@ -83,8 +83,10 @@ class PollingEngine with WidgetsBindingObserver {
 
   Future<void> _reconcileThenPoll() async {
     await _notifier.reconcileDeliveredReminders();
-    // iOS ends a card on its own once it hits the runtime limit, and this app
-    // run is the first chance to learn that and put a fresh one up.
+    // Live Activities are switched off in the system settings, so the app only
+    // learns about it on the way back. iOS also ends a card on its own once it
+    // hits the runtime limit, which this app run is the first chance to see.
+    await _liveActivities.refreshAvailability();
     await _liveActivities.reconcile(_flights);
     await _liveActivities.flightsChanged(_flights);
     if (_wantsPolling) {

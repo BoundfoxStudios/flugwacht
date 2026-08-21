@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:live_activities/live_activities.dart';
+import 'package:signals/signals.dart';
 
 import 'live_activity_url.dart';
 
@@ -8,15 +9,21 @@ import 'live_activity_url.dart';
 /// card's data through its user defaults.
 const liveActivityAppGroupId = 'group.com.boundfoxstudios.apps.flugwacht';
 
+/// What the device does with Live Activities: [unsupported] is the platform's
+/// answer, [disabled] the user's — they can switch the app's activities off in
+/// the system settings.
+enum LiveActivityAvailability { unsupported, disabled, enabled }
+
 /// The seam between the app and the Live Activity plugin, so nothing above it
 /// talks to the platform directly.
 abstract interface class LiveActivityService {
   /// The flights whose card the user tapped.
   Stream<int> get tappedFlights;
 
-  /// Whether iOS lets this app put a card on the Lock Screen at all; the user
-  /// can switch Live Activities off for the app entirely.
-  Future<bool> areActivitiesEnabled();
+  Signal<LiveActivityAvailability> get availability;
+
+  /// Picks up what the user changed in the system settings.
+  Future<void> refreshAvailability();
 
   /// Puts the flight's facts on its card, starting the activity when none runs
   /// under [activityId] yet. Past [staleIn] the card tells the viewer that its
@@ -37,7 +44,8 @@ abstract interface class LiveActivityService {
 }
 
 class PluginLiveActivityService implements LiveActivityService {
-  PluginLiveActivityService._(this._plugin);
+  PluginLiveActivityService._(this._plugin)
+    : availability = signal(LiveActivityAvailability.unsupported);
 
   /// Sets the plugin up for the App Group both targets share. Live Activities
   /// are an iOS feature here (#149 parks Android), and a device that fails the
@@ -52,13 +60,18 @@ class PluginLiveActivityService implements LiveActivityService {
         appGroupId: liveActivityAppGroupId,
         urlScheme: liveActivityUrlScheme,
       );
-      return PluginLiveActivityService._(plugin);
+      final service = PluginLiveActivityService._(plugin);
+      await service.refreshAvailability();
+      return service;
     } on Exception {
       return UnavailableLiveActivityService();
     }
   }
 
   final LiveActivities _plugin;
+
+  @override
+  final Signal<LiveActivityAvailability> availability;
 
   @override
   Stream<int> get tappedFlights => _plugin
@@ -68,7 +81,16 @@ class PluginLiveActivityService implements LiveActivityService {
       .cast<int>();
 
   @override
-  Future<bool> areActivitiesEnabled() => _plugin.areActivitiesEnabled();
+  Future<void> refreshAvailability() async {
+    availability.value = switch ((
+      await _plugin.areActivitiesSupported(),
+      await _plugin.areActivitiesEnabled(),
+    )) {
+      (false, _) => LiveActivityAvailability.unsupported,
+      (true, false) => LiveActivityAvailability.disabled,
+      (true, true) => LiveActivityAvailability.enabled,
+    };
+  }
 
   @override
   Future<void> put(
@@ -99,10 +121,13 @@ class PluginLiveActivityService implements LiveActivityService {
 /// nothing above has to ask whether the platform can do this.
 class UnavailableLiveActivityService implements LiveActivityService {
   @override
+  final availability = signal(LiveActivityAvailability.unsupported);
+
+  @override
   Stream<int> get tappedFlights => const Stream.empty();
 
   @override
-  Future<bool> areActivitiesEnabled() async => false;
+  Future<void> refreshAvailability() async {}
 
   @override
   Future<void> put(

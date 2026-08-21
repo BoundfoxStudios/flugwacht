@@ -131,7 +131,7 @@ void main() {
       pendingResult.complete(const RouteFound('DLH400', _route));
       async.flushMicrotasks();
 
-      expect(preview.state.value, isA<FlightPreviewHidden>());
+      expect(preview.state.value, isA<FlightPreviewSearching>());
       disposePreview();
     });
   });
@@ -160,6 +160,143 @@ void main() {
         ..elapse(const Duration(milliseconds: 400))
         ..flushMicrotasks();
       form.lookupKind.value = FlightLookupKind.registration;
+
+      expect(preview.state.value, isA<FlightPreviewHidden>());
+      disposePreview();
+    });
+  });
+
+  test('searches as soon as the flight number parses', () {
+    fakeAsync((async) {
+      createPreview();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 100));
+
+      expect(routeLookup.requests, isEmpty);
+      expect(preview.state.value, isA<FlightPreviewSearching>());
+      disposePreview();
+    });
+  });
+
+  test('keeps searching until the found route arrives', () {
+    fakeAsync((async) {
+      createPreview();
+      final pendingResult = Completer<RouteLookupResult>();
+      routeLookup.pendingResult = pendingResult;
+
+      enterFlightNumber('LH 400');
+      async
+        ..elapse(const Duration(milliseconds: 400))
+        ..flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewSearching>());
+
+      pendingResult.complete(const RouteFound('DLH400', _route));
+      async.flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewFound>());
+      disposePreview();
+    });
+  });
+
+  test('keeps searching until the unknown route arrives', () {
+    fakeAsync((async) {
+      createPreview();
+      final pendingResult = Completer<RouteLookupResult>();
+      routeLookup.pendingResult = pendingResult;
+
+      enterFlightNumber('LH 400');
+      async
+        ..elapse(const Duration(milliseconds: 400))
+        ..flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewSearching>());
+
+      pendingResult.complete(const RouteNotFound());
+      async.flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewRouteUnknown>());
+      disposePreview();
+    });
+  });
+
+  test('ends a running search when the input is cleared', () {
+    fakeAsync((async) {
+      createPreview();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 100));
+      enterFlightNumber('');
+
+      expect(preview.state.value, isA<FlightPreviewHidden>());
+      disposePreview();
+    });
+  });
+
+  test('ends a running search when the lookup kind changes', () {
+    fakeAsync((async) {
+      createPreview();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 100));
+      form.lookupKind.value = FlightLookupKind.hexAddress;
+
+      expect(preview.state.value, isA<FlightPreviewHidden>());
+      disposePreview();
+    });
+  });
+
+  test('drops a route that an answer of the same number has outdated', () {
+    fakeAsync((async) {
+      createPreview();
+      final stale = Completer<RouteLookupResult>();
+      routeLookup.pendingResult = stale;
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+      final current = Completer<RouteLookupResult>();
+      routeLookup.pendingResult = current;
+      enterFlightNumber('LH 40');
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+
+      current.complete(const RouteFound('DLH400', _route));
+      async.flushMicrotasks();
+      expect(preview.state.value, isA<FlightPreviewFound>());
+
+      stale.complete(const RouteLookupFailure());
+      async.flushMicrotasks();
+
+      expect(preview.state.value, isA<FlightPreviewFound>());
+      disposePreview();
+    });
+  });
+
+  test('drops a route that answers after the preview is gone', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.pendingResult = Completer<RouteLookupResult>();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+      disposePreview();
+      routeLookup.pendingResult!.complete(const RouteFound('DLH400', _route));
+
+      expect(async.flushMicrotasks, returnsNormally);
+    });
+  });
+
+  test('drops a route that answers after the lookup kind changed', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.pendingResult = Completer<RouteLookupResult>();
+
+      enterFlightNumber('LH 400');
+      async.elapse(const Duration(milliseconds: 400));
+      form.lookupKind.value = FlightLookupKind.registration;
+      routeLookup.pendingResult!.complete(const RouteFound('DLH400', _route));
+      async.flushMicrotasks();
 
       expect(preview.state.value, isA<FlightPreviewHidden>());
       disposePreview();

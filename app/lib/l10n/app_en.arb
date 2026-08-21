@@ -40,12 +40,14 @@
   },
   "newFlightDepartureTimeOriginLocal": "In the origin's local time",
   "newFlightDepartureTimeDeviceFallback": "Without a route the time counts as your device time",
+  "newFlightDepartureTimeSearchingRoute": "Waiting for the route to settle the clock",
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",
   "newFlightDatePickerConfirm": "Done",
   "newFlightPreviewFound": "Found",
   "newFlightPreviewRouteUnknown": "Route unknown",
+  "newFlightPreviewSearching": "Looking for the route",
   "newFlightPreviewCallsign": "Callsign: {callsign}",
   "@newFlightPreviewCallsign": {
     "placeholders": {

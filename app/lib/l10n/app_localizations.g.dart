@@ -266,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Without a route the time counts as your device time'**
   String get newFlightDepartureTimeDeviceFallback;
 
+  /// No description provided for @newFlightDepartureTimeSearchingRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the route to settle the clock'**
+  String get newFlightDepartureTimeSearchingRoute;
+
   /// No description provided for @newFlightNoteLabel.
   ///
   /// In en, this message translates to:
@@ -301,6 +307,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Route unknown'**
   String get newFlightPreviewRouteUnknown;
+
+  /// No description provided for @newFlightPreviewSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for the route'**
+  String get newFlightPreviewSearching;
 
   /// No description provided for @newFlightPreviewCallsign.
   ///

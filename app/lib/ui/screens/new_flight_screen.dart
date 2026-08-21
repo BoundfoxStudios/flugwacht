@@ -155,9 +155,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                     child: SignalBuilder(
                       builder: (context) => AppPrimaryButton(
                         label: localizations.newFlightSubmit,
-                        onPressed: _form.isValid.value && !_isSaving.value
-                            ? _saveFlight
-                            : null,
+                        onPressed: _canSave ? _saveFlight : null,
                       ),
                     ),
                   ),
@@ -282,27 +280,34 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     );
   }
 
+  /// A flight number whose route is still being looked up would decide the
+  /// interpretation of the entered time on a clock the app has not verified.
+  bool get _canSave =>
+      _form.isValid.value &&
+      !_isSaving.value &&
+      _preview.state.value is! FlightPreviewSearching;
+
   /// How the entered time is read: origin local while the route names an
-  /// origin, otherwise visibly the device clock — never a silent guess.
+  /// origin, otherwise visibly the device clock, never a silent guess.
   Widget _departureTimeZoneRow(AppLocalizations localizations) {
     if (_form.departureTime.value == null) {
       return const SizedBox.shrink();
     }
-    if (_preview.state.value is! FlightPreviewFound) {
-      return Padding(
-        padding: const EdgeInsets.only(top: AppSpacing.grid * 1.5),
-        child: Text(
-          localizations.newFlightDepartureTimeDeviceFallback,
-          style: AppTextStyles.small.copyWith(color: AppColors.neutral400),
-        ),
-      );
-    }
-    return AppSwitchRow(
-      label: localizations.newFlightDepartureTimeOriginLocal,
-      isEnabled: _form.departureTimeIsOriginLocal.value,
-      onToggled: (isOriginLocal) =>
-          _form.departureTimeIsOriginLocal.value = isOriginLocal,
-    );
+    return switch (_preview.state.value) {
+      FlightPreviewFound() => AppSwitchRow(
+        label: localizations.newFlightDepartureTimeOriginLocal,
+        isEnabled: _form.departureTimeIsOriginLocal.value,
+        onToggled: (isOriginLocal) =>
+            _form.departureTimeIsOriginLocal.value = isOriginLocal,
+      ),
+      FlightPreviewSearching() => _DepartureTimeHint(
+        text: localizations.newFlightDepartureTimeSearchingRoute,
+      ),
+      FlightPreviewRouteUnknown() ||
+      FlightPreviewHidden() => _DepartureTimeHint(
+        text: localizations.newFlightDepartureTimeDeviceFallback,
+      ),
+    };
   }
 
   Widget _previewCard() {
@@ -534,6 +539,21 @@ class _FieldBox extends StatelessWidget {
       child: Center(child: child),
     );
   }
+}
+
+class _DepartureTimeHint extends StatelessWidget {
+  const _DepartureTimeHint({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: AppSpacing.grid * 1.5),
+    child: Text(
+      text,
+      style: AppTextStyles.small.copyWith(color: AppColors.neutral400),
+    ),
+  );
 }
 
 class _LowCostCarrierHint extends StatelessWidget {

@@ -100,6 +100,13 @@ Future<void> enterLookupValue(WidgetTester tester, String value) async {
   await tester.pumpAndSettle();
 }
 
+/// Enters the value without settling: the preview spins while the route lookup
+/// runs, so `pumpAndSettle` would never return.
+Future<void> typeLookupValue(WidgetTester tester, String value) async {
+  await tester.enterText(find.byType(TextField).first, value);
+  await tester.pump();
+}
+
 Future<void> settleRouteLookup(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
   await tester.pumpAndSettle();
@@ -216,6 +223,31 @@ void main() {
 
     await enterLookupValue(tester, '3C6444');
     expect(submitCallback(tester), isNotNull);
+  });
+
+  testWidgets('disables the submit button while the route lookup runs', (
+    tester,
+  ) async {
+    final pendingResult = Completer<RouteLookupResult>();
+    await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup()..pendingResult = pendingResult,
+    );
+
+    await typeLookupValue(tester, 'LH 400');
+
+    expect(submitCallback(tester), isNull);
+    expect(find.text('Looking for the route'), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(submitCallback(tester), isNull);
+
+    pendingResult.complete(const RouteFound('DLH400', _route));
+    await tester.pumpAndSettle();
+
+    expect(submitCallback(tester), isNotNull);
+    expect(find.text('Looking for the route'), findsNothing);
   });
 
   testWidgets('shows the low cost carrier hint for their flight numbers only', (
@@ -374,6 +406,41 @@ void main() {
     );
   });
 
+  testWidgets('waits for the route instead of claiming the device time', (
+    tester,
+  ) async {
+    final pendingResult = Completer<RouteLookupResult>();
+    await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup()..pendingResult = pendingResult,
+    );
+
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+    await typeLookupValue(tester, 'LH 400');
+
+    expect(
+      find.text('Waiting for the route to settle the clock'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Without a route the time counts as your device time'),
+      findsNothing,
+    );
+
+    pendingResult.complete(const RouteNotFound());
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Waiting for the route to settle the clock'),
+      findsNothing,
+    );
+    expect(
+      find.text('Without a route the time counts as your device time'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('shows no time zone row while no time is picked', (tester) async {
     await pumpNewFlightScreen(
       tester,
@@ -501,6 +568,31 @@ void main() {
     expect(flight.expectedCallsign, 'DLH400');
     expect(flight.route?.origin.icaoCode, 'EDDF');
     expect(flight.route?.destination.icaoCode, 'KJFK');
+  });
+
+  testWidgets('saves the route of a lookup that answered late', (tester) async {
+    final pendingResult = Completer<RouteLookupResult>();
+    final repository = await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup()..pendingResult = pendingResult,
+    );
+
+    await typeLookupValue(tester, 'LH 400');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.byType(AppPrimaryButton), warnIfMissed: false);
+    await tester.pump();
+    pendingResult.complete(const RouteFound('DLH400', _route));
+    await tester.pumpAndSettle();
+    await pickDepartureTime(tester, hour: '4', minute: '10');
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(flight.route?.origin.icaoCode, 'EDDF');
+    expect(flight.expectedCallsign, 'DLH400');
+    expect(
+      flight.departureTimeInterpretation,
+      DepartureTimeInterpretation.originLocal,
+    );
   });
 
   testWidgets('saves without a route and falls back to the first candidate', (

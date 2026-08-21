@@ -36,6 +36,7 @@ class NewFlightPreviewCard extends StatelessWidget {
           airlineName: airlineName,
           colors: colors,
         ),
+        FlightPreviewSearching() => _SearchingContent(colors: colors),
         FlightPreviewRouteUnknown() || FlightPreviewHidden() => Text(
           AppLocalizations.of(context).newFlightPreviewRouteUnknown,
           style: AppTextStyles.body.copyWith(color: colors.subtitle),
@@ -43,6 +44,32 @@ class NewFlightPreviewCard extends StatelessWidget {
       },
     );
   }
+}
+
+class _SearchingContent extends StatelessWidget {
+  const _SearchingContent({required this.colors});
+
+  final _PreviewCardColors colors;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    spacing: AppSpacing.cardPadding,
+    children: [
+      Expanded(
+        child: Text(
+          AppLocalizations.of(context).newFlightPreviewSearching,
+          style: AppTextStyles.body.copyWith(color: colors.subtitle),
+        ),
+      ),
+      SizedBox.square(
+        dimension: 18,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: colors.subtitle,
+        ),
+      ),
+    ],
+  );
 }
 
 class _FoundContent extends StatelessWidget {

@@ -73,5 +73,20 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.boundfoxstudios.apps.flugwacht</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>flugwacht</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

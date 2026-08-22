@@ -40,7 +40,7 @@
   },
   "settingsLiveActivitySectionTitle": "Live-Aktivitäten",
   "settingsLiveActivityReminder": "Am Flugtag erinnern",
-  "settingsLiveActivityHint": "Live-Aktivitäten schaltest du pro Flug ein; iOS kann sie für Flugwacht ganz abschalten.",
+  "settingsLiveActivityHint": "Flugwacht schickt dir am Flugtag eine Mitteilung, über die du die Live-Aktivität startest.",
   "liveActivityArmLabel": "Live-Aktivität am Flugtag",
   "liveActivityDisabledHint": "Live-Aktivitäten sind für Flugwacht in den Systemeinstellungen ausgeschaltet",
   "newFlightNoteLabel": "Notiz (optional)",

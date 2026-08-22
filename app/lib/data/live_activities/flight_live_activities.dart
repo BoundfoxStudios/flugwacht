@@ -36,9 +36,24 @@ class FlightLiveActivities {
   /// pass in between would put a second card on the Lock Screen.
   final _activityIds = <int, String>{};
 
-  Future<void> refreshAvailability() => _service.refreshAvailability();
+  /// Passes run one after another, never interleaved. A reconcile that lands
+  /// while a card is still being created asks the system about an activity
+  /// that does not exist yet, forgets it, and the next pass starts a second
+  /// one — the app open inside the flight-day window does exactly that.
+  Future<void> _passes = Future<void>.value();
 
-  Future<void> flightsChanged(List<Flight> flights) async {
+  Future<void> refreshAvailability() => _inTurn(_service.refreshAvailability);
+
+  Future<void> flightsChanged(List<Flight> flights) =>
+      _inTurn(() => _applyToEach(flights));
+
+  Future<void> _inTurn(Future<void> Function() pass) {
+    final next = _passes.then((_) => pass());
+    _passes = next.catchError((Object _) {});
+    return next;
+  }
+
+  Future<void> _applyToEach(List<Flight> flights) async {
     for (final flight in flights) {
       // One card the system refuses must not cost the other flights theirs,
       // and must not take the polling run down with it.
@@ -54,7 +69,7 @@ class FlightLiveActivities {
   /// Takes the cards of flights that are gone off the Lock Screen — their rows,
   /// and with them everything the app knew about their activities, are already
   /// deleted.
-  Future<void> flightsRemoved(Iterable<Flight> flights) async {
+  Future<void> flightsRemoved(Iterable<Flight> flights) => _inTurn(() async {
     for (final flight in flights) {
       if (_runningActivityOf(flight) case final activityId?) {
         _activityIds.remove(flight.id);
@@ -64,19 +79,24 @@ class FlightLiveActivities {
       // either way, so only the system still has it.
       await _notifications.cancelLiveActivityReminder(flightId: flight.id);
     }
-  }
+  });
 
   /// Forgets the activities the system has ended on its own — it caps how long
   /// one runs, and the app only learns that by asking.
-  Future<void> reconcile(List<Flight> flights) async {
+  Future<void> reconcile(List<Flight> flights) => _inTurn(() async {
     for (final flight in flights) {
       final activityId = _runningActivityOf(flight);
-      if (activityId != null && !await _service.isRunning(activityId)) {
+      if (activityId == null || await _service.isRunning(activityId)) {
+        continue;
+      }
+      // Only forget the card this call asked about: a pass that started a
+      // fresh one in the meantime must keep it.
+      if (_runningActivityOf(flight) == activityId) {
         _activityIds.remove(flight.id);
         await _repository.setLiveActivityId(flight.id, null);
       }
     }
-  }
+  });
 
   Future<void> _apply(Flight flight) async {
     final known = _runningActivityOf(flight);
@@ -97,8 +117,12 @@ class FlightLiveActivities {
       case StartLiveActivity():
         final activityId = _activityIdOf(flight);
         _activityIds[flight.id] = activityId;
-        await _put(activityId, flight);
+        // Written before the card exists: a put that throws would otherwise
+        // leave the id in memory only, and the next app run would start a
+        // second card it can no longer reach the first one through. An id
+        // whose card never appeared is cleared by the next reconcile.
         await _repository.setLiveActivityId(flight.id, activityId);
+        await _put(activityId, flight);
       case UpdateLiveActivity(:final activityId):
         await _put(activityId, flight);
       case EndLiveActivity(:final activityId, :final dismissAfter):
@@ -119,8 +143,9 @@ class FlightLiveActivities {
     // A reminder nothing would deliver must not be remembered as pending.
     final isNotifiable =
         _notifications.permission.value == NotificationPermission.granted;
+    final known = _runningActivityOf(flight);
     final schedule = planLiveActivityReminder(
-      flight: flight,
+      flight: known == null ? flight : flight.copyWith(liveActivityId: known),
       isReminderEnabled: isNotifiable && _setting.remindsOnFlightDay.value,
       now: clock(),
     );

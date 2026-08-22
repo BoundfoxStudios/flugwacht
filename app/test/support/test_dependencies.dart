@@ -222,6 +222,13 @@ class FakeLiveActivitySetting implements LiveActivitySetting {
   final remindsOnFlightDay = signal(true);
 
   @override
+  bool armsNewFlights = false;
+
+  @override
+  Future<void> rememberArming({required bool isArmed}) async =>
+      armsNewFlights = isArmed;
+
+  @override
   Future<void> selectReminder({required bool isEnabled}) async =>
       remindsOnFlightDay.value = isEnabled;
 
@@ -330,6 +337,16 @@ class FakeLiveActivityService implements LiveActivityService {
   /// Stands in for the user tapping the card of a flight.
   void tap(int flightId) => _tappedFlights.add(flightId);
 
+  /// Stands in for a tap that started the app.
+  int? launchFlightId;
+
+  @override
+  Future<int?> takeLaunchFlight() async {
+    final flightId = launchFlightId;
+    launchFlightId = null;
+    return flightId;
+  }
+
   void dispose() {
     availability.dispose();
     unawaited(_tappedFlights.close());
@@ -352,12 +369,22 @@ class FakeLiveActivityService implements LiveActivityService {
     if (failure case final failure?) {
       throw failure;
     }
+    await held?.future;
     puts.add((activityId: activityId, data: data));
+    // The system knows a card the moment it exists, and so must the fake:
+    // answering "not running" for a card it just took hid a duplicate-card bug.
+    running = [...running, activityId];
   }
 
+  /// Holds the next put open, so a test can let another pass land while a card
+  /// is still being created.
+  Completer<void>? held;
+
   @override
-  Future<void> end(String activityId, {DateTime? dismissAt}) async =>
-      ends.add((activityId: activityId, dismissAt: dismissAt));
+  Future<void> end(String activityId, {DateTime? dismissAt}) async {
+    ends.add((activityId: activityId, dismissAt: dismissAt));
+    running = running.where((id) => id != activityId).toList();
+  }
 
   @override
   Future<bool> isRunning(String activityId) async =>

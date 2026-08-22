@@ -445,6 +445,19 @@ void main() {
     );
   });
 
+  testWidgets('frames the flight whose card started the app', (tester) async {
+    final liveActivities = createTestLiveActivityService()..launchFlightId = 2;
+
+    await pumpApp(tester, liveActivityService: liveActivities);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      tester.widget<FlightSheet>(find.byType(FlightSheet)).selectedIndex,
+      1,
+    );
+  });
+
   testWidgets('frames the flight whose notification started the app', (
     tester,
   ) async {

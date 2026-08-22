@@ -5,9 +5,13 @@ import '../../domain/flight_day_window.dart';
 import '../../domain/flight_state.dart';
 import 'live_activity_url.dart';
 
-/// How long the card keeps its numbers after the moment they counted down to;
-/// past that the data behind them is old enough to say so.
-const liveActivityStaleGrace = Duration(minutes: 15);
+/// How long the card keeps its numbers after the moment they counted down to.
+///
+/// Zero on purpose: the stale date is the one moment iOS re-evaluates a card
+/// without the app, so it has to sit exactly where the card stops being true.
+/// A grace period past the arrival would leave a finished countdown claiming
+/// to be live for that much longer.
+const liveActivityStaleGrace = Duration.zero;
 
 /// The plugin sends the stale window as whole minutes and drops anything under
 /// one, so a shorter window would leave the card claiming its numbers are
@@ -45,13 +49,13 @@ Map<String, dynamic> liveActivityPayloadOf(Flight flight, DateTime now) {
 /// How long the card's numbers stay believable, measured from now because the
 /// plugin takes a duration rather than a date.
 Duration liveActivityStaleIn(Flight flight, DateTime now) {
-  final target = _staleTarget(flight);
-  // A moment that has already passed would dim the card the second it appears;
-  // the flight day has to run out first.
-  final honest = target != null && target.isAfter(now)
-      ? target
-      : FlightDayWindow.forDepartureDate(flight.departureDate).end;
-  final remaining = honest.difference(now);
+  // Without a target at all the flight day has to run out first; a target that
+  // has already passed is exactly what staleness is for, so it falls through
+  // to the floor below and the card says so right away.
+  final target =
+      _staleTarget(flight) ??
+      FlightDayWindow.forDepartureDate(flight.departureDate).end;
+  final remaining = target.difference(now);
   return remaining < _shortestStaleWindow ? _shortestStaleWindow : remaining;
 }
 

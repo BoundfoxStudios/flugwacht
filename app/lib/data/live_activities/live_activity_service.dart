@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
+
 import 'package:live_activities/live_activities.dart';
 import 'package:live_activities/models/live_activity_state.dart';
 import 'package:signals/signals.dart';
@@ -20,6 +22,10 @@ enum LiveActivityAvailability { unsupported, disabled, enabled }
 abstract interface class LiveActivityService {
   /// The flights whose card the user tapped.
   Stream<int> get tappedFlights;
+
+  /// The flight whose card started the app, if one did — a tap the app was not
+  /// yet running to receive.
+  Future<int?> takeLaunchFlight();
 
   Signal<LiveActivityAvailability> get availability;
 
@@ -74,6 +80,8 @@ class PluginLiveActivityService implements LiveActivityService {
     }
   }
 
+  static const _launchUrls = MethodChannel('flugwacht/launch_url');
+
   final LiveActivities _plugin;
 
   @override
@@ -85,6 +93,14 @@ class PluginLiveActivityService implements LiveActivityService {
       .map((data) => flightIdFromLiveActivityUrl(data.url ?? ''))
       .where((flightId) => flightId != null)
       .cast<int>();
+
+  /// The plugin only hears a url that reaches a running app, so a cold start
+  /// is picked up natively and parked until Dart asks for it.
+  @override
+  Future<int?> takeLaunchFlight() async {
+    final url = await _launchUrls.invokeMethod<String>('take');
+    return url == null ? null : flightIdFromLiveActivityUrl(url);
+  }
 
   @override
   Future<void> refreshAvailability() async {
@@ -142,6 +158,9 @@ class UnavailableLiveActivityService implements LiveActivityService {
 
   @override
   Stream<int> get tappedFlights => const Stream.empty();
+
+  @override
+  Future<int?> takeLaunchFlight() async => null;
 
   @override
   Future<void> refreshAvailability() async {}

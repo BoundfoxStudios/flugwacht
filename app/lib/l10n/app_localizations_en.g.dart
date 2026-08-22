@@ -120,7 +120,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLiveActivityHint =>
-      'You arm a Live Activity per flight; iOS can switch them off for Flugwacht entirely.';
+      'Flugwacht sends you a notification on the flight day, so you can start the Live Activity from there.';
 
   @override
   String get liveActivityArmLabel => 'Live Activity on flight day';

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/live_activities/flight_live_activities.dart';
@@ -184,6 +186,26 @@ void main() {
     expect(service.ends.single.activityId, gone.liveActivityId);
   });
 
+  /// A live flight is polled every few seconds, so an update is almost always
+  /// in flight when the user deletes it. An end that lands mid-pass would be
+  /// undone by that pass, and the card it re-creates is unreachable forever.
+  test(
+    'keeps a deleted flight off the card while a pass is in flight',
+    () async {
+      await addFlight();
+      await activities.flightsChanged(await storedFlights());
+      final stored = await storedFlight();
+
+      service.held = Completer<void>();
+      final updating = activities.flightsChanged([stored]);
+      final removing = activities.flightsRemoved([stored]);
+      service.held!.complete();
+      await Future.wait([updating, removing]);
+
+      expect(service.running, isEmpty);
+    },
+  );
+
   test('ends nothing for a gone flight that had no activity', () async {
     await addFlight(isArmed: false);
 
@@ -213,6 +235,35 @@ void main() {
     expect((await storedFlight()).liveActivityId, activityId);
   });
 
+  /// The everyday cold start: the flight stream lands while the resume pass is
+  /// still running, so a reconcile can arrive between minting a card's id and
+  /// the system confirming it.
+  test('starts one card when a reconcile lands mid-start', () async {
+    // A clock that moves, so two starts would mint two ids — a frozen one
+    // makes them identical and hides the second card.
+    var readings = 0;
+    final ticking = FlightLiveActivities(
+      repository: repository,
+      service: service,
+      notifications: notifications,
+      setting: setting,
+      copy: (flight) => (title: 'Live Activity', body: flight.lookupValue),
+      clock: () => now.add(Duration(milliseconds: readings++)),
+    );
+    await addFlight();
+    final flights = await storedFlights();
+    service.held = Completer<void>();
+
+    final starting = ticking.flightsChanged(flights);
+    final reconciling = ticking.reconcile(flights);
+    service.held!.complete();
+    await Future.wait([starting, reconciling]);
+    await ticking.flightsChanged(await storedFlights());
+
+    expect(service.puts.map((put) => put.activityId).toSet(), hasLength(1));
+    expect((await storedFlight()).liveActivityId, isNotNull);
+  });
+
   test('keeps every other flight going when one card fails', () async {
     await addFlight();
     await repository.addFlight(
@@ -229,6 +280,17 @@ void main() {
     await activities.flightsChanged(await storedFlights());
 
     expect(service.puts.map((put) => put.activityId).toSet(), hasLength(2));
+  });
+
+  test('remembers a card whose first put failed', () async {
+    await addFlight();
+    service.failure = Exception('the system refused the card');
+    await activities.flightsChanged(await storedFlights());
+
+    service.failure = null;
+    await activities.flightsChanged(await storedFlights());
+
+    expect((await storedFlight()).liveActivityId, service.puts.last.activityId);
   });
 
   group('flight day reminder', () {

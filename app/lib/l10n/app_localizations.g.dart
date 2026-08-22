@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsLiveActivityHint.
   ///
   /// In en, this message translates to:
-  /// **'You arm a Live Activity per flight; iOS can switch them off for Flugwacht entirely.'**
+  /// **'Flugwacht sends you a notification on the flight day, so you can start the Live Activity from there.'**
   String get settingsLiveActivityHint;
 
   /// No description provided for @liveActivityArmLabel.

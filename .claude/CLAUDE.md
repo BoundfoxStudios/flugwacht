@@ -64,12 +64,20 @@ code:
 - Only the documented self-updating views keep running while the app is
   closed: `Text(timerInterval:)` and `ProgressView(timerInterval:)`. They do
   not expose their current value, so nothing can be positioned along them.
+- Everything else on a closed card is redrawn exactly once: when the stale
+  date passes. The plugin hands that date to the system only where it creates
+  an activity, so `LiveActivityStaleDate` in the app target renews it on every
+  put — it finds the card by the url in its payload, because the plugin keeps
+  the hash of the app's activity id to itself.
 - iOS ends a card on its own after eight hours and leaves it on the Lock
   Screen for up to four more. Dropping such a card's id without dismissing the
   card first puts the flight's next one beside it instead of in its place. An
   unanswered `getActivityState` is not that case: right after a cold start
   ActivityKit has not always loaded its activities, and a card it stays silent
   about is left alone.
+- `app/ios/Runner/` is a plain group, unlike the extension's folder: a file
+  added there reaches the target only through `project.pbxproj` (build file,
+  file reference, group children, sources phase).
 - A widget extension hosts only widget previews. A plain SwiftUI `#Preview` in
   that target fails with "Unsupported preview type" and can wedge Xcode.
 - `flutter pub get` on Linux empties the generated Swift package that wires the

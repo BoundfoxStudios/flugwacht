@@ -42,9 +42,10 @@ abstract interface class LiveActivityService {
   /// under [activityId] yet.
   ///
   /// Past [staleIn] the card tells the viewer that its numbers are no longer
-  /// backed by fresh data. The plugin only hands that window to the system
-  /// when it creates the activity, so a later call carries it in vain — the
-  /// window a card lives with is the one its first put set.
+  /// backed by fresh data. Every put renews that window: it is the only clock
+  /// the app can leave behind, because iOS renders the card once more when it
+  /// runs out — the single chance a card has to stop counting towards a moment
+  /// that passed while the app was closed.
   Future<void> put(
     String activityId, {
     required Map<String, dynamic> data,
@@ -87,6 +88,7 @@ class PluginLiveActivityService implements LiveActivityService {
   }
 
   static const _launchUrls = MethodChannel('flugwacht/launch_url');
+  static const _staleDates = MethodChannel('flugwacht/live_activity_stale');
 
   final LiveActivities _plugin;
 
@@ -125,15 +127,30 @@ class PluginLiveActivityService implements LiveActivityService {
     String activityId, {
     required Map<String, dynamic> data,
     required Duration staleIn,
-  }) => _plugin.createOrUpdateActivity(
-    activityId,
-    data,
-    // The card belongs to the flight, not to the app run: it keeps counting
-    // down while the app is closed, and the system clears it on its own.
-    removeWhenAppIsKilled: false,
-    iOSEnableRemoteUpdates: false,
-    staleIn: staleIn,
-  );
+  }) async {
+    await _plugin.createOrUpdateActivity(
+      activityId,
+      data,
+      // The card belongs to the flight, not to the app run: it keeps counting
+      // down while the app is closed, and the system clears it on its own.
+      removeWhenAppIsKilled: false,
+      iOSEnableRemoteUpdates: false,
+      staleIn: staleIn,
+    );
+    // The plugin hands the window to the system when it creates an activity
+    // and never again, so an updated card would keep the one its first put
+    // set. The app renews it itself — addressing the card by the url it
+    // carries, because the plugin hashes the app's id into the activity's own
+    // and keeps that hash to itself.
+    try {
+      await _staleDates.invokeMethod('renew', {
+        'url': data['url'],
+        'atMilliseconds': DateTime.now().add(staleIn).millisecondsSinceEpoch,
+      });
+    } on Exception {
+      // The card already carries its data; only its own clock is missing.
+    }
+  }
 
   @override
   Future<void> end(String activityId, {DateTime? dismissAt}) =>

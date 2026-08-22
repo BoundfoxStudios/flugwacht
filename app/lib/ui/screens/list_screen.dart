@@ -103,9 +103,7 @@ class _ListScreenState extends State<ListScreen> {
     final closedReason = await ScaffoldMessenger.of(context)
         .showSnackBar(
           SnackBar(
-            content: Text(
-              localizations.listFlightDeleted(flight.lookupValue),
-            ),
+            content: Text(localizations.listFlightDeleted(flight.lookupValue)),
             duration: const Duration(seconds: 6),
             // A snackbar with an action persists by default, but here the
             // timeout is what commits the delete — it must keep running.

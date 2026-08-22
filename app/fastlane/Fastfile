@@ -18,7 +18,19 @@ platform :ios do
   # so the archive signs manually with the imported distribution identity
   private_lane :build_signed_ipa do
     app_identifier = "com.boundfoxstudios.apps.flugwacht"
-    profile_name = "Flugwacht App Store"
+
+    # The Live Activity ships as its own binary inside the app, so it carries
+    # its own app id and its own profile; gym has to be handed both
+    signed_targets = {
+      "Runner" => {
+        app_identifier: app_identifier,
+        profile_name: "Flugwacht App Store"
+      },
+      "FlugwachtLiveActivityExtension" => {
+        app_identifier: "#{app_identifier}.live",
+        profile_name: "Flugwacht Live Activity App Store"
+      }
+    }
 
     setup_ci
 
@@ -40,26 +52,28 @@ platform :ios do
       keychain_password: ""
     )
 
-    get_provisioning_profile(
-      api_key: api_key,
-      app_identifier: app_identifier,
-      team_id: team_id,
-      provisioning_name: profile_name,
-      ignore_profiles_with_different_name: true,
-      # Without this, an unusable same-named portal profile (e.g. after a
-      # certificate rotation) makes sigh silently create a timestamp-suffixed
-      # profile that no longer matches the pinned name below
-      fail_on_name_taken: true
-    )
+    signed_targets.each do |target, signing|
+      get_provisioning_profile(
+        api_key: api_key,
+        app_identifier: signing[:app_identifier],
+        team_id: team_id,
+        provisioning_name: signing[:profile_name],
+        ignore_profiles_with_different_name: true,
+        # Without this, an unusable same-named portal profile (e.g. after a
+        # certificate rotation) makes sigh silently create a timestamp-suffixed
+        # profile that no longer matches the pinned name below
+        fail_on_name_taken: true
+      )
 
-    update_code_signing_settings(
-      path: "ios/Runner.xcodeproj",
-      use_automatic_signing: false,
-      team_id: team_id,
-      targets: ["Runner"],
-      code_sign_identity: "Apple Distribution",
-      profile_name: profile_name
-    )
+      update_code_signing_settings(
+        path: "ios/Runner.xcodeproj",
+        use_automatic_signing: false,
+        team_id: team_id,
+        targets: [target],
+        code_sign_identity: "Apple Distribution",
+        profile_name: signing[:profile_name]
+      )
+    end
 
     build_app(
       workspace: "ios/Runner.xcworkspace",
@@ -67,9 +81,9 @@ platform :ios do
       export_method: "app-store",
       export_team_id: team_id,
       export_options: {
-        provisioningProfiles: {
-          app_identifier => profile_name
-        }
+        provisioningProfiles: signed_targets.values.to_h do |signing|
+          [signing[:app_identifier], signing[:profile_name]]
+        end
       }
     )
   end

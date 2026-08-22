@@ -29,6 +29,20 @@
   "newFlightDepartureTimeOriginLocal": "In Ortszeit des Abflugorts",
   "newFlightDepartureTimeDeviceFallback": "Ohne Route gilt die Zeit als deine Gerätezeit",
   "newFlightDepartureTimeSearchingRoute": "Wartet auf die Route, die die Uhr festlegt",
+  "liveActivityReminderTitle": "Live-Aktivität verfügbar",
+  "liveActivityReminderBody": "Verfolge {flight} heute auf dem Sperrbildschirm. Tippe zum Starten.",
+  "@liveActivityReminderBody": {
+    "placeholders": {
+      "flight": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLiveActivitySectionTitle": "Live-Aktivitäten",
+  "settingsLiveActivityReminder": "Am Flugtag erinnern",
+  "settingsLiveActivityHint": "Flugwacht schickt dir am Flugtag eine Mitteilung, über die du die Live-Aktivität startest.",
+  "liveActivityArmLabel": "Live-Aktivität am Flugtag",
+  "liveActivityDisabledHint": "Live-Aktivitäten sind für Flugwacht in den Systemeinstellungen ausgeschaltet",
   "newFlightNoteLabel": "Notiz (optional)",
   "newFlightNoteHint": "Woran du den Flug erkennst, z. B. Anna & Ben",
   "newFlightSubmit": "Flug eintragen",
@@ -40,7 +54,7 @@
   "newFlightPreviewRoute": "{origin} → {destination}",
   "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}",
   "listPastSectionTitle": "Vorbei · weg in 24 h",
-  "listFlightDeleted": "Flug gelöscht",
+  "listFlightDeleted": "{flight} gelöscht",
   "listUndoDelete": "Rückgängig",
   "listDeleteFlight": "Flug löschen",
   "listPlannedDateFormat": "ccc, d. LLL",

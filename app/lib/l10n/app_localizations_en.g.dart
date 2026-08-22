@@ -105,6 +105,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Waiting for the route to settle the clock';
 
   @override
+  String get liveActivityReminderTitle => 'Live Activity available';
+
+  @override
+  String liveActivityReminderBody(String flight) {
+    return 'Follow $flight on your Lock Screen today. Tap to start.';
+  }
+
+  @override
+  String get settingsLiveActivitySectionTitle => 'Live Activities';
+
+  @override
+  String get settingsLiveActivityReminder => 'Remind me on the flight day';
+
+  @override
+  String get settingsLiveActivityHint =>
+      'Flugwacht sends you a notification on the flight day, so you can start the Live Activity from there.';
+
+  @override
+  String get liveActivityArmLabel => 'Live Activity on flight day';
+
+  @override
+  String get liveActivityDisabledHint =>
+      'Live Activities are switched off for Flugwacht in the system settings';
+
+  @override
   String get newFlightNoteLabel => 'Note (optional)';
 
   @override
@@ -149,7 +174,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listPastSectionTitle => 'Past · gone in 24 h';
 
   @override
-  String get listFlightDeleted => 'Flight deleted';
+  String listFlightDeleted(String flight) {
+    return '$flight deleted';
+  }
 
   @override
   String get listUndoDelete => 'Undo';

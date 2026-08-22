@@ -73,5 +73,25 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<!-- The live_activities plugin delivers the tapped card's url itself; with
+	     Flutter's own handler on, the same url also reaches go_router, which
+	     has no route for it and shows an error page instead of the flight -->
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.boundfoxstudios.apps.flugwacht</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>flugwacht</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

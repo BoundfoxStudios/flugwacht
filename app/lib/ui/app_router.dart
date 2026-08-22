@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../data/live_activities/live_activity_service.dart';
 import '../data/lookup/airline_directory.dart';
 import '../data/lookup/route_lookup.dart';
 import '../data/notifications/notification_service.dart';
 import '../data/persistence/flight_repository.dart';
+import '../data/settings/live_activity_setting.dart';
 import '../data/settings/map_style_setting.dart';
 import '../data/settings/notification_setting.dart';
 import '../data/settings/source_setting.dart';
@@ -29,6 +33,8 @@ GoRouter createAppRouter({
   required UnitsSetting unitsSetting,
   required NotificationSetting notificationSetting,
   required NotificationService notificationService,
+  required LiveActivityService liveActivityService,
+  required LiveActivitySetting liveActivitySetting,
   required MapTileSources tileSources,
   required PackageInfo packageInfo,
 }) {
@@ -52,6 +58,7 @@ GoRouter createAppRouter({
                   sourceSetting: sourceSetting,
                   unitsSetting: unitsSetting,
                   mapStyleSetting: mapStyleSetting,
+                  liveActivityService: liveActivityService,
                   tileSources: tileSources,
                 ),
               ),
@@ -79,6 +86,8 @@ GoRouter createAppRouter({
                   unitsSetting: unitsSetting,
                   notificationSetting: notificationSetting,
                   notificationService: notificationService,
+                  liveActivitySetting: liveActivitySetting,
+                  liveActivityService: liveActivityService,
                   packageInfo: packageInfo,
                 ),
                 routes: [
@@ -109,18 +118,35 @@ GoRouter createAppRouter({
             routeLookup: routeLookup,
             notificationService: notificationService,
             notificationSetting: notificationSetting,
+            liveActivityService: liveActivityService,
+            liveActivitySetting: liveActivitySetting,
           ),
         ),
       ),
     ],
   );
-  // A notification is about one flight, and the map is where the app shows it.
-  notificationService.tappedFlights.listen((flightId) {
-    mapSelection.requestedFlightId.value = flightId;
-    router.go('/map');
-  });
+  // A notification and a Live Activity card are both about one flight, and
+  // the map is where the app shows it.
+  for (final flights in [
+    notificationService.tappedFlights,
+    liveActivityService.tappedFlights,
+  ]) {
+    flights.listen((flightId) {
+      mapSelection.requestedFlightId.value = flightId;
+      router.go('/map');
+    });
+  }
   // The tap that started the app arrives before anything listens; the map is
   // where the app opens anyway.
   mapSelection.requestedFlightId.value = notificationService.launchFlightId;
+  // A tapped card that cold-started the app was parked natively and only
+  // becomes readable once the engine runs, so it arrives a moment later.
+  unawaited(
+    liveActivityService.takeLaunchFlight().then((flightId) {
+      if (flightId != null) {
+        mapSelection.requestedFlightId.value = flightId;
+      }
+    }),
+  );
   return router;
 }

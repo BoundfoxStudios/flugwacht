@@ -5,10 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../app_icons.dart';
+import '../../data/live_activities/live_activity_service.dart';
 import '../../data/lookup/airline_directory.dart';
 import '../../data/lookup/route_lookup.dart';
 import '../../data/notifications/notification_service.dart';
 import '../../data/persistence/flight_repository.dart';
+import '../../data/settings/live_activity_setting.dart';
 import '../../data/settings/notification_setting.dart';
 import '../../domain/calendar_date.dart';
 import '../../domain/day_time.dart';
@@ -25,6 +27,7 @@ import '../widgets/controls/app_switch_row.dart';
 import '../widgets/controls/departure_date_picker.dart';
 import '../widgets/controls/departure_time_picker.dart';
 import '../widgets/flight/flight_labels.dart';
+import '../widgets/flight/live_activity_arm_row.dart';
 import 'new_flight_form.dart';
 import 'new_flight_preview.dart';
 import 'new_flight_preview_card.dart';
@@ -38,6 +41,8 @@ class NewFlightScreen extends StatefulWidget {
     required this.routeLookup,
     required this.notificationService,
     required this.notificationSetting,
+    required this.liveActivityService,
+    required this.liveActivitySetting,
     super.key,
     this.today,
   });
@@ -47,6 +52,8 @@ class NewFlightScreen extends StatefulWidget {
   final RouteLookup routeLookup;
   final NotificationService notificationService;
   final NotificationSetting notificationSetting;
+  final LiveActivityService liveActivityService;
+  final LiveActivitySetting liveActivitySetting;
 
   /// The day the selectable date range is built around; defaults to the
   /// current day.
@@ -57,7 +64,10 @@ class NewFlightScreen extends StatefulWidget {
 }
 
 class _NewFlightScreenState extends State<NewFlightScreen> {
-  late final _form = NewFlightForm(today: widget.today ?? DateTime.now());
+  late final _form = NewFlightForm(
+    today: widget.today ?? DateTime.now(),
+    armsLiveActivity: widget.liveActivitySetting.armsNewFlights,
+  );
   late final _preview = NewFlightPreview(
     form: _form,
     airlineDirectory: widget.airlineDirectory,
@@ -146,6 +156,14 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                         ),
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
+                    ),
+                  ),
+                  SignalBuilder(
+                    builder: (context) => LiveActivityArmRow(
+                      availability: widget.liveActivityService.availability,
+                      isArmed: _form.liveActivityArmed.value,
+                      onToggled: (isArmed) =>
+                          _form.liveActivityArmed.value = isArmed,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.cardPaddingLarge),
@@ -351,6 +369,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
         : const <String>[];
     final departureDate = _form.departureDate.value;
     final note = _form.note.value.trim();
+    final isArmed = _form.liveActivityArmed.value;
 
     try {
       await widget.flightRepository.addFlight(
@@ -372,6 +391,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
             ? DepartureTimeInterpretation.originLocal
             : DepartureTimeInterpretation.device,
         note: note.isEmpty ? null : note,
+        liveActivityArmed: isArmed,
         expectedCallsign: switch (previewState) {
           FlightPreviewFound(:final callsign) => callsign,
           _ => candidates.isEmpty ? null : candidates.first,
@@ -381,6 +401,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     } finally {
       _isSaving.value = false;
     }
+    await widget.liveActivitySetting.rememberArming(isArmed: isArmed);
     await _offerNotifications();
     if (mounted) {
       context.pop();

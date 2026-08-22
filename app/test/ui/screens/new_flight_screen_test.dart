@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
+import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/day_time.dart';
@@ -46,6 +48,8 @@ Future<FlightRepository> pumpNewFlightScreen(
   RouteLookup? routeLookup,
   NotificationService? notificationService,
   NotificationSetting? notificationSetting,
+  LiveActivityService? liveActivityService,
+  LiveActivitySetting? liveActivitySetting,
 }) async {
   tester.view.physicalSize = const Size(800, 1600);
   tester.view.devicePixelRatio = 1;
@@ -65,6 +69,9 @@ Future<FlightRepository> pumpNewFlightScreen(
           notificationService:
               notificationService ?? createTestNotificationService(),
           notificationSetting: notificationSetting ?? notifications,
+          liveActivityService:
+              liveActivityService ?? createTestLiveActivityService(),
+          liveActivitySetting: liveActivitySetting ?? FakeLiveActivitySetting(),
           today: DateTime(2026, 8, 12),
         ),
       ),
@@ -782,5 +789,109 @@ void main() {
 
     expect(find.text('Turn notifications on?'), findsNothing);
     expect(service.permissionRequests, 0);
+  });
+
+  group('live activity', () {
+    testWidgets('offers no switch where the device shows no activities', (
+      tester,
+    ) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.unsupported;
+
+      await pumpNewFlightScreen(tester, liveActivityService: service);
+
+      expect(find.text('Live Activity on flight day'), findsNothing);
+    });
+
+    testWidgets('says so when the system settings switched them off', (
+      tester,
+    ) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.disabled;
+
+      await pumpNewFlightScreen(tester, liveActivityService: service);
+
+      expect(find.text('Live Activity on flight day'), findsOneWidget);
+      expect(
+        find.text(
+          'Live Activities are switched off for Flugwacht in the system '
+          'settings',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('offers the choice the last flight was saved with', (
+      tester,
+    ) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.enabled;
+      final setting = FakeLiveActivitySetting()..armsNewFlights = true;
+      final repository = await pumpNewFlightScreen(
+        tester,
+        liveActivityService: service,
+        liveActivitySetting: setting,
+      );
+      await typeLookupValue(tester, 'LH400');
+      await settleRouteLookup(tester);
+
+      await submit(tester);
+
+      expect((await savedFlight(tester, repository)).liveActivityArmed, isTrue);
+    });
+
+    testWidgets('remembers the choice for the next flight', (tester) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.enabled;
+      final setting = FakeLiveActivitySetting();
+      await pumpNewFlightScreen(
+        tester,
+        liveActivityService: service,
+        liveActivitySetting: setting,
+      );
+      await typeLookupValue(tester, 'LH400');
+      await settleRouteLookup(tester);
+
+      await tester.tap(find.text('Live Activity on flight day'));
+      await tester.pumpAndSettle();
+      await submit(tester);
+
+      expect(setting.armsNewFlights, isTrue);
+    });
+
+    testWidgets('starts a flight disarmed', (tester) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.enabled;
+      final repository = await pumpNewFlightScreen(
+        tester,
+        liveActivityService: service,
+      );
+      await typeLookupValue(tester, 'LH400');
+      await settleRouteLookup(tester);
+
+      await submit(tester);
+
+      expect(
+        (await savedFlight(tester, repository)).liveActivityArmed,
+        isFalse,
+      );
+    });
+
+    testWidgets('stores a flight the user armed', (tester) async {
+      final service = createTestLiveActivityService();
+      service.availability.value = LiveActivityAvailability.enabled;
+      final repository = await pumpNewFlightScreen(
+        tester,
+        liveActivityService: service,
+      );
+      await typeLookupValue(tester, 'LH400');
+      await settleRouteLookup(tester);
+
+      await tester.tap(find.text('Live Activity on flight day'));
+      await tester.pumpAndSettle();
+      await submit(tester);
+
+      expect((await savedFlight(tester, repository)).liveActivityArmed, isTrue);
+    });
   });
 }

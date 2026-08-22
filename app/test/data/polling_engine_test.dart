@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:flugwacht/data/adapters/lookup_result.dart';
 import 'package:flugwacht/data/adapters/readsb_source_adapter.dart';
+import 'package:flugwacht/data/live_activities/flight_live_activities.dart';
 import 'package:flugwacht/data/notifications/flight_notifier.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/polling_engine.dart';
@@ -13,6 +14,7 @@ import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
 import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/flight_route.dart';
+import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,6 +40,7 @@ void main() {
     FixPosition? latestPosition,
     bool hasBeenAirborne = false,
     FlightRoute? route,
+    bool isArmed = false,
   }) => Flight(
     id: id,
     lookupKind: lookupKind,
@@ -51,6 +54,7 @@ void main() {
       latestPosition: latestPosition,
       hasBeenAirborne: hasBeenAirborne,
     ),
+    liveActivityArmed: isArmed,
   );
 
   FixPosition positionAt(DateTime timestamp, {bool? onGround = false}) =>
@@ -108,11 +112,25 @@ void main() {
     clock: () => noon.add(async.elapsed),
   );
 
+  FlightLiveActivities liveActivitiesFor(
+    FakeAsync async,
+    FakeFlightRepository repository,
+    FakeLiveActivityService service,
+  ) => FlightLiveActivities(
+    repository: repository,
+    service: service,
+    notifications: createTestNotificationService(),
+    setting: FakeLiveActivitySetting(),
+    copy: (flight) => (title: 'Live Activity', body: flight.lookupValue),
+    clock: () => noon.add(async.elapsed),
+  );
+
   ({
     PollingEngine engine,
     FakeFlightRepository repository,
     FakeSourceAdapter adapter,
     FakeNotificationService notifications,
+    FakeLiveActivityService liveActivities,
   })
   startEngine(
     FakeAsync async,
@@ -122,12 +140,14 @@ void main() {
     final repository = withRepository ?? FakeFlightRepository();
     final adapter = FakeSourceAdapter();
     final notifications = createTestNotificationService();
+    final liveActivities = FakeLiveActivityService();
     final engine = PollingEngine(
       repository: repository,
       adapters: {SourceId.adsblol: adapter},
       activeSourceId: () => SourceId.adsblol,
       airlineDirectory: createTestAirlineDirectory(),
       notifier: notifierFor(async, repository, notifications),
+      liveActivities: liveActivitiesFor(async, repository, liveActivities),
       clock: () => noon.add(async.elapsed),
     )..start();
     repository.emit(flights);
@@ -136,6 +156,7 @@ void main() {
       repository: repository,
       adapter: adapter,
       notifications: notifications,
+      liveActivities: liveActivities,
     );
   }
 
@@ -956,6 +977,11 @@ void main() {
           repository,
           createTestNotificationService(),
         ),
+        liveActivities: liveActivitiesFor(
+          async,
+          repository,
+          FakeLiveActivityService(),
+        ),
         clock: () => noon.add(async.elapsed),
       )..start();
       repository.emit(flights);
@@ -1109,6 +1135,136 @@ void main() {
 
       started.engine.stop();
       started.repository.dispose();
+    });
+  });
+
+  group('live activities', () {
+    test('starts one card for an armed flight it learns about', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        async.flushMicrotasks();
+
+        expect(
+          started.liveActivities.puts.map((put) => put.activityId).toSet(),
+          hasLength(1),
+        );
+        expect(started.repository.liveActivityIds[1], isNotNull);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('starts none for a flight nobody armed', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith()]);
+        async.flushMicrotasks();
+
+        expect(started.liveActivities.puts, isEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('takes the card of a deleted flight off the lock screen', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        async.flushMicrotasks();
+        final activityId = started.liveActivities.puts.first.activityId;
+
+        started.repository.emit(const []);
+        async.flushMicrotasks();
+
+        expect(started.liveActivities.ends.single.activityId, activityId);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('keeps polling when the live activity platform fails', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        started.liveActivities.failure = Exception('the bridge is down');
+
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.paused);
+        async.flushMicrotasks();
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        async.elapse(const Duration(seconds: 5));
+
+        expect(started.adapter.callsignRequests, isNotEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('picks up the system setting on the way back', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        async.flushMicrotasks();
+        final refreshes = started.liveActivities.availabilityRefreshes;
+
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.paused);
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        async.flushMicrotasks();
+
+        expect(
+          started.liveActivities.availabilityRefreshes,
+          greaterThan(refreshes),
+        );
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
+    test('starts a fresh card after the system ended the old one', () {
+      fakeAsync((async) {
+        final repository = FakeFlightRepository();
+        final started = startEngine(async, [
+          flightWith(isArmed: true),
+        ], withRepository: repository);
+        async.flushMicrotasks();
+        final activityId = repository.liveActivityIds[1];
+
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.paused);
+        async.elapse(const Duration(minutes: 5));
+        started.liveActivities.running = const [];
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        async.flushMicrotasks();
+
+        expect(activityId, isNotNull);
+        expect(repository.liveActivityIds[1], isNot(activityId));
+
+        started.engine.stop();
+        repository.dispose();
+      });
+    });
+
+    /// A flight falling silent is written nowhere — its last position just
+    /// grows old. Without a look at the clock the card keeps saying "live".
+    test('tells the card when a flight falls silent', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [
+          flightWith(
+            isArmed: true,
+            hexAddress: '3c64c6',
+            expectedCallsign: 'DLH400',
+            latestPosition: positionAt(noon),
+          ),
+        ]);
+        async.flushMicrotasks();
+        expect(started.liveActivities.puts.last.data['state'], 'live');
+
+        async.elapse(maximumLivePositionAge + const Duration(seconds: 1));
+
+        expect(started.liveActivities.puts.last.data['state'], 'noSignal');
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
     });
   });
 }

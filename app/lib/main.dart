@@ -7,6 +7,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/adapters/readsb_source_adapter.dart';
 import 'data/font_licenses.dart';
+import 'data/live_activities/flight_live_activities.dart';
+import 'data/live_activities/live_activity_service.dart';
 import 'data/lookup/airline_directory.dart';
 import 'data/lookup/route_lookup.dart';
 import 'data/notifications/flight_notifier.dart';
@@ -14,6 +16,7 @@ import 'data/notifications/notification_service.dart';
 import 'data/persistence/database.dart';
 import 'data/persistence/flight_repository.dart';
 import 'data/polling_engine.dart';
+import 'data/settings/live_activity_setting.dart';
 import 'data/settings/map_style_setting.dart';
 import 'data/settings/notification_setting.dart';
 import 'data/settings/source_setting.dart';
@@ -38,6 +41,7 @@ Future<void> main() async {
   final mapStyleSetting = await MapStyleSetting.load();
   final unitsSetting = await UnitsSetting.load();
   final notificationSetting = await NotificationSetting.load();
+  final liveActivitySetting = await LiveActivitySetting.load();
   final packageInfo = await PackageInfo.fromPlatform();
   final localizations = await AppLocalizations.delegate.load(
     basicLocaleListResolution(
@@ -49,6 +53,7 @@ Future<void> main() async {
     channelName: localizations.notificationChannelName,
     channelDescription: localizations.notificationChannelDescription,
   );
+  final liveActivityService = await PluginLiveActivityService.start();
   // Not awaited: the map draws its ground as soon as the planet run is known,
   // and starts without tiles rather than without a first frame.
   final vectorTileSource = VectorTileSource(client: client);
@@ -68,6 +73,13 @@ Future<void> main() async {
       copy: (kind, flight) =>
           flightNotificationText(localizations, kind, flight),
     ),
+    liveActivities: FlightLiveActivities(
+      repository: flightRepository,
+      service: liveActivityService,
+      notifications: notificationService,
+      setting: liveActivitySetting,
+      copy: (flight) => flightLiveActivityReminderText(localizations, flight),
+    ),
   ).start();
   runApp(
     FlugwachtApp(
@@ -80,6 +92,8 @@ Future<void> main() async {
         unitsSetting: unitsSetting,
         notificationSetting: notificationSetting,
         notificationService: notificationService,
+        liveActivityService: liveActivityService,
+        liveActivitySetting: liveActivitySetting,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,

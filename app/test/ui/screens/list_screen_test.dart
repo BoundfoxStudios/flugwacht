@@ -313,7 +313,7 @@ void main() {
       await swipeAway(tester, find.byType(FlightRow));
 
       expect(find.byType(FlightRow), findsNothing);
-      expect(find.text('Flight deleted'), findsOneWidget);
+      expect(find.text('LH400 deleted'), findsOneWidget);
       expect(find.text('Undo'), findsOneWidget);
       expect(repository.deletedFlightIds, isEmpty);
     });
@@ -354,12 +354,12 @@ void main() {
       await swipeAway(tester, find.byType(FlightRow));
 
       await tester.pump(const Duration(seconds: 5));
-      expect(find.text('Flight deleted'), findsOneWidget);
+      expect(find.text('LH400 deleted'), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
-      expect(find.text('Flight deleted'), findsNothing);
+      expect(find.text('LH400 deleted'), findsNothing);
       expect(repository.deletedFlightIds, [7]);
     });
 

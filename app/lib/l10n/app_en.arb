@@ -41,6 +41,20 @@
   "newFlightDepartureTimeOriginLocal": "In the origin's local time",
   "newFlightDepartureTimeDeviceFallback": "Without a route the time counts as your device time",
   "newFlightDepartureTimeSearchingRoute": "Waiting for the route to settle the clock",
+  "liveActivityReminderTitle": "Live Activity available",
+  "liveActivityReminderBody": "Follow {flight} on your Lock Screen today. Tap to start.",
+  "@liveActivityReminderBody": {
+    "placeholders": {
+      "flight": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLiveActivitySectionTitle": "Live Activities",
+  "settingsLiveActivityReminder": "Remind me on the flight day",
+  "settingsLiveActivityHint": "Flugwacht sends you a notification on the flight day, so you can start the Live Activity from there.",
+  "liveActivityArmLabel": "Live Activity on flight day",
+  "liveActivityDisabledHint": "Live Activities are switched off for Flugwacht in the system settings",
   "newFlightNoteLabel": "Note (optional)",
   "newFlightNoteHint": "Whatever helps you recognise the flight, e.g. Anna & Ben",
   "newFlightSubmit": "Add flight",
@@ -82,7 +96,14 @@
     }
   },
   "listPastSectionTitle": "Past · gone in 24 h",
-  "listFlightDeleted": "Flight deleted",
+  "listFlightDeleted": "{flight} deleted",
+  "@listFlightDeleted": {
+    "placeholders": {
+      "flight": {
+        "type": "String"
+      }
+    }
+  },
   "listUndoDelete": "Undo",
   "listDeleteFlight": "Delete flight",
   "@listDeleteFlight": {

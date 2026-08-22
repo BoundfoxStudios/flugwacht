@@ -250,6 +250,5 @@ findings (#149).
 
 ## Open Questions
 
-- Live Activity design and lifecycle (M16, with the user)
 - FA Pro kit setup may need the user's license access on the host
 - Content of the about/licenses page (M15)

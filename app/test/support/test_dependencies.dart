@@ -5,11 +5,13 @@ import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/adapters/lookup_result.dart';
 import 'package:flugwacht/data/adapters/source_adapter.dart';
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/lookup/airline_directory.dart';
 import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/persistence/database.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
+import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/map_style_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
@@ -90,6 +92,15 @@ Future<NotificationSetting> createTestNotificationSetting() async {
   return setting;
 }
 
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<LiveActivitySetting> createTestLiveActivitySetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await LiveActivitySetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
 /// A service that records what the app asked of it instead of talking to the
 /// platform, so no test touches the notification plugin.
 class FakeNotificationService implements NotificationService {
@@ -105,6 +116,8 @@ class FakeNotificationService implements NotificationService {
   final shown = <(FlightNotification, int)>[];
   final scheduled = <(FlightNotification, int, DateTime)>[];
   final cancelled = <(FlightNotification, int)>[];
+  final scheduledReminders = <(int, DateTime)>[];
+  final cancelledReminders = <int>[];
   final _tappedFlights = StreamController<int>.broadcast();
 
   @override
@@ -145,6 +158,18 @@ class FakeNotificationService implements NotificationService {
   @override
   Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
       cancelled.add((kind, flightId));
+
+  @override
+  Future<void> scheduleLiveActivityReminder({
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) async => scheduledReminders.add((flightId, at));
+
+  @override
+  Future<void> cancelLiveActivityReminder({required int flightId}) async =>
+      cancelledReminders.add(flightId);
 
   void dispose() {
     permission.dispose();
@@ -190,6 +215,27 @@ class FakeNotificationSetting implements NotificationSetting {
   void dispose() {}
 }
 
+/// A switch without a preference store behind it, so a synchronous test can set
+/// it up in one line.
+class FakeLiveActivitySetting implements LiveActivitySetting {
+  @override
+  final remindsOnFlightDay = signal(true);
+
+  @override
+  bool armsNewFlights = false;
+
+  @override
+  Future<void> rememberArming({required bool isArmed}) async =>
+      armsNewFlights = isArmed;
+
+  @override
+  Future<void> selectReminder({required bool isEnabled}) async =>
+      remindsOnFlightDay.value = isEnabled;
+
+  @override
+  void dispose() => remindsOnFlightDay.dispose();
+}
+
 /// Records what the app asked the platform to open, so no test leaves the app
 /// for a browser.
 class FakeUrlLauncher extends UrlLauncherPlatform {
@@ -221,6 +267,12 @@ FakeNotificationService createTestNotificationService({
   return service;
 }
 
+FakeLiveActivityService createTestLiveActivityService() {
+  final service = FakeLiveActivityService();
+  addTearDown(service.dispose);
+  return service;
+}
+
 Future<GoRouter> createTestAppRouter({
   FlightRepository? flightRepository,
   NotificationService? notificationService,
@@ -233,6 +285,8 @@ Future<GoRouter> createTestAppRouter({
   unitsSetting: await createTestUnitsSetting(),
   notificationSetting: await createTestNotificationSetting(),
   notificationService: notificationService ?? createTestNotificationService(),
+  liveActivityService: createTestLiveActivityService(),
+  liveActivitySetting: await createTestLiveActivitySetting(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );
@@ -262,6 +316,88 @@ MapTileSources testTileSources({
   tileProvider: StubTileProvider(),
 );
 
+typedef LiveActivityPut = ({String activityId, Map<String, dynamic> data});
+typedef LiveActivityEnd = ({String activityId, DateTime? dismissAt});
+
+class FakeLiveActivityService implements LiveActivityService {
+  final puts = <LiveActivityPut>[];
+  final ends = <LiveActivityEnd>[];
+  var running = const <String>[];
+
+  /// What the system answers about a card it does not list: that it is over —
+  /// unless the test stands in for one that has not loaded its activities yet
+  /// and answers nothing at all.
+  var presenceOfUnlistedCard = LiveActivityPresence.finished;
+  var availabilityRefreshes = 0;
+  Exception? failure;
+
+  @override
+  final availability = signal(LiveActivityAvailability.enabled);
+
+  final _tappedFlights = StreamController<int>.broadcast();
+
+  @override
+  Stream<int> get tappedFlights => _tappedFlights.stream;
+
+  /// Stands in for the user tapping the card of a flight.
+  void tap(int flightId) => _tappedFlights.add(flightId);
+
+  /// Stands in for a tap that started the app.
+  int? launchFlightId;
+
+  @override
+  Future<int?> takeLaunchFlight() async {
+    final flightId = launchFlightId;
+    launchFlightId = null;
+    return flightId;
+  }
+
+  void dispose() {
+    availability.dispose();
+    unawaited(_tappedFlights.close());
+  }
+
+  @override
+  Future<void> refreshAvailability() async {
+    availabilityRefreshes++;
+    if (failure case final failure?) {
+      throw failure;
+    }
+  }
+
+  @override
+  Future<void> put(
+    String activityId, {
+    required Map<String, dynamic> data,
+    required Duration staleIn,
+  }) async {
+    if (failure case final failure?) {
+      throw failure;
+    }
+    await held?.future;
+    puts.add((activityId: activityId, data: data));
+    // The system knows a card the moment it exists, and so must the fake:
+    // answering "not running" for a card it just took hid a duplicate-card bug.
+    running = [...running, activityId];
+  }
+
+  /// Holds the next put open, so a test can let another pass land while a card
+  /// is still being created.
+  Completer<void>? held;
+
+  @override
+  Future<void> end(String activityId, {DateTime? dismissAt}) async {
+    ends.add((activityId: activityId, dismissAt: dismissAt));
+    running = running.where((id) => id != activityId).toList();
+  }
+
+  @override
+  Future<LiveActivityPresence> presenceOf(String activityId) async =>
+      running.contains(activityId)
+      ? LiveActivityPresence.running
+      : presenceOfUnlistedCard;
+}
+
 class FakeFlightRepository implements FlightRepository {
   final _flights = StreamController<List<Flight>>.broadcast();
   final _trails = StreamController<List<TrailPoint>>.broadcast();
@@ -275,6 +411,7 @@ class FakeFlightRepository implements FlightRepository {
   final deletedFlightIds = <int>[];
   final clearedTrails = <int>[];
   final notificationResets = <int>[];
+  final liveActivityIds = <int, String>{};
 
   /// Holds up the reconcile, so a test can watch what runs while it is still
   /// in flight.
@@ -356,6 +493,15 @@ class FakeFlightRepository implements FlightRepository {
       arrivingSoonSchedules.remove(flightId);
     } else {
       arrivingSoonSchedules[flightId] = at;
+    }
+  }
+
+  @override
+  Future<void> setLiveActivityId(int flightId, String? activityId) async {
+    if (activityId == null) {
+      liveActivityIds.remove(flightId);
+    } else {
+      liveActivityIds[flightId] = activityId;
     }
   }
 

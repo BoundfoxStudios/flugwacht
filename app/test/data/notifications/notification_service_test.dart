@@ -113,6 +113,23 @@ void main() {
       expect(service.permission.value, NotificationPermission.unavailable);
     });
 
+    test('schedules no flight day reminder', () async {
+      await service.scheduleLiveActivityReminder(
+        flightId: 7,
+        title: 'LH400',
+        body: 'live activity available',
+        at: DateTime.utc(2026, 3, 17, 6),
+      );
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
+    test('cancels no flight day reminder', () async {
+      await service.cancelLiveActivityReminder(flightId: 7);
+
+      expect(service.permission.value, NotificationPermission.unavailable);
+    });
+
     test('keeps a permission request a no-op', () async {
       await service.requestPermission();
 

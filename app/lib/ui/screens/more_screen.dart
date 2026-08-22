@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../app_icons.dart';
+import '../../data/live_activities/live_activity_service.dart';
 import '../../data/notifications/notification_service.dart';
+import '../../data/settings/live_activity_setting.dart';
 import '../../data/settings/notification_setting.dart';
 import '../../data/settings/source_setting.dart';
 import '../../data/settings/units_setting.dart';
@@ -12,6 +14,7 @@ import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/chrome/settings_card.dart';
+import 'settings_live_activity_section.dart';
 import 'settings_notifications_section.dart';
 import 'settings_source_section.dart';
 import 'settings_units_section.dart';
@@ -22,6 +25,8 @@ class MoreScreen extends StatelessWidget {
     required this.unitsSetting,
     required this.notificationSetting,
     required this.notificationService,
+    required this.liveActivitySetting,
+    required this.liveActivityService,
     required this.packageInfo,
     super.key,
   });
@@ -32,6 +37,8 @@ class MoreScreen extends StatelessWidget {
   final UnitsSetting unitsSetting;
   final NotificationSetting notificationSetting;
   final NotificationService notificationService;
+  final LiveActivitySetting liveActivitySetting;
+  final LiveActivityService liveActivityService;
   final PackageInfo packageInfo;
 
   @override
@@ -59,6 +66,10 @@ class MoreScreen extends StatelessWidget {
                     SettingsNotificationsSection(
                       notificationSetting: notificationSetting,
                       notificationService: notificationService,
+                    ),
+                    SettingsLiveActivitySection(
+                      setting: liveActivitySetting,
+                      service: liveActivityService,
                     ),
                     _LinkCard(
                       title: localizations.settingsFaqTitle,

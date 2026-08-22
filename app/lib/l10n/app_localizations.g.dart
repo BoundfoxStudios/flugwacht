@@ -272,6 +272,48 @@ abstract class AppLocalizations {
   /// **'Waiting for the route to settle the clock'**
   String get newFlightDepartureTimeSearchingRoute;
 
+  /// No description provided for @liveActivityReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activity available'**
+  String get liveActivityReminderTitle;
+
+  /// No description provided for @liveActivityReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow {flight} on your Lock Screen today. Tap to start.'**
+  String liveActivityReminderBody(String flight);
+
+  /// No description provided for @settingsLiveActivitySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activities'**
+  String get settingsLiveActivitySectionTitle;
+
+  /// No description provided for @settingsLiveActivityReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me on the flight day'**
+  String get settingsLiveActivityReminder;
+
+  /// No description provided for @settingsLiveActivityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Flugwacht sends you a notification on the flight day, so you can start the Live Activity from there.'**
+  String get settingsLiveActivityHint;
+
+  /// No description provided for @liveActivityArmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activity on flight day'**
+  String get liveActivityArmLabel;
+
+  /// No description provided for @liveActivityDisabledHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activities are switched off for Flugwacht in the system settings'**
+  String get liveActivityDisabledHint;
+
   /// No description provided for @newFlightNoteLabel.
   ///
   /// In en, this message translates to:
@@ -345,8 +387,8 @@ abstract class AppLocalizations {
   /// No description provided for @listFlightDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Flight deleted'**
-  String get listFlightDeleted;
+  /// **'{flight} deleted'**
+  String listFlightDeleted(String flight);
 
   /// No description provided for @listUndoDelete.
   ///

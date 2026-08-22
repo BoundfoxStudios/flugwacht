@@ -104,6 +104,31 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wartet auf die Route, die die Uhr festlegt';
 
   @override
+  String get liveActivityReminderTitle => 'Live-Aktivität verfügbar';
+
+  @override
+  String liveActivityReminderBody(String flight) {
+    return 'Verfolge $flight heute auf dem Sperrbildschirm. Tippe zum Starten.';
+  }
+
+  @override
+  String get settingsLiveActivitySectionTitle => 'Live-Aktivitäten';
+
+  @override
+  String get settingsLiveActivityReminder => 'Am Flugtag erinnern';
+
+  @override
+  String get settingsLiveActivityHint =>
+      'Flugwacht schickt dir am Flugtag eine Mitteilung, über die du die Live-Aktivität startest.';
+
+  @override
+  String get liveActivityArmLabel => 'Live-Aktivität am Flugtag';
+
+  @override
+  String get liveActivityDisabledHint =>
+      'Live-Aktivitäten sind für Flugwacht in den Systemeinstellungen ausgeschaltet';
+
+  @override
   String get newFlightNoteLabel => 'Notiz (optional)';
 
   @override
@@ -148,7 +173,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listPastSectionTitle => 'Vorbei · weg in 24 h';
 
   @override
-  String get listFlightDeleted => 'Flug gelöscht';
+  String listFlightDeleted(String flight) {
+    return '$flight gelöscht';
+  }
 
   @override
   String get listUndoDelete => 'Rückgängig';

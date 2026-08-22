@@ -34,6 +34,56 @@
   assets from inside the package; the app renders them with `flutter_svg`.
   The app-icon masters stay in `assets/icon/`, they are build-time input only.
 
+## iOS Live Activity
+
+The Lock Screen card lives in its own widget extension target
+(`FlugwachtLiveActivityExtension`, `app/ios/FlugwachtLiveActivity/`), driven
+from Dart through the `live_activities` plugin. What is not obvious from the
+code:
+
+- The extension's folder is a synchronized group: files dropped into it join
+  the target automatically, resources included. That is why Bebas Neue and
+  Barlow sit there a second time — the extension has its own bundle and cannot
+  reach the Flutter assets.
+- **`Embed Foundation Extensions` must run before Flutter's `Thin Binary`
+  script phase.** Xcode appends new embed phases at the end, which makes every
+  build fail with a dependency cycle.
+- The attributes type has to be named exactly `LiveActivitiesAppAttributes` and
+  carry exactly `id: UUID` plus a `ContentState` with `appGroupId`. It is the
+  plugin's contract; a renamed or extended type makes ActivityKit accept the
+  activity and never show it.
+- The card's data does not travel in the activity. The plugin writes it into
+  the App Group under `"<attributes.id>_<key>"`, and the extension reads it
+  from there through `context.attributes`.
+- Every payload carries every key. The plugin only clears a key that arrives
+  as an explicit null, and a create would throw on one — so a fact that stops
+  applying is sent as an empty string or a zero timestamp, never omitted.
+- `getAllActivitiesIds()` does **not** answer in the ids the app starts cards
+  with — it returns ActivityKit's own. Use `getActivityState(activityId)`,
+  which matches the custom id.
+- Only the documented self-updating views keep running while the app is
+  closed: `Text(timerInterval:)` and `ProgressView(timerInterval:)`. They do
+  not expose their current value, so nothing can be positioned along them.
+- Everything else on a closed card is redrawn exactly once: when the stale
+  date passes. The plugin hands that date to the system only where it creates
+  an activity, so `LiveActivityStaleDate` in the app target renews it on every
+  put — it finds the card by the url in its payload, because the plugin keeps
+  the hash of the app's activity id to itself.
+- iOS ends a card on its own after eight hours and leaves it on the Lock
+  Screen for up to four more. Dropping such a card's id without dismissing the
+  card first puts the flight's next one beside it instead of in its place. An
+  unanswered `getActivityState` is not that case: right after a cold start
+  ActivityKit has not always loaded its activities, and a card it stays silent
+  about is left alone.
+- `app/ios/Runner/` is a plain group, unlike the extension's folder: a file
+  added there reaches the target only through `project.pbxproj` (build file,
+  file reference, group children, sources phase).
+- A widget extension hosts only widget previews. A plain SwiftUI `#Preview` in
+  that target fails with "Unsupported preview type" and can wedge Xcode.
+- `flutter pub get` on Linux empties the generated Swift package that wires the
+  iOS plugins. After working in the sandbox, run `flutter build ios
+  --config-only` on the Mac before building in Xcode.
+
 ## Credentials
 
 - The repo will become public. Never commit credentials, tokens, or license

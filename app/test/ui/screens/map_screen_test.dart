@@ -127,6 +127,7 @@ Future<FakeFlightRepository> pumpMapScreen(
         unitsSetting: await createTestUnitsSetting(),
         clock: () => _now,
         mapStyleSetting: styleSetting,
+        liveActivityService: createTestLiveActivityService(),
         tileSources: testTileSources(withVectorTiles: withVectorTiles),
       ),
     ),

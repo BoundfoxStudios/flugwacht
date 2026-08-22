@@ -104,6 +104,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wartet auf die Route, die die Uhr festlegt';
 
   @override
+  String get liveActivityArmLabel => 'Live-Aktivität am Flugtag';
+
+  @override
+  String get liveActivityDisabledHint =>
+      'Live-Aktivitäten sind für Flugwacht in den Systemeinstellungen ausgeschaltet';
+
+  @override
   String get newFlightNoteLabel => 'Notiz (optional)';
 
   @override

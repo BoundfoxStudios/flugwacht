@@ -18,6 +18,7 @@ class NewFlightForm {
   final note = signal('');
   final departureTime = signal<DayTime?>(null);
   final departureTimeIsOriginLocal = signal(true);
+  final liveActivityArmed = signal(false);
   late final Signal<DateTime> departureDate;
 
   final _inputs = {
@@ -63,6 +64,7 @@ class NewFlightForm {
     departureDate.dispose();
     departureTime.dispose();
     departureTimeIsOriginLocal.dispose();
+    liveActivityArmed.dispose();
     isValid.dispose();
     showsLowCostCarrierHint.dispose();
   }

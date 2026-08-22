@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
+import '../../../data/live_activities/live_activity_service.dart';
 import '../../../data/settings/source_setting.dart';
 import '../../../data/settings/units_setting.dart';
 import '../../../domain/flight.dart';
@@ -20,6 +21,7 @@ import '../chrome/pager_dots.dart';
 import '../map/map_visuals.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'live_activity_arm_row.dart';
 import 'no_signal_info_box.dart';
 import 'sheet_info_box.dart';
 import 'state_timeline.dart';
@@ -34,6 +36,8 @@ class FlightSheet extends StatefulWidget {
     required this.sourceSetting,
     required this.unitsSetting,
     required this.mapStyle,
+    required this.liveActivityService,
+    required this.onLiveActivityArmed,
     super.key,
     this.onOpenChanged,
     this.clock = DateTime.now,
@@ -64,6 +68,11 @@ class FlightSheet extends StatefulWidget {
 
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
+  final LiveActivityService liveActivityService;
+
+  /// Reports the arming the user changed on the flight in front of them.
+  final void Function(Flight flight, {required bool isArmed})
+  onLiveActivityArmed;
 
   /// Names the tiles the map behind the sheet renders, which the footer has to
   /// credit while the sheet covers the map's own attribution.
@@ -183,6 +192,10 @@ class _FlightSheetState extends State<FlightSheet> {
                                     sourceSetting: widget.sourceSetting,
                                     unitsSetting: widget.unitsSetting,
                                     mapStyle: widget.mapStyle,
+                                    liveActivityService:
+                                        widget.liveActivityService,
+                                    onLiveActivityArmed:
+                                        widget.onLiveActivityArmed,
                                   ),
                                 ),
                             ],
@@ -272,6 +285,8 @@ class _FlightPage extends StatelessWidget {
     required this.sourceSetting,
     required this.unitsSetting,
     required this.mapStyle,
+    required this.liveActivityService,
+    required this.onLiveActivityArmed,
   });
 
   final FlightListEntry entry;
@@ -282,6 +297,9 @@ class _FlightPage extends StatelessWidget {
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
   final MapStyle mapStyle;
+  final LiveActivityService liveActivityService;
+  final void Function(Flight flight, {required bool isArmed})
+  onLiveActivityArmed;
 
   @override
   Widget build(BuildContext context) {
@@ -341,6 +359,13 @@ class _FlightPage extends StatelessWidget {
             SizedBox(height: gap),
             _WaitingInfoBox(flight: entry.flight),
           ],
+          SizedBox(height: gap),
+          LiveActivityArmRow(
+            availability: liveActivityService.availability,
+            isArmed: entry.flight.liveActivityArmed,
+            onToggled: (isArmed) =>
+                onLiveActivityArmed(entry.flight, isArmed: isArmed),
+          ),
           SizedBox(height: gap),
           SignalBuilder(builder: (context) => _footer(localizations)),
         ],

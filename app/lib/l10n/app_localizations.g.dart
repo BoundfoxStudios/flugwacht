@@ -272,6 +272,18 @@ abstract class AppLocalizations {
   /// **'Waiting for the route to settle the clock'**
   String get newFlightDepartureTimeSearchingRoute;
 
+  /// No description provided for @liveActivityArmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activity on flight day'**
+  String get liveActivityArmLabel;
+
+  /// No description provided for @liveActivityDisabledHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activities are switched off for Flugwacht in the system settings'**
+  String get liveActivityDisabledHint;
+
   /// No description provided for @newFlightNoteLabel.
   ///
   /// In en, this message translates to:

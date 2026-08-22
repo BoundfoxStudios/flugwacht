@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../app_icons.dart';
+import '../../data/live_activities/live_activity_service.dart';
 import '../../data/lookup/airline_directory.dart';
 import '../../data/lookup/route_lookup.dart';
 import '../../data/notifications/notification_service.dart';
@@ -25,6 +26,7 @@ import '../widgets/controls/app_switch_row.dart';
 import '../widgets/controls/departure_date_picker.dart';
 import '../widgets/controls/departure_time_picker.dart';
 import '../widgets/flight/flight_labels.dart';
+import '../widgets/flight/live_activity_arm_row.dart';
 import 'new_flight_form.dart';
 import 'new_flight_preview.dart';
 import 'new_flight_preview_card.dart';
@@ -38,6 +40,7 @@ class NewFlightScreen extends StatefulWidget {
     required this.routeLookup,
     required this.notificationService,
     required this.notificationSetting,
+    required this.liveActivityService,
     super.key,
     this.today,
   });
@@ -47,6 +50,7 @@ class NewFlightScreen extends StatefulWidget {
   final RouteLookup routeLookup;
   final NotificationService notificationService;
   final NotificationSetting notificationSetting;
+  final LiveActivityService liveActivityService;
 
   /// The day the selectable date range is built around; defaults to the
   /// current day.
@@ -146,6 +150,14 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
                         ),
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
+                    ),
+                  ),
+                  SignalBuilder(
+                    builder: (context) => LiveActivityArmRow(
+                      availability: widget.liveActivityService.availability,
+                      isArmed: _form.liveActivityArmed.value,
+                      onToggled: (isArmed) =>
+                          _form.liveActivityArmed.value = isArmed,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.cardPaddingLarge),
@@ -372,6 +384,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
             ? DepartureTimeInterpretation.originLocal
             : DepartureTimeInterpretation.device,
         note: note.isEmpty ? null : note,
+        liveActivityArmed: _form.liveActivityArmed.value,
         expectedCallsign: switch (previewState) {
           FlightPreviewFound(:final callsign) => callsign,
           _ => candidates.isEmpty ? null : candidates.first,

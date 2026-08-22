@@ -62,11 +62,19 @@ private func millisecondsFromNow(_ seconds: TimeInterval) -> Int {
 }
 
 /// Puts a card's facts where the widget reads them, so a preview exercises the
-/// same App Group path a real activity takes.
-private func seeded(_ values: [String: Any], id: String) -> LiveActivitiesAppAttributes {
+/// same App Group path a real activity takes. The two maps stay apart because
+/// the preview compiler cannot type a mixed one through `UserDefaults.set`.
+private func seeded(
+  texts: [String: String],
+  instants: [String: Int],
+  id: String
+) -> LiveActivitiesAppAttributes {
   let attributes = LiveActivitiesAppAttributes(id: UUID(uuidString: id) ?? UUID())
   let defaults = UserDefaults(suiteName: previewAppGroupId)
-  for (key, value) in values {
+  for (key, value) in texts {
+    defaults?.set(value, forKey: attributes.prefixedKey(key))
+  }
+  for (key, value) in instants {
     defaults?.set(value, forKey: attributes.prefixedKey(key))
   }
   return attributes
@@ -80,54 +88,69 @@ private func previewFlight(
   departureIn: TimeInterval? = nil,
   arrivesIn: TimeInterval? = nil,
   airborneSince: TimeInterval? = nil,
-  landedAgo: TimeInterval? = nil
-) -> [String: Any] {
-  [
-    "url": "flugwacht://flight/1",
-    "designator": "LH 454",
-    "note": note,
-    "state": state,
-    "originCode": origin,
-    "destinationCode": destination,
-    "departureAt": departureIn.map(millisecondsFromNow) ?? 0,
-    "estimatedArrivalAt": arrivesIn.map(millisecondsFromNow) ?? 0,
-    "firstAirborneAt": airborneSince.map { millisecondsFromNow(-$0) } ?? 0,
-    "landedAt": landedAgo.map { millisecondsFromNow(-$0) } ?? 0,
-  ]
+  landedAgo: TimeInterval? = nil,
+  id: String
+) -> LiveActivitiesAppAttributes {
+  seeded(
+    texts: [
+      "url": "flugwacht://flight/1",
+      "designator": "LH 454",
+      "note": note,
+      "state": state,
+      "originCode": origin,
+      "destinationCode": destination,
+    ],
+    instants: [
+      "departureAt": departureIn.map(millisecondsFromNow) ?? 0,
+      "estimatedArrivalAt": arrivesIn.map(millisecondsFromNow) ?? 0,
+      "firstAirborneAt": airborneSince.map { millisecondsFromNow(-$0) } ?? 0,
+      "landedAt": landedAgo.map { millisecondsFromNow(-$0) } ?? 0,
+    ],
+    id: id
+  )
 }
 
 extension LiveActivitiesAppAttributes {
   fileprivate static var inTheAir: LiveActivitiesAppAttributes {
-    seeded(
-      previewFlight(state: "live", arrivesIn: 9660, airborneSince: 3000),
+    previewFlight(
+      state: "live",
+      arrivesIn: 9660,
+      airborneSince: 3000,
       id: "A0000000-0000-4000-8000-000000000001"
     )
   }
 
   fileprivate static var withoutSignal: LiveActivitiesAppAttributes {
-    seeded(
-      previewFlight(state: "noSignal", arrivesIn: 5400, airborneSince: 7200),
+    previewFlight(
+      state: "noSignal",
+      arrivesIn: 5400,
+      airborneSince: 7200,
       id: "A0000000-0000-4000-8000-000000000002"
     )
   }
 
   fileprivate static var beforeDeparture: LiveActivitiesAppAttributes {
-    seeded(
-      previewFlight(state: "planned", departureIn: 7200),
+    previewFlight(
+      state: "planned",
+      departureIn: 7200,
       id: "A0000000-0000-4000-8000-000000000003"
     )
   }
 
   fileprivate static var landed: LiveActivitiesAppAttributes {
-    seeded(
-      previewFlight(state: "ended", landedAgo: 300),
+    previewFlight(
+      state: "ended",
+      landedAgo: 300,
       id: "A0000000-0000-4000-8000-000000000004"
     )
   }
 
   fileprivate static var withoutRoute: LiveActivitiesAppAttributes {
-    seeded(
-      previewFlight(state: "waiting", note: "", origin: "", destination: ""),
+    previewFlight(
+      state: "waiting",
+      note: "",
+      origin: "",
+      destination: "",
       id: "A0000000-0000-4000-8000-000000000005"
     )
   }

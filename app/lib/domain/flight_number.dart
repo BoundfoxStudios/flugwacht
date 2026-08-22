@@ -3,6 +3,7 @@ final _pattern = RegExp(
 );
 final _whitespace = RegExp(r'\s');
 final _leadingZeros = RegExp('^0+(?=.)');
+final _numberParts = RegExp(r'^([0-9]+)([A-Z]{0,2})$');
 
 const _maximumNumberLength = 4;
 
@@ -30,6 +31,13 @@ class FlightNumber {
   final String number;
 
   String get normalized => '$airlineCode$number';
+
+  /// The digits alone, without the letters a few numbers carry behind them.
+  String get digits => _digitsAndSuffix?.group(1) ?? number;
+
+  String get suffix => _digitsAndSuffix?.group(2) ?? '';
+
+  RegExpMatch? get _digitsAndSuffix => _numberParts.firstMatch(number);
 
   @override
   bool operator ==(Object other) =>

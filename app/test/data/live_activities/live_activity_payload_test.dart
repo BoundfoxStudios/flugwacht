@@ -221,7 +221,7 @@ void main() {
       );
     });
 
-    test('outlives the estimated arrival by the grace period', () {
+    test('runs out exactly at the estimated arrival', () {
       final flight = _flight(
         tracking: FlightTracking(latestPosition: _position()),
       );
@@ -237,7 +237,7 @@ void main() {
       );
     });
 
-    test('outlives the scheduled departure before the flight is up', () {
+    test('runs out at the scheduled departure before the flight is up', () {
       final flight = _flight(departureTime: const DayTime(14, 0));
       expect(
         _onFlightDay.add(liveActivityStaleIn(flight, _onFlightDay)),

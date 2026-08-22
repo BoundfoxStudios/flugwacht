@@ -10,6 +10,7 @@ import '../../data/lookup/airline_directory.dart';
 import '../../data/lookup/route_lookup.dart';
 import '../../data/notifications/notification_service.dart';
 import '../../data/persistence/flight_repository.dart';
+import '../../data/settings/live_activity_setting.dart';
 import '../../data/settings/notification_setting.dart';
 import '../../domain/calendar_date.dart';
 import '../../domain/day_time.dart';
@@ -41,6 +42,7 @@ class NewFlightScreen extends StatefulWidget {
     required this.notificationService,
     required this.notificationSetting,
     required this.liveActivityService,
+    required this.liveActivitySetting,
     super.key,
     this.today,
   });
@@ -51,6 +53,7 @@ class NewFlightScreen extends StatefulWidget {
   final NotificationService notificationService;
   final NotificationSetting notificationSetting;
   final LiveActivityService liveActivityService;
+  final LiveActivitySetting liveActivitySetting;
 
   /// The day the selectable date range is built around; defaults to the
   /// current day.
@@ -61,7 +64,10 @@ class NewFlightScreen extends StatefulWidget {
 }
 
 class _NewFlightScreenState extends State<NewFlightScreen> {
-  late final _form = NewFlightForm(today: widget.today ?? DateTime.now());
+  late final _form = NewFlightForm(
+    today: widget.today ?? DateTime.now(),
+    armsLiveActivity: widget.liveActivitySetting.armsNewFlights,
+  );
   late final _preview = NewFlightPreview(
     form: _form,
     airlineDirectory: widget.airlineDirectory,
@@ -363,6 +369,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
         : const <String>[];
     final departureDate = _form.departureDate.value;
     final note = _form.note.value.trim();
+    final isArmed = _form.liveActivityArmed.value;
 
     try {
       await widget.flightRepository.addFlight(
@@ -384,7 +391,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
             ? DepartureTimeInterpretation.originLocal
             : DepartureTimeInterpretation.device,
         note: note.isEmpty ? null : note,
-        liveActivityArmed: _form.liveActivityArmed.value,
+        liveActivityArmed: isArmed,
         expectedCallsign: switch (previewState) {
           FlightPreviewFound(:final callsign) => callsign,
           _ => candidates.isEmpty ? null : candidates.first,
@@ -394,6 +401,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
     } finally {
       _isSaving.value = false;
     }
+    await widget.liveActivitySetting.rememberArming(isArmed: isArmed);
     await _offerNotifications();
     if (mounted) {
       context.pop();

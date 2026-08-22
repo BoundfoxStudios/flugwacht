@@ -264,15 +264,13 @@ void main() {
       expect(settings.liveActivities.remindsOnFlightDay.value, isFalse);
     });
 
-    testWidgets('says the activities themselves belong to the flight', (
-      tester,
-    ) async {
+    testWidgets('names the notification the switch is about', (tester) async {
       await pumpMoreScreen(tester);
 
       expect(
         find.text(
-          'You arm a Live Activity per flight; iOS can switch them off for '
-          'Flugwacht entirely.',
+          'Flugwacht sends you a notification on the flight day, so you can '
+          'start the Live Activity from there.',
         ),
         findsOneWidget,
       );

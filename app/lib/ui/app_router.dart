@@ -117,6 +117,7 @@ GoRouter createAppRouter({
             notificationService: notificationService,
             notificationSetting: notificationSetting,
             liveActivityService: liveActivityService,
+            liveActivitySetting: liveActivitySetting,
           ),
         ),
       ),

@@ -121,6 +121,12 @@ struct FlightCardView: View {
   }
 
   private var phaseLabel: LocalizedStringKey {
+    // Past its estimate the flight is far more likely down than out of reach,
+    // and "no signal" would keep the reader waiting for something that already
+    // happened.
+    if card.hasProbablyLanded {
+      return "PROBABLY LANDED"
+    }
     switch card.phase {
     case .planned: "PLANNED"
     case .waiting: "WAITING"

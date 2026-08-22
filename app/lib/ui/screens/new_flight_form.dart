@@ -7,8 +7,9 @@ import '../../domain/flight_number.dart';
 import '../../domain/lookup_input.dart';
 
 class NewFlightForm {
-  NewFlightForm({required DateTime today})
-    : _today = DateTime(today.year, today.month, today.day) {
+  NewFlightForm({required DateTime today, bool armsLiveActivity = false})
+    : _today = DateTime(today.year, today.month, today.day),
+      liveActivityArmed = signal(armsLiveActivity) {
     departureDate = signal(_today);
   }
 
@@ -18,7 +19,7 @@ class NewFlightForm {
   final note = signal('');
   final departureTime = signal<DayTime?>(null);
   final departureTimeIsOriginLocal = signal(true);
-  final liveActivityArmed = signal(false);
+  final Signal<bool> liveActivityArmed;
   late final Signal<DateTime> departureDate;
 
   final _inputs = {

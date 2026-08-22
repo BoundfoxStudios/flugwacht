@@ -5,9 +5,13 @@ import '../../domain/flight_day_window.dart';
 import '../../domain/flight_state.dart';
 import 'live_activity_url.dart';
 
-/// How long the card keeps its numbers after the moment they counted down to;
-/// past that the data behind them is old enough to say so.
-const liveActivityStaleGrace = Duration(minutes: 15);
+/// How long the card keeps its numbers after the moment they counted down to.
+///
+/// Zero on purpose: the stale date is the one moment iOS re-evaluates a card
+/// without the app, so it has to sit exactly where the card stops being true.
+/// A grace period past the arrival would leave a finished countdown claiming
+/// to be live for that much longer.
+const liveActivityStaleGrace = Duration.zero;
 
 /// The plugin sends the stale window as whole minutes and drops anything under
 /// one, so a shorter window would leave the card claiming its numbers are

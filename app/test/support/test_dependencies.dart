@@ -222,6 +222,13 @@ class FakeLiveActivitySetting implements LiveActivitySetting {
   final remindsOnFlightDay = signal(true);
 
   @override
+  bool armsNewFlights = false;
+
+  @override
+  Future<void> rememberArming({required bool isArmed}) async =>
+      armsNewFlights = isArmed;
+
+  @override
   Future<void> selectReminder({required bool isEnabled}) async =>
       remindsOnFlightDay.value = isEnabled;
 

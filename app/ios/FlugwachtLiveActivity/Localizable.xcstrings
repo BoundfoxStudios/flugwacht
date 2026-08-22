@@ -204,6 +204,23 @@
           }
         }
       }
+    },
+    "PROBABLY LANDED": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VERMUTLICH GELANDET"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PROBABLY LANDED"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

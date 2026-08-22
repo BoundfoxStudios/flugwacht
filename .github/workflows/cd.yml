@@ -16,15 +16,12 @@ concurrency:
 
 jobs:
   deliver-android:
-    # Guards manual dispatches: store builds only ever ship from main
-    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/android.yml
     with:
       deliver: true
     secrets: inherit
 
   deliver-ios:
-    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/ios.yml
     with:
       deliver: true

@@ -7,6 +7,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/adapters/readsb_source_adapter.dart';
 import 'data/font_licenses.dart';
+import 'data/live_activities/flight_live_activities.dart';
+import 'data/live_activities/live_activity_service.dart';
 import 'data/lookup/airline_directory.dart';
 import 'data/lookup/route_lookup.dart';
 import 'data/notifications/flight_notifier.dart';
@@ -49,6 +51,7 @@ Future<void> main() async {
     channelName: localizations.notificationChannelName,
     channelDescription: localizations.notificationChannelDescription,
   );
+  final liveActivityService = await PluginLiveActivityService.start();
   // Not awaited: the map draws its ground as soon as the planet run is known,
   // and starts without tiles rather than without a first frame.
   final vectorTileSource = VectorTileSource(client: client);
@@ -68,6 +71,10 @@ Future<void> main() async {
       copy: (kind, flight) =>
           flightNotificationText(localizations, kind, flight),
     ),
+    liveActivities: FlightLiveActivities(
+      repository: flightRepository,
+      service: liveActivityService,
+    ),
   ).start();
   runApp(
     FlugwachtApp(
@@ -80,6 +87,7 @@ Future<void> main() async {
         unitsSetting: unitsSetting,
         notificationSetting: notificationSetting,
         notificationService: notificationService,
+        liveActivityService: liveActivityService,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,

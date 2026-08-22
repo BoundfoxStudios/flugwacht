@@ -19,7 +19,11 @@ struct FlightCardView: View {
           isComplete: card.phase == .ended
         )
       }
-      bottomRow
+      // A flight without a departure time, a route or an estimate has nothing
+      // to say down here, and an empty row would only add a gap.
+      if hasBottomRow {
+        bottomRow
+      }
     }
     .padding(16)
     .opacity(isStale ? 0.55 : 1)
@@ -43,6 +47,11 @@ struct FlightCardView: View {
     }
   }
 
+  private var hasBottomRow: Bool {
+    isStale || card.countdown != nil || card.landing != nil
+        || card.arrival != nil
+  }
+
   @ViewBuilder private var bottomRow: some View {
     HStack(alignment: .firstTextBaseline) {
       countdown
@@ -52,7 +61,7 @@ struct FlightCardView: View {
   }
 
   @ViewBuilder private var countdown: some View {
-    if card.phase == .ended, let landedAt = card.landedAt {
+    if let landedAt = card.landing {
       HStack(spacing: 6) {
         Text("Landed")
           .font(FlugwachtFont.text(13))
@@ -80,7 +89,7 @@ struct FlightCardView: View {
   }
 
   @ViewBuilder private var arrival: some View {
-    if card.phase != .ended, let arrivesAt = card.estimatedArrivalAt {
+    if let arrivesAt = card.arrival {
       HStack(spacing: 2) {
         if card.isArrivalUncertain || isStale {
           Text(verbatim: "~")

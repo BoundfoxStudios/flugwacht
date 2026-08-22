@@ -87,6 +87,17 @@ struct FlightCard {
     return start...estimatedArrivalAt
   }
 
+  /// When the flight touched down, once it has.
+  var landing: Date? {
+    phase == .ended ? landedAt : nil
+  }
+
+  /// The arrival the card still counts towards; a flight that is down has one
+  /// in the past and shows its landing instead.
+  var arrival: Date? {
+    phase == .ended ? nil : estimatedArrivalAt
+  }
+
   /// Whether the arrival time is a guess the app could not confirm.
   var isArrivalUncertain: Bool {
     phase == .noSignal

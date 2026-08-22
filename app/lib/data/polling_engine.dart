@@ -43,6 +43,7 @@ class PollingEngine with WidgetsBindingObserver {
   final DateTime Function() clock;
 
   final _lastPollStarts = <int, DateTime>{};
+  final _lastStates = <int, FlightState>{};
   final _runningLookups = <int>{};
   var _flights = const <Flight>[];
   var _wantsPolling = false;
@@ -120,6 +121,7 @@ class PollingEngine with WidgetsBindingObserver {
     _flights = flights;
     final storedIds = flights.map((flight) => flight.id).toSet();
     _lastPollStarts.removeWhere((flightId, _) => !storedIds.contains(flightId));
+    _lastStates.removeWhere((flightId, _) => !storedIds.contains(flightId));
     unawaited(
       _notifier.flightsRemoved(gone.map((flight) => flight.id).toList()),
     );
@@ -132,8 +134,13 @@ class PollingEngine with WidgetsBindingObserver {
 
   void _pollDueFlights() {
     final now = clock();
+    var hasStateChanged = false;
     for (final flight in _flights) {
       final state = resolveFlightState(flight, now);
+      if (_lastStates[flight.id] case final previous? when previous != state) {
+        hasStateChanged = true;
+      }
+      _lastStates[flight.id] = state;
       if (!isPollable(state)) {
         _lastPollStarts.remove(flight.id);
         continue;
@@ -148,6 +155,12 @@ class PollingEngine with WidgetsBindingObserver {
       }
       _lastPollStarts[flight.id] = now;
       unawaited(_pollFlight(flight));
+    }
+    // A flight falling silent is written nowhere: its last position simply
+    // ages past the moment it stands for. Nothing but the clock moves it, so
+    // nothing but the clock can tell the card about it.
+    if (hasStateChanged) {
+      unawaited(_liveActivities.flightsChanged(_flights));
     }
   }
 

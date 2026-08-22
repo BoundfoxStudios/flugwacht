@@ -14,6 +14,7 @@ import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
 import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/flight_route.dart';
+import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1239,6 +1240,30 @@ void main() {
 
         started.engine.stop();
         repository.dispose();
+      });
+    });
+
+    /// A flight falling silent is written nowhere — its last position just
+    /// grows old. Without a look at the clock the card keeps saying "live".
+    test('tells the card when a flight falls silent', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [
+          flightWith(
+            isArmed: true,
+            hexAddress: '3c64c6',
+            expectedCallsign: 'DLH400',
+            latestPosition: positionAt(noon),
+          ),
+        ]);
+        async.flushMicrotasks();
+        expect(started.liveActivities.puts.last.data['state'], 'live');
+
+        async.elapse(maximumLivePositionAge + const Duration(seconds: 1));
+
+        expect(started.liveActivities.puts.last.data['state'], 'noSignal');
+
+        started.engine.stop();
+        started.repository.dispose();
       });
     });
   });

@@ -28,7 +28,7 @@ void main() {
     });
 
     test('finds no activity running', () async {
-      expect(await service.runningActivityIds(), isEmpty);
+      expect(await service.isRunning('activity-1'), isFalse);
     });
 
     test('hands up no tapped flight', () async {

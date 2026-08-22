@@ -1173,6 +1173,23 @@ void main() {
       });
     });
 
+    test('keeps polling when the live activity platform fails', () {
+      fakeAsync((async) {
+        final started = startEngine(async, [flightWith(isArmed: true)]);
+        started.liveActivities.failure = Exception('the bridge is down');
+
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.paused);
+        async.flushMicrotasks();
+        started.engine.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        async.elapse(const Duration(seconds: 5));
+
+        expect(started.adapter.callsignRequests, isNotEmpty);
+
+        started.engine.stop();
+        started.repository.dispose();
+      });
+    });
+
     test('picks up the system setting on the way back', () {
       fakeAsync((async) {
         final started = startEngine(async, [flightWith(isArmed: true)]);

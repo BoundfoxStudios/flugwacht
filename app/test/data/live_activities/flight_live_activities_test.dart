@@ -185,7 +185,7 @@ void main() {
     expect((await storedFlight()).liveActivityId, isNull);
   });
 
-  test('keeps an activity the system still runs', () async {
+  test('asks about the activity under the id it started it with', () async {
     await addFlight();
     await activities.flightsChanged(await storedFlights());
     final activityId = service.puts.single.activityId;
@@ -194,5 +194,23 @@ void main() {
     await activities.reconcile(await storedFlights());
 
     expect((await storedFlight()).liveActivityId, activityId);
+  });
+
+  test('keeps every other flight going when one card fails', () async {
+    await addFlight();
+    await repository.addFlight(
+      lookupKind: FlightLookupKind.flightNumber,
+      lookupValue: 'LH400',
+      departureDate: const CalendarDate(2026, 3, 17),
+      liveActivityArmed: true,
+    );
+    service.failure = Exception('the system refused the card');
+
+    await activities.flightsChanged(await storedFlights());
+
+    service.failure = null;
+    await activities.flightsChanged(await storedFlights());
+
+    expect(service.puts.map((put) => put.activityId).toSet(), hasLength(2));
   });
 }

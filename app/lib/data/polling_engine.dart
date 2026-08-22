@@ -86,9 +86,15 @@ class PollingEngine with WidgetsBindingObserver {
     // Live Activities are switched off in the system settings, so the app only
     // learns about it on the way back. iOS also ends a card on its own once it
     // hits the runtime limit, which this app run is the first chance to see.
-    await _liveActivities.refreshAvailability();
-    await _liveActivities.reconcile(_flights);
-    await _liveActivities.flightsChanged(_flights);
+    // A platform that refuses any of it costs the user their cards, never the
+    // polling this run exists for.
+    try {
+      await _liveActivities.refreshAvailability();
+      await _liveActivities.reconcile(_flights);
+      await _liveActivities.flightsChanged(_flights);
+    } on Exception {
+      // The next resume asks again.
+    }
     if (_wantsPolling) {
       _startScheduler();
     }

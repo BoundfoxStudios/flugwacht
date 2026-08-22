@@ -278,6 +278,7 @@ class FakeLiveActivityService implements LiveActivityService {
   final ends = <LiveActivityEnd>[];
   var running = const <String>[];
   var availabilityRefreshes = 0;
+  Exception? failure;
 
   @override
   final availability = signal(LiveActivityAvailability.enabled);
@@ -296,21 +297,32 @@ class FakeLiveActivityService implements LiveActivityService {
   }
 
   @override
-  Future<void> refreshAvailability() async => availabilityRefreshes++;
+  Future<void> refreshAvailability() async {
+    availabilityRefreshes++;
+    if (failure case final failure?) {
+      throw failure;
+    }
+  }
 
   @override
   Future<void> put(
     String activityId, {
     required Map<String, dynamic> data,
     required Duration staleIn,
-  }) async => puts.add((activityId: activityId, data: data));
+  }) async {
+    if (failure case final failure?) {
+      throw failure;
+    }
+    puts.add((activityId: activityId, data: data));
+  }
 
   @override
   Future<void> end(String activityId, {DateTime? dismissAt}) async =>
       ends.add((activityId: activityId, dismissAt: dismissAt));
 
   @override
-  Future<List<String>> runningActivityIds() async => running;
+  Future<bool> isRunning(String activityId) async =>
+      running.contains(activityId);
 }
 
 class FakeFlightRepository implements FlightRepository {

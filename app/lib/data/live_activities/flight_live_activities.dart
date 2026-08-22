@@ -27,7 +27,13 @@ class FlightLiveActivities {
 
   Future<void> flightsChanged(List<Flight> flights) async {
     for (final flight in flights) {
-      await _apply(flight);
+      // One card the system refuses must not cost the other flights theirs,
+      // and must not take the polling run down with it.
+      try {
+        await _apply(flight);
+      } on Exception {
+        continue;
+      }
     }
   }
 
@@ -46,10 +52,9 @@ class FlightLiveActivities {
   /// Forgets the activities the system has ended on its own — it caps how long
   /// one runs, and the app only learns that by asking.
   Future<void> reconcile(List<Flight> flights) async {
-    final running = await _service.runningActivityIds();
     for (final flight in flights) {
       final activityId = _runningActivityOf(flight);
-      if (activityId != null && !running.contains(activityId)) {
+      if (activityId != null && !await _service.isRunning(activityId)) {
         _activityIds.remove(flight.id);
         await _repository.setLiveActivityId(flight.id, null);
       }
@@ -62,15 +67,17 @@ class FlightLiveActivities {
       flight: known == null ? flight : flight.copyWith(liveActivityId: known),
       now: clock(),
     );
+    // A card the system would refuse leaves the flight without one, and the
+    // app must not remember an activity that never appeared. Ending still
+    // goes through: a card from before the switch was flipped has to go.
+    if (_service.availability.value != LiveActivityAvailability.enabled &&
+        action is! EndLiveActivity) {
+      return;
+    }
     switch (action) {
       case KeepLiveActivity():
         return;
       case StartLiveActivity():
-        // A card the system would refuse leaves the flight without one, and
-        // the app must not remember an activity that never appeared.
-        if (_service.availability.value != LiveActivityAvailability.enabled) {
-          return;
-        }
         final activityId = _activityIdOf(flight);
         _activityIds[flight.id] = activityId;
         await _put(activityId, flight);

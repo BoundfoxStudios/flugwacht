@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:live_activities/live_activities.dart';
+import 'package:live_activities/models/live_activity_state.dart';
 import 'package:signals/signals.dart';
 
 import 'live_activity_url.dart';
@@ -26,8 +27,12 @@ abstract interface class LiveActivityService {
   Future<void> refreshAvailability();
 
   /// Puts the flight's facts on its card, starting the activity when none runs
-  /// under [activityId] yet. Past [staleIn] the card tells the viewer that its
-  /// numbers are no longer backed by fresh data.
+  /// under [activityId] yet.
+  ///
+  /// Past [staleIn] the card tells the viewer that its numbers are no longer
+  /// backed by fresh data. The plugin only hands that window to the system
+  /// when it creates the activity, so a later call carries it in vain — the
+  /// window a card lives with is the one its first put set.
   Future<void> put(
     String activityId, {
     required Map<String, dynamic> data,
@@ -38,9 +43,10 @@ abstract interface class LiveActivityService {
   /// look at it, right away otherwise.
   Future<void> end(String activityId, {DateTime? dismissAt});
 
-  /// The activities the system still runs, which outlive nothing the app
-  /// remembers: iOS ends them on its own once they hit its runtime limit.
-  Future<List<String>> runningActivityIds();
+  /// Whether the system still shows the activity started under [activityId].
+  /// It outlives nothing the app remembers: iOS ends a card on its own once it
+  /// hits the runtime limit, and the user can swipe it away.
+  Future<bool> isRunning(String activityId);
 }
 
 class PluginLiveActivityService implements LiveActivityService {
@@ -113,8 +119,19 @@ class PluginLiveActivityService implements LiveActivityService {
       ? _plugin.endActivity(activityId)
       : _plugin.scheduleEnd(activityId, at: dismissAt);
 
+  /// Asked per id on purpose: `getAllActivitiesIds` answers in ActivityKit's
+  /// own identifiers, while the plugin hashes ours into the activity's
+  /// attributes — the two never compare equal. `getActivityState` is the one
+  /// call that takes the id the app started the card with.
   @override
-  Future<List<String>> runningActivityIds() => _plugin.getAllActivitiesIds();
+  Future<bool> isRunning(String activityId) async =>
+      switch (await _plugin.getActivityState(activityId)) {
+        LiveActivityState.active || LiveActivityState.stale => true,
+        LiveActivityState.ended ||
+        LiveActivityState.dismissed ||
+        LiveActivityState.unknown ||
+        null => false,
+      };
 }
 
 /// What a device without Live Activities gets: every call is a no-op, so
@@ -140,5 +157,5 @@ class UnavailableLiveActivityService implements LiveActivityService {
   Future<void> end(String activityId, {DateTime? dismissAt}) async {}
 
   @override
-  Future<List<String>> runningActivityIds() async => const [];
+  Future<bool> isRunning(String activityId) async => false;
 }

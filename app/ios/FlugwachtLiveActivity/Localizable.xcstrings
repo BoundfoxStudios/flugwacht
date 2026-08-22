@@ -187,6 +187,23 @@
           }
         }
       }
+    },
+    "Probably landed · open the app": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vermutlich gelandet · App öffnen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probably landed · open the app"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

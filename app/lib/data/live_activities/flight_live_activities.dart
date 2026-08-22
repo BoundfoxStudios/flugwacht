@@ -69,7 +69,7 @@ class FlightLiveActivities {
   /// Takes the cards of flights that are gone off the Lock Screen — their rows,
   /// and with them everything the app knew about their activities, are already
   /// deleted.
-  Future<void> flightsRemoved(Iterable<Flight> flights) async {
+  Future<void> flightsRemoved(Iterable<Flight> flights) => _inTurn(() async {
     for (final flight in flights) {
       if (_runningActivityOf(flight) case final activityId?) {
         _activityIds.remove(flight.id);
@@ -79,7 +79,7 @@ class FlightLiveActivities {
       // either way, so only the system still has it.
       await _notifications.cancelLiveActivityReminder(flightId: flight.id);
     }
-  }
+  });
 
   /// Forgets the activities the system has ended on its own — it caps how long
   /// one runs, and the app only learns that by asking.

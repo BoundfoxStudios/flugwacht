@@ -49,7 +49,7 @@ struct FlightCardView: View {
 
   private var hasBottomRow: Bool {
     isStale || card.countdown != nil || card.landing != nil
-        || card.arrival != nil
+        || card.arrival != nil || card.hasProbablyLanded
   }
 
   @ViewBuilder private var bottomRow: some View {
@@ -81,6 +81,11 @@ struct FlightCardView: View {
           .monospacedDigit()
           .frame(maxWidth: 74, alignment: .leading)
       }
+    } else if card.hasProbablyLanded {
+      Text("Probably landed · open the app")
+        .font(FlugwachtFont.text(13))
+        .foregroundStyle(FlugwachtColor.secondary)
+        .lineLimit(1)
     } else {
       staleHint
     }
@@ -98,7 +103,9 @@ struct FlightCardView: View {
   }
 
   @ViewBuilder private var arrival: some View {
-    if let arrivesAt = card.arrival {
+    // An estimate that has run out says nothing useful next to the hint that
+    // the flight probably arrived.
+    if let arrivesAt = card.arrival, !card.hasProbablyLanded {
       HStack(spacing: 2) {
         if card.isArrivalUncertain || isStale {
           Text(verbatim: "~")

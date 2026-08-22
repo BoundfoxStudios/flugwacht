@@ -186,6 +186,26 @@ void main() {
     expect(service.ends.single.activityId, gone.liveActivityId);
   });
 
+  /// A live flight is polled every few seconds, so an update is almost always
+  /// in flight when the user deletes it. An end that lands mid-pass would be
+  /// undone by that pass, and the card it re-creates is unreachable forever.
+  test(
+    'keeps a deleted flight off the card while a pass is in flight',
+    () async {
+      await addFlight();
+      await activities.flightsChanged(await storedFlights());
+      final stored = await storedFlight();
+
+      service.held = Completer<void>();
+      final updating = activities.flightsChanged([stored]);
+      final removing = activities.flightsRemoved([stored]);
+      service.held!.complete();
+      await Future.wait([updating, removing]);
+
+      expect(service.running, isEmpty);
+    },
+  );
+
   test('ends nothing for a gone flight that had no activity', () async {
     await addFlight(isArmed: false);
 

@@ -127,7 +127,7 @@ struct FlightCardView: View {
     if card.hasProbablyLanded {
       return "PROBABLY LANDED"
     }
-    switch card.phase {
+    return switch card.phase {
     case .planned: "PLANNED"
     case .waiting: "WAITING"
     case .live: "LIVE"

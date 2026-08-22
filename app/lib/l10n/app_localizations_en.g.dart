@@ -105,6 +105,24 @@ class AppLocalizationsEn extends AppLocalizations {
       'Waiting for the route to settle the clock';
 
   @override
+  String get liveActivityReminderTitle => 'Live Activity available';
+
+  @override
+  String liveActivityReminderBody(String flight) {
+    return 'Follow $flight on your Lock Screen today. Tap to start.';
+  }
+
+  @override
+  String get settingsLiveActivitySectionTitle => 'Live Activities';
+
+  @override
+  String get settingsLiveActivityReminder => 'Remind me on the flight day';
+
+  @override
+  String get settingsLiveActivityHint =>
+      'You arm a Live Activity per flight; iOS can switch them off for Flugwacht entirely.';
+
+  @override
   String get liveActivityArmLabel => 'Live Activity on flight day';
 
   @override

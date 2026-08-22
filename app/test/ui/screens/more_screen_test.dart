@@ -1,4 +1,6 @@
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
+import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
@@ -21,6 +23,7 @@ Future<
     UnitsSetting units,
     NotificationSetting notifications,
     FakeNotificationService service,
+    LiveActivitySetting liveActivities,
   })
 >
 pumpMoreScreen(
@@ -28,6 +31,7 @@ pumpMoreScreen(
   String version = '1.4.2',
   Locale locale = const Locale('en'),
   NotificationPermission permission = NotificationPermission.granted,
+  LiveActivityAvailability liveActivities = LiveActivityAvailability.enabled,
 }) async {
   final sourceSetting = await createTestSourceSetting();
   final unitsSetting = await createTestUnitsSetting();
@@ -35,6 +39,9 @@ pumpMoreScreen(
   final notificationService = createTestNotificationService(
     permission: permission,
   );
+  final liveActivitySetting = await createTestLiveActivitySetting();
+  final liveActivityService = createTestLiveActivityService();
+  liveActivityService.availability.value = liveActivities;
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -46,6 +53,8 @@ pumpMoreScreen(
         unitsSetting: unitsSetting,
         notificationSetting: notificationSetting,
         notificationService: notificationService,
+        liveActivitySetting: liveActivitySetting,
+        liveActivityService: liveActivityService,
         packageInfo: testPackageInfo(version: version),
       ),
     ),
@@ -56,6 +65,7 @@ pumpMoreScreen(
     units: unitsSetting,
     notifications: notificationSetting,
     service: notificationService,
+    liveActivities: liveActivitySetting,
   );
 }
 
@@ -226,5 +236,46 @@ void main() {
       tester.getTopLeft(find.text('Frequently asked questions')).dy,
       lessThan(tester.getTopLeft(find.text('About Flugwacht')).dy),
     );
+  });
+
+  group('live activities', () {
+    testWidgets('stays away where the device shows no activities', (
+      tester,
+    ) async {
+      await pumpMoreScreen(
+        tester,
+        liveActivities: LiveActivityAvailability.unsupported,
+      );
+
+      expect(find.text('Remind me on the flight day'), findsNothing);
+    });
+
+    testWidgets('reminds on the flight day until the user says otherwise', (
+      tester,
+    ) async {
+      final settings = await pumpMoreScreen(tester);
+      expect(settings.liveActivities.remindsOnFlightDay.value, isTrue);
+
+      await tester.ensureVisible(find.text('Remind me on the flight day'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Remind me on the flight day'));
+      await tester.pumpAndSettle();
+
+      expect(settings.liveActivities.remindsOnFlightDay.value, isFalse);
+    });
+
+    testWidgets('says the activities themselves belong to the flight', (
+      tester,
+    ) async {
+      await pumpMoreScreen(tester);
+
+      expect(
+        find.text(
+          'You arm a Live Activity per flight; iOS can switch them off for '
+          'Flugwacht entirely.',
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }

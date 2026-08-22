@@ -11,6 +11,7 @@ import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/persistence/database.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
+import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/map_style_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
@@ -91,6 +92,15 @@ Future<NotificationSetting> createTestNotificationSetting() async {
   return setting;
 }
 
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<LiveActivitySetting> createTestLiveActivitySetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await LiveActivitySetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
 /// A service that records what the app asked of it instead of talking to the
 /// platform, so no test touches the notification plugin.
 class FakeNotificationService implements NotificationService {
@@ -106,6 +116,8 @@ class FakeNotificationService implements NotificationService {
   final shown = <(FlightNotification, int)>[];
   final scheduled = <(FlightNotification, int, DateTime)>[];
   final cancelled = <(FlightNotification, int)>[];
+  final scheduledReminders = <(int, DateTime)>[];
+  final cancelledReminders = <int>[];
   final _tappedFlights = StreamController<int>.broadcast();
 
   @override
@@ -146,6 +158,18 @@ class FakeNotificationService implements NotificationService {
   @override
   Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
       cancelled.add((kind, flightId));
+
+  @override
+  Future<void> scheduleLiveActivityReminder({
+    required int flightId,
+    required String title,
+    required String body,
+    required DateTime at,
+  }) async => scheduledReminders.add((flightId, at));
+
+  @override
+  Future<void> cancelLiveActivityReminder({required int flightId}) async =>
+      cancelledReminders.add(flightId);
 
   void dispose() {
     permission.dispose();
@@ -189,6 +213,20 @@ class FakeNotificationSetting implements NotificationSetting {
 
   @override
   void dispose() {}
+}
+
+/// A switch without a preference store behind it, so a synchronous test can set
+/// it up in one line.
+class FakeLiveActivitySetting implements LiveActivitySetting {
+  @override
+  final remindsOnFlightDay = signal(true);
+
+  @override
+  Future<void> selectReminder({required bool isEnabled}) async =>
+      remindsOnFlightDay.value = isEnabled;
+
+  @override
+  void dispose() => remindsOnFlightDay.dispose();
 }
 
 /// Records what the app asked the platform to open, so no test leaves the app
@@ -241,6 +279,7 @@ Future<GoRouter> createTestAppRouter({
   notificationSetting: await createTestNotificationSetting(),
   notificationService: notificationService ?? createTestNotificationService(),
   liveActivityService: createTestLiveActivityService(),
+  liveActivitySetting: await createTestLiveActivitySetting(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );

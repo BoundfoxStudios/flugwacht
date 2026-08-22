@@ -7,6 +7,7 @@ import '../data/lookup/airline_directory.dart';
 import '../data/lookup/route_lookup.dart';
 import '../data/notifications/notification_service.dart';
 import '../data/persistence/flight_repository.dart';
+import '../data/settings/live_activity_setting.dart';
 import '../data/settings/map_style_setting.dart';
 import '../data/settings/notification_setting.dart';
 import '../data/settings/source_setting.dart';
@@ -31,6 +32,7 @@ GoRouter createAppRouter({
   required NotificationSetting notificationSetting,
   required NotificationService notificationService,
   required LiveActivityService liveActivityService,
+  required LiveActivitySetting liveActivitySetting,
   required MapTileSources tileSources,
   required PackageInfo packageInfo,
 }) {
@@ -82,6 +84,8 @@ GoRouter createAppRouter({
                   unitsSetting: unitsSetting,
                   notificationSetting: notificationSetting,
                   notificationService: notificationService,
+                  liveActivitySetting: liveActivitySetting,
+                  liveActivityService: liveActivityService,
                   packageInfo: packageInfo,
                 ),
                 routes: [

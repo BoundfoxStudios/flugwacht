@@ -41,6 +41,18 @@
   "newFlightDepartureTimeOriginLocal": "In the origin's local time",
   "newFlightDepartureTimeDeviceFallback": "Without a route the time counts as your device time",
   "newFlightDepartureTimeSearchingRoute": "Waiting for the route to settle the clock",
+  "liveActivityReminderTitle": "Live Activity available",
+  "liveActivityReminderBody": "Follow {flight} on your Lock Screen today. Tap to start.",
+  "@liveActivityReminderBody": {
+    "placeholders": {
+      "flight": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLiveActivitySectionTitle": "Live Activities",
+  "settingsLiveActivityReminder": "Remind me on the flight day",
+  "settingsLiveActivityHint": "You arm a Live Activity per flight; iOS can switch them off for Flugwacht entirely.",
   "liveActivityArmLabel": "Live Activity on flight day",
   "liveActivityDisabledHint": "Live Activities are switched off for Flugwacht in the system settings",
   "newFlightNoteLabel": "Note (optional)",

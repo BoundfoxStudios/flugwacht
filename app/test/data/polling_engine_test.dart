@@ -111,6 +111,19 @@ void main() {
     clock: () => noon.add(async.elapsed),
   );
 
+  FlightLiveActivities liveActivitiesFor(
+    FakeAsync async,
+    FakeFlightRepository repository,
+    FakeLiveActivityService service,
+  ) => FlightLiveActivities(
+    repository: repository,
+    service: service,
+    notifications: createTestNotificationService(),
+    setting: FakeLiveActivitySetting(),
+    copy: (flight) => (title: 'Live Activity', body: flight.lookupValue),
+    clock: () => noon.add(async.elapsed),
+  );
+
   ({
     PollingEngine engine,
     FakeFlightRepository repository,
@@ -133,11 +146,7 @@ void main() {
       activeSourceId: () => SourceId.adsblol,
       airlineDirectory: createTestAirlineDirectory(),
       notifier: notifierFor(async, repository, notifications),
-      liveActivities: FlightLiveActivities(
-        repository: repository,
-        service: liveActivities,
-        clock: () => noon.add(async.elapsed),
-      ),
+      liveActivities: liveActivitiesFor(async, repository, liveActivities),
       clock: () => noon.add(async.elapsed),
     )..start();
     repository.emit(flights);
@@ -967,10 +976,10 @@ void main() {
           repository,
           createTestNotificationService(),
         ),
-        liveActivities: FlightLiveActivities(
-          repository: repository,
-          service: FakeLiveActivityService(),
-          clock: () => noon.add(async.elapsed),
+        liveActivities: liveActivitiesFor(
+          async,
+          repository,
+          FakeLiveActivityService(),
         ),
         clock: () => noon.add(async.elapsed),
       )..start();

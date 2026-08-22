@@ -16,6 +16,7 @@ import 'data/notifications/notification_service.dart';
 import 'data/persistence/database.dart';
 import 'data/persistence/flight_repository.dart';
 import 'data/polling_engine.dart';
+import 'data/settings/live_activity_setting.dart';
 import 'data/settings/map_style_setting.dart';
 import 'data/settings/notification_setting.dart';
 import 'data/settings/source_setting.dart';
@@ -40,6 +41,7 @@ Future<void> main() async {
   final mapStyleSetting = await MapStyleSetting.load();
   final unitsSetting = await UnitsSetting.load();
   final notificationSetting = await NotificationSetting.load();
+  final liveActivitySetting = await LiveActivitySetting.load();
   final packageInfo = await PackageInfo.fromPlatform();
   final localizations = await AppLocalizations.delegate.load(
     basicLocaleListResolution(
@@ -74,6 +76,9 @@ Future<void> main() async {
     liveActivities: FlightLiveActivities(
       repository: flightRepository,
       service: liveActivityService,
+      notifications: notificationService,
+      setting: liveActivitySetting,
+      copy: (flight) => flightLiveActivityReminderText(localizations, flight),
     ),
   ).start();
   runApp(
@@ -88,6 +93,7 @@ Future<void> main() async {
         notificationSetting: notificationSetting,
         notificationService: notificationService,
         liveActivityService: liveActivityService,
+        liveActivitySetting: liveActivitySetting,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,

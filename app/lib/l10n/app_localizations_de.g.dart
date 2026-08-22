@@ -104,6 +104,24 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wartet auf die Route, die die Uhr festlegt';
 
   @override
+  String get liveActivityReminderTitle => 'Live-Aktivität verfügbar';
+
+  @override
+  String liveActivityReminderBody(String flight) {
+    return 'Verfolge $flight heute auf dem Sperrbildschirm. Tippe zum Starten.';
+  }
+
+  @override
+  String get settingsLiveActivitySectionTitle => 'Live-Aktivitäten';
+
+  @override
+  String get settingsLiveActivityReminder => 'Am Flugtag erinnern';
+
+  @override
+  String get settingsLiveActivityHint =>
+      'Live-Aktivitäten schaltest du pro Flug ein; iOS kann sie für Flugwacht ganz abschalten.';
+
+  @override
   String get liveActivityArmLabel => 'Live-Aktivität am Flugtag';
 
   @override

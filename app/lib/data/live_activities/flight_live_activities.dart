@@ -1,8 +1,15 @@
 import '../../domain/flight.dart';
 import '../../domain/live_activity_planning.dart';
+import '../notifications/notification_service.dart';
 import '../persistence/flight_repository.dart';
+import '../settings/live_activity_setting.dart';
 import 'live_activity_payload.dart';
 import 'live_activity_service.dart';
+
+/// What the flight-day reminder says; built where the localizations live,
+/// because nothing down here knows them.
+typedef LiveActivityReminderCopy =
+    ({String title, String body}) Function(Flight flight);
 
 /// Turns what the app learns about its flights into Live Activities: decides
 /// with [planLiveActivityAction], talks to the system through the service and
@@ -11,11 +18,17 @@ class FlightLiveActivities {
   FlightLiveActivities({
     required this._repository,
     required this._service,
+    required this._notifications,
+    required this._setting,
+    required this._copy,
     this.clock = DateTime.now,
   });
 
   final FlightRepository _repository;
   final LiveActivityService _service;
+  final NotificationService _notifications;
+  final LiveActivitySetting _setting;
+  final LiveActivityReminderCopy _copy;
   final DateTime Function() clock;
 
   /// The card this app run put up for a flight. The stored id only catches up
@@ -31,6 +44,7 @@ class FlightLiveActivities {
       // and must not take the polling run down with it.
       try {
         await _apply(flight);
+        await _applyReminder(flight);
       } on Exception {
         continue;
       }
@@ -46,6 +60,9 @@ class FlightLiveActivities {
         _activityIds.remove(flight.id);
         await _service.end(activityId);
       }
+      // Unconditionally: the row that knew about a pending reminder is gone
+      // either way, so only the system still has it.
+      await _notifications.cancelLiveActivityReminder(flightId: flight.id);
     }
   }
 
@@ -95,6 +112,33 @@ class FlightLiveActivities {
         }
         await _service.end(activityId, dismissAt: dismissAt);
         await _repository.setLiveActivityId(flight.id, null);
+    }
+  }
+
+  Future<void> _applyReminder(Flight flight) async {
+    // A reminder nothing would deliver must not be remembered as pending.
+    final isNotifiable =
+        _notifications.permission.value == NotificationPermission.granted;
+    final schedule = planLiveActivityReminder(
+      flight: flight,
+      isReminderEnabled: isNotifiable && _setting.remindsOnFlightDay.value,
+      now: clock(),
+    );
+    switch (schedule) {
+      case KeepLiveActivityReminder():
+        return;
+      case CancelLiveActivityReminder():
+        await _repository.setLiveActivityReminderSchedule(flight.id, null);
+        await _notifications.cancelLiveActivityReminder(flightId: flight.id);
+      case SetLiveActivityReminder(:final at):
+        await _repository.setLiveActivityReminderSchedule(flight.id, at);
+        final text = _copy(flight);
+        await _notifications.scheduleLiveActivityReminder(
+          flightId: flight.id,
+          title: text.title,
+          body: text.body,
+          at: at,
+        );
     }
   }
 

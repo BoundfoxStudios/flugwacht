@@ -53,22 +53,37 @@ class AirlineDirectory {
         await (bundle ?? rootBundle).loadString(assetPath),
       );
 
+  /// Airlines file a short number padded to three digits on the wire; a wider
+  /// padding is not a form aircraft transmit and would only cost queries.
+  static const _wireNumberWidth = 3;
+
   final Map<String, _Airline> _airlinesByIcaoCode;
   final Map<String, List<_Airline>> _airlinesByIataCode;
 
   /// The callsigns the flight number can stand for, in the order of the
   /// airline file: an icao code resolves to itself, an iata code to every
-  /// airline carrying it.
-  List<String> callsignCandidates(FlightNumber flightNumber) {
-    final code = flightNumber.airlineCode;
-    if (_airlinesByIcaoCode.containsKey(code)) {
-      return ['$code${flightNumber.number}'];
+  /// airline carrying it, each with the number in every form it travels in.
+  List<String> callsignCandidates(FlightNumber flightNumber) => [
+    for (final icaoCode in _icaoCodesFor(flightNumber.airlineCode))
+      for (final number in _numberForms(flightNumber)) '$icaoCode$number',
+  ];
+
+  Iterable<String> _icaoCodesFor(String code) =>
+      _airlinesByIcaoCode.containsKey(code)
+      ? [code]
+      : [
+          for (final airline in _airlinesByIataCode[code] ?? const <_Airline>[])
+            if (airline.icaoCode.isNotEmpty) airline.icaoCode,
+        ];
+
+  /// The standing data lists a number stripped, while an aircraft transmits it
+  /// padded — a query built from the stripped form alone never reaches it.
+  Iterable<String> _numberForms(FlightNumber flightNumber) sync* {
+    yield flightNumber.number;
+    final digits = flightNumber.digits;
+    if (digits.length < _wireNumberWidth) {
+      yield '${digits.padLeft(_wireNumberWidth, '0')}${flightNumber.suffix}';
     }
-    return [
-      for (final airline in _airlinesByIataCode[code] ?? const <_Airline>[])
-        if (airline.icaoCode.isNotEmpty)
-          '${airline.icaoCode}${flightNumber.number}',
-    ];
   }
 
   String? airlineName(String code) =>

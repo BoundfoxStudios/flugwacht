@@ -50,6 +50,38 @@ void main() {
     ]);
   });
 
+  /// Airlines file their number zero padded on the wire while the standing
+  /// data lists it stripped, so a query built from the stripped form alone
+  /// never reaches the aircraft.
+  test('offers the zero padded forms a wire callsign uses', () {
+    expect(directory.callsignCandidates(const FlightNumber('DLH', '16')), [
+      'DLH16',
+      'DLH016',
+    ]);
+  });
+
+  test('pads every airline behind an ambiguous iata code', () {
+    expect(directory.callsignCandidates(const FlightNumber('LH', '16')), [
+      'DLH16',
+      'DLH016',
+      'GEC16',
+      'GEC016',
+    ]);
+  });
+
+  test('leaves a number that fills the width alone', () {
+    expect(directory.callsignCandidates(const FlightNumber('DLH', '400')), [
+      'DLH400',
+    ]);
+  });
+
+  test('keeps a suffix behind the padded digits', () {
+    expect(directory.callsignCandidates(const FlightNumber('DLH', '16A')), [
+      'DLH16A',
+      'DLH016A',
+    ]);
+  });
+
   test('yields no candidates for an unknown code', () {
     expect(
       directory.callsignCandidates(const FlightNumber('ZZ', '400')),

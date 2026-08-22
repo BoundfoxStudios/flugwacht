@@ -75,13 +75,22 @@ struct FlightCardView: View {
         Text(countdown.label == .departure ? "Departure in" : "Landing in")
           .font(FlugwachtFont.text(13))
           .foregroundStyle(FlugwachtColor.secondary)
-        Text(timerInterval: Date.now...countdown.target, countsDown: true)
+        Text(timerInterval: countdown.span, countsDown: true)
           .font(FlugwachtFont.numerals(20))
           .foregroundStyle(FlugwachtColor.primary)
           .monospacedDigit()
           .frame(maxWidth: 74, alignment: .leading)
       }
-    } else if isStale {
+    } else {
+      staleHint
+    }
+  }
+
+  /// The card only says its data is old where nothing else occupies the line;
+  /// next to a running countdown the dimmed look and the ~ before the ETA
+  /// already carry it.
+  @ViewBuilder private var staleHint: some View {
+    if isStale {
       Text("Data outdated")
         .font(FlugwachtFont.text(13))
         .foregroundStyle(FlugwachtColor.secondary)

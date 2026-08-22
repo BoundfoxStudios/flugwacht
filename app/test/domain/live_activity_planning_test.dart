@@ -196,6 +196,23 @@ void main() {
       );
     });
 
+    /// The lead time of a flight just after midnight reaches into the day
+    /// before, where no activity could start yet.
+    test('never schedules it before the flight day begins', () {
+      final schedule = _reminder(
+        flight: _flight(departureTime: const DayTime(1, 0)),
+        now: _beforeFlightDay,
+      );
+      expect(
+        schedule,
+        isA<SetLiveActivityReminder>().having(
+          (schedule) => schedule.at,
+          'at',
+          DateTime(2026, 3, 17),
+        ),
+      );
+    });
+
     test('leaves a reminder that is pending in another time zone', () {
       final schedule = _reminder(
         flight: _flight(

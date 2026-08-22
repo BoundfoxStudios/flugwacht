@@ -39,7 +39,7 @@ struct FlightLiveActivity: Widget {
 
   @ViewBuilder private func compactCountdown(for card: FlightCard) -> some View {
     if let countdown = card.countdown {
-      Text(timerInterval: Date.now...countdown.target, countsDown: true)
+      Text(timerInterval: countdown.span, countsDown: true)
         .font(FlugwachtFont.numerals(15))
         .foregroundStyle(FlugwachtColor.accent)
         .monospacedDigit()
@@ -145,6 +145,17 @@ extension LiveActivitiesAppAttributes {
     )
   }
 
+  /// The frozen estimate ran out: the card must fall back to its state label
+  /// rather than build a countdown that ends before it starts.
+  fileprivate static var arrivalPassed: LiveActivitiesAppAttributes {
+    previewFlight(
+      state: "noSignal",
+      arrivesIn: -1800,
+      airborneSince: 10800,
+      id: "A0000000-0000-4000-8000-000000000007"
+    )
+  }
+
   fileprivate static var withoutRoute: LiveActivitiesAppAttributes {
     previewFlight(
       state: "waiting",
@@ -187,6 +198,12 @@ extension LiveActivitiesAppAttributes.ContentState {
 }
 
 #Preview("without a route", as: .content, using: LiveActivitiesAppAttributes.withoutRoute) {
+  FlightLiveActivity()
+} contentStates: {
+  LiveActivitiesAppAttributes.ContentState.shared
+}
+
+#Preview("arrival passed", as: .content, using: LiveActivitiesAppAttributes.arrivalPassed) {
   FlightLiveActivity()
 } contentStates: {
   LiveActivitiesAppAttributes.ContentState.shared

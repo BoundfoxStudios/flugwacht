@@ -35,7 +35,6 @@ class EndLiveActivity extends LiveActivityAction {
 
   final String activityId;
 
-  /// How long the card stays before the system dismisses it.
   final Duration dismissAfter;
 }
 
@@ -120,10 +119,17 @@ LiveActivityReminderSchedule planLiveActivityReminder({
 }
 
 /// The moment the activity could first start: shortly before the departure the
-/// user entered, or the start of the flight day when they entered none.
+/// user entered, or the start of the flight day when they entered none. Never
+/// earlier than the flight day — a night flight's lead time reaches into the
+/// day before, where no activity can exist yet.
 DateTime _reminderMoment(Flight flight) {
+  final windowStart = FlightDayWindow.forDepartureDate(
+    flight.departureDate,
+  ).start;
   final departure = departureInstantOf(flight);
-  return departure == null
-      ? FlightDayWindow.forDepartureDate(flight.departureDate).start
-      : departure.subtract(_reminderLeadTime);
+  if (departure == null) {
+    return windowStart;
+  }
+  final lead = departure.subtract(_reminderLeadTime);
+  return lead.isBefore(windowStart) ? windowStart : lead;
 }

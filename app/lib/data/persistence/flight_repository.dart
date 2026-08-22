@@ -139,7 +139,6 @@ class FlightRepository {
     return rows > 0;
   }
 
-  /// Whether the user wants a Live Activity for this flight on its flight day.
   Future<void> setLiveActivityArmed(
     int flightId, {
     required bool isArmed,

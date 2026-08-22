@@ -253,11 +253,14 @@ void main() {
       );
     });
 
-    test('falls back to the flight day once the departure has passed', () {
+    /// A moment that has passed is exactly what staleness is for: stretching
+    /// the window to the end of the flight day would let a card present an
+    /// expired countdown as fresh for up to two days.
+    test('marks a card outdated right away once its moment has passed', () {
       final flight = _flight(departureTime: const DayTime(6, 0));
       expect(
-        _onFlightDay.add(liveActivityStaleIn(flight, _onFlightDay)),
-        DateTime(2026, 3, 19),
+        liveActivityStaleIn(flight, _onFlightDay),
+        const Duration(minutes: 1),
       );
     });
   });

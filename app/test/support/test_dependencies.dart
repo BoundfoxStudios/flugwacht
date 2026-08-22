@@ -352,12 +352,22 @@ class FakeLiveActivityService implements LiveActivityService {
     if (failure case final failure?) {
       throw failure;
     }
+    await held?.future;
     puts.add((activityId: activityId, data: data));
+    // The system knows a card the moment it exists, and so must the fake:
+    // answering "not running" for a card it just took hid a duplicate-card bug.
+    running = [...running, activityId];
   }
 
+  /// Holds the next put open, so a test can let another pass land while a card
+  /// is still being created.
+  Completer<void>? held;
+
   @override
-  Future<void> end(String activityId, {DateTime? dismissAt}) async =>
-      ends.add((activityId: activityId, dismissAt: dismissAt));
+  Future<void> end(String activityId, {DateTime? dismissAt}) async {
+    ends.add((activityId: activityId, dismissAt: dismissAt));
+    running = running.where((id) => id != activityId).toList();
+  }
 
   @override
   Future<bool> isRunning(String activityId) async =>

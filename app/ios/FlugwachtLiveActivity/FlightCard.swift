@@ -63,17 +63,21 @@ struct FlightCard {
     return (originCode, destinationCode)
   }
 
-  /// What the numbers count down to, or nothing while the flight gives no
-  /// basis for a countdown.
-  var countdown: (label: CountdownLabel, target: Date)? {
-    switch phase {
-    case .live, .noSignal:
-      return estimatedArrivalAt.map { (.landing, $0) }
-    case .planned, .waiting:
-      return departureAt.map { (.departure, $0) }
-    case .ended, .missed:
+  /// The span the countdown runs over, built here so it can never end before
+  /// it starts — a reversed range traps at render time. A moment that has
+  /// already passed leaves no countdown at all, and the card falls back to the
+  /// state label the way the spec asks.
+  var countdown: (label: CountdownLabel, span: ClosedRange<Date>)? {
+    let now = Date.now
+    let target: (label: CountdownLabel, at: Date)? = switch phase {
+    case .live, .noSignal: estimatedArrivalAt.map { (.landing, $0) }
+    case .planned, .waiting: departureAt.map { (.departure, $0) }
+    case .ended, .missed: nil
+    }
+    guard let target, target.at > now else {
       return nil
     }
+    return (target.label, now...target.at)
   }
 
   /// The span the progress bar fills over, anchored on the moment the flight

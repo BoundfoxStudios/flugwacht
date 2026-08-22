@@ -9,6 +9,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../app_icons.dart';
 import '../../data/persistence/flight_repository.dart';
 import '../../data/settings/map_style_setting.dart';
+import '../../domain/flight.dart';
 import '../../domain/trail_point.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../map_selection.dart';
@@ -77,8 +78,8 @@ class _ListScreenState extends State<ListScreen> {
                 mapStyleSetting: widget.mapStyleSetting,
                 tileSources: widget.tileSources,
                 onFlightSelected: (flightId) => _openOnMap(context, flightId),
-                onFlightDeleted: (flightId) =>
-                    unawaited(_deleteFlight(context, flightId)),
+                onFlightDeleted: (flight) =>
+                    unawaited(_deleteFlight(context, flight)),
               );
       },
     ),
@@ -96,13 +97,15 @@ class _ListScreenState extends State<ListScreen> {
 
   /// The row goes first and the delete follows only when the undo is gone, so
   /// a wrong swipe costs the flight nothing.
-  Future<void> _deleteFlight(BuildContext context, int flightId) async {
+  Future<void> _deleteFlight(BuildContext context, Flight flight) async {
     final localizations = AppLocalizations.of(context);
-    _flightList.holdDeletion(flightId);
+    _flightList.holdDeletion(flight.id);
     final closedReason = await ScaffoldMessenger.of(context)
         .showSnackBar(
           SnackBar(
-            content: Text(localizations.listFlightDeleted),
+            content: Text(
+              localizations.listFlightDeleted(flight.lookupValue),
+            ),
             duration: const Duration(seconds: 6),
             // A snackbar with an action persists by default, but here the
             // timeout is what commits the delete — it must keep running.
@@ -115,10 +118,10 @@ class _ListScreenState extends State<ListScreen> {
         )
         .closed;
     if (closedReason == SnackBarClosedReason.action) {
-      _flightList.releaseDeletion(flightId);
+      _flightList.releaseDeletion(flight.id);
       return;
     }
-    await _flightList.commitDeletion(flightId);
+    await _flightList.commitDeletion(flight.id);
   }
 
   void _openOnMap(BuildContext context, int flightId) {
@@ -144,7 +147,7 @@ class _FlightSections extends StatelessWidget {
   final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
   final ValueChanged<int> onFlightSelected;
-  final ValueChanged<int> onFlightDeleted;
+  final ValueChanged<Flight> onFlightDeleted;
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +173,7 @@ class _FlightSections extends StatelessWidget {
               _SwipeToDelete(
                 key: ValueKey(entry.flight.id),
                 flightId: entry.flight.id,
-                onDeleted: () => onFlightDeleted(entry.flight.id),
+                onDeleted: () => onFlightDeleted(entry.flight),
                 child: _HeroCell(
                   key: ValueKey(entry.flight.id),
                   entry: entry,
@@ -185,7 +188,7 @@ class _FlightSections extends StatelessWidget {
               _SwipeToDelete(
                 key: ValueKey(entry.flight.id),
                 flightId: entry.flight.id,
-                onDeleted: () => onFlightDeleted(entry.flight.id),
+                onDeleted: () => onFlightDeleted(entry.flight),
                 child: FlightRow(
                   flight: entry.flight,
                   state: entry.state,
@@ -198,7 +201,7 @@ class _FlightSections extends StatelessWidget {
                 _SwipeToDelete(
                   key: ValueKey(entry.flight.id),
                   flightId: entry.flight.id,
-                  onDeleted: () => onFlightDeleted(entry.flight.id),
+                  onDeleted: () => onFlightDeleted(entry.flight),
                   child: FlightRow(
                     flight: entry.flight,
                     state: entry.state,

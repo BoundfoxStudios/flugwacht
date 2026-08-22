@@ -54,7 +54,7 @@
   "newFlightPreviewRoute": "{origin} → {destination}",
   "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}",
   "listPastSectionTitle": "Vorbei · weg in 24 h",
-  "listFlightDeleted": "Flug gelöscht",
+  "listFlightDeleted": "{flight} gelöscht",
   "listUndoDelete": "Rückgängig",
   "listDeleteFlight": "Flug löschen",
   "listPlannedDateFormat": "ccc, d. LLL",

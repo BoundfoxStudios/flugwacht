@@ -387,8 +387,8 @@ abstract class AppLocalizations {
   /// No description provided for @listFlightDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Flight deleted'**
-  String get listFlightDeleted;
+  /// **'{flight} deleted'**
+  String listFlightDeleted(String flight);
 
   /// No description provided for @listUndoDelete.
   ///

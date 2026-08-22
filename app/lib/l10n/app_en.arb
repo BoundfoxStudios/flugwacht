@@ -96,7 +96,14 @@
     }
   },
   "listPastSectionTitle": "Past · gone in 24 h",
-  "listFlightDeleted": "Flight deleted",
+  "listFlightDeleted": "{flight} deleted",
+  "@listFlightDeleted": {
+    "placeholders": {
+      "flight": {
+        "type": "String"
+      }
+    }
+  },
   "listUndoDelete": "Undo",
   "listDeleteFlight": "Delete flight",
   "@listDeleteFlight": {

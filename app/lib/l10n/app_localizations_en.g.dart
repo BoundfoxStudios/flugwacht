@@ -174,7 +174,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listPastSectionTitle => 'Past · gone in 24 h';
 
   @override
-  String get listFlightDeleted => 'Flight deleted';
+  String listFlightDeleted(String flight) {
+    return '$flight deleted';
+  }
 
   @override
   String get listUndoDelete => 'Undo';

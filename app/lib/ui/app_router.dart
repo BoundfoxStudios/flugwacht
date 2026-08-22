@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -137,5 +139,14 @@ GoRouter createAppRouter({
   // The tap that started the app arrives before anything listens; the map is
   // where the app opens anyway.
   mapSelection.requestedFlightId.value = notificationService.launchFlightId;
+  // A tapped card that cold-started the app was parked natively and only
+  // becomes readable once the engine runs, so it arrives a moment later.
+  unawaited(
+    liveActivityService.takeLaunchFlight().then((flightId) {
+      if (flightId != null) {
+        mapSelection.requestedFlightId.value = flightId;
+      }
+    }),
+  );
   return router;
 }

@@ -12,5 +12,19 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    guard
+      let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "LaunchUrl")
+    else {
+      return
+    }
+    launchUrlChannel = FlutterMethodChannel(
+      name: "flugwacht/launch_url",
+      binaryMessenger: registrar.messenger()
+    )
+    launchUrlChannel?.setMethodCallHandler { call, result in
+      result(call.method == "take" ? LaunchUrl.take() : FlutterMethodNotImplemented)
+    }
   }
+
+  private var launchUrlChannel: FlutterMethodChannel?
 }

@@ -337,6 +337,16 @@ class FakeLiveActivityService implements LiveActivityService {
   /// Stands in for the user tapping the card of a flight.
   void tap(int flightId) => _tappedFlights.add(flightId);
 
+  /// Stands in for a tap that started the app.
+  int? launchFlightId;
+
+  @override
+  Future<int?> takeLaunchFlight() async {
+    final flightId = launchFlightId;
+    launchFlightId = null;
+    return flightId;
+  }
+
   void dispose() {
     availability.dispose();
     unawaited(_tappedFlights.close());

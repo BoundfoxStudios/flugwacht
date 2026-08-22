@@ -26,7 +26,10 @@ struct FlightCardView: View {
   }
 
   private var titleRow: some View {
-    HStack(alignment: .firstTextBaseline) {
+    HStack(alignment: .firstTextBaseline, spacing: 6) {
+      Image(systemName: "airplane")
+        .font(.system(size: 12))
+        .foregroundStyle(FlugwachtColor.accent)
       Text(card.note.map { "\(card.designator) · \($0)" } ?? card.designator)
         .font(FlugwachtFont.emphasis(15))
         .foregroundStyle(FlugwachtColor.primary)

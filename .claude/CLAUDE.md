@@ -64,6 +64,12 @@ code:
 - Only the documented self-updating views keep running while the app is
   closed: `Text(timerInterval:)` and `ProgressView(timerInterval:)`. They do
   not expose their current value, so nothing can be positioned along them.
+- iOS ends a card on its own after eight hours and leaves it on the Lock
+  Screen for up to four more. Dropping such a card's id without dismissing the
+  card first puts the flight's next one beside it instead of in its place. An
+  unanswered `getActivityState` is not that case: right after a cold start
+  ActivityKit has not always loaded its activities, and a card it stays silent
+  about is left alone.
 - A widget extension hosts only widget previews. A plain SwiftUI `#Preview` in
   that target fails with "Unsupported preview type" and can wedge Xcode.
 - `flutter pub get` on Linux empties the generated Swift package that wires the

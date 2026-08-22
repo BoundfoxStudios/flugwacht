@@ -27,8 +27,11 @@ void main() {
       await expectLater(service.end('activity-1'), completes);
     });
 
-    test('finds no activity running', () async {
-      expect(await service.isRunning('activity-1'), isFalse);
+    test('knows nothing about an activity', () async {
+      expect(
+        await service.presenceOf('activity-1'),
+        LiveActivityPresence.unknown,
+      );
     });
 
     test('hands up no tapped flight', () async {

@@ -81,18 +81,26 @@ class FlightLiveActivities {
     }
   });
 
-  /// Forgets the activities the system has ended on its own — it caps how long
+  /// Clears away the cards the system has ended on its own — it caps how long
   /// one runs, and the app only learns that by asking.
+  ///
+  /// An ended card stays on the Lock Screen for hours, so forgetting it is not
+  /// enough: the flight's next card would join it instead of replacing it. A
+  /// system that does not answer at all leaves the card alone — a card that is
+  /// really gone comes back under the same id on the next put.
   Future<void> reconcile(List<Flight> flights) => _inTurn(() async {
     for (final flight in flights) {
       final activityId = _runningActivityOf(flight);
-      if (activityId == null || await _service.isRunning(activityId)) {
+      if (activityId == null ||
+          await _service.presenceOf(activityId) !=
+              LiveActivityPresence.finished) {
         continue;
       }
-      // Only forget the card this call asked about: a pass that started a
+      // Only take down the card this call asked about: a pass that started a
       // fresh one in the meantime must keep it.
       if (_runningActivityOf(flight) == activityId) {
         _activityIds.remove(flight.id);
+        await _service.end(activityId);
         await _repository.setLiveActivityId(flight.id, null);
       }
     }

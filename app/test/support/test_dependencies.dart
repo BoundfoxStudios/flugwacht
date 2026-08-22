@@ -323,6 +323,11 @@ class FakeLiveActivityService implements LiveActivityService {
   final puts = <LiveActivityPut>[];
   final ends = <LiveActivityEnd>[];
   var running = const <String>[];
+
+  /// What the system answers about a card it does not list: that it is over —
+  /// unless the test stands in for one that has not loaded its activities yet
+  /// and answers nothing at all.
+  var presenceOfUnlistedCard = LiveActivityPresence.finished;
   var availabilityRefreshes = 0;
   Exception? failure;
 
@@ -387,8 +392,10 @@ class FakeLiveActivityService implements LiveActivityService {
   }
 
   @override
-  Future<bool> isRunning(String activityId) async =>
-      running.contains(activityId);
+  Future<LiveActivityPresence> presenceOf(String activityId) async =>
+      running.contains(activityId)
+      ? LiveActivityPresence.running
+      : presenceOfUnlistedCard;
 }
 
 class FakeFlightRepository implements FlightRepository {

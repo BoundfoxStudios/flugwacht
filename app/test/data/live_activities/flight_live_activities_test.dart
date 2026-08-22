@@ -214,14 +214,36 @@ void main() {
     expect(service.ends, isEmpty);
   });
 
-  test('forgets an activity the system no longer runs', () async {
+  /// iOS ends a card of its own accord once it has run for its limit, and
+  /// leaves it on the Lock Screen for hours afterwards. A card started next to
+  /// it would put the flight on the screen twice.
+  test('takes down a card the system has ended', () async {
     await addFlight();
     await activities.flightsChanged(await storedFlights());
+    final activityId = service.puts.single.activityId;
     service.running = const [];
 
     await activities.reconcile(await storedFlights());
 
+    expect(service.ends.single.activityId, activityId);
     expect((await storedFlight()).liveActivityId, isNull);
+  });
+
+  /// ActivityKit has not always loaded its activities right after a cold
+  /// start, and then answers about a card on the Lock Screen as if it had
+  /// never heard of it.
+  test('leaves a card the system will not talk about alone', () async {
+    await addFlight();
+    await activities.flightsChanged(await storedFlights());
+    final activityId = service.puts.single.activityId;
+    service
+      ..running = const []
+      ..presenceOfUnlistedCard = LiveActivityPresence.unknown;
+
+    await activities.reconcile(await storedFlights());
+
+    expect(service.ends, isEmpty);
+    expect((await storedFlight()).liveActivityId, activityId);
   });
 
   test('asks about the activity under the id it started it with', () async {

@@ -17,6 +17,12 @@ const liveActivityAppGroupId = 'group.com.boundfoxstudios.apps.flugwacht';
 /// the system settings.
 enum LiveActivityAvailability { unsupported, disabled, enabled }
 
+/// What became of a card the app started. [unknown] is not an answer but the
+/// absence of one: right after a cold start ActivityKit has not always loaded
+/// its activities yet, and a card it does not mention then may well be on the
+/// Lock Screen.
+enum LiveActivityPresence { running, finished, unknown }
+
 /// The seam between the app and the Live Activity plugin, so nothing above it
 /// talks to the platform directly.
 abstract interface class LiveActivityService {
@@ -49,10 +55,10 @@ abstract interface class LiveActivityService {
   /// look at it, right away otherwise.
   Future<void> end(String activityId, {DateTime? dismissAt});
 
-  /// Whether the system still shows the activity started under [activityId].
-  /// It outlives nothing the app remembers: iOS ends a card on its own once it
+  /// What the system did with the activity started under [activityId]. It
+  /// outlives nothing the app remembers: iOS ends a card on its own once it
   /// hits the runtime limit, and the user can swipe it away.
-  Future<bool> isRunning(String activityId);
+  Future<LiveActivityPresence> presenceOf(String activityId);
 }
 
 class PluginLiveActivityService implements LiveActivityService {
@@ -140,13 +146,13 @@ class PluginLiveActivityService implements LiveActivityService {
   /// attributes — the two never compare equal. `getActivityState` is the one
   /// call that takes the id the app started the card with.
   @override
-  Future<bool> isRunning(String activityId) async =>
+  Future<LiveActivityPresence> presenceOf(String activityId) async =>
       switch (await _plugin.getActivityState(activityId)) {
-        LiveActivityState.active || LiveActivityState.stale => true,
+        LiveActivityState.active ||
+        LiveActivityState.stale => LiveActivityPresence.running,
         LiveActivityState.ended ||
-        LiveActivityState.dismissed ||
-        LiveActivityState.unknown ||
-        null => false,
+        LiveActivityState.dismissed => LiveActivityPresence.finished,
+        LiveActivityState.unknown || null => LiveActivityPresence.unknown,
       };
 }
 
@@ -176,5 +182,6 @@ class UnavailableLiveActivityService implements LiveActivityService {
   Future<void> end(String activityId, {DateTime? dismissAt}) async {}
 
   @override
-  Future<bool> isRunning(String activityId) async => false;
+  Future<LiveActivityPresence> presenceOf(String activityId) async =>
+      LiveActivityPresence.unknown;
 }

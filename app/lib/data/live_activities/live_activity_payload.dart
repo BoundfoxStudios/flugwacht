@@ -9,28 +9,36 @@ import 'live_activity_url.dart';
 /// past that the data behind them is old enough to say so.
 const liveActivityStaleGrace = Duration(minutes: 15);
 
+/// The plugin sends the stale window as whole minutes and drops anything under
+/// one, so a shorter window would leave the card claiming its numbers are
+/// fresh forever.
+const _shortestStaleWindow = Duration(minutes: 1);
+
 /// What the widget extension needs to draw the flight, flat enough to travel
-/// through the App Group as key-value pairs. Absent facts are left out rather
-/// than sent as null.
+/// through the App Group as key-value pairs.
+///
+/// Every key travels on every payload: an update only clears what it carries
+/// as null, a create would throw on one, and a key left out keeps whatever the
+/// last update wrote. A fact that stops applying therefore has to arrive as an
+/// empty string or a zero timestamp.
 Map<String, dynamic> liveActivityPayloadOf(Flight flight, DateTime now) {
   final route = flight.route;
   final tracking = flight.tracking;
   return {
     'url': liveActivityUrlOf(flight.id),
     'designator': flight.lookupValue,
-    'note': ?flight.note,
+    'note': flight.note ?? '',
     'state': resolveFlightState(flight, now).name,
-    if (route != null) ...{
-      'originCode': route.origin.iataCode ?? route.origin.icaoCode,
-      'destinationCode':
-          route.destination.iataCode ?? route.destination.icaoCode,
-    },
-    'departureAt': ?departureInstantOf(flight)?.millisecondsSinceEpoch,
-    'estimatedArrivalAt': ?arrivalEstimateOf(
-      flight,
-    )?.arrivesAt.millisecondsSinceEpoch,
-    'firstAirborneAt': ?tracking.firstAirborneAt?.millisecondsSinceEpoch,
-    'landedAt': ?_landingOf(tracking)?.millisecondsSinceEpoch,
+    'originCode': route == null
+        ? ''
+        : route.origin.iataCode ?? route.origin.icaoCode,
+    'destinationCode': route == null
+        ? ''
+        : route.destination.iataCode ?? route.destination.icaoCode,
+    'departureAt': _epochOf(departureInstantOf(flight)),
+    'estimatedArrivalAt': _epochOf(arrivalEstimateOf(flight)?.arrivesAt),
+    'firstAirborneAt': _epochOf(tracking.firstAirborneAt),
+    'landedAt': _epochOf(_landingOf(tracking)),
   };
 }
 
@@ -44,8 +52,10 @@ Duration liveActivityStaleIn(Flight flight, DateTime now) {
       ? target
       : FlightDayWindow.forDepartureDate(flight.departureDate).end;
   final remaining = honest.difference(now);
-  return remaining.isNegative ? Duration.zero : remaining;
+  return remaining < _shortestStaleWindow ? _shortestStaleWindow : remaining;
 }
+
+int _epochOf(DateTime? instant) => instant?.millisecondsSinceEpoch ?? 0;
 
 DateTime? _staleTarget(Flight flight) {
   final estimate = arrivalEstimateOf(flight);

@@ -72,9 +72,9 @@ void main() {
       expect(payload['note'], 'Papa');
     });
 
-    test('leaves out a note the flight does not carry', () {
+    test('empties the note of a flight that carries none', () {
       final payload = liveActivityPayloadOf(_flight(), _onFlightDay);
-      expect(payload.containsKey('note'), isFalse);
+      expect(payload['note'], '');
     });
 
     test('carries the state the app shows for the flight', () {
@@ -115,10 +115,10 @@ void main() {
       expect(payload['destinationCode'], 'EDDM');
     });
 
-    test('leaves out the codes of a flight without a route', () {
+    test('empties the codes of a flight without a route', () {
       final payload = liveActivityPayloadOf(_flight(route: null), _onFlightDay);
-      expect(payload.containsKey('originCode'), isFalse);
-      expect(payload.containsKey('destinationCode'), isFalse);
+      expect(payload['originCode'], '');
+      expect(payload['destinationCode'], '');
     });
 
     test('carries the scheduled departure as epoch milliseconds', () {
@@ -140,7 +140,7 @@ void main() {
       expect(payload['estimatedArrivalAt'], isA<int>());
     });
 
-    test('leaves out an arrival the flight gives no basis for', () {
+    test('zeroes an arrival the flight gives no basis for', () {
       final payload = liveActivityPayloadOf(
         _flight(
           tracking: FlightTracking(
@@ -149,7 +149,7 @@ void main() {
         ),
         _onFlightDay,
       );
-      expect(payload.containsKey('estimatedArrivalAt'), isFalse);
+      expect(payload['estimatedArrivalAt'], 0);
     });
 
     test('carries the anchor the progress bar runs from', () {
@@ -182,16 +182,45 @@ void main() {
       expect(payload['landedAt'], landedAt.millisecondsSinceEpoch);
     });
 
-    test('leaves out an arrival while the flight is still up', () {
+    test('zeroes the landing while the flight is still up', () {
       final payload = liveActivityPayloadOf(
         _flight(tracking: FlightTracking(latestPosition: _position())),
         _onFlightDay,
       );
-      expect(payload.containsKey('landedAt'), isFalse);
+      expect(payload['landedAt'], 0);
+    });
+
+    /// An update only clears a key the map carries as null, and a create would
+    /// throw on one — so a fact that stops applying has to arrive as a value
+    /// the card can read as "none", or its last value stays on the Lock Screen.
+    test('carries every key on every payload', () {
+      final complete = liveActivityPayloadOf(
+        _flight(
+          note: 'Papa',
+          departureTime: const DayTime(10, 0),
+          tracking: FlightTracking(
+            latestPosition: _position(),
+            firstAirborneAt: _onFlightDay,
+          ),
+        ),
+        _onFlightDay,
+      );
+      final bare = liveActivityPayloadOf(_flight(route: null), _onFlightDay);
+
+      expect(bare.keys.toSet(), complete.keys.toSet());
+      expect(bare.values, isNot(contains(isNull)));
     });
   });
 
   group('stale date', () {
+    test('stays at least a minute, which the plugin rounds to', () {
+      final flight = _flight(departureTime: const DayTime(12, 14));
+      expect(
+        liveActivityStaleIn(flight, DateTime(2026, 3, 17, 12, 29)),
+        greaterThanOrEqualTo(const Duration(minutes: 1)),
+      );
+    });
+
     test('outlives the estimated arrival by the grace period', () {
       final flight = _flight(
         tracking: FlightTracking(latestPosition: _position()),

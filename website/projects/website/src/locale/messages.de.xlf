@@ -94,6 +94,22 @@
         <source>FAQ</source>
         <target>FAQ</target>
       </trans-unit>
+      <trans-unit id="screenshots.heading" datatype="html">
+        <source>A look at the app.</source>
+        <target>Ein Blick in die App.</target>
+      </trans-unit>
+      <trans-unit id="screenshots.map" datatype="html">
+        <source>Map &amp; arrival</source>
+        <target>Karte &amp; Ankunft</target>
+      </trans-unit>
+      <trans-unit id="screenshots.today" datatype="html">
+        <source>Today&apos;s flights</source>
+        <target>Deine Flüge heute</target>
+      </trans-unit>
+      <trans-unit id="screenshots.add" datatype="html">
+        <source>Add a flight</source>
+        <target>Flug hinzufügen</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

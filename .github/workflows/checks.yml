@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   # Per-commit groups for pushes so queued main runs are never canceled as superseded
@@ -14,7 +15,18 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.areas.outputs.app }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/changed-areas
+        id: areas
+
   checks:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:

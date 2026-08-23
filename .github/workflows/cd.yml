@@ -3,6 +3,9 @@ name: CD
 on:
   push:
     branches: [main]
+    # A website-only merge must not burn a build number or ship to testers
+    paths-ignore:
+      - 'website/**'
   workflow_dispatch:
 
 permissions:

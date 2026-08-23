@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: build-${{ github.ref }}
@@ -13,10 +14,25 @@ concurrency:
 # Rehearses the CD delivery builds (signed store artifacts) without uploading
 # anything, so signing regressions surface on the PR instead of on main
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.areas.outputs.app }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/changed-areas
+        id: areas
+
   build-android:
+    needs: changes
     uses: ./.github/workflows/android.yml
+    with:
+      enabled: ${{ needs.changes.outputs.app == 'true' }}
     secrets: inherit
 
   build-ios:
+    needs: changes
     uses: ./.github/workflows/ios.yml
+    with:
+      enabled: ${{ needs.changes.outputs.app == 'true' }}
     secrets: inherit

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../app_icons.dart';
+import '../../data/live_activities/live_activity_service.dart';
 import '../../data/persistence/flight_repository.dart';
 import '../../data/settings/map_style_setting.dart';
 import '../../domain/flight.dart';
@@ -18,6 +19,7 @@ import '../theme/app_tokens.dart';
 import '../widgets/chrome/app_fab.dart';
 import '../widgets/flight/flight_hero_cell.dart';
 import '../widgets/flight/flight_row.dart';
+import '../widgets/flight/live_activity_arm_row.dart';
 import '../widgets/map/map_visuals.dart';
 import 'flight_list.dart';
 import 'list_empty_state.dart';
@@ -29,6 +31,7 @@ class ListScreen extends StatefulWidget {
     required this.mapSelection,
     required this.mapStyleSetting,
     required this.tileSources,
+    required this.liveActivityService,
     super.key,
     this.clock = DateTime.now,
   });
@@ -44,6 +47,9 @@ class ListScreen extends StatefulWidget {
   /// Handed to the hero cells.
   final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
+
+  /// Tells the cells whether the device shows Live Activities at all.
+  final LiveActivityService liveActivityService;
 
   @override
   State<ListScreen> createState() => _ListScreenState();
@@ -77,6 +83,7 @@ class _ListScreenState extends State<ListScreen> {
                 repository: widget.flightRepository,
                 mapStyleSetting: widget.mapStyleSetting,
                 tileSources: widget.tileSources,
+                liveActivityService: widget.liveActivityService,
                 onFlightSelected: (flightId) => _openOnMap(context, flightId),
                 onFlightDeleted: (flight) =>
                     unawaited(_deleteFlight(context, flight)),
@@ -135,6 +142,7 @@ class _FlightSections extends StatelessWidget {
     required this.repository,
     required this.mapStyleSetting,
     required this.tileSources,
+    required this.liveActivityService,
     required this.onFlightSelected,
     required this.onFlightDeleted,
   });
@@ -144,8 +152,17 @@ class _FlightSections extends StatelessWidget {
   final FlightRepository repository;
   final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
+  final LiveActivityService liveActivityService;
   final ValueChanged<int> onFlightSelected;
   final ValueChanged<Flight> onFlightDeleted;
+
+  /// A card the flight can no longer get makes the switch pointless, so the
+  /// past section goes without one.
+  FlightLiveActivityControl _liveActivityOf(Flight flight) => (
+    availability: liveActivityService.availability,
+    onArmed: (isArmed) =>
+        unawaited(repository.setLiveActivityArmed(flight.id, isArmed: isArmed)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -179,6 +196,7 @@ class _FlightSections extends StatelessWidget {
                   repository: repository,
                   mapStyleSetting: mapStyleSetting,
                   tileSources: tileSources,
+                  liveActivity: _liveActivityOf(entry.flight),
                   onTap: () => onFlightSelected(entry.flight.id),
                 ),
               ),
@@ -191,6 +209,7 @@ class _FlightSections extends StatelessWidget {
                   flight: entry.flight,
                   state: entry.state,
                   now: today,
+                  liveActivity: _liveActivityOf(entry.flight),
                 ),
               ),
             if (sections.past.isNotEmpty) ...[
@@ -355,6 +374,7 @@ class _HeroCell extends StatefulWidget {
     required this.repository,
     required this.mapStyleSetting,
     required this.tileSources,
+    required this.liveActivity,
     required this.onTap,
     super.key,
   });
@@ -364,6 +384,7 @@ class _HeroCell extends StatefulWidget {
   final FlightRepository repository;
   final MapStyleSetting mapStyleSetting;
   final MapTileSources tileSources;
+  final FlightLiveActivityControl liveActivity;
   final VoidCallback onTap;
 
   @override
@@ -399,6 +420,7 @@ class _HeroCellState extends State<_HeroCell> {
       onTap: widget.onTap,
       mapStyleSetting: widget.mapStyleSetting,
       tileSources: widget.tileSources,
+      liveActivity: widget.liveActivity,
     ),
   );
 }

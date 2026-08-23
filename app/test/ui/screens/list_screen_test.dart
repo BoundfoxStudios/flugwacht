@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
@@ -27,6 +28,7 @@ Flight _flight({
   String? note,
   CalendarDate date = const CalendarDate(2026, 8, 12),
   FlightTracking tracking = const FlightTracking(),
+  bool liveActivityArmed = false,
 }) => Flight(
   id: id,
   lookupKind: FlightLookupKind.flightNumber,
@@ -34,6 +36,7 @@ Flight _flight({
   departureDate: date,
   note: note,
   tracking: tracking,
+  liveActivityArmed: liveActivityArmed,
 );
 
 FlightTracking _seenAt(DateTime timestamp, {bool? onGround}) => FlightTracking(
@@ -50,6 +53,7 @@ Future<FakeFlightRepository> pumpListScreen(
   WidgetTester tester, {
   MapSelection? selection,
   Locale locale = const Locale('en'),
+  FakeLiveActivityService? liveActivityService,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
@@ -66,6 +70,8 @@ Future<FakeFlightRepository> pumpListScreen(
           clock: () => _today,
           mapStyleSetting: mapStyleSetting,
           tileSources: testTileSources(),
+          liveActivityService:
+              liveActivityService ?? createTestLiveActivityService(),
         ),
       ),
       GoRoute(
@@ -287,6 +293,122 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('new flight screen'), findsOneWidget);
+  });
+
+  group('the live activity switch', () {
+    const label = 'Live Activity on flight day';
+
+    testWidgets('arms a flight from its row', (tester) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([_flight(id: 7)]);
+      await tester.pump();
+
+      await tester.tap(find.text(label));
+      await tester.pump();
+
+      expect(repository.liveActivityArmings, [(7, true)]);
+    });
+
+    testWidgets('disarms a flight from its hero cell', (tester) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([
+        _flight(
+          id: 7,
+          tracking: _seenAt(DateTime(2026, 8, 12, 9, 25)),
+          liveActivityArmed: true,
+        ),
+      ]);
+      await tester.pump();
+
+      await tester.tap(find.text(label));
+      await tester.pump();
+
+      expect(repository.liveActivityArmings, [(7, false)]);
+    });
+
+    testWidgets('leaves the hero flight on the list while it is toggled', (
+      tester,
+    ) async {
+      final selection = MapSelection();
+      addTearDown(selection.dispose);
+      final repository = await pumpListScreen(tester, selection: selection);
+      repository.emit([
+        _flight(id: 7, tracking: _seenAt(DateTime(2026, 8, 12, 9, 25))),
+      ]);
+      await tester.pump();
+
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+
+      expect(selection.flightId.value, isNull);
+      expect(find.text('map screen'), findsNothing);
+    });
+
+    testWidgets('stays away from a flight that is over', (tester) async {
+      final repository = await pumpListScreen(tester);
+      repository.emit([
+        _flight(id: 1, lookupValue: 'EW594'),
+        _flight(
+          id: 2,
+          lookupValue: 'BA915',
+          tracking: _seenAt(DateTime(2026, 8, 12, 8), onGround: true),
+        ),
+      ]);
+      await tester.pump();
+
+      expect(find.text(label), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text(label)).dy,
+        lessThan(tester.getTopLeft(find.text('BA915')).dy),
+      );
+    });
+
+    testWidgets('takes no room where the device shows no activities', (
+      tester,
+    ) async {
+      final liveActivityService = createTestLiveActivityService();
+      liveActivityService.availability.value =
+          LiveActivityAvailability.unsupported;
+      final repository = await pumpListScreen(
+        tester,
+        liveActivityService: liveActivityService,
+      );
+      repository.emit([_flight()]);
+      await tester.pump();
+      final plainHeight = tester.getSize(find.byType(FlightRow)).height;
+
+      liveActivityService.availability.value = LiveActivityAvailability.enabled;
+      await tester.pump();
+
+      expect(find.text(label), findsOneWidget);
+      expect(
+        tester.getSize(find.byType(FlightRow)).height,
+        greaterThan(plainHeight),
+      );
+    });
+
+    testWidgets('says why it does nothing where the system switched it off', (
+      tester,
+    ) async {
+      final liveActivityService = createTestLiveActivityService();
+      liveActivityService.availability.value =
+          LiveActivityAvailability.disabled;
+      final repository = await pumpListScreen(
+        tester,
+        liveActivityService: liveActivityService,
+      );
+
+      repository.emit([_flight()]);
+      await tester.pump();
+
+      expect(
+        find.text(
+          'Live Activities are switched off for Flugwacht in the system '
+          'settings',
+        ),
+        findsOneWidget,
+      );
+    });
   });
 
   group('deleting a flight', () {

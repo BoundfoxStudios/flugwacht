@@ -412,6 +412,7 @@ class FakeFlightRepository implements FlightRepository {
   final clearedTrails = <int>[];
   final notificationResets = <int>[];
   final liveActivityIds = <int, String>{};
+  final liveActivityArmings = <(int, bool)>[];
 
   /// Holds up the reconcile, so a test can watch what runs while it is still
   /// in flight.
@@ -495,6 +496,12 @@ class FakeFlightRepository implements FlightRepository {
       arrivingSoonSchedules[flightId] = at;
     }
   }
+
+  @override
+  Future<void> setLiveActivityArmed(
+    int flightId, {
+    required bool isArmed,
+  }) async => liveActivityArmings.add((flightId, isArmed));
 
   @override
   Future<void> setLiveActivityId(int flightId, String? activityId) async {

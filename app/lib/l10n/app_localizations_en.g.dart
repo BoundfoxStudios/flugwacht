@@ -113,9 +113,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get settingsLiveActivitySectionTitle => 'Live Activities';
-
-  @override
   String get settingsLiveActivityReminder => 'Remind me on the flight day';
 
   @override
@@ -398,7 +395,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsUnitsAviation => 'Aviation (ft, kt)';
 
   @override
-  String get settingsNotificationsSectionTitle => 'Notifications';
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsDuringFlightTitle => 'During the flight';
+
+  @override
+  String get notificationsFlightDayTitle => 'On the flight day';
 
   @override
   String get settingsNotificationDeparted => 'Departed';

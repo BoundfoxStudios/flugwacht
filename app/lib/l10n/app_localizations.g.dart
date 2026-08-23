@@ -284,12 +284,6 @@ abstract class AppLocalizations {
   /// **'Follow {flight} on your Lock Screen today. Tap to start.'**
   String liveActivityReminderBody(String flight);
 
-  /// No description provided for @settingsLiveActivitySectionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Live Activities'**
-  String get settingsLiveActivitySectionTitle;
-
   /// No description provided for @settingsLiveActivityReminder.
   ///
   /// In en, this message translates to:
@@ -726,11 +720,29 @@ abstract class AppLocalizations {
   /// **'Aviation (ft, kt)'**
   String get settingsUnitsAviation;
 
-  /// No description provided for @settingsNotificationsSectionTitle.
+  /// No description provided for @settingsNotificationsTitle.
   ///
   /// In en, this message translates to:
   /// **'Notifications'**
-  String get settingsNotificationsSectionTitle;
+  String get settingsNotificationsTitle;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsDuringFlightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'During the flight'**
+  String get notificationsDuringFlightTitle;
+
+  /// No description provided for @notificationsFlightDayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On the flight day'**
+  String get notificationsFlightDayTitle;
 
   /// No description provided for @settingsNotificationDeparted.
   ///

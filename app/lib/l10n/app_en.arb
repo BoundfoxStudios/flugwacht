@@ -50,7 +50,6 @@
       }
     }
   },
-  "settingsLiveActivitySectionTitle": "Live Activities",
   "settingsLiveActivityReminder": "Remind me on the flight day",
   "settingsLiveActivityHint": "Flugwacht sends you a notification on the flight day, so you can start the Live Activity from there.",
   "liveActivityArmLabel": "Live Activity on flight day",
@@ -411,7 +410,10 @@
   "settingsUnitsSectionTitle": "Units",
   "settingsUnitsMetric": "Metric (m, km/h)",
   "settingsUnitsAviation": "Aviation (ft, kt)",
-  "settingsNotificationsSectionTitle": "Notifications",
+  "settingsNotificationsTitle": "Notifications",
+  "notificationsTitle": "Notifications",
+  "notificationsDuringFlightTitle": "During the flight",
+  "notificationsFlightDayTitle": "On the flight day",
   "settingsNotificationDeparted": "Departed",
   "settingsNotificationArrivingSoon": "Arriving soon (~30 min)",
   "settingsNotificationLanded": "Landed",

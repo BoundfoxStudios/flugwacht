@@ -22,6 +22,7 @@ import 'screens/list_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
 import 'screens/new_flight_screen.dart';
+import 'screens/notifications_screen.dart';
 import 'widgets/map/map_visuals.dart';
 
 GoRouter createAppRouter({
@@ -84,13 +85,18 @@ GoRouter createAppRouter({
                 builder: (context, state) => MoreScreen(
                   sourceSetting: sourceSetting,
                   unitsSetting: unitsSetting,
-                  notificationSetting: notificationSetting,
-                  notificationService: notificationService,
-                  liveActivitySetting: liveActivitySetting,
-                  liveActivityService: liveActivityService,
                   packageInfo: packageInfo,
                 ),
                 routes: [
+                  GoRoute(
+                    path: 'notifications',
+                    builder: (context, state) => NotificationsScreen(
+                      notificationSetting: notificationSetting,
+                      notificationService: notificationService,
+                      liveActivitySetting: liveActivitySetting,
+                      liveActivityService: liveActivityService,
+                    ),
+                  ),
                   GoRoute(
                     path: 'faq',
                     builder: (context, state) => const FaqScreen(),

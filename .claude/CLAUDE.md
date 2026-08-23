@@ -12,8 +12,8 @@
 
 - Everything in the repository and on GitHub is written in English: docs,
   README, issues, milestones, PRs, code, commits. German is used only in the
-  chat with Manuel. The app's own UI copy is German (product decision from the
-  design handoff).
+  chat with Manuel. The app's own UI copy is German (a deliberate product
+  decision).
 
 ## Git & GitHub
 

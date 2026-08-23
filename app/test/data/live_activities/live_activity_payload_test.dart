@@ -277,10 +277,6 @@ void main() {
         liveActivityRelevanceOf(airborne, _onFlightDay),
         greaterThan(liveActivityRelevanceOf(waiting, _onFlightDay)),
       );
-      expect(
-        liveActivityRelevanceOf(waiting, _onFlightDay),
-        greaterThan(liveActivityRelevanceOf(waiting, DateTime(2026, 3, 16))),
-      );
     });
 
     test('ranks a finished flight below every running one', () {
@@ -294,7 +290,7 @@ void main() {
 
       expect(
         liveActivityRelevanceOf(landed, _onFlightDay),
-        lessThan(liveActivityRelevanceOf(_flight(), DateTime(2026, 3, 16))),
+        lessThan(liveActivityRelevanceOf(_flight(), _onFlightDay)),
       );
     });
   });

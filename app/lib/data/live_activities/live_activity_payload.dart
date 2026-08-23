@@ -64,12 +64,14 @@ Duration liveActivityStaleIn(Flight flight, DateTime now) {
 /// show than one that has not left yet.
 double liveActivityRelevanceOf(Flight flight, DateTime now) =>
     switch (resolveFlightState(flight, now)) {
-      FlightState.live => 4,
-      FlightState.noSignal => 3,
-      FlightState.waiting => 2,
-      FlightState.planned => 1,
-      // Its card is only still up so the user gets to look at it.
-      FlightState.ended || FlightState.missed => 0,
+      FlightState.live => 3,
+      FlightState.noSignal => 2,
+      FlightState.waiting => 1,
+      // A landed card is only still up to be looked at. The other two never
+      // reach ActivityKit at all: planLiveActivityAction keeps no card for a
+      // flight outside its flight day, and takes a running one down without a
+      // last put.
+      FlightState.ended || FlightState.planned || FlightState.missed => 0,
     };
 
 int _epochOf(DateTime? instant) => instant?.millisecondsSinceEpoch ?? 0;

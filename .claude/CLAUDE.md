@@ -181,7 +181,10 @@ obvious from the code:
   which also orders the Lock Screen. `liveActivityRelevanceOf` derives it from
   the flight state, so a flight in the air outranks one that has not left yet.
   A card that never sets a score sits at 0.0, which is why the app must send
-  one on every put.
+  one on every put. Only `waiting`, `noSignal`, `live` and the grace period of
+  a landed card ever reach ActivityKit: `planLiveActivityAction` keeps no card
+  for a flight outside its flight day and ends a running one without a last
+  put, so a `planned` or `missed` score would never be sent.
 - iOS ends a card on its own after eight hours and leaves it on the Lock
   Screen for up to four more. Dropping such a card's id without dismissing the
   card first puts the flight's next one beside it instead of in its place. An

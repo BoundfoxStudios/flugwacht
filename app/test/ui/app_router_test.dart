@@ -5,6 +5,7 @@ import 'package:flugwacht/ui/screens/list_screen.dart';
 import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
+import 'package:flugwacht/ui/screens/notifications_screen.dart';
 import 'package:flugwacht/ui/widgets/chrome/app_tab_bar.dart';
 import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +87,26 @@ void main() {
 
     expect(find.byType(MoreScreen), findsOneWidget);
     expect(find.byType(FaqScreen), findsNothing);
+  });
+
+  testWidgets('the settings card opens the notifications page and comes back', (
+    tester,
+  ) async {
+    final router = await pumpApp(tester);
+
+    await tester.tap(find.text('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Notifications'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(NotificationsScreen), findsOneWidget);
+    expect(router.state.uri.toString(), '/more/notifications');
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MoreScreen), findsOneWidget);
+    expect(find.byType(NotificationsScreen), findsNothing);
   });
 
   testWidgets('a tapped notification brings the map back to the front', (

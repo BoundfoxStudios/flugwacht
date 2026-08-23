@@ -38,7 +38,6 @@
       }
     }
   },
-  "settingsLiveActivitySectionTitle": "Live-Aktivitäten",
   "settingsLiveActivityReminder": "Am Flugtag erinnern",
   "settingsLiveActivityHint": "Flugwacht schickt dir am Flugtag eine Mitteilung, über die du die Live-Aktivität startest.",
   "liveActivityArmLabel": "Live-Aktivität am Flugtag",
@@ -111,7 +110,10 @@
   "settingsUnitsSectionTitle": "Einheiten",
   "settingsUnitsMetric": "Metrisch (m, km/h)",
   "settingsUnitsAviation": "Luftfahrt (ft, kt)",
-  "settingsNotificationsSectionTitle": "Mitteilungen",
+  "settingsNotificationsTitle": "Mitteilungen",
+  "notificationsTitle": "Mitteilungen",
+  "notificationsDuringFlightTitle": "Während des Flugs",
+  "notificationsFlightDayTitle": "Am Flugtag",
   "settingsNotificationDeparted": "Gestartet",
   "settingsNotificationArrivingSoon": "Ankunft bald (~30 Min)",
   "settingsNotificationLanded": "Gelandet",

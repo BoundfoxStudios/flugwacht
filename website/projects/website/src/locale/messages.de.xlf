@@ -3,7 +3,7 @@
   <file source-language="en" target-language="de" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="footer.tagline" datatype="html">
-        <source> A simple flight tracker for friends and family. </source>
+        <source>A simple flight tracker for friends and family.</source>
         <target>Ein einfacher Flugtracker für Freunde und Familie.</target>
       </trans-unit>
       <trans-unit id="footer.getTheApp" datatype="html">
@@ -33,6 +33,26 @@
       <trans-unit id="footer.mapData" datatype="html">
         <source>Map data © OpenStreetMap contributors</source>
         <target>Kartendaten © OpenStreetMap-Mitwirkende</target>
+      </trans-unit>
+      <trans-unit id="hero.badge" datatype="html">
+        <source>FREE &amp; OPEN SOURCE</source>
+        <target>KOSTENLOS &amp; OPEN SOURCE</target>
+      </trans-unit>
+      <trans-unit id="hero.title" datatype="html">
+        <source>Simply track your <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>friends&apos; flights.</source>
+        <target>Verfolge einfach die <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>Flüge deiner Freunde.</target>
+      </trans-unit>
+      <trans-unit id="hero.teaser" datatype="html">
+        <source>Flugwacht is a minimal flight tracker for the flights you actually care about. No account, no ads, everything stays on your device. The flight data comes from community-run ADS-B networks.</source>
+        <target>Flugwacht ist ein minimaler Flugtracker für die Flüge, die dir wirklich wichtig sind. Ohne Konto, ohne Werbung, alles bleibt auf deinem Gerät. Die Flugdaten kommen aus Community-ADS-B-Netzwerken.</target>
+      </trans-unit>
+      <trans-unit id="hero.appStoreAlt" datatype="html">
+        <source>Download on the App Store</source>
+        <target>Laden im App Store</target>
+      </trans-unit>
+      <trans-unit id="hero.playStoreAlt" datatype="html">
+        <source>Get it on Google Play</source>
+        <target>Jetzt bei Google Play</target>
       </trans-unit>
       <trans-unit id="nav.features" datatype="html">
         <source>Features</source>

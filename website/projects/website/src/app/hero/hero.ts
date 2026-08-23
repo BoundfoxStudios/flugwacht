@@ -1,10 +1,13 @@
 import { Component, LOCALE_ID, inject } from '@angular/core';
+import { SITE_TEASER } from '../site-copy';
 
 @Component({
   selector: 'bfs-fw-hero',
   templateUrl: './hero.html',
 })
 export class Hero {
+  protected readonly teaser = SITE_TEASER;
+
   private readonly isGerman = inject(LOCALE_ID).startsWith('de');
 
   protected readonly appStoreBadge = this.isGerman

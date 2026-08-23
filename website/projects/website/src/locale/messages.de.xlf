@@ -126,10 +126,6 @@
         <source>Simply track your <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>friends&apos; flights.</source>
         <target>Verfolge einfach die <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>Flüge deiner Freunde.</target>
       </trans-unit>
-      <trans-unit id="hero.teaser" datatype="html">
-        <source>Flugwacht is a minimal flight tracker for the flights you actually care about. No account, no ads, everything stays on your device. The flight data comes from community-run ADS-B networks.</source>
-        <target>Flugwacht ist ein minimaler Flugtracker für die Flüge, die dir wirklich wichtig sind. Ohne Konto, ohne Werbung, alles bleibt auf deinem Gerät. Die Flugdaten kommen aus Community-ADS-B-Netzwerken.</target>
-      </trans-unit>
       <trans-unit id="hero.appStoreAlt" datatype="html">
         <source>Download on the App Store</source>
         <target>Laden im App Store</target>
@@ -201,6 +197,14 @@
       <trans-unit id="screenshots.add" datatype="html">
         <source>Add a flight</source>
         <target>Flug hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="seo.title" datatype="html">
+        <source>Flugwacht – Simple flight tracking for friends &amp; family</source>
+        <target>Flugwacht – Flüge von Freunden &amp; Familie einfach verfolgen</target>
+      </trans-unit>
+      <trans-unit id="hero.teaser" datatype="html">
+        <source>Flugwacht is a minimal flight tracker for the flights you actually care about. No account, no ads, everything stays on your device. The flight data comes from community-run ADS-B networks.</source>
+        <target>Flugwacht ist ein minimaler Flugtracker für die Flüge, die dir wirklich wichtig sind. Ohne Konto, ohne Werbung, alles bleibt auf deinem Gerät. Die Flugdaten kommen aus Community-ADS-B-Netzwerken.</target>
       </trans-unit>
     </body>
   </file>

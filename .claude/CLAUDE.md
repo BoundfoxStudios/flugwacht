@@ -10,7 +10,7 @@
 
 ## Language
 
-- Everything in the repository and on GitHub is written in English: docs, spec,
+- Everything in the repository and on GitHub is written in English: docs,
   README, issues, milestones, PRs, code, commits. German is used only in the
   chat with Manuel. The app's own UI copy is German (product decision from the
   design handoff).
@@ -27,8 +27,7 @@
   commits; every regular commit does (keeps a later release-please adoption
   possible).
 - Planning and tracking happen through GitHub issues and milestones; commits
-  reference their issue. The spec lives in `SPEC.md`; spec discussions happen
-  directly in the chat.
+  reference their issue.
 - Never append commits to a PR that is already under review — Manuel merges
   quickly, and late pushes get orphaned by the branch auto-delete. New changes
   get their own small PR.

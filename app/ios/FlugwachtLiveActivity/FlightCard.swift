@@ -66,7 +66,7 @@ struct FlightCard {
   /// The span the countdown runs over, built here so it can never end before
   /// it starts — a reversed range traps at render time. A moment that has
   /// already passed leaves no countdown at all, and the card falls back to the
-  /// state label the way the spec asks.
+  /// state label.
   var countdown: (label: CountdownLabel, span: ClosedRange<Date>)? {
     let now = Date.now
     let target: (label: CountdownLabel, at: Date)? = switch phase {

@@ -26,7 +26,7 @@ import '../widgets/map/source_legend_card.dart';
 import 'list_sections.dart';
 import 'map_flights.dart';
 
-/// The peek height the handoff frames the map around; the camera keeps that
+/// The peek height the map is framed around; the camera keeps that
 /// much room free so the sheet never covers the framed flight.
 const mapSheetPeekHeight = 176.0;
 

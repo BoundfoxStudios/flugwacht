@@ -11,6 +11,7 @@ import '../map/map_visuals.dart';
 import '../map/mini_map.dart';
 import 'flight_labels.dart';
 import 'flight_state_badge.dart';
+import 'live_activity_arm_row.dart';
 import 'state_timeline.dart';
 
 /// The cell of an airborne flight: mini map with its state badge, the title
@@ -25,6 +26,7 @@ class FlightHeroCell extends StatefulWidget {
     required this.tileSources,
     super.key,
     this.onTap,
+    this.liveActivity,
   });
 
   static const _mapHeight = 150.0;
@@ -43,6 +45,9 @@ class FlightHeroCell extends StatefulWidget {
 
   /// Opens the flight on the map; without it the cell is not interactive.
   final VoidCallback? onTap;
+
+  /// Offers the flight's Lock Screen switch under the cell's content.
+  final FlightLiveActivityControl? liveActivity;
 
   /// Handed to the mini map.
   final MapStyleSetting mapStyleSetting;
@@ -180,6 +185,13 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
                       state: state,
                       variant: StateTimelineVariant.compact,
                     ),
+                    if (widget.liveActivity case final liveActivity?)
+                      LiveActivityArmRow(
+                        availability: liveActivity.availability,
+                        isArmed: flight.liveActivityArmed,
+                        onToggled: liveActivity.onArmed,
+                        separator: _Hairline(color: colors.border),
+                      ),
                   ],
                 ),
               ),
@@ -189,6 +201,22 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
       ),
     );
   }
+}
+
+/// Sets the Lock Screen switch off from the flight's own numbers above it.
+class _Hairline extends StatelessWidget {
+  const _Hairline({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: FlightHeroCell._blockGap),
+    child: SizedBox(
+      height: FlightHeroCell._borderWidth,
+      child: ColoredBox(color: color),
+    ),
+  );
 }
 
 class _ArrivalRow extends StatelessWidget {

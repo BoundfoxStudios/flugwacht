@@ -74,6 +74,7 @@ GoRouter createAppRouter({
                   mapSelection: mapSelection,
                   mapStyleSetting: mapStyleSetting,
                   tileSources: tileSources,
+                  liveActivityService: liveActivityService,
                 ),
               ),
             ],

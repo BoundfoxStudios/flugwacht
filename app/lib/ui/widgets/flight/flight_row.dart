@@ -11,6 +11,7 @@ import '../../../l10n/app_localizations.g.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_tokens.dart';
 import 'flight_labels.dart';
+import 'live_activity_arm_row.dart';
 
 /// A non-hero list cell: the waiting row, the dashed planned row and the
 /// grayed row of the past section, told apart by the derived flight state.
@@ -20,16 +21,22 @@ class FlightRow extends StatelessWidget {
     required this.state,
     required this.now,
     super.key,
+    this.liveActivity,
   });
 
   static const _verticalPadding = 14.0;
   static const _titleGap = 2.0;
+  static const _liveActivityGap = AppSpacing.grid * 2;
 
   final Flight flight;
   final FlightState state;
 
   /// Names the departure day of a past row relative to the current one.
   final DateTime now;
+
+  /// Offers the flight's Lock Screen switch; the past section leaves it out,
+  /// where arming a flight would no longer put a card up.
+  final FlightLiveActivityControl? liveActivity;
 
   @override
   Widget build(BuildContext context) {
@@ -51,42 +58,54 @@ class FlightRow extends StatelessWidget {
         horizontal: AppSpacing.cardPaddingLarge,
         vertical: _verticalPadding,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  flightTitle(localizations, flight),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.bodyEmphasis.copyWith(
-                    color: variant.titleColor(palette),
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: _titleGap),
-                  Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.secondary.copyWith(
-                      color: variant.subtitleColor(palette),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      flightTitle(localizations, flight),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.bodyEmphasis.copyWith(
+                        color: variant.titleColor(palette),
+                      ),
                     ),
-                  ),
-                ],
-              ],
-            ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: _titleGap),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.secondary.copyWith(
+                          color: variant.subtitleColor(palette),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.cardPadding),
+              Text(
+                _accessory(localizations, context),
+                style: AppTextStyles.accessory.copyWith(
+                  color: variant.accessoryColor(palette),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.cardPadding),
-          Text(
-            _accessory(localizations, context),
-            style: AppTextStyles.accessory.copyWith(
-              color: variant.accessoryColor(palette),
+          if (liveActivity case final liveActivity?)
+            LiveActivityArmRow(
+              availability: liveActivity.availability,
+              isArmed: flight.liveActivityArmed,
+              onToggled: liveActivity.onArmed,
+              separator: const SizedBox(height: _liveActivityGap),
             ),
-          ),
         ],
       ),
     );

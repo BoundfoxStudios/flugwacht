@@ -569,10 +569,11 @@ packages:
   live_activities:
     dependency: "direct main"
     description:
-      name: live_activities
-      sha256: "923e686f471b012edd03b6bd6673bc03bfc8f2e72ad81d05045c4c568a8b7fd4"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "9cb0cb49d38cfc0b60827127523413d3d7547d63"
+      resolved-ref: "9cb0cb49d38cfc0b60827127523413d3d7547d63"
+      url: "https://github.com/BoundfoxStudios/flutter_live_activities.git"
+    source: git
     version: "2.5.1"
   logging:
     dependency: transitive

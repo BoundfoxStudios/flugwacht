@@ -14,7 +14,9 @@ never-do list, not a token dump.
 - Logo: the "Radar-Auge" mark; wordmark FLUGWACHT in Bebas Neue, no subtitle.
 - Icons: Font Awesome Pro, style `regular`, via `font_awesome_flutter` (the
   Pro setup is configured outside the repo, see Credentials in `CLAUDE.md`).
-- Boundfox branding stays subtle: the fox appears only on the about page.
+- Boundfox branding stays subtle: the fox appears only on the app's about
+  page and in the website footer, both dark surfaces. Never on the website's
+  yellow gradient band.
 
 ## Layout & Motion
 

@@ -35,11 +35,52 @@
 ## Repository Layout
 
 - Monorepo: the Flutter app lives in `app/` — run all Flutter/Dart commands
-  there. `website/` (planned) and possibly `backend/` (later expansion stage)
-  will join next to it.
+  there, and the marketing site in `website/` — run all npm/Angular commands
+  there. A `backend/` (later expansion stage) may join them.
 - The logo masters live in `app/assets/logo/` because Flutter only bundles
   assets from inside the package; the app renders them with `flutter_svg`.
   The app-icon masters stay in `assets/icon/`, they are build-time input only.
+
+## Website
+
+`website/` is the flugwacht.app one-pager: an Angular app built to fully static
+HTML, light mode only, English at the root and German under `de/`. There is no
+server, no analytics and no third-party request at runtime. Its own README
+covers the commands; what is not obvious from the code:
+
+- **Every asset path must be absolute.** The localized build copies the whole
+  public folder into each locale's output, and the German bundle carries
+  `<base href="/de/">`, so a relative `fonts/…` would quietly resolve to the
+  `de/` copy: it loads, but the German page then re-downloads every font and
+  image the English page already cached. Absolute paths give each asset one
+  canonical URL and leave the per-locale duplicates unused.
+- The locale layout comes from the `i18n` block in `angular.json`
+  (`subPath: ""` for `en`, `"de"` for `de`) plus `localize: true`. The root
+  component writes `LOCALE_ID` onto the document element, because the localized
+  build does not set `<html lang>` by itself.
+- Translations are keyed by stable custom ids (`@@hero.title` style) and live in
+  `src/locale/messages.de.xlf`; `npm run extract-i18n` regenerates the source
+  `messages.xlf`. `i18nMissingTranslation` is `error`, so a forgotten German
+  string fails the build rather than shipping English. Copy that would repeat in
+  a template loop is written as `$localize` in the component instead.
+- The hero teaser is also the meta description, so it lives once in
+  `site-copy.ts` and is imported by both.
+- **No arbitrary Tailwind values anywhere** (`p-[10px]` and the like). Every
+  value the design prescribes resolves to a stock utility; the three brand
+  yellows are registered as `brand-yellow`, `brand-accent` and `brand-orange`.
+- A base-layer rule in `styles.css` gives every `h1`–`h6` Bebas Neue, uppercase
+  and `leading-none`, so heading copy is authored in sentence case and the
+  accessible name stays readable. The FAQ question is the one deliberate
+  exception and undoes it with `font-sans normal-case leading-normal`.
+- Bebas Neue and Barlow are self-hosted as WOFF2 under `public/fonts/`,
+  converted from the same TTFs the app bundles, with their OFL licenses.
+- Hit targets are at least 44 px everywhere. Where the design's spacing is
+  tighter than that, the target is grown with padding and pulled back with a
+  negative margin on the surrounding stack (see the footer link columns), so the
+  layout keeps its designed spacing.
+- Font Awesome Pro comes from a private registry. The committed `.npmrc`
+  references `${FONTAWESOME_NPM_TOKEN}`; without it `npm ci` fails with
+  `npm error code E401`. A warm npm cache hides that, so verify with a cold one.
 
 ## Callsigns
 

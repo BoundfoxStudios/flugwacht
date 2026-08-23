@@ -291,11 +291,14 @@ Future<GoRouter> createTestAppRouter({
   packageInfo: testPackageInfo(),
 );
 
-PackageInfo testPackageInfo({String version = '1.0.0'}) => PackageInfo(
+PackageInfo testPackageInfo({
+  String version = '1.0.0',
+  String buildNumber = '1',
+}) => PackageInfo(
   appName: 'Flugwacht',
   packageName: 'com.boundfoxstudios.apps.flugwacht',
   version: version,
-  buildNumber: '1',
+  buildNumber: buildNumber,
 );
 
 /// Tiles from stub providers under a stand-in package name, so no widget test

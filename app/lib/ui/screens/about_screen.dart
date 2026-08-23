@@ -41,7 +41,10 @@ class AboutScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: _sectionGap,
           children: [
-            _IdentityCard(version: packageInfo.version),
+            _IdentityCard(
+              version: packageInfo.version,
+              buildNumber: packageInfo.buildNumber,
+            ),
             const _CreditsCard(),
             SettingsCard(
               children: [
@@ -91,11 +94,15 @@ class AboutScreen extends StatelessWidget {
 }
 
 class _IdentityCard extends StatelessWidget {
-  const _IdentityCard({required this.version});
+  const _IdentityCard({required this.version, required this.buildNumber});
 
   static const _lockupHeight = 56.0;
 
   final String version;
+
+  /// The build the version was cut from, which CI counts up per release. It is
+  /// the only way to tell two builds of the same version apart on a device.
+  final String buildNumber;
 
   @override
   Widget build(BuildContext context) => SettingsCard(
@@ -105,7 +112,7 @@ class _IdentityCard extends StatelessWidget {
         children: [
           const FlugwachtLockup(height: _lockupHeight),
           Text(
-            AppLocalizations.of(context).aboutVersion(version),
+            AppLocalizations.of(context).aboutVersion(version, buildNumber),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

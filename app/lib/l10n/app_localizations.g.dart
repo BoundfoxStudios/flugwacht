@@ -825,8 +825,8 @@ abstract class AppLocalizations {
   /// No description provided for @aboutVersion.
   ///
   /// In en, this message translates to:
-  /// **'Version {version}'**
-  String aboutVersion(String version);
+  /// **'Version {version} ({buildNumber})'**
+  String aboutVersion(String version, String buildNumber);
 
   /// No description provided for @aboutSourcesSectionTitle.
   ///

@@ -10,6 +10,7 @@ import '../../support/test_dependencies.dart';
 Future<FakeUrlLauncher> pumpAboutScreen(
   WidgetTester tester, {
   String version = '1.4.2',
+  String buildNumber = '1',
   Locale locale = const Locale('en'),
 }) async {
   final launcher = createTestUrlLauncher();
@@ -19,7 +20,12 @@ Future<FakeUrlLauncher> pumpAboutScreen(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
-      home: AboutScreen(packageInfo: testPackageInfo(version: version)),
+      home: AboutScreen(
+        packageInfo: testPackageInfo(
+          version: version,
+          buildNumber: buildNumber,
+        ),
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -39,6 +45,14 @@ void main() {
 
     expect(find.byType(FlugwachtLockup), findsOneWidget);
     expect(find.textContaining('2.7.0'), findsOneWidget);
+  });
+
+  /// Two builds of the same version are only told apart by the build number,
+  /// and a device shows it nowhere else.
+  testWidgets('names the build the version was cut from', (tester) async {
+    await pumpAboutScreen(tester, version: '2.7.0', buildNumber: '148');
+
+    expect(textContaining(tester, '2.7.0'), contains('148'));
   });
 
   testWidgets('credits only the selectable sources with their licenses', (

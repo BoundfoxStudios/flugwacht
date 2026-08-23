@@ -53,10 +53,6 @@ class AirlineDirectory {
         await (bundle ?? rootBundle).loadString(assetPath),
       );
 
-  /// Airlines file a short number padded to three digits on the wire; a wider
-  /// padding is not a form aircraft transmit and would only cost queries.
-  static const _wireNumberWidth = 3;
-
   final Map<String, _Airline> _airlinesByIcaoCode;
   final Map<String, List<_Airline>> _airlinesByIataCode;
 
@@ -80,9 +76,8 @@ class AirlineDirectory {
   /// padded — a query built from the stripped form alone never reaches it.
   Iterable<String> _numberForms(FlightNumber flightNumber) sync* {
     yield flightNumber.number;
-    final digits = flightNumber.digits;
-    if (digits.length < _wireNumberWidth) {
-      yield '${digits.padLeft(_wireNumberWidth, '0')}${flightNumber.suffix}';
+    if (flightNumber.wireNumber != flightNumber.number) {
+      yield flightNumber.wireNumber;
     }
   }
 

@@ -33,6 +33,17 @@ void main() {
     expect(FlightNumber.tryParse('lh 0400')?.normalized, 'LH400');
   });
 
+  test('pads a short number to the width the wire carries', () {
+    expect(FlightNumber.tryParse('CFG16')?.wireNumber, '016');
+    expect(FlightNumber.tryParse('CFG016')?.wireForm, 'CFG016');
+    expect(FlightNumber.tryParse('DLH16A')?.wireForm, 'DLH016A');
+  });
+
+  test('leaves a number that fills the width alone', () {
+    expect(FlightNumber.tryParse('DLH400')?.wireForm, 'DLH400');
+    expect(FlightNumber.tryParse('CFG2016')?.wireForm, 'CFG2016');
+  });
+
   test('rejects input without a code or without a number', () {
     expect(FlightNumber.tryParse(''), isNull);
     expect(FlightNumber.tryParse('LH'), isNull);

@@ -7,6 +7,10 @@ final _numberParts = RegExp(r'^([0-9]+)([A-Z]{0,2})$');
 
 const _maximumNumberLength = 4;
 
+/// Airlines file a short number padded to three digits on the wire; a wider
+/// padding is not a form aircraft transmit.
+const _wireNumberWidth = 3;
+
 class FlightNumber {
   const FlightNumber(this.airlineCode, this.number);
 
@@ -31,6 +35,12 @@ class FlightNumber {
   final String number;
 
   String get normalized => '$airlineCode$number';
+
+  /// The number in the form an aircraft transmits it: the standing data lists
+  /// a short one stripped, the wire carries it padded.
+  String get wireNumber => digits.padLeft(_wireNumberWidth, '0') + suffix;
+
+  String get wireForm => '$airlineCode$wireNumber';
 
   /// The digits alone, without the letters a few numbers carry behind them.
   String get digits => _digitsAndSuffix?.group(1) ?? number;

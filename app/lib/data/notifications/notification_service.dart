@@ -6,6 +6,7 @@ import 'package:signals/signals.dart';
 import 'package:timezone/timezone.dart' as timezone;
 
 import '../../domain/flight_notification.dart';
+import 'notification_ids.dart';
 
 /// What the operating system allows; a flight that has never been saved leaves
 /// it undecided, because the app only asks in that moment. [unavailable] is not
@@ -179,7 +180,7 @@ class LocalNotificationService implements NotificationService {
     required String title,
     required String body,
   }) => _plugin.show(
-    id: _idOf(kind, flightId),
+    id: notificationIdOf(kind, flightId),
     title: title,
     body: body,
     notificationDetails: _details,
@@ -194,7 +195,7 @@ class LocalNotificationService implements NotificationService {
     required String body,
     required DateTime at,
   }) => _plugin.zonedSchedule(
-    id: _idOf(kind, flightId),
+    id: notificationIdOf(kind, flightId),
     title: title,
     body: body,
     scheduledDate: timezone.TZDateTime.from(at, timezone.UTC),
@@ -207,7 +208,7 @@ class LocalNotificationService implements NotificationService {
 
   @override
   Future<void> cancel(FlightNotification kind, {required int flightId}) =>
-      _plugin.cancel(id: _idOf(kind, flightId));
+      _plugin.cancel(id: notificationIdOf(kind, flightId));
 
   @override
   Future<void> scheduleLiveActivityReminder({
@@ -216,7 +217,7 @@ class LocalNotificationService implements NotificationService {
     required String body,
     required DateTime at,
   }) => _plugin.zonedSchedule(
-    id: _reminderIdOf(flightId),
+    id: liveActivityReminderIdOf(flightId),
     title: title,
     body: body,
     scheduledDate: timezone.TZDateTime.from(at, timezone.UTC),
@@ -227,7 +228,7 @@ class LocalNotificationService implements NotificationService {
 
   @override
   Future<void> cancelLiveActivityReminder({required int flightId}) =>
-      _plugin.cancel(id: _reminderIdOf(flightId));
+      _plugin.cancel(id: liveActivityReminderIdOf(flightId));
 
   void dispose() {
     permission.dispose();
@@ -240,18 +241,6 @@ class LocalNotificationService implements NotificationService {
       _tappedFlights.add(flightId);
     }
   }
-
-  /// One stable id per flight and kind, so a reminder can be replaced and
-  /// cancelled without bookkeeping.
-  /// One slot per notification a flight can have: its own moments plus the
-  /// flight-day reminder, which takes the slot behind them.
-  static final _idsPerFlight = FlightNotification.values.length + 1;
-
-  static int _idOf(FlightNotification kind, int flightId) =>
-      flightId * _idsPerFlight + kind.index;
-
-  static int _reminderIdOf(int flightId) =>
-      flightId * _idsPerFlight + FlightNotification.values.length;
 
   /// The flight a notification carries; every notification of the app names
   /// one, and nothing else may reach this.

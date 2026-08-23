@@ -1,0 +1,35 @@
+<section class="mx-auto flex max-w-6xl flex-col gap-10 px-5 sm:px-8 py-18">
+  <bfs-fw-section-head heading="The data behind Flugwacht." i18n-heading="@@sources.heading">
+    <p class="max-w-140 text-base leading-relaxed text-neutral-600" i18n="@@sources.subline">
+      Flugwacht currently supports two community-run data sources. You pick the active one in the
+      app settings.
+    </p>
+  </bfs-fw-section-head>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    @for (source of sources; track source.name) {
+      <a
+        [href]="source.url"
+        target="_blank"
+        rel="noopener"
+        class="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-7 no-underline shadow-md transition-colors duration-150 hover:border-brand-accent"
+      >
+        <div class="flex items-center justify-between">
+          <span class="font-display text-3xl leading-none text-neutral-800">{{ source.name }}</span>
+          <fa-icon [icon]="['far', 'arrow-up-right']" class="text-base text-neutral-400" />
+        </div>
+        <p class="text-base leading-relaxed text-neutral-600">{{ source.text }}</p>
+      </a>
+    }
+  </div>
+
+  <div class="flex items-center gap-4 rounded-xl border border-neutral-200 bg-neutral-50 px-6 py-5">
+    <div class="flex size-11 flex-none items-center justify-center rounded-lg bg-brand-yellow">
+      <fa-icon [icon]="['far', 'satellite-dish']" class="text-xl text-neutral-800" />
+    </div>
+    <p class="text-base leading-relaxed text-neutral-700" i18n="@@sources.feeder">
+      If you have a Raspberry Pi and an antenna, you can contribute data yourself. Both communities
+      are always happy about new feeders.
+    </p>
+  </div>
+</section>

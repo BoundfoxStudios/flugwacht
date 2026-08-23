@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="sources.heading" datatype="html">
+        <source>The data behind Flugwacht.</source>
+        <target>Die Daten hinter Flugwacht.</target>
+      </trans-unit>
+      <trans-unit id="sources.subline" datatype="html">
+        <source>Flugwacht currently supports two community-run data sources. You pick the active one in the app settings.</source>
+        <target>Flugwacht unterstützt aktuell zwei Community-Datenquellen. Die aktive wählst du in den Einstellungen der App.</target>
+      </trans-unit>
+      <trans-unit id="sources.feeder" datatype="html">
+        <source>If you have a Raspberry Pi and an antenna, you can contribute data yourself. Both communities are always happy about new feeders.</source>
+        <target>Mit einem Raspberry Pi und einer Antenne kannst du selbst Daten beisteuern. Beide Communities freuen sich über neue Feeder.</target>
+      </trans-unit>
+      <trans-unit id="sources.lol.text" datatype="html">
+        <source>Open, community-run ADS-B network with a free public API.</source>
+        <target>Offenes, community-betriebenes ADS-B-Netzwerk mit freier API.</target>
+      </trans-unit>
+      <trans-unit id="sources.fi.text" datatype="html">
+        <source>Community ADS-B aggregator run by hobbyists, open and non-commercial.</source>
+        <target>Community-ADS-B-Aggregator von Hobbyisten, offen und nicht-kommerziell.</target>
+      </trans-unit>
+      <trans-unit id="faq.heading" datatype="html">
+        <source>FAQ.</source>
+        <target>Häufige Fragen.</target>
+      </trans-unit>
+      <trans-unit id="faq.free.question" datatype="html">
+        <source>Is Flugwacht really free?</source>
+        <target>Ist Flugwacht wirklich kostenlos?</target>
+      </trans-unit>
+      <trans-unit id="faq.free.answer" datatype="html">
+        <source>Yes. Flugwacht is free and open source, has no ads and needs no account. It&apos;s a project by Boundfox Studios.</source>
+        <target>Ja. Flugwacht ist kostenlos und Open Source, hat keine Werbung und braucht kein Konto. Es ist ein Projekt von Boundfox Studios.</target>
+      </trans-unit>
+      <trans-unit id="faq.which.question" datatype="html">
+        <source>Which flights can I track?</source>
+        <target>Welche Flüge kann ich verfolgen?</target>
+      </trans-unit>
+      <trans-unit id="faq.which.answer" datatype="html">
+        <source>Every flight that broadcasts ADS-B, which is nearly every airliner worldwide. You can add a flight by its flight number, registration or hex code.</source>
+        <target>Jeden Flug, der ADS-B sendet, also fast jedes Verkehrsflugzeug weltweit. Einen Flug fügst du per Flugnummer, Kennzeichen oder Hex-Code hinzu.</target>
+      </trans-unit>
+      <trans-unit id="faq.noSignal.question" datatype="html">
+        <source>What does &apos;no signal&apos; mean?</source>
+        <target>Was bedeutet 'kein Signal'?</target>
+      </trans-unit>
+      <trans-unit id="faq.noSignal.answer" datatype="html">
+        <source>Over oceans and in remote areas there are fewer receivers, so short gaps are normal. The flight reappears once it&apos;s back in range.</source>
+        <target>Über Ozeanen und abgelegenen Gebieten gibt es weniger Empfänger, kurze Lücken sind dort normal. Sobald der Flug wieder in Reichweite ist, taucht er von selbst wieder auf.</target>
+      </trans-unit>
+      <trans-unit id="faq.data.question" datatype="html">
+        <source>Does Flugwacht collect my data?</source>
+        <target>Sammelt Flugwacht meine Daten?</target>
+      </trans-unit>
+      <trans-unit id="faq.data.answer" datatype="html">
+        <source>No. Your flights are stored only on your device, and the app only talks to the data source you picked.</source>
+        <target>Nein. Deine Flüge liegen nur auf deinem Gerät, und die App spricht ausschließlich mit der gewählten Datenquelle.</target>
+      </trans-unit>
+      <trans-unit id="features.heading" datatype="html">
+        <source>Features at a glance.</source>
+        <target>Funktionen auf einen Blick.</target>
+      </trans-unit>
+      <trans-unit id="features.map.title" datatype="html">
+        <source>Live on the map</source>
+        <target>Live auf der Karte</target>
+      </trans-unit>
+      <trans-unit id="features.map.text" datatype="html">
+        <source>Follow several flights at once on OpenStreetMap, from takeoff to landing.</source>
+        <target>Verfolge mehrere Flüge gleichzeitig auf OpenStreetMap, vom Start bis zur Landung.</target>
+      </trans-unit>
+      <trans-unit id="features.notify.title" datatype="html">
+        <source>Get notified</source>
+        <target>Bleib informiert</target>
+      </trans-unit>
+      <trans-unit id="features.notify.text" datatype="html">
+        <source>You get a notification at takeoff, shortly before arrival, and after landing.</source>
+        <target>Du bekommst eine Mitteilung beim Start, kurz vor der Ankunft und nach der Landung.</target>
+      </trans-unit>
+      <trans-unit id="features.private.title" datatype="html">
+        <source>Private by design</source>
+        <target>Privatsphäre ab Werk</target>
+      </trans-unit>
+      <trans-unit id="features.private.text" datatype="html">
+        <source>Flugwacht works without an account and doesn&apos;t track you. Your flights are only stored on your device.</source>
+        <target>Flugwacht funktioniert ohne Konto und trackt dich nicht. Deine Flüge sind nur auf deinem Gerät gespeichert.</target>
+      </trans-unit>
+      <trans-unit id="footer.tagline" datatype="html">
+        <source>A simple flight tracker for friends and family.</source>
+        <target>Ein einfacher Flugtracker für Freunde und Familie.</target>
+      </trans-unit>
+      <trans-unit id="footer.getTheApp" datatype="html">
+        <source>GET THE APP</source>
+        <target>APP LADEN</target>
+      </trans-unit>
+      <trans-unit id="footer.community" datatype="html">
+        <source>COMMUNITY</source>
+        <target>COMMUNITY</target>
+      </trans-unit>
+      <trans-unit id="footer.legal" datatype="html">
+        <source>LEGAL</source>
+        <target>RECHTLICHES</target>
+      </trans-unit>
+      <trans-unit id="footer.imprint" datatype="html">
+        <source>Imprint</source>
+        <target>Impressum</target>
+      </trans-unit>
+      <trans-unit id="footer.privacy" datatype="html">
+        <source>Privacy Policy</source>
+        <target>Datenschutzerklärung</target>
+      </trans-unit>
+      <trans-unit id="footer.boundfoxProject" datatype="html">
+        <source>A Boundfox Studios project</source>
+        <target>Ein Projekt von Boundfox Studios</target>
+      </trans-unit>
+      <trans-unit id="footer.mapData" datatype="html">
+        <source>Map data © OpenStreetMap contributors</source>
+        <target>Kartendaten © OpenStreetMap-Mitwirkende</target>
+      </trans-unit>
+      <trans-unit id="hero.badge" datatype="html">
+        <source>FREE &amp; OPEN SOURCE</source>
+        <target>KOSTENLOS &amp; OPEN SOURCE</target>
+      </trans-unit>
+      <trans-unit id="hero.title" datatype="html">
+        <source>Simply track your <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>friends&apos; flights.</source>
+        <target>Verfolge einfach die <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>Flüge deiner Freunde.</target>
+      </trans-unit>
+      <trans-unit id="hero.appStoreAlt" datatype="html">
+        <source>Download on the App Store</source>
+        <target>Laden im App Store</target>
+      </trans-unit>
+      <trans-unit id="hero.playStoreAlt" datatype="html">
+        <source>Get it on Google Play</source>
+        <target>Jetzt bei Google Play</target>
+      </trans-unit>
+      <trans-unit id="hero.screenshotAlt" datatype="html">
+        <source>The Flugwacht map tracking a live flight from Frankfurt to Zagreb, with its approximate arrival time</source>
+        <target>Die Flugwacht-Karte mit einem laufenden Flug von Frankfurt nach Zagreb und der voraussichtlichen Ankunftszeit</target>
+      </trans-unit>
+      <trans-unit id="how.heading" datatype="html">
+        <source>How it works.</source>
+        <target>So funktioniert's.</target>
+      </trans-unit>
+      <trans-unit id="how.broadcast.title" datatype="html">
+        <source>Planes broadcast</source>
+        <target>Flugzeuge senden</target>
+      </trans-unit>
+      <trans-unit id="how.broadcast.text" datatype="html">
+        <source>Nearly every airliner continuously transmits its position over ADS-B radio.</source>
+        <target>Fast jedes Verkehrsflugzeug funkt seine Position laufend per ADS-B.</target>
+      </trans-unit>
+      <trans-unit id="how.listen.title" datatype="html">
+        <source>Communities listen</source>
+        <target>Communities empfangen</target>
+      </trans-unit>
+      <trans-unit id="how.listen.text" datatype="html">
+        <source>Thousands of volunteers with small antennas feed open networks like adsb.lol and adsb.fi.</source>
+        <target>Tausende Freiwillige mit kleinen Antennen speisen offene Netzwerke wie adsb.lol und adsb.fi.</target>
+      </trans-unit>
+      <trans-unit id="how.show.title" datatype="html">
+        <source>Flugwacht shows it</source>
+        <target>Flugwacht zeigt es</target>
+      </trans-unit>
+      <trans-unit id="how.show.text" datatype="html">
+        <source>Flugwacht reads their open APIs and shows you where your flight is and when it lands.</source>
+        <target>Flugwacht liest deren offene Schnittstellen und zeigt dir, wo dein Flug ist und wann er landet.</target>
+      </trans-unit>
+      <trans-unit id="nav.features" datatype="html">
+        <source>Features</source>
+        <target>Funktionen</target>
+      </trans-unit>
+      <trans-unit id="nav.howItWorks" datatype="html">
+        <source>How it works</source>
+        <target>So funktioniert's</target>
+      </trans-unit>
+      <trans-unit id="nav.faq" datatype="html">
+        <source>FAQ</source>
+        <target>FAQ</target>
+      </trans-unit>
+      <trans-unit id="openSource.heading" datatype="html">
+        <source>Flugwacht is open source.</source>
+        <target>Flugwacht ist Open Source.</target>
+      </trans-unit>
+      <trans-unit id="openSource.text" datatype="html">
+        <source>Flugwacht is open source. Read the code, file an issue or build it yourself.</source>
+        <target>Flugwacht ist Open Source. Lies den Code, melde ein Issue oder bau es selbst.</target>
+      </trans-unit>
+      <trans-unit id="screenshots.heading" datatype="html">
+        <source>A look at the app.</source>
+        <target>Ein Blick in die App.</target>
+      </trans-unit>
+      <trans-unit id="screenshots.map" datatype="html">
+        <source>Map &amp; arrival</source>
+        <target>Karte &amp; Ankunft</target>
+      </trans-unit>
+      <trans-unit id="screenshots.today" datatype="html">
+        <source>Today&apos;s flights</source>
+        <target>Deine Flüge heute</target>
+      </trans-unit>
+      <trans-unit id="screenshots.settings" datatype="html">
+        <source>Settings</source>
+        <target>Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="seo.title" datatype="html">
+        <source>Flugwacht – Simple flight tracking for friends &amp; family</source>
+        <target>Flugwacht – Flüge von Freunden &amp; Familie einfach verfolgen</target>
+      </trans-unit>
+      <trans-unit id="hero.teaser" datatype="html">
+        <source>Flugwacht is a minimal flight tracker for the flights you actually care about. No account, no ads, everything stays on your device. The flight data comes from community-run ADS-B networks.</source>
+        <target>Flugwacht ist ein minimaler Flugtracker für die Flüge, die dir wirklich wichtig sind. Ohne Konto, ohne Werbung, alles bleibt auf deinem Gerät. Die Flugdaten kommen aus Community-ADS-B-Netzwerken.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

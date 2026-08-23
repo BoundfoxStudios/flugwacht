@@ -1,3 +1,8 @@
 .DS_Store
 .idea/
 *.iml
+node_modules
+design_handoff_flugwacht_website/
+.env
+.env.*
+!.env.example

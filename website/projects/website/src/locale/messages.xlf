@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="sources.heading" datatype="html">
+        <source>The data behind Flugwacht.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.subline" datatype="html">
+        <source> Flugwacht currently supports two community-run data sources. You pick the active one in the app settings. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
+          <context context-type="linenumber">4,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.feeder" datatype="html">
+        <source> If you have a Raspberry Pi and an antenna, you can contribute data yourself. Both communities are always happy about new feeders. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
+          <context context-type="linenumber">31,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.lol.text" datatype="html">
+        <source>Open, community-run ADS-B network with a free public API.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.fi.text" datatype="html">
+        <source>Community ADS-B aggregator run by hobbyists, open and non-commercial.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.heading" datatype="html">
+        <source>FAQ.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.free.question" datatype="html">
+        <source>Is Flugwacht really free?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.free.answer" datatype="html">
+        <source>Yes. Flugwacht is free and open source, has no ads and needs no account. It&apos;s a project by Boundfox Studios.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.which.question" datatype="html">
+        <source>Which flights can I track?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.which.answer" datatype="html">
+        <source>Every flight that broadcasts ADS-B, which is nearly every airliner worldwide. You can add a flight by its flight number, registration or hex code.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.noSignal.question" datatype="html">
+        <source>What does &apos;no signal&apos; mean?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.noSignal.answer" datatype="html">
+        <source>Over oceans and in remote areas there are fewer receivers, so short gaps are normal. The flight reappears once it&apos;s back in range.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.data.question" datatype="html">
+        <source>Does Flugwacht collect my data?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="faq.data.answer" datatype="html">
+        <source>No. Your flights are stored only on your device, and the app only talks to the data source you picked.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/faq/faq.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.heading" datatype="html">
+        <source>Features at a glance.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.map.title" datatype="html">
+        <source>Live on the map</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.map.text" datatype="html">
+        <source>Follow several flights at once on OpenStreetMap, from takeoff to landing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.notify.title" datatype="html">
+        <source>Get notified</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.notify.text" datatype="html">
+        <source>You get a notification at takeoff, shortly before arrival, and after landing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.private.title" datatype="html">
+        <source>Private by design</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.private.text" datatype="html">
+        <source>Flugwacht works without an account and doesn&apos;t track you. Your flights are only stored on your device.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.tagline" datatype="html">
+        <source> A simple flight tracker for friends and family. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">10,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.getTheApp" datatype="html">
+        <source>GET THE APP</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.community" datatype="html">
+        <source>COMMUNITY</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.legal" datatype="html">
+        <source>LEGAL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.imprint" datatype="html">
+        <source>Imprint</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">76,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.privacy" datatype="html">
+        <source>Privacy Policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">84,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.boundfoxProject" datatype="html">
+        <source>A Boundfox Studios project</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">101,104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.mapData" datatype="html">
+        <source>Map data © OpenStreetMap contributors</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">105,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.badge" datatype="html">
+        <source>FREE &amp; OPEN SOURCE</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
+          <context context-type="linenumber">9,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.title" datatype="html">
+        <source> Simply track your <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>friends&apos; flights. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.appStoreAlt" datatype="html">
+        <source>Download on the App Store</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.playStoreAlt" datatype="html">
+        <source>Get it on Google Play</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
+          <context context-type="linenumber">40,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.screenshotAlt" datatype="html">
+        <source>The Flugwacht map tracking a live flight from Frankfurt to Zagreb, with its approximate arrival time</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
+          <context context-type="linenumber">71,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.heading" datatype="html">
+        <source>How it works.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.broadcast.title" datatype="html">
+        <source>Planes broadcast</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.broadcast.text" datatype="html">
+        <source>Nearly every airliner continuously transmits its position over ADS-B radio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.listen.title" datatype="html">
+        <source>Communities listen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.listen.text" datatype="html">
+        <source>Thousands of volunteers with small antennas feed open networks like adsb.lol and adsb.fi.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.show.title" datatype="html">
+        <source>Flugwacht shows it</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.show.text" datatype="html">
+        <source>Flugwacht reads their open APIs and shows you where your flight is and when it lands.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.features" datatype="html">
+        <source>Features</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/navigation/navigation.html</context>
+          <context context-type="linenumber">16,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.howItWorks" datatype="html">
+        <source>How it works</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/navigation/navigation.html</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.faq" datatype="html">
+        <source>FAQ</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/navigation/navigation.html</context>
+          <context context-type="linenumber">29,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="openSource.heading" datatype="html">
+        <source> Flugwacht is open source. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/open-source/open-source.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="openSource.text" datatype="html">
+        <source> Flugwacht is open source. Read the code, file an issue or build it yourself. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/open-source/open-source.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="screenshots.heading" datatype="html">
+        <source>A look at the app.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="screenshots.map" datatype="html">
+        <source>Map &amp; arrival</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="screenshots.today" datatype="html">
+        <source>Today&apos;s flights</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="screenshots.settings" datatype="html">
+        <source>Settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="seo.title" datatype="html">
+        <source>Flugwacht – Simple flight tracking for friends &amp; family</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/seo.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.teaser" datatype="html">
+        <source>Flugwacht is a minimal flight tracker for the flights you actually care about. No account, no ads, everything stays on your device. The flight data comes from community-run ADS-B networks.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/site-copy.ts</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

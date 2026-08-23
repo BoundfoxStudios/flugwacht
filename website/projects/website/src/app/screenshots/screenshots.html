@@ -1,0 +1,24 @@
+<section class="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-18 sm:px-8">
+  <bfs-fw-section-head heading="A look at the app." i18n-heading="@@screenshots.heading" centered />
+
+  <div class="flex flex-wrap justify-center gap-12">
+    @for (screen of screens; track screen.image) {
+      <!-- The caption names the screen, so it is the figure's accessible name and the image itself
+           carries no duplicate alt text. -->
+      <figure class="flex flex-col items-center gap-4">
+        <div class="h-122 w-60 rounded-3xl bg-neutral-900 p-2 shadow-xl">
+          <div class="size-full overflow-hidden rounded-2xl bg-neutral-800">
+            <img
+              [src]="screen.image"
+              alt=""
+              class="size-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+        <figcaption class="text-sm font-semibold text-neutral-600">{{ screen.caption }}</figcaption>
+      </figure>
+    }
+  </div>
+</section>

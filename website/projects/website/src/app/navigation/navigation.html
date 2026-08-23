@@ -1,0 +1,73 @@
+<header class="sticky top-0 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-5 sm:px-8 py-4">
+    <a href="#top" class="flex min-h-11 min-w-11 items-center gap-2.5 no-underline">
+      <bfs-fw-logo class="block size-7" />
+      <span class="hidden font-display text-2xl tracking-wider text-neutral-800 sm:inline"
+        >FLUGWACHT</span
+      >
+    </a>
+
+    <div class="flex items-center gap-6">
+      <nav class="hidden items-center gap-6 md:flex">
+        <a
+          href="#features"
+          class="relative inline-flex min-h-11 items-center text-sm font-semibold text-neutral-700 no-underline before:absolute before:inset-y-0 before:-inset-x-2.5"
+          i18n="@@nav.features"
+          >Features</a
+        >
+        <a
+          href="#how"
+          class="relative inline-flex min-h-11 items-center text-sm font-semibold text-neutral-700 no-underline before:absolute before:inset-y-0 before:-inset-x-2.5"
+          i18n="@@nav.howItWorks"
+          >How it works</a
+        >
+        <a
+          href="#faq"
+          class="relative inline-flex min-h-11 items-center text-sm font-semibold text-neutral-700 no-underline before:absolute before:inset-y-0 before:-inset-x-2.5"
+          i18n="@@nav.faq"
+          >FAQ</a
+        >
+      </nav>
+
+      <a
+        href="https://github.com/BoundfoxStudios/flugwacht"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+        class="relative inline-flex min-h-11 items-center text-xl text-neutral-700 before:absolute before:inset-y-0 before:-inset-x-3"
+      >
+        <fa-icon [icon]="['fab', 'github']" />
+      </a>
+      <a
+        href="https://discord.gg/tHqNzMT"
+        target="_blank"
+        rel="noopener"
+        aria-label="Discord"
+        class="relative inline-flex min-h-11 items-center text-xl text-neutral-700 before:absolute before:inset-y-0 before:-inset-x-3"
+      >
+        <fa-icon [icon]="['fab', 'discord']" />
+      </a>
+
+      <div class="flex overflow-hidden rounded-md border border-neutral-200">
+        <a
+          href="/"
+          hreflang="en"
+          lang="en"
+          [attr.aria-current]="isGerman ? null : 'true'"
+          class="inline-flex min-h-11 min-w-11 items-center justify-center px-3 py-1.5 text-sm font-semibold no-underline"
+          [class]="isGerman ? 'text-neutral-500' : 'bg-neutral-800 text-white'"
+          >EN</a
+        >
+        <a
+          href="/de/"
+          hreflang="de"
+          lang="de"
+          [attr.aria-current]="isGerman ? 'true' : null"
+          class="inline-flex min-h-11 min-w-11 items-center justify-center px-3 py-1.5 text-sm font-semibold no-underline"
+          [class]="isGerman ? 'bg-neutral-800 text-white' : 'text-neutral-500'"
+          >DE</a
+        >
+      </div>
+    </div>
+  </div>
+</header>

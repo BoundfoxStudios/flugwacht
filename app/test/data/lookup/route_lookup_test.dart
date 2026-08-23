@@ -35,6 +35,16 @@ http.Client _clientServing(_Files files, {List<String>? requested}) =>
             );
     });
 
+/// Condor's route file, where the airline markets a number of its own: the
+/// tests below only vary the rows it carries.
+RouteLookup _lookupServingCondor(String routeRows) => RouteLookup(
+  client: _clientServing({
+    '$_base/routes/schema-01/C/CFG-all.csv': '$_routeHeader$routeRows',
+    '$_base/airports/schema-01/E/ED.csv': _edAirports,
+    '$_base/airports/schema-01/K/KJ.csv': _kjAirports,
+  }),
+);
+
 void main() {
   test(
     'requests the all-routes file and the airport files by prefix',
@@ -155,6 +165,55 @@ void main() {
       expect((result as RouteFound).callsign, 'GEC400');
     },
   );
+
+  test('answers with the callsign a marketed number is flown under', () async {
+    final lookup = _lookupServingCondor(
+      'CFG16,CFG,16,CFG,EDDF-KJFK\n'
+      'CFG2016,CFG,2016,CFG,EDDF-KJFK\n',
+    );
+
+    final result = await lookup.lookup(const ['CFG2016']);
+
+    expect((result as RouteFound).callsign, 'CFG16');
+    expect(result.route.destination.icaoCode, 'KJFK');
+  });
+
+  test('keeps the marketed callsign when the shorter number flies '
+      'elsewhere', () async {
+    final lookup = _lookupServingCondor(
+      'CFG16,CFG,16,CFG,EDDF-EDDM\n'
+      'CFG2016,CFG,2016,CFG,EDDF-KJFK\n',
+    );
+
+    final result = await lookup.lookup(const ['CFG2016']);
+
+    expect((result as RouteFound).callsign, 'CFG2016');
+  });
+
+  test(
+    'keeps the marketed callsign when a single digit is left over',
+    () async {
+      final lookup = _lookupServingCondor(
+        'CFG2,CFG,2,CFG,EDDF-KJFK\n'
+        'CFG1002,CFG,1002,CFG,EDDF-KJFK\n',
+      );
+
+      final result = await lookup.lookup(const ['CFG1002']);
+
+      expect((result as RouteFound).callsign, 'CFG1002');
+    },
+  );
+
+  test('reads only a number of the full width as a marketed one', () async {
+    final lookup = _lookupServingCondor(
+      'CFG16,CFG,16,CFG,EDDF-KJFK\n'
+      'CFG216,CFG,216,CFG,EDDF-KJFK\n',
+    );
+
+    final result = await lookup.lookup(const ['CFG216']);
+
+    expect((result as RouteFound).callsign, 'CFG216');
+  });
 
   test('reports a missing iata code as null', () async {
     final lookup = RouteLookup(

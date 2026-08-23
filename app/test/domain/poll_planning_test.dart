@@ -435,6 +435,18 @@ void main() {
       ]);
     });
 
+    test('searches the expected callsign in the form the wire carries', () {
+      final query = planPollQuery(flightWith(expectedCallsign: 'CFG16'), const [
+        'CFG2016',
+      ]);
+
+      expect((query as CallsignSearchPollQuery).candidates, [
+        'CFG16',
+        'CFG016',
+        'CFG2016',
+      ]);
+    });
+
     test(
       'searches the expected callsign alone without directory candidates',
       () {

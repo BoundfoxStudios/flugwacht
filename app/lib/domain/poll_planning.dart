@@ -3,6 +3,7 @@ import 'departure_time.dart';
 import 'fix.dart';
 import 'flight.dart';
 import 'flight_day_window.dart';
+import 'flight_number.dart';
 import 'flight_state.dart';
 import 'source_id.dart';
 
@@ -85,7 +86,23 @@ PollQuery planPollQuery(Flight flight, List<String> callsignCandidates) =>
 List<String> _orderedCandidates(
   String? expectedCallsign,
   List<String> callsignCandidates,
-) => <String>{?expectedCallsign, ...callsignCandidates}.toList();
+) => <String>{
+  ..._callsignForms(expectedCallsign),
+  ...callsignCandidates,
+}.toList();
+
+/// The known callsign in both forms: it is stored the way the standing data
+/// lists it, which strips the leading zeros an aircraft transmits.
+Iterable<String> _callsignForms(String? callsign) sync* {
+  if (callsign == null) {
+    return;
+  }
+  yield callsign;
+  final wireForm = FlightNumber.tryParse(callsign)?.wireForm;
+  if (wireForm != null && wireForm != callsign) {
+    yield wireForm;
+  }
+}
 
 sealed class PollOutcome {
   const PollOutcome();

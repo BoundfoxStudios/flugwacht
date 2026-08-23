@@ -34,6 +34,22 @@
   assets from inside the package; the app renders them with `flutter_svg`.
   The app-icon masters stay in `assets/icon/`, they are build-time input only.
 
+## Callsigns
+
+A flight number is not the string an aircraft transmits, and the two are kept
+apart:
+
+- The stored identity is the standing data's form, which strips a short
+  number's leading zeros (`CFG16`), while aircraft transmit it padded to three
+  digits (`CFG016`). The live sources match the exact string, so a callsign
+  query always carries both forms. A flight number the user typed is stored as
+  typed, zeros included.
+- An airline that markets a flight under a number of its own puts a marketing
+  digit in front of the number it files: Condor sells DE2016 and flies as
+  CFG016. No rule derives that. The standing data gives it away by carrying
+  the same route under both numbers, which is the only evidence the app
+  accepts, and only for a number of the full four digits.
+
 ## iOS Live Activity
 
 The Lock Screen card lives in its own widget extension target

@@ -616,6 +616,19 @@ void main() {
     expect(flight.note, isNull);
   });
 
+  testWidgets('saves a hand typed callsign with its leading zero', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(tester);
+
+    await enterLookupValue(tester, 'dlh 016');
+    await settleRouteLookup(tester);
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(flight.lookupValue, 'DLH016');
+  });
+
   testWidgets('saves a registration flight upper cased and without a route', (
     tester,
   ) async {

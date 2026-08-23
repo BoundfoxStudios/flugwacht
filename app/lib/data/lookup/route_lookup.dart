@@ -9,6 +9,12 @@ import 'csv_parser.dart';
 const _baseUrl =
     'https://raw.githubusercontent.com/vradarserver/standing-data/main';
 
+/// A marketed number carries the full width a flight number can have, and what
+/// its leading digit leaves behind still has to be a number of its own: a
+/// single digit would match unrelated flights over the same route.
+const _marketedNumberDigits = 4;
+const _leastOperatedDigits = 2;
+
 sealed class RouteLookupResult {
   const RouteLookupResult();
 }
@@ -43,9 +49,9 @@ class RouteLookup {
     final airportRowsByPath = <String, List<List<String>>>{};
     try {
       for (final callsign in callsignCandidates) {
-        final route = await _route(callsign, airportRowsByPath);
-        if (route != null) {
-          return RouteFound(callsign, route);
+        final found = await _route(callsign, airportRowsByPath);
+        if (found != null) {
+          return found;
         }
       }
       return const RouteNotFound();
@@ -54,7 +60,7 @@ class RouteLookup {
     }
   }
 
-  Future<FlightRoute?> _route(
+  Future<RouteFound?> _route(
     String callsign,
     Map<String, List<List<String>>> airportRowsByPath,
   ) async {
@@ -62,7 +68,15 @@ class RouteLookup {
     if (flightNumber == null) {
       return null;
     }
-    final airportCodes = await _airportCodes(flightNumber, callsign);
+    final rows = await _routeRows(flightNumber);
+    if (rows == null) {
+      return null;
+    }
+    final row = _rowFor(rows, callsign);
+    if (row == null) {
+      return null;
+    }
+    final airportCodes = _airportCodesOf(row);
     if (airportCodes == null) {
       return null;
     }
@@ -71,24 +85,24 @@ class RouteLookup {
     if (origin == null || destination == null) {
       return null;
     }
-    return FlightRoute(origin: origin, destination: destination);
+    return RouteFound(
+      _operatedCallsign(rows, flightNumber, row[4]) ?? callsign,
+      FlightRoute(origin: origin, destination: destination),
+    );
   }
 
-  /// The airports the callsign flies through, or null when the standing data
-  /// carries no usable route for it.
-  Future<List<String>?> _airportCodes(
-    FlightNumber flightNumber,
-    String callsign,
-  ) async {
+  /// Every route of the callsign's airline, or null when the standing data
+  /// carries no file for it.
+  Future<List<List<String>>?> _routeRows(FlightNumber flightNumber) async {
     final code = flightNumber.airlineCode;
     final directory = 'routes/schema-01/${code[0]}';
-    var rows = await _rows('$directory/$code-all.csv');
     // Airlines above 10 000 routes are split into one file per leading digit
     // and then carry no all-routes file.
-    rows ??= await _rows('$directory/$code-${flightNumber.number[0]}.csv');
-    if (rows == null) {
-      return null;
-    }
+    return await _rows('$directory/$code-all.csv') ??
+        await _rows('$directory/$code-${flightNumber.number[0]}.csv');
+  }
+
+  List<String>? _rowFor(List<List<String>> rows, String callsign) {
     for (final row in rows.skip(1)) {
       if (row.first != callsign) {
         continue;
@@ -96,13 +110,42 @@ class RouteLookup {
       if (row.length < 5) {
         throw const _UnavailableData();
       }
-      final airportCodes = row[4]
-          .split('-')
-          .where((code) => code.isNotEmpty)
-          .toList();
-      return airportCodes.length < 2 ? null : airportCodes;
+      return row;
     }
     return null;
+  }
+
+  /// The airports the row flies through, or null when it carries no usable
+  /// route.
+  List<String>? _airportCodesOf(List<String> row) {
+    final airportCodes = row[4]
+        .split('-')
+        .where((code) => code.isNotEmpty)
+        .toList();
+    return airportCodes.length < 2 ? null : airportCodes;
+  }
+
+  /// The callsign the flight goes by where the airline markets it under a
+  /// number of its own: it puts a marketing digit in front of the number it
+  /// files, so Condor sells DE2016 and flies as CFG016. Only the standing data
+  /// tells the two apart, by carrying the shorter number over the same route.
+  String? _operatedCallsign(
+    List<List<String>> rows,
+    FlightNumber marketed,
+    String airportCodes,
+  ) {
+    if (marketed.digits.length != _marketedNumberDigits) {
+      return null;
+    }
+    final operated = FlightNumber.tryParse(
+      '${marketed.airlineCode}${marketed.digits.substring(1)}'
+      '${marketed.suffix}',
+    );
+    if (operated == null || operated.digits.length < _leastOperatedDigits) {
+      return null;
+    }
+    final row = _rowFor(rows, operated.normalized);
+    return row != null && row[4] == airportCodes ? operated.normalized : null;
   }
 
   Future<RouteAirport?> _airport(

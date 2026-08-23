@@ -1,0 +1,22 @@
+<section id="features" class="border-y border-neutral-200 bg-neutral-50">
+  <div class="mx-auto flex max-w-6xl flex-col gap-10 px-8 py-18">
+    <bfs-fw-section-head
+      heading="Features at a glance."
+      i18n-heading="@@features.heading"
+    />
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      @for (feature of features; track feature.title) {
+        <div
+          class="flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-7 shadow-md"
+        >
+          <div class="flex size-12 items-center justify-center rounded-lg bg-brand-yellow">
+            <fa-icon [icon]="feature.icon" class="text-xl text-neutral-800" />
+          </div>
+          <h3 class="text-2xl text-neutral-800">{{ feature.title }}</h3>
+          <p class="text-base leading-relaxed text-neutral-600">{{ feature.text }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>

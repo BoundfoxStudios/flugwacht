@@ -2,6 +2,55 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="features.heading" datatype="html">
+        <source>Features at a glance.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.html</context>
+          <context context-type="linenumber">4,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.map.title" datatype="html">
+        <source>Live on the map</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.map.text" datatype="html">
+        <source>Follow several flights at once on OpenStreetMap, from takeoff to landing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.notify.title" datatype="html">
+        <source>Get notified</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.notify.text" datatype="html">
+        <source>You get a notification at takeoff, shortly before arrival, and after landing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.private.title" datatype="html">
+        <source>Private by design</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="features.private.text" datatype="html">
+        <source>Flugwacht works without an account and doesn&apos;t track you. Your flights are only stored on your device.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/features/features.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="footer.tagline" datatype="html">
         <source> A simple flight tracker for friends and family. </source>
         <context-group purpose="location">

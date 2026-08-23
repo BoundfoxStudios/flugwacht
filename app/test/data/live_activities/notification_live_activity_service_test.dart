@@ -166,6 +166,23 @@ void main() {
       expect(androidArgumentsOf('show')['autoCancel'], isFalse);
     });
 
+    /// Anything below the default importance is classed as silent, and Android
+    /// keeps silent notifications off the lock screen, where the card belongs.
+    test('stays off the pile the lock screen hides', () async {
+      final service = await startService();
+
+      await service.put('flight-3-1', flight: airborne, now: onFlightDay);
+
+      final android = androidArgumentsOf('show');
+      expect(android['importance'], Importance.defaultImportance.value);
+      expect(android['silent'], isFalse);
+      expect(
+        (callOf('createNotificationChannel').arguments
+            as Map<Object?, Object?>)['importance'],
+        Importance.defaultImportance.value,
+      );
+    });
+
     /// The whole point of the card: the countdown is drawn by the system from
     /// the moment the card carries, so it keeps running with the app closed.
     test('lets the system count down to the arrival', () async {

@@ -51,8 +51,11 @@ class NotificationLiveActivityService implements LiveActivityService {
               cardChannelId,
               channelName,
               description: channelDescription,
-              // A card is there to be looked at, not to interrupt.
-              importance: Importance.low,
+              // Quiet through the channel's own sound and vibration rather
+              // than through a lower importance: anything below the default is
+              // classed as silent, and Android keeps silent notifications off
+              // the lock screen, which is the one place this card is for.
+              importance: Importance.defaultImportance,
               playSound: false,
               enableVibration: false,
             ),
@@ -218,11 +221,14 @@ class NotificationLiveActivityService implements LiveActivityService {
           cardChannelId,
           _channelName,
           category: AndroidNotificationCategory.progress,
-          importance: Importance.low,
-          priority: Priority.low,
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
           ongoing: dismissAt == null,
           autoCancel: false,
-          silent: true,
+          // Not silent, for the same reason the channel is not: it would put
+          // the card back among the notifications the lock screen hides. The
+          // channel carries no sound, so nothing is heard either way, and
+          // alerting once keeps every later put from drawing attention.
           onlyAlertOnce: true,
           showWhen: card.countdown != null,
           when: card.countdown?.at.millisecondsSinceEpoch,

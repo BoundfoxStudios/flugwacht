@@ -143,8 +143,13 @@ apart:
 
 The Lock Screen card lives in its own widget extension target
 (`FlugwachtLiveActivityExtension`, `app/ios/FlugwachtLiveActivity/`), driven
-from Dart through the `live_activities` plugin. What is not obvious from the
-code:
+from Dart through the `live_activities` plugin. The app runs a fork of it
+(`BoundfoxStudios/flutter_live_activities`, pinned by commit in
+`app/pubspec.yaml`): upstream never passes ActivityKit's relevance score and
+updates a card through the deprecated call that carries no `ActivityContent`,
+so neither the score nor the stale date can be renewed. The fork adds both, and
+until upstream takes them the dependency stays a git one. What else is not
+obvious from the code:
 
 - The extension's folder is a synchronized group: files dropped into it join
   the target automatically, resources included. That is why Bebas Neue and
@@ -170,10 +175,13 @@ code:
   closed: `Text(timerInterval:)` and `ProgressView(timerInterval:)`. They do
   not expose their current value, so nothing can be positioned along them.
 - Everything else on a closed card is redrawn exactly once: when the stale
-  date passes. The plugin hands that date to the system only where it creates
-  an activity, so `LiveActivityStaleDate` in the app target renews it on every
-  put — it finds the card by the url in its payload, because the plugin keeps
-  the hash of the app's activity id to itself.
+  date passes. Every put therefore has to renew that date, which is what the
+  fork's update path is for.
+- The Dynamic Island shows at most two cards and picks them by relevance score,
+  which also orders the Lock Screen. `liveActivityRelevanceOf` derives it from
+  the flight state, so a flight in the air outranks one that has not left yet.
+  A card that never sets a score sits at 0.0, which is why the app must send
+  one on every put.
 - iOS ends a card on its own after eight hours and leaves it on the Lock
   Screen for up to four more. Dropping such a card's id without dismissing the
   card first puts the flight's next one beside it instead of in its place. An

@@ -264,4 +264,38 @@ void main() {
       );
     });
   });
+  group('relevance', () {
+    /// The bug this ranking exists for: with several cards up, iOS put the
+    /// flight that had not left yet in the Dynamic Island.
+    test('puts a flight in the air over one that has not left yet', () {
+      final airborne = _flight(
+        tracking: FlightTracking(latestPosition: _position()),
+      );
+      final waiting = _flight();
+
+      expect(
+        liveActivityRelevanceOf(airborne, _onFlightDay),
+        greaterThan(liveActivityRelevanceOf(waiting, _onFlightDay)),
+      );
+      expect(
+        liveActivityRelevanceOf(waiting, _onFlightDay),
+        greaterThan(liveActivityRelevanceOf(waiting, DateTime(2026, 3, 16))),
+      );
+    });
+
+    test('ranks a finished flight below every running one', () {
+      final landed = _flight(
+        tracking: FlightTracking(
+          latestPosition: _position(onGround: true),
+          hasBeenAirborne: true,
+          lastKnownOnGround: true,
+        ),
+      );
+
+      expect(
+        liveActivityRelevanceOf(landed, _onFlightDay),
+        lessThan(liveActivityRelevanceOf(_flight(), DateTime(2026, 3, 16))),
+      );
+    });
+  });
 }

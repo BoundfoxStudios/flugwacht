@@ -370,6 +370,7 @@ class FakeLiveActivityService implements LiveActivityService {
     String activityId, {
     required Map<String, dynamic> data,
     required Duration staleIn,
+    required double relevanceScore,
   }) async {
     if (failure case final failure?) {
       throw failure;

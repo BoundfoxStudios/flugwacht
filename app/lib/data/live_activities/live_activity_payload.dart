@@ -59,6 +59,19 @@ Duration liveActivityStaleIn(Flight flight, DateTime now) {
   return remaining < _shortestStaleWindow ? _shortestStaleWindow : remaining;
 }
 
+/// Which card the Dynamic Island shows and how the cards stack on the Lock
+/// Screen: iOS picks the highest score, and a flight in the air has more to
+/// show than one that has not left yet.
+double liveActivityRelevanceOf(Flight flight, DateTime now) =>
+    switch (resolveFlightState(flight, now)) {
+      FlightState.live => 4,
+      FlightState.noSignal => 3,
+      FlightState.waiting => 2,
+      FlightState.planned => 1,
+      // Its card is only still up so the user gets to look at it.
+      FlightState.ended || FlightState.missed => 0,
+    };
+
 int _epochOf(DateTime? instant) => instant?.millisecondsSinceEpoch ?? 0;
 
 DateTime? _staleTarget(Flight flight) {

@@ -18,7 +18,12 @@ void main() {
 
     test('starts nothing', () async {
       await expectLater(
-        service.put('activity-1', data: const {}, staleIn: Duration.zero),
+        service.put(
+          'activity-1',
+          data: const {},
+          staleIn: Duration.zero,
+          relevanceScore: 0,
+        ),
         completes,
       );
     });

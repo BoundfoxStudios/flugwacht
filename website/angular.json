@@ -36,17 +36,13 @@
                 "input": "projects/website/public"
               }
             ],
-            "styles": [
-              "projects/website/src/styles.css"
-            ],
+            "styles": ["projects/website/src/styles.css"],
             "server": "projects/website/src/main.server.ts",
             "outputMode": "static",
             "security": {
               "allowedHosts": []
             },
-            "polyfills": [
-              "@angular/localize/init"
-            ],
+            "polyfills": ["@angular/localize/init"],
             "localize": true,
             "i18nMissingTranslation": "error"
           },

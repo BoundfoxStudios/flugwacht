@@ -8,11 +8,11 @@ requests at runtime.
 
 Run everything from this folder.
 
-| Command | What it does |
-| --- | --- |
-| `npm run setup` | Installs dependencies with `.env` loaded (see below) |
-| `npm start` | Dev server on the source locale |
-| `npm run build` | Static production build into `dist/website/browser` |
+| Command                | What it does                                           |
+| ---------------------- | ------------------------------------------------------ |
+| `npm run setup`        | Installs dependencies with `.env` loaded (see below)   |
+| `npm start`            | Dev server on the source locale                        |
+| `npm run build`        | Static production build into `dist/website/browser`    |
 | `npm run extract-i18n` | Regenerates `projects/website/src/locale/messages.xlf` |
 
 German copy lives in `projects/website/src/locale/messages.de.xlf`. A missing

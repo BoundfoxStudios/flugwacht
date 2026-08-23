@@ -20,7 +20,7 @@
         <source> If you have a Raspberry Pi and an antenna, you can contribute data yourself. Both communities are always happy about new feeders. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
-          <context context-type="linenumber">33,36</context>
+          <context context-type="linenumber">31,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="sources.lol.text" datatype="html">
@@ -104,7 +104,7 @@
         <source>Features at a glance.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/features/features.html</context>
-          <context context-type="linenumber">4,5</context>
+          <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
       <trans-unit id="features.map.title" datatype="html">
@@ -167,42 +167,42 @@
         <source>COMMUNITY</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
-          <context context-type="linenumber">41,43</context>
+          <context context-type="linenumber">45,47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="footer.legal" datatype="html">
         <source>LEGAL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
-          <context context-type="linenumber">61,63</context>
+          <context context-type="linenumber">67,69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="footer.imprint" datatype="html">
         <source>Imprint</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
-          <context context-type="linenumber">69,72</context>
+          <context context-type="linenumber">76,78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="footer.privacy" datatype="html">
         <source>Privacy Policy</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
-          <context context-type="linenumber">77,79</context>
+          <context context-type="linenumber">84,86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="footer.boundfoxProject" datatype="html">
         <source>A Boundfox Studios project</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
-          <context context-type="linenumber">93,96</context>
+          <context context-type="linenumber">101,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="footer.mapData" datatype="html">
         <source>Map data © OpenStreetMap contributors</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
-          <context context-type="linenumber">97,100</context>
+          <context context-type="linenumber">105,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="hero.badge" datatype="html">
@@ -231,6 +231,13 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
           <context context-type="linenumber">40,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hero.screenshotAlt" datatype="html">
+        <source>The Flugwacht map tracking a live flight from Frankfurt to Zagreb, with its approximate arrival time</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/hero/hero.html</context>
+          <context context-type="linenumber">71,72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="how.heading" datatype="html">
@@ -286,35 +293,35 @@
         <source>Features</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/navigation/navigation.html</context>
-          <context context-type="linenumber">14,17</context>
+          <context context-type="linenumber">16,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.howItWorks" datatype="html">
         <source>How it works</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/navigation/navigation.html</context>
-          <context context-type="linenumber">20,23</context>
+          <context context-type="linenumber">22,25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.faq" datatype="html">
         <source>FAQ</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/navigation/navigation.html</context>
-          <context context-type="linenumber">27,28</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="openSource.heading" datatype="html">
-        <source>Flugwacht is open source.</source>
+        <source> Flugwacht is open source. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/open-source/open-source.html</context>
-          <context context-type="linenumber">4,5</context>
+          <context context-type="linenumber">7,9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="openSource.text" datatype="html">
         <source> Flugwacht is open source. Read the code, file an issue or build it yourself. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/open-source/open-source.html</context>
-          <context context-type="linenumber">6,9</context>
+          <context context-type="linenumber">10,13</context>
         </context-group>
       </trans-unit>
       <trans-unit id="screenshots.heading" datatype="html">
@@ -328,28 +335,28 @@
         <source>Map &amp; arrival</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="screenshots.today" datatype="html">
         <source>Today&apos;s flights</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="screenshots.add" datatype="html">
-        <source>Add a flight</source>
+      <trans-unit id="screenshots.settings" datatype="html">
+        <source>Settings</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="seo.title" datatype="html">
         <source>Flugwacht – Simple flight tracking for friends &amp; family</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/seo.ts</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="hero.teaser" datatype="html">

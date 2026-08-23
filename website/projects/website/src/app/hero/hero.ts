@@ -8,13 +8,9 @@ import { SITE_TEASER } from '../site-copy';
 export class Hero {
   protected readonly teaser = SITE_TEASER;
 
-  private readonly isGerman = inject(LOCALE_ID).startsWith('de');
+  private readonly locale = inject(LOCALE_ID).startsWith('de') ? 'de' : 'en';
 
-  protected readonly appStoreBadge = this.isGerman
-    ? '/images/badges/app-store-de.svg'
-    : '/images/badges/app-store-en.svg';
-
-  protected readonly playStoreBadge = this.isGerman
-    ? '/images/badges/google-play-de.png'
-    : '/images/badges/google-play-en.png';
+  protected readonly appStoreBadge = `/images/badges/app-store-${this.locale}.svg`;
+  protected readonly playStoreBadge = `/images/badges/google-play-${this.locale}.png`;
+  protected readonly screenshot = `/images/screens/hero-${this.locale}.webp`;
 }

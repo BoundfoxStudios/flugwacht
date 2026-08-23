@@ -134,6 +134,10 @@
         <source>Get it on Google Play</source>
         <target>Jetzt bei Google Play</target>
       </trans-unit>
+      <trans-unit id="hero.screenshotAlt" datatype="html">
+        <source>The Flugwacht map tracking a live flight from Frankfurt to Zagreb, with its approximate arrival time</source>
+        <target>Die Flugwacht-Karte mit einem laufenden Flug von Frankfurt nach Zagreb und der voraussichtlichen Ankunftszeit</target>
+      </trans-unit>
       <trans-unit id="how.heading" datatype="html">
         <source>How it works.</source>
         <target>So funktioniert's.</target>
@@ -194,9 +198,9 @@
         <source>Today&apos;s flights</source>
         <target>Deine Flüge heute</target>
       </trans-unit>
-      <trans-unit id="screenshots.add" datatype="html">
-        <source>Add a flight</source>
-        <target>Flug hinzufügen</target>
+      <trans-unit id="screenshots.settings" datatype="html">
+        <source>Settings</source>
+        <target>Einstellungen</target>
       </trans-unit>
       <trans-unit id="seo.title" datatype="html">
         <source>Flugwacht – Simple flight tracking for friends &amp; family</source>

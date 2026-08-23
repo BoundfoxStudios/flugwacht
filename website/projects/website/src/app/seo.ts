@@ -9,7 +9,6 @@ import { Meta, MetaDefinition, Title } from '@angular/platform-browser';
 import { SITE_TEASER } from './site-copy';
 
 const SITE = 'https://flugwacht.app';
-const SOCIAL_CARD = `${SITE}/images/social-card.png`;
 
 const ALTERNATES = [
   { hreflang: 'en', href: `${SITE}/` },
@@ -24,6 +23,7 @@ export function provideSeo(): EnvironmentProviders {
 
     const title = $localize`:@@seo.title:Flugwacht – Simple flight tracking for friends & family`;
     const canonical = isGerman ? `${SITE}/de/` : `${SITE}/`;
+    const socialCard = `${SITE}/images/social-card-${isGerman ? 'de' : 'en'}.png`;
 
     inject(Title).setTitle(title);
 
@@ -38,14 +38,14 @@ export function provideSeo(): EnvironmentProviders {
       { property: 'og:title', content: title },
       { property: 'og:description', content: SITE_TEASER },
       { property: 'og:url', content: canonical },
-      { property: 'og:image', content: SOCIAL_CARD },
+      { property: 'og:image', content: socialCard },
       { property: 'og:image:width', content: '1280' },
       { property: 'og:image:height', content: '640' },
       { property: 'og:image:alt', content: 'Flugwacht' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: title },
       { name: 'twitter:description', content: SITE_TEASER },
-      { name: 'twitter:image', content: SOCIAL_CARD },
+      { name: 'twitter:image', content: socialCard },
     ];
     for (const tag of tags) {
       meta.updateTag(tag);

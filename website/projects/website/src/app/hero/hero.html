@@ -65,7 +65,15 @@
     </svg>
 
     <div class="h-144 w-70 rounded-4xl bg-neutral-900 p-2 shadow-2xl">
-      <div class="size-full overflow-hidden rounded-3xl bg-neutral-800"></div>
+      <div class="size-full overflow-hidden rounded-3xl bg-neutral-800">
+        <img
+          [src]="screenshot"
+          alt="The Flugwacht map tracking a live flight from Frankfurt to Zagreb, with its approximate arrival time"
+          i18n-alt="@@hero.screenshotAlt"
+          class="size-full object-cover"
+          fetchpriority="high"
+        />
+      </div>
     </div>
   </div>
 </section>

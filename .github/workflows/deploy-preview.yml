@@ -1,0 +1,34 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-preview.yml'
+      - '.github/workflows/website-deploy.yml'
+  workflow_dispatch:
+
+# Only the newest state matters on a preview all pull requests share
+concurrency:
+  group: deploy-preview
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Neither a fork's pull request nor Dependabot's can reach the secrets, so
+    # neither gets a preview. Skipping beats failing on the token step;
+    # pull_request_target would build foreign code with the secrets in reach.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event.pull_request.head.repo.full_name == github.repository
+      && github.actor != 'dependabot[bot]')
+    uses: ./.github/workflows/website-deploy.yml
+    with:
+      environment: preview
+      url: https://preview.flugwacht.app
+      branch: deployment/preview
+    secrets: inherit

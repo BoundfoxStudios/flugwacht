@@ -1,0 +1,28 @@
+name: Changed areas
+description: >-
+  Reports which part of the monorepo a change touches, so a pipeline that
+  cannot be affected by it is skipped.
+
+outputs:
+  app:
+    description: Whether anything outside the website changed
+    value: ${{ steps.filter.outputs.app }}
+  website:
+    description: Whether the website changed
+    value: ${{ steps.filter.outputs.website }}
+
+runs:
+  using: composite
+  steps:
+    # The app side is defined as everything the website is not, so a change to
+    # shared ground (workflows, tooling, the repository root) keeps building the
+    # app instead of silently losing its coverage to an outdated path list
+    - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+      id: filter
+      with:
+        filters: |
+          app:
+            - '!website/**'
+          website:
+            - 'website/**'
+            - '.github/**'

@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/website-deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/website-deploy.yml
+    with:
+      environment: production
+      url: https://flugwacht.app
+      branch: deployment/production
+      # Pinned rather than following the trigger: a manual run must never publish
+      # another branch to production, and two merges landing seconds apart
+      # converge on main's tip instead of the older build winning the race
+      ref: main
+    secrets: inherit

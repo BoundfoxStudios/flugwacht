@@ -1,0 +1,6 @@
+{
+  "recurse": true,
+  "retry": true,
+  "retryErrors": true,
+  "timeout": 20000
+}

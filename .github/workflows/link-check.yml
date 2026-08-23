@@ -1,0 +1,24 @@
+name: Link check
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: link-check
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  link-check:
+    name: Link check
+    runs-on: ubuntu-latest
+    steps:
+      # Only for linkinator.config.json, so a local run matches this one
+      - uses: actions/checkout@v7
+      # Deliberately against the live site rather than the build output, so a
+      # file the hosting does not serve fails here too
+      - run: npx --yes linkinator@8.0.4 https://flugwacht.app

@@ -82,6 +82,47 @@ covers the commands; what is not obvious from the code:
   references `${FONTAWESOME_NPM_TOKEN}`; without it `npm ci` fails with
   `npm error code E401`. A warm npm cache hides that, so verify with a cold one.
 
+## Pipelines & Deployment
+
+Every pipeline is scoped by area: the website is `website/**`, and the app is
+everything the website is not, so a change to shared ground (workflows, tooling,
+the repository root) keeps building the app instead of losing its coverage to an
+outdated path list. `.github/actions/changed-areas` is the one place that draws
+that line.
+
+- **A required check has to report, so the job is skipped, not the workflow.** A
+  workflow a `paths` filter kept from starting leaves its check pending forever
+  and blocks the merge, while a job skipped by an `if` reports success. That is
+  why `build.yml` calls `android.yml`/`ios.yml` unconditionally and passes
+  `enabled: false`: an `if` on the calling job would rename the check from
+  `build-android / build` to `build-android` and leave the required name
+  pending. Workflows without a required check (`cd.yml`, `deploy.yml`,
+  `deploy-preview.yml`) do use plain `paths` filters, which start no runner at
+  all.
+- Deploying replaces the contents of `deployment/production` with the build
+  output; Netcup (Plesk) pulls that branch through a GitHub webhook. Every pull
+  request touching the website publishes to `deployment/preview` the same way,
+  served by an access-restricted subdomain. All pull requests share that branch,
+  so the last build wins. Both run the same reusable `website-deploy.yml`,
+  parameterised by environment, url and branch. Neither a fork's pull request nor
+  Dependabot's gets a preview, because neither can reach the secrets.
+- **Production pins `ref: main`, the preview follows its trigger.** Without the
+  pin a manual `workflow_dispatch` would publish whatever branch the dropdown
+  offered straight to flugwacht.app, and two merges landing seconds apart could
+  leave the older build on top: the concurrency group serializes the runs but
+  does not order them.
+- The publish job declares its environment, so an environment-scoped secret
+  silently beats the organization one of the same name that `secrets: inherit`
+  carries. Both environments hold none today, and duplicating
+  `FONTAWESOME_NPM_TOKEN` or the bot key there would surface as an install or
+  token failure, not as a configuration error.
+- `build-id.txt` beside the site holds the tree hash of the output. An unchanged
+  build keeps its id and produces no commit, and because it is served live it is
+  the only way to tell whether Plesk has pulled the newest build yet.
+- The nightly linkinator run goes against the live site rather than the build
+  output, so a file the hosting does not serve fails too. The root
+  `linkinator.config.json` keeps a local run identical to CI.
+
 ## Callsigns
 
 A flight number is not the string an aircraft transmits, and the two are kept

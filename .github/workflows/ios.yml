@@ -3,6 +3,13 @@ name: iOS
 on:
   workflow_call:
     inputs:
+      enabled:
+        description: >-
+          Run the build. The caller skips this job rather than the whole
+          workflow, so the status check still reports; a required check that
+          never reports blocks the merge instead of passing it.
+        type: boolean
+        default: true
       deliver:
         description: Upload the signed IPA to TestFlight
         type: boolean
@@ -10,6 +17,7 @@ on:
 
 jobs:
   build:
+    if: inputs.enabled
     runs-on: macos-latest
     timeout-minutes: 45
     defaults:

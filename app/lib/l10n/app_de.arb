@@ -127,7 +127,7 @@
   "settingsAboutTitle": "Über Flugwacht",
   "settingsAboutSubtitle": "Version {version} · Lizenzen & Quellen",
   "aboutTitle": "Über Flugwacht",
-  "aboutVersion": "Version {version}",
+  "aboutVersion": "Version {version} ({buildNumber})",
   "aboutSourcesSectionTitle": "Daten & Karte",
   "aboutSources": "Flugdaten: {sources} — frei für privaten Gebrauch, Community-Netze ohne Gewähr auf Verfügbarkeit oder Aktualität.",
   "aboutMapAttribution": "Karte © OpenStreetMap-Mitwirkende.",

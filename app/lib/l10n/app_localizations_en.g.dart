@@ -452,8 +452,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutTitle => 'About Flugwacht';
 
   @override
-  String aboutVersion(String version) {
-    return 'Version $version';
+  String aboutVersion(String version, String buildNumber) {
+    return 'Version $version ($buildNumber)';
   }
 
   @override

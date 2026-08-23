@@ -434,10 +434,13 @@
     }
   },
   "aboutTitle": "About Flugwacht",
-  "aboutVersion": "Version {version}",
+  "aboutVersion": "Version {version} ({buildNumber})",
   "@aboutVersion": {
     "placeholders": {
       "version": {
+        "type": "String"
+      },
+      "buildNumber": {
         "type": "String"
       }
     }

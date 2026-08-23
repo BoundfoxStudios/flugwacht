@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development"
+    "watch": "ng build --watch --configuration development",
+    "extract-i18n": "ng extract-i18n"
   },
   "private": true,
   "packageManager": "npm@12.0.2",
@@ -13,6 +14,7 @@
     "@angular/common": "^22.1.0",
     "@angular/compiler": "^22.1.0",
     "@angular/core": "^22.1.0",
+    "@angular/localize": "^22.1.3",
     "@angular/platform-browser": "^22.1.0",
     "@angular/platform-server": "^22.1.0",
     "@angular/router": "^22.1.0",

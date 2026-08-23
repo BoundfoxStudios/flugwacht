@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, DOCUMENT, LOCALE_ID, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -7,4 +7,8 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  constructor() {
+    inject(DOCUMENT).documentElement.lang = inject(LOCALE_ID);
+  }
+}

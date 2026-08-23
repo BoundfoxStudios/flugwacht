@@ -24,14 +24,13 @@
                 "input": "projects/website/public"
               }
             ],
-            "styles": ["projects/website/src/styles.css"],
+            "styles": [
+              "projects/website/src/styles.css"
+            ],
             "server": "projects/website/src/main.server.ts",
-            "outputMode": "server",
+            "outputMode": "static",
             "security": {
               "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "projects/website/src/server.ts"
             }
           },
           "configurations": {
@@ -69,9 +68,6 @@
             }
           },
           "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test"
         }
       }
     }

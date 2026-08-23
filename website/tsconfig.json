@@ -23,9 +23,6 @@
   "references": [
     {
       "path": "./projects/website/tsconfig.app.json"
-    },
-    {
-      "path": "./projects/website/tsconfig.spec.json"
     }
   ]
 }

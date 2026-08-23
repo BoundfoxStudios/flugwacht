@@ -9,8 +9,9 @@
 
 <p align="center">
   <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/checks.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/checks.yml/badge.svg?branch=main" alt="Checks workflow status"></a>
-  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/android.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/android.yml/badge.svg?branch=main" alt="Android workflow status"></a>
-  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/ios.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/ios.yml/badge.svg?branch=main" alt="iOS workflow status"></a>
+  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/cd.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/cd.yml/badge.svg?branch=main" alt="CD workflow status"></a>
+  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/security-scan.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/security-scan.yml/badge.svg?branch=main" alt="Security Scan workflow status"></a>
+  <a href="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/airline-directory.yml"><img src="https://github.com/BoundfoxStudios/flugwacht/actions/workflows/airline-directory.yml/badge.svg" alt="Airline Directory workflow status"></a>
   <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBoundfoxStudios%2Fflugwacht%2Fmain%2Fapp%2F.fvmrc&query=%24.flutter&label=Flutter&logo=flutter&color=02569B" alt="Pinned Flutter version">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/BoundfoxStudios/flugwacht" alt="License"></a>
   <a href="https://play.google.com/store/apps/details?id=com.boundfoxstudios.apps.flugwacht"><img src="https://img.shields.io/badge/Play_Store-3DDC84?logo=googleplay&logoColor=white" alt="Flugwacht on the Play Store"></a>

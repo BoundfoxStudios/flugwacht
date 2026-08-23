@@ -1,8 +1,8 @@
 # Design Reference
 
-Binding design rules distilled from the original design handoff. The token
-values themselves live in code (`app/lib/ui/theme/app_tokens.dart`); this file
-keeps the rules and the never-do list, not a token dump.
+Binding design rules. The token values themselves live in code
+(`app/lib/ui/theme/app_tokens.dart`); this file keeps the rules and the
+never-do list, not a token dump.
 
 ## Brand
 
@@ -33,6 +33,9 @@ keeps the rules and the never-do list, not a token dump.
   "Du" form. The device language selects the locale, English is the fallback.
 - Deliberately vague labels for the arrival estimate ("Ankunft ca.",
   "~14:32" on stale data) – never fake precision.
+- Never an em-dash (—); a dash is always the en-dash (–).
+- Copy reads like a person wrote it: plain, direct wording without the
+  phrasing patterns typical of AI-generated text.
 
 ## Never
 

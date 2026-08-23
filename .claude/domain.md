@@ -1,6 +1,6 @@
 # Domain Reference
 
-Binding domain knowledge distilled from the original concept handoff. The
+Binding domain knowledge. The
 product is a deliberately minimal tracker for individually added flights; the
 one question that matters is "Where are they right now, and when will they
 arrive?" – a feature that does not serve it does not belong in the app.

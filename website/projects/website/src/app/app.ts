@@ -1,8 +1,8 @@
 import { Component, DOCUMENT, LOCALE_ID, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Navigation } from './navigation/navigation';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [Navigation],
   selector: 'bfs-fw-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

@@ -184,6 +184,7 @@ class FlightLiveActivities {
       activityId,
       data: liveActivityPayloadOf(flight, now),
       staleIn: liveActivityStaleIn(flight, now),
+      relevanceScore: liveActivityRelevanceOf(flight, now),
     );
   }
 

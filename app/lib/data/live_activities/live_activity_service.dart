@@ -46,10 +46,14 @@ abstract interface class LiveActivityService {
   /// the app can leave behind, because iOS renders the card once more when it
   /// runs out — the single chance a card has to stop counting towards a moment
   /// that passed while the app was closed.
+  ///
+  /// [relevanceScore] ranks this card against the app's other ones; the highest
+  /// gets the Dynamic Island.
   Future<void> put(
     String activityId, {
     required Map<String, dynamic> data,
     required Duration staleIn,
+    required double relevanceScore,
   });
 
   /// Takes the card away — at [dismissAt] when the user should still get to
@@ -88,7 +92,6 @@ class PluginLiveActivityService implements LiveActivityService {
   }
 
   static const _launchUrls = MethodChannel('flugwacht/launch_url');
-  static const _staleDates = MethodChannel('flugwacht/live_activity_stale');
 
   final LiveActivities _plugin;
 
@@ -127,6 +130,7 @@ class PluginLiveActivityService implements LiveActivityService {
     String activityId, {
     required Map<String, dynamic> data,
     required Duration staleIn,
+    required double relevanceScore,
   }) async {
     await _plugin.createOrUpdateActivity(
       activityId,
@@ -136,20 +140,8 @@ class PluginLiveActivityService implements LiveActivityService {
       removeWhenAppIsKilled: false,
       iOSEnableRemoteUpdates: false,
       staleIn: staleIn,
+      relevanceScore: relevanceScore,
     );
-    // The plugin hands the window to the system when it creates an activity
-    // and never again, so an updated card would keep the one its first put
-    // set. The app renews it itself — addressing the card by the url it
-    // carries, because the plugin hashes the app's id into the activity's own
-    // and keeps that hash to itself.
-    try {
-      await _staleDates.invokeMethod('renew', {
-        'url': data['url'],
-        'atMilliseconds': DateTime.now().add(staleIn).millisecondsSinceEpoch,
-      });
-    } on Exception {
-      // The card already carries its data; only its own clock is missing.
-    }
   }
 
   @override
@@ -193,6 +185,7 @@ class UnavailableLiveActivityService implements LiveActivityService {
     String activityId, {
     required Map<String, dynamic> data,
     required Duration staleIn,
+    required double relevanceScore,
   }) async {}
 
   @override

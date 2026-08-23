@@ -18,7 +18,6 @@ import UIKit
       return
     }
     launchUrlChannel = launchUrls(over: registrar.messenger())
-    staleDateChannel = staleDates(over: registrar.messenger())
   }
 
   private func launchUrls(over messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
@@ -29,29 +28,5 @@ import UIKit
     return channel
   }
 
-  private func staleDates(over messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
-    let channel = FlutterMethodChannel(
-      name: "flugwacht/live_activity_stale",
-      binaryMessenger: messenger
-    )
-    channel.setMethodCallHandler { call, result in
-      guard call.method == "renew",
-        let arguments = call.arguments as? [String: Any],
-        let url = arguments["url"] as? String,
-        let milliseconds = arguments["atMilliseconds"] as? Int
-      else {
-        result(FlutterMethodNotImplemented)
-        return
-      }
-      LiveActivityStaleDate.renew(
-        cardAt: url,
-        until: Date(timeIntervalSince1970: Double(milliseconds) / 1000)
-      )
-      result(nil)
-    }
-    return channel
-  }
-
   private var launchUrlChannel: FlutterMethodChannel?
-  private var staleDateChannel: FlutterMethodChannel?
 }

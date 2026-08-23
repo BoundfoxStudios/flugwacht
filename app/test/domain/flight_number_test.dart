@@ -44,6 +44,10 @@ void main() {
     expect(FlightNumber.tryParse('CFG2016')?.wireForm, 'CFG2016');
   });
 
+  test('cleans an input without stripping its leading zeros', () {
+    expect(FlightNumber.clean(' cfg 016 '), 'CFG016');
+  });
+
   test('rejects input without a code or without a number', () {
     expect(FlightNumber.tryParse(''), isNull);
     expect(FlightNumber.tryParse('LH'), isNull);

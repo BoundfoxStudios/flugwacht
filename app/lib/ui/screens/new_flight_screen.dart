@@ -375,7 +375,10 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
       await widget.flightRepository.addFlight(
         lookupKind: kind,
         lookupValue: switch (kind) {
-          FlightLookupKind.flightNumber => flightNumber!.normalized,
+          // Stored as it was typed: a leading zero is how the airline files a
+          // short number and how the aircraft transmits it, while parsing
+          // drops it for the standing data.
+          FlightLookupKind.flightNumber => FlightNumber.clean(input),
           FlightLookupKind.registration => normalizedRegistration(input)!,
           FlightLookupKind.hexAddress => normalizedHexAddress(input)!,
         },

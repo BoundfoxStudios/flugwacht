@@ -176,11 +176,13 @@ void main() {
       final android = androidArgumentsOf('show');
       expect(android['importance'], Importance.defaultImportance.value);
       expect(android['silent'], isFalse);
-      expect(
-        (callOf('createNotificationChannel').arguments
-            as Map<Object?, Object?>)['importance'],
-        Importance.defaultImportance.value,
-      );
+      final channel =
+          callOf('createNotificationChannel').arguments
+              as Map<Object?, Object?>;
+      expect(channel['importance'], Importance.defaultImportance.value);
+      // Taking the channel's sound away would class it as silent again, which
+      // is the same switch: quiet and visible cannot both be had.
+      expect(channel['playSound'], isTrue);
     });
 
     /// The whole point of the card: the countdown is drawn by the system from

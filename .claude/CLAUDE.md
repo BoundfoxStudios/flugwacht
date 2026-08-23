@@ -222,13 +222,15 @@ supported Android version.
   promoted notification degrades to below that version, so nothing is lost if
   this is ever revisited. Custom `RemoteViews` layouts are out for the same
   reason: they disqualify promotion permanently (#149).
-- **The channel must not sit below `IMPORTANCE_DEFAULT`.** Anything lower is
-  classed as a silent notification, and Android keeps those off the lock screen,
-  which is the one place the card is for. Quiet comes from the channel's own
-  sound and vibration being off, plus `onlyAlertOnce`, never from a lower
-  importance or from `setSilent`. A channel's importance is also fixed at
-  creation: changing it in code does nothing to an installed app, so testing a
-  change to it needs a reinstall or cleared app data.
+- **The card's channel keeps `IMPORTANCE_DEFAULT` and its sound.** Silent and
+  lock-screen-visible are the same switch on Android, and there is no
+  configuration that has both: a channel below the default importance is classed
+  as silent, and so is one at the default whose sound is taken away (verified on
+  a Pixel, 2026-08-23). So the card announces itself once, `onlyAlertOnce` keeps
+  every later put quiet, and a user who wants it silent says so in the system
+  settings. A channel's importance is fixed at creation: changing it in code
+  does nothing to an installed app, so testing a change to it needs a reinstall
+  or cleared app data.
 - `setUsesChronometer` plus `setChronometerCountDown` is the one thing Android
   draws by itself while the app is closed, and it is the whole point of the
   card. The progress bar is **not** self-running, unlike iOS's

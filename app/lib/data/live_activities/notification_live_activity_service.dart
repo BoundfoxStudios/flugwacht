@@ -51,13 +51,13 @@ class NotificationLiveActivityService implements LiveActivityService {
               cardChannelId,
               channelName,
               description: channelDescription,
-              // Quiet through the channel's own sound and vibration rather
-              // than through a lower importance: anything below the default is
-              // classed as silent, and Android keeps silent notifications off
-              // the lock screen, which is the one place this card is for.
+              // Keeps its sound on purpose. Android has one switch for both,
+              // and a channel that makes no noise is classed as silent, which
+              // keeps it off the lock screen: the one place this card is for.
+              // So the card announces itself once and stays quiet after that,
+              // and whoever would rather have it silent can say so in the
+              // system settings.
               importance: Importance.defaultImportance,
-              playSound: false,
-              enableVibration: false,
             ),
           );
       final service = NotificationLiveActivityService._(
@@ -226,9 +226,8 @@ class NotificationLiveActivityService implements LiveActivityService {
           ongoing: dismissAt == null,
           autoCancel: false,
           // Not silent, for the same reason the channel is not: it would put
-          // the card back among the notifications the lock screen hides. The
-          // channel carries no sound, so nothing is heard either way, and
-          // alerting once keeps every later put from drawing attention.
+          // the card back among the notifications the lock screen hides.
+          // Alerting once is what keeps every later put from making a sound.
           onlyAlertOnce: true,
           showWhen: card.countdown != null,
           when: card.countdown?.at.millisecondsSinceEpoch,

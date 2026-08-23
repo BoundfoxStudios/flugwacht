@@ -1049,6 +1049,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ended'**
   String get flightStateEnded;
+
+  /// No description provided for @lockScreenArmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'On the lock screen on flight day'**
+  String get lockScreenArmLabel;
+
+  /// No description provided for @lockScreenReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow on the lock screen'**
+  String get lockScreenReminderTitle;
+
+  /// No description provided for @lockScreenReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow {flight} on your lock screen today. Tap to start.'**
+  String lockScreenReminderBody(String flight);
+
+  /// No description provided for @settingsLockScreenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Flugwacht sends you a notification on the flight day, so you can put the flight on your lock screen from there.'**
+  String get settingsLockScreenHint;
+
+  /// No description provided for @lockScreenDisabledHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications on the lock screen are switched off for Flugwacht in the system settings'**
+  String get lockScreenDisabledHint;
+
+  /// No description provided for @lockScreenChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Running flights'**
+  String get lockScreenChannelName;
+
+  /// No description provided for @lockScreenChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The card that shows a flight on your lock screen while it is under way.'**
+  String get lockScreenChannelDescription;
+
+  /// No description provided for @lockScreenCardArrival.
+  ///
+  /// In en, this message translates to:
+  /// **'arrival {time}'**
+  String lockScreenCardArrival(String time);
+
+  /// No description provided for @lockScreenCardArrivalUncertain.
+  ///
+  /// In en, this message translates to:
+  /// **'arrival ~{time}'**
+  String lockScreenCardArrivalUncertain(String time);
+
+  /// No description provided for @lockScreenCardLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'landed {time}'**
+  String lockScreenCardLanded(String time);
+
+  /// No description provided for @lockScreenCardProbablyLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'probably landed'**
+  String get lockScreenCardProbablyLanded;
 }
 
 class _AppLocalizationsDelegate

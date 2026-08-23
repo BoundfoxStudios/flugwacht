@@ -153,7 +153,7 @@ void main() {
     expect(
       find.text(
         'Flugwacht sends you a notification on the flight day, so you can '
-        'start the Live Activity from there.',
+        'put the flight on your lock screen from there.',
       ),
       findsOneWidget,
     );
@@ -171,7 +171,7 @@ void main() {
     await pumpNotificationsScreen(tester);
 
     expect(find.text('Live Activities'), findsNothing);
-    expect(find.text('Live Activity on flight day'), findsNothing);
+    expect(find.text('On the lock screen on flight day'), findsNothing);
   });
 
   testWidgets('points at the system settings while notifications are off', (

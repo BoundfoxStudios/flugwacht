@@ -296,7 +296,7 @@ void main() {
   });
 
   group('the live activity switch', () {
-    const label = 'Live Activity on flight day';
+    const label = 'On the lock screen on flight day';
 
     testWidgets('arms a flight from its row', (tester) async {
       final repository = await pumpListScreen(tester);
@@ -403,8 +403,8 @@ void main() {
 
       expect(
         find.text(
-          'Live Activities are switched off for Flugwacht in the system '
-          'settings',
+          'Notifications on the lock screen are switched off for '
+          'Flugwacht in the system settings',
         ),
         findsOneWidget,
       );

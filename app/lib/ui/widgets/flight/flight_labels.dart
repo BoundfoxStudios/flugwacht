@@ -40,18 +40,6 @@ FlightNotificationText flightNotificationText(
   },
 );
 
-/// What the flight-day reminder says; the title names the offer, the body the
-/// flight the way every screen does.
-({String title, String body}) flightLiveActivityReminderText(
-  AppLocalizations localizations,
-  Flight flight,
-) => (
-  title: localizations.liveActivityReminderTitle,
-  body: localizations.liveActivityReminderBody(
-    flightTitle(localizations, flight),
-  ),
-);
-
 /// The route in IATA codes, falling back to ICAO for an airport without one.
 String? flightRouteLabel(AppLocalizations localizations, FlightRoute? route) =>
     route == null

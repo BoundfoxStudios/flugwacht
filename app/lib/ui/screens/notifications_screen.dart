@@ -12,6 +12,7 @@ import '../../l10n/app_localizations.g.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/chrome/settings_card.dart';
 import '../widgets/controls/app_switch_row.dart';
+import '../widgets/flight/live_activity_labels.dart';
 
 /// Everything the app notifies about, grouped by when it reaches the user. The
 /// notifications themselves stay local on the device, and whether a flight gets
@@ -183,7 +184,7 @@ class _FlightDayCard extends StatelessWidget {
           ),
         ),
         Text(
-          localizations.settingsLiveActivityHint,
+          liveActivitySettingsHint(localizations),
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],

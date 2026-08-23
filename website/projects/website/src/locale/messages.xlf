@@ -142,6 +142,55 @@
           <context context-type="linenumber">43,44</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="how.heading" datatype="html">
+        <source>How it works.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.broadcast.title" datatype="html">
+        <source>Planes broadcast</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.broadcast.text" datatype="html">
+        <source>Nearly every airliner continuously transmits its position over ADS-B radio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.listen.title" datatype="html">
+        <source>Communities listen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.listen.text" datatype="html">
+        <source>Thousands of volunteers with small antennas feed open networks like adsb.lol and adsb.fi.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.show.title" datatype="html">
+        <source>Flugwacht shows it</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="how.show.text" datatype="html">
+        <source>Flugwacht reads their open APIs and shows you where your flight is and when it lands.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/how-it-works/how-it-works.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="nav.features" datatype="html">
         <source>Features</source>
         <context-group purpose="location">

@@ -82,6 +82,34 @@
         <source>Get it on Google Play</source>
         <target>Jetzt bei Google Play</target>
       </trans-unit>
+      <trans-unit id="how.heading" datatype="html">
+        <source>How it works.</source>
+        <target>So funktioniert's.</target>
+      </trans-unit>
+      <trans-unit id="how.broadcast.title" datatype="html">
+        <source>Planes broadcast</source>
+        <target>Flugzeuge senden</target>
+      </trans-unit>
+      <trans-unit id="how.broadcast.text" datatype="html">
+        <source>Nearly every airliner continuously transmits its position over ADS-B radio.</source>
+        <target>Fast jedes Verkehrsflugzeug funkt seine Position laufend per ADS-B.</target>
+      </trans-unit>
+      <trans-unit id="how.listen.title" datatype="html">
+        <source>Communities listen</source>
+        <target>Communities empfangen</target>
+      </trans-unit>
+      <trans-unit id="how.listen.text" datatype="html">
+        <source>Thousands of volunteers with small antennas feed open networks like adsb.lol and adsb.fi.</source>
+        <target>Tausende Freiwillige mit kleinen Antennen speisen offene Netzwerke wie adsb.lol und adsb.fi.</target>
+      </trans-unit>
+      <trans-unit id="how.show.title" datatype="html">
+        <source>Flugwacht shows it</source>
+        <target>Flugwacht zeigt es</target>
+      </trans-unit>
+      <trans-unit id="how.show.text" datatype="html">
+        <source>Flugwacht reads their open APIs and shows you where your flight is and when it lands.</source>
+        <target>Flugwacht liest deren offene Schnittstellen und zeigt dir, wo dein Flug ist und wann er landet.</target>
+      </trans-unit>
       <trans-unit id="nav.features" datatype="html">
         <source>Features</source>
         <target>Funktionen</target>

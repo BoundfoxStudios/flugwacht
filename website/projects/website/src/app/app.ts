@@ -2,11 +2,12 @@ import { Component, DOCUMENT, LOCALE_ID, inject } from '@angular/core';
 import { Footer } from './footer/footer';
 import { Features } from './features/features';
 import { Hero } from './hero/hero';
+import { HowItWorks } from './how-it-works/how-it-works';
 import { Screenshots } from './screenshots/screenshots';
 import { Navigation } from './navigation/navigation';
 
 @Component({
-  imports: [Navigation, Hero, Features, Screenshots, Footer],
+  imports: [Navigation, Hero, Features, Screenshots, HowItWorks, Footer],
   selector: 'bfs-fw-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

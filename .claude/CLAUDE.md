@@ -103,8 +103,19 @@ that line.
   output; Netcup (Plesk) pulls that branch through a GitHub webhook. Every pull
   request touching the website publishes to `deployment/preview` the same way,
   served by an access-restricted subdomain. All pull requests share that branch,
-  so the last build wins. A fork's pull request gets no preview: it cannot reach
-  the secrets.
+  so the last build wins. Both run the same reusable `website-deploy.yml`,
+  parameterised by environment, url and branch. Neither a fork's pull request nor
+  Dependabot's gets a preview, because neither can reach the secrets.
+- **Production pins `ref: main`, the preview follows its trigger.** Without the
+  pin a manual `workflow_dispatch` would publish whatever branch the dropdown
+  offered straight to flugwacht.app, and two merges landing seconds apart could
+  leave the older build on top: the concurrency group serializes the runs but
+  does not order them.
+- The publish job declares its environment, so an environment-scoped secret
+  silently beats the organization one of the same name that `secrets: inherit`
+  carries. Both environments hold none today, and duplicating
+  `FONTAWESOME_NPM_TOKEN` or the bot key there would surface as an install or
+  token failure, not as a configuration error.
 - `build-id.txt` beside the site holds the tree hash of the output. An unchanged
   build keeps its id and produces no commit, and because it is served live it is
   the only way to tell whether Plesk has pulled the newest build yet.

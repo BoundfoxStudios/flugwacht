@@ -6,8 +6,10 @@ on:
     paths:
       - 'website/**'
       - '.github/workflows/deploy-preview.yml'
+      - '.github/workflows/website-deploy.yml'
   workflow_dispatch:
 
+# Only the newest state matters on a preview all pull requests share
 concurrency:
   group: deploy-preview
   cancel-in-progress: true
@@ -17,67 +19,16 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy
-    # A fork's pull request has no access to the secrets, so it gets no preview.
-    # Skipping it beats failing on the token step; pull_request_target would build
-    # foreign code with the secrets in reach.
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    environment:
-      name: preview
+    # Neither a fork's pull request nor Dependabot's can reach the secrets, so
+    # neither gets a preview. Skipping beats failing on the token step;
+    # pull_request_target would build foreign code with the secrets in reach.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event.pull_request.head.repo.full_name == github.repository
+      && github.actor != 'dependabot[bot]')
+    uses: ./.github/workflows/website-deploy.yml
+    with:
+      environment: preview
       url: https://preview.flugwacht.app
-    steps:
-      - uses: actions/create-github-app-token@v3
-        id: app-token
-        with:
-          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
-      # No ref: on a pull_request the checkout takes the merge commit, which is
-      # what the preview should show
-      - uses: actions/checkout@v7
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: website/.nvmrc
-          cache: npm
-          cache-dependency-path: website/package-lock.json
-      - run: npm ci
-        working-directory: website
-        env:
-          FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
-      - run: npm run build
-        working-directory: website
-      - name: Publish to the deployment branch
-        env:
-          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          # GITHUB_SHA is the ephemeral test merge commit and does not say which
-          # pull request the preview is showing; the head sha does
-          PUBLISH_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: |
-          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
-          git config user.name "${APP_SLUG}[bot]"
-          git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
-          # The orphan fallback covers the very first run, before the branch exists.
-          if git fetch --depth 1 origin deployment/preview; then
-            git worktree add published -B deployment/preview FETCH_HEAD
-          else
-            git worktree add --orphan -b deployment/preview published
-          fi
-          # Replacing the contents outright rather than syncing them: rsync's quick check compares
-          # size and mtime, so an edit that keeps the byte count within the same second is skipped.
-          find published -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp --archive website/dist/website/browser/. published/
-          git -C published add --all
-          # The marker is the tree hash of the output itself, so an unchanged build keeps its id
-          # and produces no commit.
-          build_id=$(git -C published write-tree)
-          echo "$build_id" > published/build-id.txt
-          git -C published add --all
-          if git -C published diff --cached --quiet HEAD 2>/dev/null; then
-            echo "build output unchanged, nothing to publish"
-          else
-            git -C published commit -m "chore: publish ${PUBLISH_SHA}"
-            git -C published push origin deployment/preview
-          fi
+      branch: deployment/preview
+    secrets: inherit

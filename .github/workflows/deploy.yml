@@ -6,6 +6,7 @@ on:
     paths:
       - 'website/**'
       - '.github/workflows/deploy.yml'
+      - '.github/workflows/website-deploy.yml'
   workflow_dispatch:
 
 concurrency:
@@ -17,60 +18,13 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    environment:
-      name: production
+    uses: ./.github/workflows/website-deploy.yml
+    with:
+      environment: production
       url: https://flugwacht.app
-    steps:
-      - uses: actions/create-github-app-token@v3
-        id: app-token
-        with:
-          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
-      - uses: actions/checkout@v7
-        with:
-          ref: main
-          token: ${{ steps.app-token.outputs.token }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: website/.nvmrc
-          cache: npm
-          cache-dependency-path: website/package-lock.json
-      - run: npm ci
-        working-directory: website
-        env:
-          FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
-      - run: npm run build
-        working-directory: website
-      - name: Publish to the deployment branch
-        env:
-          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
-          git config user.name "${APP_SLUG}[bot]"
-          git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
-          # The orphan fallback covers the very first run, before the branch exists.
-          if git fetch --depth 1 origin deployment/production; then
-            git worktree add published -B deployment/production FETCH_HEAD
-          else
-            git worktree add --orphan -b deployment/production published
-          fi
-          # Replacing the contents outright rather than syncing them: rsync's quick check compares
-          # size and mtime, so an edit that keeps the byte count within the same second is skipped.
-          find published -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp --archive website/dist/website/browser/. published/
-          git -C published add --all
-          # The marker is the tree hash of the output itself, so an unchanged build keeps its id
-          # and produces no commit. Served alongside the site, it is also the only way to tell
-          # whether Plesk has already pulled the newest build.
-          build_id=$(git -C published write-tree)
-          echo "$build_id" > published/build-id.txt
-          git -C published add --all
-          if git -C published diff --cached --quiet HEAD 2>/dev/null; then
-            echo "build output unchanged, nothing to publish"
-          else
-            git -C published commit -m "chore: publish ${GITHUB_SHA}"
-            git -C published push origin deployment/production
-          fi
+      branch: deployment/production
+      # Pinned rather than following the trigger: a manual run must never publish
+      # another branch to production, and two merges landing seconds apart
+      # converge on main's tip instead of the older build winning the race
+      ref: main
+    secrets: inherit

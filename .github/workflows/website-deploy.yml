@@ -1,0 +1,88 @@
+name: Website Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: The GitHub environment this deployment is recorded under
+        type: string
+        required: true
+      url:
+        description: Where the published output is served
+        type: string
+        required: true
+      branch:
+        description: The branch Netcup pulls the published output from
+        type: string
+        required: true
+      ref:
+        description: >-
+          What to build. Empty builds the commit that triggered the run; a
+          deployment that must not follow the trigger pins a branch here.
+        type: string
+        default: ''
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ inputs.url }}
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ vars.BFS_APP_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BFS_APP_BOT_PRIVATE_KEY }}
+      # An empty ref leaves the checkout at the commit the event carries, which on
+      # a pull request is the merge commit the preview is meant to show
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          token: ${{ steps.app-token.outputs.token }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: website/.nvmrc
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+        working-directory: website
+        env:
+          FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
+      - run: npm run build
+        working-directory: website
+      - name: Publish to the deployment branch
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH: ${{ inputs.branch }}
+          # On a pull request GITHUB_SHA is the ephemeral test merge commit and does
+          # not say which one the preview is showing; the head sha does
+          PUBLISH_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
+          # The orphan fallback covers the very first run, before the branch exists.
+          if git fetch --depth 1 origin "$BRANCH"; then
+            git worktree add published -B "$BRANCH" FETCH_HEAD
+          else
+            git worktree add --orphan -b "$BRANCH" published
+          fi
+          # Replacing the contents outright rather than syncing them: rsync's quick check compares
+          # size and mtime, so an edit that keeps the byte count within the same second is skipped.
+          find published -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp --archive website/dist/website/browser/. published/
+          git -C published add --all
+          # The marker is the tree hash of the output itself, so an unchanged build keeps its id
+          # and produces no commit. Served alongside the site, it is also the only way to tell
+          # whether Plesk has already pulled the newest build.
+          build_id=$(git -C published write-tree)
+          echo "$build_id" > published/build-id.txt
+          git -C published add --all
+          if git -C published diff --cached --quiet HEAD 2>/dev/null; then
+            echo "build output unchanged, nothing to publish"
+          else
+            git -C published commit -m "chore: publish ${PUBLISH_SHA}"
+            git -C published push origin "$BRANCH"
+          fi

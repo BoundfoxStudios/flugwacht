@@ -1,7 +1,49 @@
 @import 'tailwindcss';
 
+/* Absolute paths: the German bundle sets <base href="/de/">, so a relative url would load the
+   locale's own copy of the font and re-download what the English page already cached. */
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/fonts/BebasNeue-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  src: url('/fonts/Barlow-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  src: url('/fonts/Barlow-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-brand-yellow: #ffeb3b;
   --color-brand-accent: #ffc107;
   --color-brand-orange: #ffa726;
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-sans: 'Barlow', sans-serif;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    line-height: 1;
+    text-transform: uppercase;
+  }
 }

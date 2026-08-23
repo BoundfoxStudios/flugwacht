@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "setup": "npx --yes @dotenvx/dotenvx@2 run -- npm ci",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",

@@ -10,6 +10,7 @@ Run everything from this folder.
 
 | Command | What it does |
 | --- | --- |
+| `npm run setup` | Installs dependencies with `.env` loaded (see below) |
 | `npm start` | Dev server on the source locale |
 | `npm run build` | Static production build into `dist/website/browser` |
 | `npm run extract-i18n` | Regenerates `projects/website/src/locale/messages.xlf` |
@@ -26,16 +27,29 @@ registry. `.npmrc` points at it and reads the token from the environment:
 //npm.fontawesome.com/:_authToken=${FONTAWESOME_NPM_TOKEN}
 ```
 
-The token is never committed. Set it before installing:
+The token is never committed. Locally it lives in a git-ignored `.env`:
 
 ```bash
-export FONTAWESOME_NPM_TOKEN=your-font-awesome-pro-token
-npm ci
+cp .env.example .env    # then fill in the token
+npm run setup           # dotenvx loads .env, then runs npm ci
 ```
 
-Without it, `npm ci` fails with `npm error code E401` on the `@fortawesome`
-packages. A warm npm cache can mask this locally, so a cold install is the
-honest check.
+`setup` reaches dotenvx through `npx` instead of depending on it, because
+`npm ci` wipes `node_modules` and would pull a locally installed copy out from
+under the running process. The same wrapper works for adding a package:
+
+```bash
+npx @dotenvx/dotenvx run -- npm install <package>
+```
+
+CI needs no `.env`: a variable that already exists in the environment takes
+precedence over `.env`, so a plain `npm ci` with the token exported as a secret
+works unchanged.
+
+Only installs need the token — `npm start` and `npm run build` never talk to the
+registry. Without it, `npm ci` fails with `npm error code E401` on the
+`@fortawesome` packages. A warm npm cache can mask this locally, so a cold
+install is the honest check.
 
 ## Fonts
 

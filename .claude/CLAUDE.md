@@ -121,7 +121,10 @@ that line.
   the only way to tell whether Plesk has pulled the newest build yet.
 - The nightly linkinator run goes against the live site rather than the build
   output, so a file the hosting does not serve fails too. The root
-  `linkinator.config.json` keeps a local run identical to CI.
+  `linkinator.config.json` keeps a local run identical to CI. **It fails on
+  purpose until the app ships**: both store links 404 while the listings are
+  unpublished, and skipping them was weighed and rejected, so do not add them to
+  `skip`. The run turns green with the store launch.
 
 ## Callsigns
 

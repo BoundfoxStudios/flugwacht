@@ -10,7 +10,17 @@ import { OpenSource } from './open-source/open-source';
 import { Screenshots } from './screenshots/screenshots';
 
 @Component({
-  imports: [Navigation, Hero, Features, Screenshots, HowItWorks, DataSources, OpenSource, Faq, Footer],
+  imports: [
+    Navigation,
+    Hero,
+    Features,
+    Screenshots,
+    HowItWorks,
+    DataSources,
+    OpenSource,
+    Faq,
+    Footer,
+  ],
   selector: 'bfs-fw-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

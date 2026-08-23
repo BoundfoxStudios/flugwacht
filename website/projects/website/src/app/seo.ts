@@ -1,4 +1,10 @@
-import { DOCUMENT, EnvironmentProviders, LOCALE_ID, inject, provideAppInitializer } from '@angular/core';
+import {
+  DOCUMENT,
+  EnvironmentProviders,
+  LOCALE_ID,
+  inject,
+  provideAppInitializer,
+} from '@angular/core';
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser';
 import { SITE_TEASER } from './site-copy';
 
@@ -46,7 +52,9 @@ export function provideSeo(): EnvironmentProviders {
     }
 
     const link = (selector: string, attributes: Record<string, string>) => {
-      const element = document.head.querySelector(selector) ?? document.head.appendChild(document.createElement('link'));
+      const element =
+        document.head.querySelector(selector) ??
+        document.head.appendChild(document.createElement('link'));
       for (const [name, value] of Object.entries(attributes)) {
         element.setAttribute(name, value);
       }

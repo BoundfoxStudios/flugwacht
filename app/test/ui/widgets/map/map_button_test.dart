@@ -48,7 +48,7 @@ void main() {
     expect(decoration.boxShadow, isEmpty);
   });
 
-  testWidgets('keeps the hit target the handoff asks for', (tester) async {
+  testWidgets('keeps the 44 px minimum hit target', (tester) async {
     await pumpMapButton(tester, brightness: Brightness.light);
 
     expect(tester.getSize(find.byType(MapButton)), const Size(44, 44));

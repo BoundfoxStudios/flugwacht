@@ -22,6 +22,42 @@
         <source>Community ADS-B aggregator run by hobbyists, open and non-commercial.</source>
         <target>Community-ADS-B-Aggregator von Hobbyisten, offen und nicht-kommerziell.</target>
       </trans-unit>
+      <trans-unit id="faq.heading" datatype="html">
+        <source>FAQ.</source>
+        <target>Häufige Fragen.</target>
+      </trans-unit>
+      <trans-unit id="faq.free.question" datatype="html">
+        <source>Is Flugwacht really free?</source>
+        <target>Ist Flugwacht wirklich kostenlos?</target>
+      </trans-unit>
+      <trans-unit id="faq.free.answer" datatype="html">
+        <source>Yes. Flugwacht is free and open source, has no ads and needs no account. It&apos;s a project by Boundfox Studios.</source>
+        <target>Ja. Flugwacht ist kostenlos und Open Source, hat keine Werbung und braucht kein Konto. Es ist ein Projekt von Boundfox Studios.</target>
+      </trans-unit>
+      <trans-unit id="faq.which.question" datatype="html">
+        <source>Which flights can I track?</source>
+        <target>Welche Flüge kann ich verfolgen?</target>
+      </trans-unit>
+      <trans-unit id="faq.which.answer" datatype="html">
+        <source>Every flight that broadcasts ADS-B, which is nearly every airliner worldwide. You can add a flight by its flight number, registration or hex code.</source>
+        <target>Jeden Flug, der ADS-B sendet, also fast jedes Verkehrsflugzeug weltweit. Einen Flug fügst du per Flugnummer, Kennzeichen oder Hex-Code hinzu.</target>
+      </trans-unit>
+      <trans-unit id="faq.noSignal.question" datatype="html">
+        <source>What does &apos;no signal&apos; mean?</source>
+        <target>Was bedeutet 'kein Signal'?</target>
+      </trans-unit>
+      <trans-unit id="faq.noSignal.answer" datatype="html">
+        <source>Over oceans and in remote areas there are fewer receivers, so short gaps are normal. The flight reappears once it&apos;s back in range.</source>
+        <target>Über Ozeanen und abgelegenen Gebieten gibt es weniger Empfänger, kurze Lücken sind dort normal. Sobald der Flug wieder in Reichweite ist, taucht er von selbst wieder auf.</target>
+      </trans-unit>
+      <trans-unit id="faq.data.question" datatype="html">
+        <source>Does Flugwacht collect my data?</source>
+        <target>Sammelt Flugwacht meine Daten?</target>
+      </trans-unit>
+      <trans-unit id="faq.data.answer" datatype="html">
+        <source>No. Your flights are stored only on your device, and the app only talks to the data source you picked.</source>
+        <target>Nein. Deine Flüge liegen nur auf deinem Gerät, und die App spricht ausschließlich mit der gewählten Datenquelle.</target>
+      </trans-unit>
       <trans-unit id="features.heading" datatype="html">
         <source>Features at a glance.</source>
         <target>Funktionen auf einen Blick.</target>
@@ -141,6 +177,14 @@
       <trans-unit id="nav.faq" datatype="html">
         <source>FAQ</source>
         <target>FAQ</target>
+      </trans-unit>
+      <trans-unit id="openSource.heading" datatype="html">
+        <source>Flugwacht is open source.</source>
+        <target>Flugwacht ist Open Source.</target>
+      </trans-unit>
+      <trans-unit id="openSource.text" datatype="html">
+        <source>Flugwacht is open source. Read the code, file an issue or build it yourself.</source>
+        <target>Flugwacht ist Open Source. Lies den Code, melde ein Issue oder bau es selbst.</target>
       </trans-unit>
       <trans-unit id="screenshots.heading" datatype="html">
         <source>A look at the app.</source>

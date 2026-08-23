@@ -13,10 +13,20 @@ Run everything from this folder.
 | `npm run setup`        | Installs dependencies with `.env` loaded (see below)   |
 | `npm start`            | Dev server on the source locale                        |
 | `npm run build`        | Static production build into `dist/website/browser`    |
+| `npm run format`       | Formats every file with Prettier                       |
+| `npm run format:check` | Fails on an unformatted file, as CI does               |
 | `npm run extract-i18n` | Regenerates `projects/website/src/locale/messages.xlf` |
 
 German copy lives in `projects/website/src/locale/messages.de.xlf`. A missing
 translation fails the build, so both locales stay complete.
+
+## Deployment
+
+Merging to `main` builds the site and replaces the contents of the
+`deployment/production` branch with the output; Netcup pulls that branch through
+a webhook. A pull request that touches the website publishes the same way to
+`deployment/preview`, which an access-restricted subdomain serves. All pull
+requests share that branch, so the last build wins.
 
 ## Font Awesome Pro
 

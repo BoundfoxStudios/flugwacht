@@ -2,6 +2,26 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" target-language="de" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="sources.heading" datatype="html">
+        <source>The data behind Flugwacht.</source>
+        <target>Die Daten hinter Flugwacht.</target>
+      </trans-unit>
+      <trans-unit id="sources.subline" datatype="html">
+        <source>Flugwacht currently supports two community-run data sources. You pick the active one in the app settings.</source>
+        <target>Flugwacht unterstützt aktuell zwei Community-Datenquellen. Die aktive wählst du in den Einstellungen der App.</target>
+      </trans-unit>
+      <trans-unit id="sources.feeder" datatype="html">
+        <source>If you have a Raspberry Pi and an antenna, you can contribute data yourself. Both communities are always happy about new feeders.</source>
+        <target>Mit einem Raspberry Pi und einer Antenne kannst du selbst Daten beisteuern. Beide Communities freuen sich über neue Feeder.</target>
+      </trans-unit>
+      <trans-unit id="sources.lol.text" datatype="html">
+        <source>Open, community-run ADS-B network with a free public API.</source>
+        <target>Offenes, community-betriebenes ADS-B-Netzwerk mit freier API.</target>
+      </trans-unit>
+      <trans-unit id="sources.fi.text" datatype="html">
+        <source>Community ADS-B aggregator run by hobbyists, open and non-commercial.</source>
+        <target>Community-ADS-B-Aggregator von Hobbyisten, offen und nicht-kommerziell.</target>
+      </trans-unit>
       <trans-unit id="features.heading" datatype="html">
         <source>Features at a glance.</source>
         <target>Funktionen auf einen Blick.</target>

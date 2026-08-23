@@ -2,6 +2,41 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="sources.heading" datatype="html">
+        <source>The data behind Flugwacht.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.subline" datatype="html">
+        <source> Flugwacht currently supports two community-run data sources. You pick the active one in the app settings. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
+          <context context-type="linenumber">4,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.feeder" datatype="html">
+        <source> If you have a Raspberry Pi and an antenna, you can contribute data yourself. Both communities are always happy about new feeders. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.html</context>
+          <context context-type="linenumber">33,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.lol.text" datatype="html">
+        <source>Open, community-run ADS-B network with a free public API.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sources.fi.text" datatype="html">
+        <source>Community ADS-B aggregator run by hobbyists, open and non-commercial.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/data-sources/data-sources.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="features.heading" datatype="html">
         <source>Features at a glance.</source>
         <context-group purpose="location">

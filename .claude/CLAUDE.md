@@ -1,5 +1,13 @@
 # Flugwacht — Project Rules
 
+## Reference Files
+
+- `domain.md` (this folder): binding domain invariants – fix normalization,
+  identity and route rules, coverage gaps, state machine, source rules, and
+  the standing local-only boundary.
+- `design.md` (this folder): binding design rules and the never-do list –
+  brand, typography, layout and motion, language and copy.
+
 ## Language
 
 - Everything in the repository and on GitHub is written in English: docs, spec,

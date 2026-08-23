@@ -1,8 +1,9 @@
 import { Component, DOCUMENT, LOCALE_ID, inject } from '@angular/core';
+import { Footer } from './footer/footer';
 import { Navigation } from './navigation/navigation';
 
 @Component({
-  imports: [Navigation],
+  imports: [Navigation, Footer],
   selector: 'bfs-fw-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

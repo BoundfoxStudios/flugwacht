@@ -2,6 +2,38 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" target-language="de" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="footer.tagline" datatype="html">
+        <source> A simple flight tracker for friends and family. </source>
+        <target>Ein einfacher Flugtracker für Freunde und Familie.</target>
+      </trans-unit>
+      <trans-unit id="footer.getTheApp" datatype="html">
+        <source>GET THE APP</source>
+        <target>APP LADEN</target>
+      </trans-unit>
+      <trans-unit id="footer.community" datatype="html">
+        <source>COMMUNITY</source>
+        <target>COMMUNITY</target>
+      </trans-unit>
+      <trans-unit id="footer.legal" datatype="html">
+        <source>LEGAL</source>
+        <target>RECHTLICHES</target>
+      </trans-unit>
+      <trans-unit id="footer.imprint" datatype="html">
+        <source>Imprint</source>
+        <target>Impressum</target>
+      </trans-unit>
+      <trans-unit id="footer.privacy" datatype="html">
+        <source>Privacy Policy</source>
+        <target>Datenschutzerklärung</target>
+      </trans-unit>
+      <trans-unit id="footer.boundfoxProject" datatype="html">
+        <source>A Boundfox Studios project</source>
+        <target>Ein Projekt von Boundfox Studios</target>
+      </trans-unit>
+      <trans-unit id="footer.mapData" datatype="html">
+        <source>Map data © OpenStreetMap contributors</source>
+        <target>Kartendaten © OpenStreetMap-Mitwirkende</target>
+      </trans-unit>
       <trans-unit id="nav.features" datatype="html">
         <source>Features</source>
         <target>Funktionen</target>

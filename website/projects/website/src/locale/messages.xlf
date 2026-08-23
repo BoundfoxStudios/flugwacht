@@ -2,6 +2,62 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="footer.tagline" datatype="html">
+        <source> A simple flight tracker for friends and family. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">10,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.getTheApp" datatype="html">
+        <source>GET THE APP</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.community" datatype="html">
+        <source>COMMUNITY</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.legal" datatype="html">
+        <source>LEGAL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">61,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.imprint" datatype="html">
+        <source>Imprint</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">69,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.privacy" datatype="html">
+        <source>Privacy Policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">77,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.boundfoxProject" datatype="html">
+        <source>A Boundfox Studios project</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">93,96</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.mapData" datatype="html">
+        <source>Map data © OpenStreetMap contributors</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/website/src/app/footer/footer.html</context>
+          <context context-type="linenumber">97,100</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="nav.features" datatype="html">
         <source>Features</source>
         <context-group purpose="location">

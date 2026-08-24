@@ -15,9 +15,6 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.boundfoxstudios.apps.flugwacht"
-    // permission_handler_android 14 (through live_activities) requires API 37,
-    // which Flutter's compileSdkVersion does not reach. It ships as platform
-    // android-37.0, a name AGP 9.0 fails to resolve, hence the AGP/Gradle bump
     compileSdk = 37
     ndkVersion = flutter.ndkVersion
 

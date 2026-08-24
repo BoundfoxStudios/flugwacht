@@ -101,11 +101,21 @@ void main() {
     expect(launcher.launched, ['https://github.com/BoundfoxStudios/flugwacht']);
   });
 
+  testWidgets('opens the discord invite from its row', (tester) async {
+    final launcher = await pumpAboutScreen(tester);
+
+    await tester.tap(find.text('Join Flugwacht on Discord'));
+    await tester.pumpAndSettle();
+
+    expect(launcher.launched, ['https://discord.gg/tHqNzMT']);
+  });
+
   testWidgets('renders the german copy', (tester) async {
     await pumpAboutScreen(tester, locale: const Locale('de'));
 
     expect(find.text('Ein Projekt von Boundfox Studios'), findsOneWidget);
     expect(find.text('Open-Source-Lizenzen'), findsOneWidget);
     expect(find.text('Flugwacht auf GitHub'), findsOneWidget);
+    expect(find.text('Tritt der Discord Community bei'), findsOneWidget);
   });
 }

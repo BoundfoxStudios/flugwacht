@@ -304,18 +304,13 @@ void main() {
       );
 
       expect(
-        apply(
-          registrationFlight,
-          const RegistrationPollQuery('DABYT'),
-          [
-            fixWith(
-              callsign: 'DLH400',
-              positionAtTimestamp: beforeAnchor,
-              onGround: true,
-            ),
-          ],
-          now: beforeAnchor,
-        ),
+        apply(registrationFlight, const RegistrationPollQuery('DABYT'), [
+          fixWith(
+            callsign: 'DLH400',
+            positionAtTimestamp: beforeAnchor,
+            onGround: true,
+          ),
+        ], now: beforeAnchor),
         isA<PollAwaitsDeparture>(),
       );
     });

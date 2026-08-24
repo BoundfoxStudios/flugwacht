@@ -68,7 +68,10 @@ class AboutScreen extends StatelessWidget {
                 ),
                 _AboutRow(
                   label: localizations.aboutGithub,
-                  leading: const FaIcon(AppIcons.github, size: _AboutRow.leadingSize),
+                  leading: const FaIcon(
+                    AppIcons.github,
+                    size: _AboutRow.leadingSize,
+                  ),
                   onTap: () => unawaited(_openUrl(_repositoryUrl)),
                 ),
                 _AboutRow(

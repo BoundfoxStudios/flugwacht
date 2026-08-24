@@ -70,8 +70,11 @@ class _SettingsCardState extends State<SettingsCard> {
               left: SettingsCard._padding.left,
               right: SettingsCard._padding.right,
             ),
-            child: Text(hint, style: AppTextStyles.small.copyWith(color: AppColors.neutral400),),
-          )
+            child: Text(
+              hint,
+              style: AppTextStyles.small.copyWith(color: AppColors.neutral400),
+            ),
+          ),
       ],
     );
     final onTap = widget.onTap;

@@ -26,6 +26,15 @@ class RouteFound extends RouteLookupResult {
   final FlightRoute route;
 }
 
+/// A chain returning to its start names no single destination, so the legs it
+/// could be are handed to the user to choose from.
+class RouteLegsFound extends RouteLookupResult {
+  const RouteLegsFound(this.callsign, this.legs);
+
+  final String callsign;
+  final List<FlightRoute> legs;
+}
+
 class RouteNotFound extends RouteLookupResult {
   const RouteNotFound();
 }
@@ -60,7 +69,7 @@ class RouteLookup {
     }
   }
 
-  Future<RouteFound?> _route(
+  Future<RouteLookupResult?> _route(
     String callsign,
     Map<String, List<List<String>>> airportRowsByPath,
   ) async {
@@ -80,15 +89,41 @@ class RouteLookup {
     if (airportCodes == null) {
       return null;
     }
+    final operatedCallsign =
+        _operatedCallsign(rows, flightNumber, row[4]) ?? callsign;
+    if (_returnsToItsStart(airportCodes)) {
+      final legs = await _legsOf(airportCodes, airportRowsByPath);
+      return legs == null ? null : RouteLegsFound(operatedCallsign, legs);
+    }
     final origin = await _airport(airportCodes.first, airportRowsByPath);
     final destination = await _airport(airportCodes.last, airportRowsByPath);
     if (origin == null || destination == null) {
       return null;
     }
     return RouteFound(
-      _operatedCallsign(rows, flightNumber, row[4]) ?? callsign,
+      operatedCallsign,
       FlightRoute(origin: origin, destination: destination),
     );
+  }
+
+  /// Every leg the rotation could be, or null as soon as one of its airports
+  /// is missing: a chain the app cannot name in full offers no honest choice.
+  Future<List<FlightRoute>?> _legsOf(
+    List<String> airportCodes,
+    Map<String, List<List<String>>> airportRowsByPath,
+  ) async {
+    final airports = <RouteAirport>[];
+    for (final code in airportCodes) {
+      final airport = await _airport(code, airportRowsByPath);
+      if (airport == null) {
+        return null;
+      }
+      airports.add(airport);
+    }
+    return [
+      for (var index = 0; index < airports.length - 1; index++)
+        FlightRoute(origin: airports[index], destination: airports[index + 1]),
+    ];
   }
 
   /// Every route of the callsign's airline, or null when the standing data
@@ -116,18 +151,24 @@ class RouteLookup {
   }
 
   /// The airports the row flies through, or null when it carries no usable
-  /// route: the column is the aircraft's whole rotation rather than one leg,
-  /// so a chain ending where it started (CFG1402 reads EDDF-GCLP-GCFV-EDDF)
-  /// names its own origin as the destination.
+  /// route. A repeated airport names no movement and collapses into one, so
+  /// DLH8985 (EGTE-EGTE-EGTE) is left with a single airport and no route.
   List<String>? _airportCodesOf(List<String> row) {
-    final airportCodes = row[4]
-        .split('-')
-        .where((code) => code.isNotEmpty)
-        .toList();
-    return airportCodes.length < 2 || airportCodes.first == airportCodes.last
-        ? null
-        : airportCodes;
+    final airportCodes = <String>[];
+    for (final code in row[4].split('-')) {
+      if (code.isNotEmpty && code != airportCodes.lastOrNull) {
+        airportCodes.add(code);
+      }
+    }
+    return airportCodes.length < 2 ? null : airportCodes;
   }
+
+  /// The column is the aircraft's whole rotation rather than one leg, so a
+  /// chain ending where it started (CFG1402 reads EDDF-GCLP-GCFV-EDDF) names
+  /// its own origin as the destination. Which leg was booked is not derivable
+  /// from the data, only from the user.
+  bool _returnsToItsStart(List<String> airportCodes) =>
+      airportCodes.first == airportCodes.last;
 
   /// The callsign the flight goes by where the airline markets it under a
   /// number of its own: it puts a marketing digit in front of the number it

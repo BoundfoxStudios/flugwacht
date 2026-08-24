@@ -321,6 +321,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
       FlightPreviewSearching() => _DepartureTimeHint(
         text: localizations.newFlightDepartureTimeSearchingRoute,
       ),
+      FlightPreviewLegChoice() ||
       FlightPreviewRouteUnknown() ||
       FlightPreviewHidden() => _DepartureTimeHint(
         text: localizations.newFlightDepartureTimeDeviceFallback,
@@ -337,6 +338,7 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
         FlightPreviewHidden() => const SizedBox.shrink(),
         _ => NewFlightPreviewCard(
           state: state,
+          onLegChosen: _preview.chooseLeg,
           airlineName: _airlineNameOf(state),
         ),
       },
@@ -396,7 +398,8 @@ class _NewFlightScreenState extends State<NewFlightScreen> {
         note: note.isEmpty ? null : note,
         liveActivityArmed: isArmed,
         expectedCallsign: switch (previewState) {
-          FlightPreviewFound(:final callsign) => callsign,
+          FlightPreviewFound(:final callsign) ||
+          FlightPreviewLegChoice(:final callsign) => callsign,
           _ => candidates.isEmpty ? null : candidates.first,
         },
         route: previewState is FlightPreviewFound ? previewState.route : null,

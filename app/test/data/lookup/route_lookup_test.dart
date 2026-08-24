@@ -132,10 +132,28 @@ void main() {
   });
 
   test('maps a multi leg chain to the first and last airport', () async {
+    final requested = <String>[];
     final lookup = RouteLookup(
       client: _clientServing({
         '$_base/routes/schema-01/D/DLH-all.csv':
             '${_routeHeader}DLH500,DLH,500,DLH,EDDM-EDDF-KJFK\n',
+        '$_base/airports/schema-01/E/ED.csv': _edAirports,
+        '$_base/airports/schema-01/K/KJ.csv': _kjAirports,
+      }, requested: requested),
+    );
+
+    final result = await lookup.lookup(const ['DLH500']);
+
+    expect((result as RouteFound).route.origin.icaoCode, 'EDDM');
+    expect(result.route.destination.icaoCode, 'KJFK');
+    expect(requested.where((url) => url.contains('/airports/')).length, 2);
+  });
+
+  test('offers every leg of a chain ending where it started', () async {
+    final lookup = RouteLookup(
+      client: _clientServing({
+        '$_base/routes/schema-01/D/DLH-all.csv':
+            '${_routeHeader}DLH500,DLH,500,DLH,EDDM-EDDF-KJFK-EDDM\n',
         '$_base/airports/schema-01/E/ED.csv': _edAirports,
         '$_base/airports/schema-01/K/KJ.csv': _kjAirports,
       }),
@@ -143,23 +161,36 @@ void main() {
 
     final result = await lookup.lookup(const ['DLH500']);
 
-    expect((result as RouteFound).route.origin.icaoCode, 'EDDM');
-    expect(result.route.destination.icaoCode, 'KJFK');
+    expect(
+      (result as RouteLegsFound).legs.map(
+        (leg) => '${leg.origin.icaoCode}-${leg.destination.icaoCode}',
+      ),
+      ['EDDM-EDDF', 'EDDF-KJFK', 'KJFK-EDDM'],
+    );
   });
 
-  test('reports not found for a chain ending where it started', () async {
-    final requested = <String>[];
+  test('offers no leg while an airport of the chain is missing', () async {
     final lookup = RouteLookup(
       client: _clientServing({
         '$_base/routes/schema-01/D/DLH-all.csv':
             '${_routeHeader}DLH500,DLH,500,DLH,EDDM-EDDF-KJFK-EDDM\n',
         '$_base/airports/schema-01/E/ED.csv': _edAirports,
-        '$_base/airports/schema-01/K/KJ.csv': _kjAirports,
-      }, requested: requested),
+        '$_base/airports/schema-01/K/KJ.csv': _airportHeader,
+      }),
     );
 
     expect(await lookup.lookup(const ['DLH500']), isA<RouteNotFound>());
-    expect(requested.where((url) => url.contains('/airports/')), isEmpty);
+  });
+
+  test('answers a rotation with the callsign it is flown under', () async {
+    final lookup = _lookupServingCondor(
+      'CFG16,CFG,16,CFG,EDDF-KJFK-EDDF\n'
+      'CFG2016,CFG,2016,CFG,EDDF-KJFK-EDDF\n',
+    );
+
+    final result = await lookup.lookup(const ['CFG2016']);
+
+    expect((result as RouteLegsFound).callsign, 'CFG16');
   });
 
   test('reports not found for a row naming one airport twice', () async {
@@ -172,6 +203,38 @@ void main() {
     );
 
     expect(await lookup.lookup(const ['DLH500']), isA<RouteNotFound>());
+  });
+
+  test('reports not found for a row repeating one airport thrice', () async {
+    final lookup = RouteLookup(
+      client: _clientServing({
+        '$_base/routes/schema-01/D/DLH-all.csv':
+            '${_routeHeader}DLH500,DLH,500,DLH,EDDF-EDDF-EDDF\n',
+        '$_base/airports/schema-01/E/ED.csv': _edAirports,
+      }),
+    );
+
+    expect(await lookup.lookup(const ['DLH500']), isA<RouteNotFound>());
+  });
+
+  test('drops an airport a chain names twice in a row', () async {
+    final lookup = RouteLookup(
+      client: _clientServing({
+        '$_base/routes/schema-01/D/DLH-all.csv':
+            '${_routeHeader}DLH500,DLH,500,DLH,EDDM-EDDF-EDDF-KJFK-EDDM\n',
+        '$_base/airports/schema-01/E/ED.csv': _edAirports,
+        '$_base/airports/schema-01/K/KJ.csv': _kjAirports,
+      }),
+    );
+
+    final result = await lookup.lookup(const ['DLH500']);
+
+    expect(
+      (result as RouteLegsFound).legs.map(
+        (leg) => '${leg.origin.icaoCode}-${leg.destination.icaoCode}',
+      ),
+      ['EDDM-EDDF', 'EDDF-KJFK', 'KJFK-EDDM'],
+    );
   });
 
   test('reports not found for a row naming a single airport', () async {

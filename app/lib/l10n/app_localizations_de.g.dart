@@ -148,6 +148,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newFlightPreviewSearching => 'Suche die Route';
 
   @override
+  String get newFlightPreviewChooseLeg => 'Welcher Abschnitt ist Deiner?';
+
+  @override
+  String get newFlightPreviewChooseLegHint =>
+      'Die Airline meldet unter dieser Nummer den ganzen Umlauf.';
+
+  @override
   String newFlightPreviewCallsign(String callsign) {
     return 'Funk: $callsign';
   }

@@ -350,6 +350,18 @@ abstract class AppLocalizations {
   /// **'Looking for the route'**
   String get newFlightPreviewSearching;
 
+  /// No description provided for @newFlightPreviewChooseLeg.
+  ///
+  /// In en, this message translates to:
+  /// **'Which leg is yours?'**
+  String get newFlightPreviewChooseLeg;
+
+  /// No description provided for @newFlightPreviewChooseLegHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The airline files the whole rotation under this number.'**
+  String get newFlightPreviewChooseLegHint;
+
   /// No description provided for @newFlightPreviewCallsign.
   ///
   /// In en, this message translates to:

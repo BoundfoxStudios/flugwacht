@@ -582,4 +582,48 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get flightStateEnded => 'beendet';
+
+  @override
+  String get lockScreenArmLabel => 'Auf dem Sperrbildschirm am Flugtag';
+
+  @override
+  String get lockScreenReminderTitle => 'Auf dem Sperrbildschirm verfolgen';
+
+  @override
+  String lockScreenReminderBody(String flight) {
+    return 'Verfolge $flight heute auf dem Sperrbildschirm. Tippe zum Starten.';
+  }
+
+  @override
+  String get settingsLockScreenHint =>
+      'Flugwacht schickt dir am Flugtag eine Mitteilung, über die du den Flug auf den Sperrbildschirm holst.';
+
+  @override
+  String get lockScreenDisabledHint =>
+      'Mitteilungen auf dem Sperrbildschirm sind für Flugwacht in den Systemeinstellungen ausgeschaltet';
+
+  @override
+  String get lockScreenChannelName => 'Laufende Flüge';
+
+  @override
+  String get lockScreenChannelDescription =>
+      'Die Karte, die einen Flug auf dem Sperrbildschirm zeigt, solange er unterwegs ist.';
+
+  @override
+  String lockScreenCardArrival(String time) {
+    return 'Ankunft $time';
+  }
+
+  @override
+  String lockScreenCardArrivalUncertain(String time) {
+    return 'Ankunft ~$time';
+  }
+
+  @override
+  String lockScreenCardLanded(String time) {
+    return 'gelandet $time';
+  }
+
+  @override
+  String get lockScreenCardProbablyLanded => 'wahrscheinlich gelandet';
 }

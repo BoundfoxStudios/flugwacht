@@ -1,4 +1,6 @@
 import 'package:flugwacht/data/live_activities/live_activity_service.dart';
+import 'package:flugwacht/domain/calendar_date.dart';
+import 'package:flugwacht/domain/flight.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -20,9 +22,13 @@ void main() {
       await expectLater(
         service.put(
           'activity-1',
-          data: const {},
-          staleIn: Duration.zero,
-          relevanceScore: 0,
+          flight: const Flight(
+            id: 1,
+            lookupKind: FlightLookupKind.flightNumber,
+            lookupValue: 'LH433',
+            departureDate: CalendarDate(2026, 3, 17),
+          ),
+          now: DateTime.utc(2026, 3, 17, 12),
         ),
         completes,
       );

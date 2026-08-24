@@ -489,5 +489,44 @@
   "flightStateWaiting": "waiting",
   "flightStateLive": "live",
   "flightStateNoSignal": "no signal",
-  "flightStateEnded": "ended"
+  "flightStateEnded": "ended",
+  "lockScreenArmLabel": "On the lock screen on flight day",
+  "lockScreenReminderTitle": "Follow on the lock screen",
+  "lockScreenReminderBody": "Follow {flight} on your lock screen today. Tap to start.",
+  "@lockScreenReminderBody": {
+    "placeholders": {
+      "flight": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLockScreenHint": "Flugwacht sends you a notification on the flight day, so you can put the flight on your lock screen from there.",
+  "lockScreenDisabledHint": "Notifications on the lock screen are switched off for Flugwacht in the system settings",
+  "lockScreenChannelName": "Running flights",
+  "lockScreenChannelDescription": "The card that shows a flight on your lock screen while it is under way.",
+  "lockScreenCardArrival": "arrival {time}",
+  "@lockScreenCardArrival": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockScreenCardArrivalUncertain": "arrival ~{time}",
+  "@lockScreenCardArrivalUncertain": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockScreenCardLanded": "landed {time}",
+  "@lockScreenCardLanded": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockScreenCardProbablyLanded": "probably landed"
 }

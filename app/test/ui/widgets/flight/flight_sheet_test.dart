@@ -627,7 +627,7 @@ void main() {
       await pumpFlightSheet(tester, liveActivityService: service);
       await openSheet(tester);
 
-      expect(find.text('Live Activity on flight day'), findsNothing);
+      expect(find.text('On the lock screen on flight day'), findsNothing);
     });
 
     testWidgets('arms the flight the sheet shows', (tester) async {
@@ -639,7 +639,7 @@ void main() {
       );
       await openSheet(tester);
 
-      await tester.tap(find.text('Live Activity on flight day'));
+      await tester.tap(find.text('On the lock screen on flight day'));
       await tester.pumpAndSettle();
 
       expect(armings, [(1, true)]);

@@ -4,6 +4,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../../data/live_activities/live_activity_service.dart';
 import '../../../l10n/app_localizations.g.dart';
 import '../controls/app_switch_row.dart';
+import 'live_activity_labels.dart';
 
 /// What a flight cell needs to offer the switch of the flight it shows.
 typedef FlightLiveActivityControl = ({
@@ -45,13 +46,13 @@ class LiveActivityArmRow extends StatelessWidget {
           children: [
             ?separator,
             AppSwitchRow(
-              label: localizations.liveActivityArmLabel,
+              label: liveActivityArmLabel(localizations),
               isEnabled: isArmed,
               onToggled: onToggled,
             ),
             if (availability == LiveActivityAvailability.disabled)
               Text(
-                localizations.liveActivityDisabledHint,
+                liveActivityDisabledHint(localizations),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
           ],

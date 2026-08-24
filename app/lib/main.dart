@@ -1,14 +1,17 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/adapters/readsb_source_adapter.dart';
 import 'data/font_licenses.dart';
 import 'data/live_activities/flight_live_activities.dart';
 import 'data/live_activities/live_activity_service.dart';
+import 'data/live_activities/notification_live_activity_service.dart';
 import 'data/lookup/airline_directory.dart';
 import 'data/lookup/route_lookup.dart';
 import 'data/notifications/flight_notifier.dart';
@@ -28,6 +31,7 @@ import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/widgets/flight/flight_labels.dart';
+import 'ui/widgets/flight/live_activity_labels.dart';
 import 'ui/widgets/map/map_visuals.dart';
 
 Future<void> main() async {
@@ -49,11 +53,17 @@ Future<void> main() async {
       AppLocalizations.supportedLocales,
     ),
   );
+  // The card's copy formats times outside any widget, and nothing else loads
+  // the locale's date symbols before the first frame is built.
+  await initializeDateFormatting(localizations.localeName);
   final notificationService = await LocalNotificationService.start(
     channelName: localizations.notificationChannelName,
     channelDescription: localizations.notificationChannelDescription,
   );
-  final liveActivityService = await PluginLiveActivityService.start();
+  final liveActivityService = await _startLiveActivities(
+    localizations,
+    notificationService,
+  );
   // Not awaited: the map draws its ground as soon as the planet run is known,
   // and starts without tiles rather than without a first frame.
   final vectorTileSource = VectorTileSource(client: client);
@@ -101,6 +111,26 @@ Future<void> main() async {
         packageInfo: packageInfo,
       ),
     ),
+  );
+}
+
+/// The card is an iOS Live Activity and an Android notification, so which
+/// service runs is a platform decision. Android's rides on the notification
+/// stack, and a device that could not set that up gets no card either.
+Future<LiveActivityService> _startLiveActivities(
+  AppLocalizations localizations,
+  NotificationService notifications,
+) {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return PluginLiveActivityService.start();
+  }
+  if (notifications.permission.value == NotificationPermission.unavailable) {
+    return Future.value(UnavailableLiveActivityService());
+  }
+  return NotificationLiveActivityService.start(
+    copy: (card) => flightCardText(localizations, card),
+    channelName: localizations.lockScreenChannelName,
+    channelDescription: localizations.lockScreenChannelDescription,
   );
 }
 

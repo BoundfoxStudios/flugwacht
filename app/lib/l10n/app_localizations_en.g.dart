@@ -583,4 +583,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flightStateEnded => 'ended';
+
+  @override
+  String get lockScreenArmLabel => 'On the lock screen on flight day';
+
+  @override
+  String get lockScreenReminderTitle => 'Follow on the lock screen';
+
+  @override
+  String lockScreenReminderBody(String flight) {
+    return 'Follow $flight on your lock screen today. Tap to start.';
+  }
+
+  @override
+  String get settingsLockScreenHint =>
+      'Flugwacht sends you a notification on the flight day, so you can put the flight on your lock screen from there.';
+
+  @override
+  String get lockScreenDisabledHint =>
+      'Notifications on the lock screen are switched off for Flugwacht in the system settings';
+
+  @override
+  String get lockScreenChannelName => 'Running flights';
+
+  @override
+  String get lockScreenChannelDescription =>
+      'The card that shows a flight on your lock screen while it is under way.';
+
+  @override
+  String lockScreenCardArrival(String time) {
+    return 'arrival $time';
+  }
+
+  @override
+  String lockScreenCardArrivalUncertain(String time) {
+    return 'arrival ~$time';
+  }
+
+  @override
+  String lockScreenCardLanded(String time) {
+    return 'landed $time';
+  }
+
+  @override
+  String get lockScreenCardProbablyLanded => 'probably landed';
 }

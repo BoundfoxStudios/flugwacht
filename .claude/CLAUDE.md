@@ -139,7 +139,15 @@ apart:
   the same route under both numbers, which is the only evidence the app
   accepts, and only for a number of the full four digits.
 
-## iOS Live Activity
+## The flight card
+
+An armed flight shows a card for its flight day. What the card is differs per
+platform, but everything above the platform is shared: `planLiveActivityAction`,
+`liveActivityStaleIn` and the flight state machine decide, and one
+`LiveActivityService` implementation per platform carries it out. `main.dart`
+picks which, and the copy is chosen the same way (see the Copy section below).
+
+### iOS Live Activity
 
 The Lock Screen card lives in its own widget extension target
 (`FlugwachtLiveActivityExtension`, `app/ios/FlugwachtLiveActivity/`), driven
@@ -199,6 +207,68 @@ obvious from the code:
 - `flutter pub get` on Linux empties the generated Swift package that wires the
   iOS plugins. After working in the sandbox, run `flutter build ios
   --config-only` on the Mac before building in Xcode.
+
+### Android card
+
+An ongoing notification on the `flight_card` channel, built entirely on
+`flutter_local_notifications`, which the app already uses for its other
+notifications. No native code, no extra permission, and it works on every
+supported Android version.
+
+- Deliberately **not** Android 16's promoted "Live Updates" surface (status bar
+  chip, Samsung Now Bar). `setRequestPromotedOngoing` only exists from API 36.1,
+  and Google's guidance rules out "activities triggered by third parties", which
+  a flight someone else operates sits close to. What the app builds is what a
+  promoted notification degrades to below that version, so nothing is lost if
+  this is ever revisited. Custom `RemoteViews` layouts are out for the same
+  reason: they disqualify promotion permanently (#149).
+- **The card's channel keeps `IMPORTANCE_DEFAULT` and its sound.** Silent and
+  lock-screen-visible are the same switch on Android, and there is no
+  configuration that has both: a channel below the default importance is classed
+  as silent, and so is one at the default whose sound is taken away (verified on
+  a Pixel, 2026-08-23). So the card announces itself once, `onlyAlertOnce` keeps
+  every later put quiet, and a user who wants it silent says so in the system
+  settings. A channel's importance is fixed at creation: changing it in code
+  does nothing to an installed app, so testing a change to it needs a reinstall
+  or cleared app data.
+- `setUsesChronometer` plus `setChronometerCountDown` is the one thing Android
+  draws by itself while the app is closed, and it is the whole point of the
+  card. The progress bar is **not** self-running, unlike iOS's
+  `ProgressView(timerInterval:)`, so it only moves on app runs.
+- Android has no counterpart to iOS's stale date. The same effect is scheduled
+  by hand: a second notification under the card's own id, due when the numbers
+  stop being true, replaces the card with one that no longer counts. That is why
+  the card and its stale update share a notification slot.
+- `zonedSchedule` throws on a date in the past, measured against the real clock
+  rather than the moment handed in. Tests that reach it need a date ahead of the
+  wall clock.
+- Every notification slot a flight can occupy is handed out by
+  `notification_ids.dart`, cards included, so nothing can cancel or replace
+  another notification by accident.
+- The card is ended through Android's `timeoutAfter` rather than a scheduled
+  dismissal, which Android does not have. `presenceOf` reads
+  `getActiveNotifications`: Android never ends a card on its own, so a missing
+  one means the user swiped it away.
+- A tap on a card reaches the app through the notification service, which
+  already receives every payload. The Android `LiveActivityService` therefore
+  hands up no tapped flights of its own, and reporting them twice would open the
+  flight twice.
+- `relevanceScore` has no Android counterpart and is not part of the shared
+  service contract; the iOS implementation derives it from the flight itself.
+
+### Copy
+
+Two copy sets, one per platform: iOS keeps Apple's "Live Activity" and "Lock
+Screen", Android names the effect instead of a feature, because it has no
+established term and Google's "Live Updates" would promise the promoted surface
+the app does not build. `live_activity_labels.dart` picks between them off
+`defaultTargetPlatform`, and every string exists twice in the ARB files
+(`liveActivity*` versus `lockScreen*`).
+
+The card's copy formats times outside any widget, so `main.dart` calls
+`initializeDateFormatting` before the polling engine starts. Nothing else loads
+the locale's date symbols before the first frame, and the failure would be a
+silent missing card rather than a crash.
 
 ## Credentials
 

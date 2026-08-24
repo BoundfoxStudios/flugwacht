@@ -6,6 +6,8 @@ import 'package:live_activities/live_activities.dart';
 import 'package:live_activities/models/live_activity_state.dart';
 import 'package:signals/signals.dart';
 
+import '../../domain/flight.dart';
+import 'live_activity_payload.dart';
 import 'live_activity_url.dart';
 
 /// The App Group the app and the widget extension share; the plugin moves the
@@ -38,22 +40,16 @@ abstract interface class LiveActivityService {
   /// Picks up what the user changed in the system settings.
   Future<void> refreshAvailability();
 
-  /// Puts the flight's facts on its card, starting the activity when none runs
-  /// under [activityId] yet.
+  /// Puts the flight's facts on its card as of [now], starting the activity
+  /// when none runs under [activityId] yet.
   ///
-  /// Past [staleIn] the card tells the viewer that its numbers are no longer
-  /// backed by fresh data. Every put renews that window: it is the only clock
-  /// the app can leave behind, because iOS renders the card once more when it
-  /// runs out — the single chance a card has to stop counting towards a moment
-  /// that passed while the app was closed.
-  ///
-  /// [relevanceScore] ranks this card against the app's other ones; the highest
-  /// gets the Dynamic Island.
+  /// What a card is made of differs per platform, so each implementation
+  /// derives its own from the flight rather than being handed a shape only one
+  /// of them can use.
   Future<void> put(
     String activityId, {
-    required Map<String, dynamic> data,
-    required Duration staleIn,
-    required double relevanceScore,
+    required Flight flight,
+    required DateTime now,
   });
 
   /// Takes the card away — at [dismissAt] when the user should still get to
@@ -71,8 +67,8 @@ class PluginLiveActivityService implements LiveActivityService {
     : availability = signal(LiveActivityAvailability.unsupported);
 
   /// Sets the plugin up for the App Group both targets share. Live Activities
-  /// are an iOS feature here (#149 parks Android), and a device that fails the
-  /// setup costs the user the cards, never a stalled app.
+  /// are Apple's own thing; Android's card runs on notifications instead. A
+  /// device that fails the setup costs the user the cards, never a stalled app.
   static Future<LiveActivityService> start() async {
     if (!Platform.isIOS) {
       return UnavailableLiveActivityService();
@@ -125,22 +121,27 @@ class PluginLiveActivityService implements LiveActivityService {
     };
   }
 
+  /// Past the stale window the card tells the viewer that its numbers are no
+  /// longer backed by fresh data. Every put renews it: it is the only clock the
+  /// app can leave behind, because iOS renders the card once more when it runs
+  /// out, the single chance a card has to stop counting towards a moment that
+  /// passed while the app was closed. The relevance score ranks this card
+  /// against the app's other ones; the highest gets the Dynamic Island.
   @override
   Future<void> put(
     String activityId, {
-    required Map<String, dynamic> data,
-    required Duration staleIn,
-    required double relevanceScore,
+    required Flight flight,
+    required DateTime now,
   }) async {
     await _plugin.createOrUpdateActivity(
       activityId,
-      data,
+      liveActivityPayloadOf(flight, now),
       // The card belongs to the flight, not to the app run: it keeps counting
       // down while the app is closed, and the system clears it on its own.
       removeWhenAppIsKilled: false,
       iOSEnableRemoteUpdates: false,
-      staleIn: staleIn,
-      relevanceScore: relevanceScore,
+      staleIn: liveActivityStaleIn(flight, now),
+      relevanceScore: liveActivityRelevanceOf(flight, now),
     );
   }
 
@@ -183,9 +184,8 @@ class UnavailableLiveActivityService implements LiveActivityService {
   @override
   Future<void> put(
     String activityId, {
-    required Map<String, dynamic> data,
-    required Duration staleIn,
-    required double relevanceScore,
+    required Flight flight,
+    required DateTime now,
   }) async {}
 
   @override

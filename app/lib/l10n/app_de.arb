@@ -164,5 +164,16 @@
   "flightStateWaiting": "wartet",
   "flightStateLive": "live",
   "flightStateNoSignal": "kein Signal",
-  "flightStateEnded": "beendet"
+  "flightStateEnded": "beendet",
+  "lockScreenArmLabel": "Auf dem Sperrbildschirm am Flugtag",
+  "lockScreenReminderTitle": "Auf dem Sperrbildschirm verfolgen",
+  "lockScreenReminderBody": "Verfolge {flight} heute auf dem Sperrbildschirm. Tippe zum Starten.",
+  "settingsLockScreenHint": "Flugwacht schickt dir am Flugtag eine Mitteilung, über die du den Flug auf den Sperrbildschirm holst.",
+  "lockScreenDisabledHint": "Mitteilungen auf dem Sperrbildschirm sind für Flugwacht in den Systemeinstellungen ausgeschaltet",
+  "lockScreenChannelName": "Laufende Flüge",
+  "lockScreenChannelDescription": "Die Karte, die einen Flug auf dem Sperrbildschirm zeigt, solange er unterwegs ist.",
+  "lockScreenCardArrival": "Ankunft {time}",
+  "lockScreenCardArrivalUncertain": "Ankunft ~{time}",
+  "lockScreenCardLanded": "gelandet {time}",
+  "lockScreenCardProbablyLanded": "wahrscheinlich gelandet"
 }

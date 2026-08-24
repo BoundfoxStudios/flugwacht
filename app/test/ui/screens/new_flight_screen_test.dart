@@ -813,7 +813,7 @@ void main() {
 
       await pumpNewFlightScreen(tester, liveActivityService: service);
 
-      expect(find.text('Live Activity on flight day'), findsNothing);
+      expect(find.text('On the lock screen on flight day'), findsNothing);
     });
 
     testWidgets('says so when the system settings switched them off', (
@@ -824,11 +824,11 @@ void main() {
 
       await pumpNewFlightScreen(tester, liveActivityService: service);
 
-      expect(find.text('Live Activity on flight day'), findsOneWidget);
+      expect(find.text('On the lock screen on flight day'), findsOneWidget);
       expect(
         find.text(
-          'Live Activities are switched off for Flugwacht in the system '
-          'settings',
+          'Notifications on the lock screen are switched off for '
+          'Flugwacht in the system settings',
         ),
         findsOneWidget,
       );
@@ -865,7 +865,7 @@ void main() {
       await typeLookupValue(tester, 'LH400');
       await settleRouteLookup(tester);
 
-      await tester.tap(find.text('Live Activity on flight day'));
+      await tester.tap(find.text('On the lock screen on flight day'));
       await tester.pumpAndSettle();
       await submit(tester);
 
@@ -900,7 +900,7 @@ void main() {
       await typeLookupValue(tester, 'LH400');
       await settleRouteLookup(tester);
 
-      await tester.tap(find.text('Live Activity on flight day'));
+      await tester.tap(find.text('On the lock screen on flight day'));
       await tester.pumpAndSettle();
       await submit(tester);
 

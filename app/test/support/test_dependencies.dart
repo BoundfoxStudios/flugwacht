@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:flugwacht/data/adapters/lookup_result.dart';
 import 'package:flugwacht/data/adapters/source_adapter.dart';
+import 'package:flugwacht/data/live_activities/live_activity_payload.dart';
 import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/lookup/airline_directory.dart';
 import 'package:flugwacht/data/lookup/route_lookup.dart';
@@ -368,18 +369,23 @@ class FakeLiveActivityService implements LiveActivityService {
     }
   }
 
+  /// Records what the iOS card would carry: it is the shape the assertions are
+  /// written against, and deriving it here keeps them independent of which
+  /// service the platform would pick.
   @override
   Future<void> put(
     String activityId, {
-    required Map<String, dynamic> data,
-    required Duration staleIn,
-    required double relevanceScore,
+    required Flight flight,
+    required DateTime now,
   }) async {
     if (failure case final failure?) {
       throw failure;
     }
     await held?.future;
-    puts.add((activityId: activityId, data: data));
+    puts.add((
+      activityId: activityId,
+      data: liveActivityPayloadOf(flight, now),
+    ));
     // The system knows a card the moment it exists, and so must the fake:
     // answering "not running" for a card it just took hid a duplicate-card bug.
     running = [...running, activityId];

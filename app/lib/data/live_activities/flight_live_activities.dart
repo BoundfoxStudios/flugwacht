@@ -3,7 +3,7 @@ import '../../domain/live_activity_planning.dart';
 import '../notifications/notification_service.dart';
 import '../persistence/flight_repository.dart';
 import '../settings/live_activity_setting.dart';
-import 'live_activity_payload.dart';
+import 'live_activity_id.dart';
 import 'live_activity_service.dart';
 
 /// What the flight-day reminder says; built where the localizations live,
@@ -178,18 +178,8 @@ class FlightLiveActivities {
   String? _runningActivityOf(Flight flight) =>
       _activityIds[flight.id] ?? flight.liveActivityId;
 
-  Future<void> _put(String activityId, Flight flight) async {
-    final now = clock();
-    await _service.put(
-      activityId,
-      data: liveActivityPayloadOf(flight, now),
-      staleIn: liveActivityStaleIn(flight, now),
-      relevanceScore: liveActivityRelevanceOf(flight, now),
-    );
-  }
+  Future<void> _put(String activityId, Flight flight) =>
+      _service.put(activityId, flight: flight, now: clock());
 
-  /// Unique per start: a card the system already dismissed must not have its
-  /// identifier reused by the next one.
-  String _activityIdOf(Flight flight) =>
-      'flight-${flight.id}-${clock().millisecondsSinceEpoch}';
+  String _activityIdOf(Flight flight) => liveActivityIdOf(flight.id, clock());
 }

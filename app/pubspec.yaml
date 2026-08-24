@@ -35,7 +35,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   # Pinned by flutter_localizations; "any" resolves to that exact version
   intl: any
   # Private companion repo bundling the licensed Font Awesome Pro icons;
@@ -43,7 +43,7 @@ dependencies:
   font_awesome_flutter:
     git:
       url: https://github.com/BoundfoxStudios/font-awesome-flutter-pro.git
-      ref: v1.0.0
+      ref: v1.1.0
   flutter_map: ^8.3.1
   http: ^1.6.0
   latlong2: ^0.10.1
@@ -61,18 +61,20 @@ dependencies:
   flutter_local_notifications: ^22.3.0
   url_launcher: ^6.3.2
   csv: ^8.0.0
-  # Fork until upstream carries the ActivityKit relevance score and updates the
-  # card through ActivityContent (#238); 2.5.1 plus those two commits.
+  # Upstream main until a release carries the ActivityKit relevance score and
+  # updates the card through ActivityContent (#238); 2.5.1 has neither.
   live_activities:
     git:
-      url: https://github.com/BoundfoxStudios/flutter_live_activities.git
-      ref: 9cb0cb49d38cfc0b60827127523413d3d7547d63
+      url: https://github.com/istornz/flutter_live_activities.git
+      ref: b17737cd1916c2f52c7ab49cd3660571b7a961fe
 
+  material_ui: ^1.0.1
+  cupertino_ui: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
   # Pinned by flutter_test; "any" resolves to that exact version
-  fake_async: any
+  fake_async: ^1.3.3
   # Only for the in-memory preference store the tests run against
   shared_preferences_platform_interface: ^2.4.2
 
@@ -83,7 +85,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   drift_dev: ^2.34.5
-  build_runner: ^2.15.1
+  build_runner: ^2.16.0
   url_launcher_platform_interface: ^2.3.2
 
 # For information on the generic Dart part of this file, see the
@@ -105,7 +107,6 @@ flutter:
     - assets/logo/lockup-light.svg
     - assets/logo/lockup-dark.svg
     - assets/logo/bfs.svg
-    - assets/logo/github.svg
     - assets/fonts/OFL-BebasNeue.txt
     - assets/fonts/OFL-Barlow.txt
 

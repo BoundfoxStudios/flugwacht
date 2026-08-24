@@ -135,6 +135,8 @@
   "aboutLicenses": "Open-Source-Lizenzen",
   "aboutBoundfox": "Ein Projekt von Boundfox Studios",
   "aboutGithub": "Flugwacht auf GitHub",
+  "aboutDiscord": "Tritt der Discord Community bei",
+  "settingsBugHint": "Nutze GitHub oder Discord um Fehler zu melden oder Vorschläge zu machen.",
   "settingsFaqTitle": "Häufige Fragen",
   "faqTitle": "Häufige Fragen",
   "faqOtherServicesQuestion": "Warum weichen die Daten von FlightRadar24 & Co. ab?",

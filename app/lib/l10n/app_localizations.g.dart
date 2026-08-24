@@ -870,6 +870,18 @@ abstract class AppLocalizations {
   /// **'Flugwacht on GitHub'**
   String get aboutGithub;
 
+  /// No description provided for @aboutDiscord.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Flugwacht on Discord'**
+  String get aboutDiscord;
+
+  /// No description provided for @settingsBugHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use GitHub or Discord to report issues or make suggestions.'**
+  String get settingsBugHint;
+
   /// No description provided for @settingsFaqTitle.
   ///
   /// In en, this message translates to:

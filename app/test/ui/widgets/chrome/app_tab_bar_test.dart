@@ -2,9 +2,9 @@ import 'package:flugwacht/app_icons.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/chrome/app_tab_bar.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _tabs = [
   AppTab(icon: AppIcons.map, label: 'Karte'),

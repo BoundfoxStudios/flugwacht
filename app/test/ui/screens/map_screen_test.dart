@@ -9,6 +9,7 @@ import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/main.dart';
 import 'package:flugwacht/ui/app_router.dart';
@@ -19,10 +20,10 @@ import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_sheet.dart';
 import 'package:flugwacht/ui/widgets/map/map_button.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../support/test_dependencies.dart';
@@ -114,7 +115,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: switch (brightness) {
         Brightness.light => buildLightTheme(),

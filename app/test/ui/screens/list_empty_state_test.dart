@@ -1,10 +1,11 @@
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/branding/radar_eye_logo.dart';
 import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 Future<void> pumpEmptyState(
   WidgetTester tester, {
@@ -13,7 +14,7 @@ Future<void> pumpEmptyState(
 }) => tester.pumpWidget(
   MaterialApp(
     locale: locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     theme: buildLightTheme(),
     home: Scaffold(body: ListEmptyState(onAddFlight: onAddFlight ?? () {})),

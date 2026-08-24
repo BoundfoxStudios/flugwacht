@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,6 +15,7 @@ import '../widgets/chrome/settings_card.dart';
 
 const _boundfoxUrl = 'https://boundfoxstudios.com';
 const _repositoryUrl = 'https://github.com/BoundfoxStudios/flugwacht';
+const _discordUrl = 'https://discord.gg/tHqNzMT';
 
 /// What the app is built on and who built it: the identity, the credits the
 /// data and the icons carry, and the way into the package licenses.
@@ -55,6 +56,7 @@ class AboutScreen extends StatelessWidget {
               ],
             ),
             SettingsCard(
+              hint: localizations.settingsBugHint,
               children: [
                 _AboutRow(
                   label: localizations.aboutBoundfox,
@@ -66,15 +68,19 @@ class AboutScreen extends StatelessWidget {
                 ),
                 _AboutRow(
                   label: localizations.aboutGithub,
-                  leading: SvgPicture.asset(
-                    'assets/logo/github.svg',
-                    height: _AboutRow.leadingSize,
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.onSurface,
-                      BlendMode.srcIn,
-                    ),
+                  leading: const FaIcon(
+                    AppIcons.github,
+                    size: _AboutRow.leadingSize,
                   ),
                   onTap: () => unawaited(_openUrl(_repositoryUrl)),
+                ),
+                _AboutRow(
+                  label: localizations.aboutDiscord,
+                  leading: const FaIcon(
+                    AppIcons.discord,
+                    size: _AboutRow.leadingSize,
+                  ),
+                  onTap: () => unawaited(_openUrl(_discordUrl)),
                 ),
               ],
             ),
@@ -152,6 +158,7 @@ class _AboutRow extends StatefulWidget {
   const _AboutRow({required this.label, required this.onTap, this.leading});
 
   static const leadingSize = 20.0;
+
   // A slot as wide as the widest logo, so rows with differently proportioned
   // logos still start their label at the same x.
   static const _leadingSlotWidth = 24.0;

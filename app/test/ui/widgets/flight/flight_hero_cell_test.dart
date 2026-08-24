@@ -4,14 +4,15 @@ import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/trail_point.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/state_timeline.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../support/rendered_pixels.dart';
 import '../../../support/test_dependencies.dart';
@@ -79,7 +80,7 @@ Future<void> pumpHeroCell(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: switch (brightness) {
         Brightness.light => buildLightTheme(),

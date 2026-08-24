@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'data/adapters/readsb_source_adapter.dart';
@@ -27,6 +27,7 @@ import 'data/settings/units_setting.dart';
 import 'data/vector_tile_source.dart';
 import 'domain/airport_timezone.dart';
 import 'domain/source_id.dart';
+import 'l10n/app_localization_delegates.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
@@ -142,7 +143,7 @@ class FlugwachtApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp.router(
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     theme: buildLightTheme(),
     darkTheme: buildDarkTheme(),

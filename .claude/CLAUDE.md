@@ -123,6 +123,20 @@ that line.
   output, so a file the hosting does not serve fails too. The root
   `linkinator.config.json` keeps a local run identical to CI.
 
+## Localization
+
+The app builds its Material surface on `material_ui`, whose
+`MaterialLocalizations` is a different type from the one
+`package:flutter/material.dart` still carries. `flutter_localizations` serves
+the legacy type, so the generated `AppLocalizations.localizationsDelegates`
+never satisfies a `material_ui` widget: English survives on the built-in
+`DefaultMaterialLocalizations`, every other locale asserts. What the app and
+the widget tests pass instead is `appLocalizationDelegates`
+(`app/lib/l10n/app_localization_delegates.dart`), which pairs the generated
+delegate with `material_ui`'s own `GlobalMaterialLocalizations.delegates`, a
+list that already carries the Cupertino and Widgets delegates. `gen_l10n` has
+no option to emit that, so the generated list stays wrong and unused.
+
 ## Callsigns
 
 A flight number is not the string an aircraft transmits, and the two are kept
@@ -151,13 +165,13 @@ picks which, and the copy is chosen the same way (see the Copy section below).
 
 The Lock Screen card lives in its own widget extension target
 (`FlugwachtLiveActivityExtension`, `app/ios/FlugwachtLiveActivity/`), driven
-from Dart through the `live_activities` plugin. The app runs a fork of it
-(`BoundfoxStudios/flutter_live_activities`, pinned by commit in
-`app/pubspec.yaml`): upstream never passes ActivityKit's relevance score and
-updates a card through the deprecated call that carries no `ActivityContent`,
-so neither the score nor the stale date can be renewed. The fork adds both, and
-until upstream takes them the dependency stays a git one. What else is not
-obvious from the code:
+from Dart through the `live_activities` plugin. The app pins upstream's
+(`istornz/flutter_live_activities`) `main` by commit in `app/pubspec.yaml`
+instead of taking the package from pub.dev: the released 2.5.1 never passes
+ActivityKit's relevance score and updates a card through the deprecated call
+that carries no `ActivityContent`, so neither the score nor the stale date can
+be renewed. `main` carries both, and until a release ships them the dependency
+stays a git one. What else is not obvious from the code:
 
 - The extension's folder is a synchronized group: files dropped into it join
   the target automatically, resources included. That is why Bebas Neue and
@@ -184,7 +198,7 @@ obvious from the code:
   not expose their current value, so nothing can be positioned along them.
 - Everything else on a closed card is redrawn exactly once: when the stale
   date passes. Every put therefore has to renew that date, which is what the
-  fork's update path is for.
+  `ActivityContent` update path is for.
 - The Dynamic Island shows at most two cards and picks them by relevance score,
   which also orders the Lock Screen. `liveActivityRelevanceOf` derives it from
   the flight state, so a flight in the air outranks one that has not left yet.

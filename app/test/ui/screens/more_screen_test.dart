@@ -2,12 +2,13 @@ import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/units.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/controls/app_radio_row.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../support/test_dependencies.dart';
 
@@ -21,7 +22,7 @@ Future<({SourceSetting source, UnitsSetting units})> pumpMoreScreen(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
       home: MoreScreen(

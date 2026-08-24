@@ -1,10 +1,11 @@
 import 'package:flugwacht/domain/source_id.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flugwacht/ui/widgets/map/source_legend_card.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 Future<void> pumpLegendCard(
   WidgetTester tester, {
@@ -16,7 +17,7 @@ Future<void> pumpLegendCard(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: switch (brightness) {
         Brightness.light => buildLightTheme(),

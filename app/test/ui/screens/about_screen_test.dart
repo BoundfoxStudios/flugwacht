@@ -1,9 +1,10 @@
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/about_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/branding/flugwacht_lockup.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../support/test_dependencies.dart';
 
@@ -17,7 +18,7 @@ Future<FakeUrlLauncher> pumpAboutScreen(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
       home: AboutScreen(
@@ -100,11 +101,21 @@ void main() {
     expect(launcher.launched, ['https://github.com/BoundfoxStudios/flugwacht']);
   });
 
+  testWidgets('opens the discord invite from its row', (tester) async {
+    final launcher = await pumpAboutScreen(tester);
+
+    await tester.tap(find.text('Join Flugwacht on Discord'));
+    await tester.pumpAndSettle();
+
+    expect(launcher.launched, ['https://discord.gg/tHqNzMT']);
+  });
+
   testWidgets('renders the german copy', (tester) async {
     await pumpAboutScreen(tester, locale: const Locale('de'));
 
     expect(find.text('Ein Projekt von Boundfox Studios'), findsOneWidget);
     expect(find.text('Open-Source-Lizenzen'), findsOneWidget);
     expect(find.text('Flugwacht auf GitHub'), findsOneWidget);
+    expect(find.text('Tritt der Discord Community bei'), findsOneWidget);
   });
 }

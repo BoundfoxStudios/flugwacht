@@ -17,9 +17,9 @@ import 'package:flugwacht/ui/widgets/chrome/pager_dots.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_sheet.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_state_badge.dart';
 import 'package:flugwacht/ui/widgets/flight/state_timeline.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../support/test_dependencies.dart';
 

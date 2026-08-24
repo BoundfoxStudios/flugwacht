@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:material_ui/material_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../app_icons.dart';

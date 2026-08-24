@@ -3,8 +3,8 @@ import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/branding/radar_eye_logo.dart';
 import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 Future<void> pumpEmptyState(
   WidgetTester tester, {

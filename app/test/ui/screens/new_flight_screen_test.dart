@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
@@ -17,10 +18,9 @@ import 'package:flugwacht/ui/screens/new_flight_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
 import 'package:flugwacht/ui/widgets/controls/app_segmented_control.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../support/test_dependencies.dart';
 

@@ -8,9 +8,9 @@ import 'package:flugwacht/ui/screens/new_flight_screen.dart';
 import 'package:flugwacht/ui/screens/notifications_screen.dart';
 import 'package:flugwacht/ui/widgets/chrome/app_tab_bar.dart';
 import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../support/test_dependencies.dart';
 

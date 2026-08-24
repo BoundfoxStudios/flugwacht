@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/branding/radar_eye_logo.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _logoKey = ValueKey('logo');
 const _logoSize = 76.0;

@@ -1,8 +1,8 @@
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/branding/flugwacht_lockup.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../support/rendered_pixels.dart';
 

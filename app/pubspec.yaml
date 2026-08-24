@@ -35,7 +35,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   # Pinned by flutter_localizations; "any" resolves to that exact version
   intl: any
   # Private companion repo bundling the licensed Font Awesome Pro icons;
@@ -68,11 +68,13 @@ dependencies:
       url: https://github.com/BoundfoxStudios/flutter_live_activities.git
       ref: 9cb0cb49d38cfc0b60827127523413d3d7547d63
 
+  material_ui: ^1.0.1
+  cupertino_ui: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
   # Pinned by flutter_test; "any" resolves to that exact version
-  fake_async: any
+  fake_async: ^1.3.3
   # Only for the in-memory preference store the tests run against
   shared_preferences_platform_interface: ^2.4.2
 
@@ -83,7 +85,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   drift_dev: ^2.34.5
-  build_runner: ^2.15.1
+  build_runner: ^2.16.0
   url_launcher_platform_interface: ^2.3.2
 
 # For information on the generic Dart part of this file, see the

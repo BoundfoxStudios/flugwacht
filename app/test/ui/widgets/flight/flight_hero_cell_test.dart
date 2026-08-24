@@ -9,9 +9,9 @@ import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/state_timeline.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../support/rendered_pixels.dart';
 import '../../../support/test_dependencies.dart';

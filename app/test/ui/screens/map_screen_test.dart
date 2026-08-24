@@ -19,10 +19,10 @@ import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_sheet.dart';
 import 'package:flugwacht/ui/widgets/map/map_button.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../../support/test_dependencies.dart';

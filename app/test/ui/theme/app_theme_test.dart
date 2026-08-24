@@ -1,6 +1,6 @@
 import 'package:flugwacht/ui/theme/app_theme.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 double _contrastRatio(Color first, Color second) {
   final firstLuminance = first.computeLuminance();

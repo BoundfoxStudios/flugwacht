@@ -7,10 +7,10 @@ import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations_en.g.dart';
 import 'package:flugwacht/ui/theme/reduced_map_theme.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 

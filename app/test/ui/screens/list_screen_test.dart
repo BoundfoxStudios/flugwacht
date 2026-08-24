@@ -11,9 +11,9 @@ import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/chrome/app_fab.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_row.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../support/rendered_pixels.dart';
 import '../../support/test_dependencies.dart';

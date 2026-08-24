@@ -401,8 +401,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v1.0.0"
-      resolved-ref: "1652bf5917cf9b2ff645eedd5dc53280bb8e5437"
+      ref: "v1.1.0"
+      resolved-ref: af65582f71011c93c7198c9d007494ada140974f
       url: "https://github.com/BoundfoxStudios/font-awesome-flutter-pro.git"
     source: git
     version: "11.0.0"

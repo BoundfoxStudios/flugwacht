@@ -479,6 +479,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get aboutGithub => 'Flugwacht auf GitHub';
 
   @override
+  String get aboutDiscord => 'Tritt der Discord Community bei';
+
+  @override
+  String get settingsBugHint =>
+      'Nutze GitHub oder Discord um Fehler zu melden oder Vorschläge zu machen.';
+
+  @override
   String get settingsFaqTitle => 'Häufige Fragen';
 
   @override

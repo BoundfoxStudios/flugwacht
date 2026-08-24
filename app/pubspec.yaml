@@ -43,7 +43,7 @@ dependencies:
   font_awesome_flutter:
     git:
       url: https://github.com/BoundfoxStudios/font-awesome-flutter-pro.git
-      ref: v1.0.0
+      ref: v1.1.0
   flutter_map: ^8.3.1
   http: ^1.6.0
   latlong2: ^0.10.1
@@ -107,7 +107,6 @@ flutter:
     - assets/logo/lockup-light.svg
     - assets/logo/lockup-dark.svg
     - assets/logo/bfs.svg
-    - assets/logo/github.svg
     - assets/fonts/OFL-BebasNeue.txt
     - assets/fonts/OFL-Barlow.txt
 

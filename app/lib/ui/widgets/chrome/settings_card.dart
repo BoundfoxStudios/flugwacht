@@ -10,6 +10,7 @@ class SettingsCard extends StatefulWidget {
   const SettingsCard({
     required this.children,
     this.title,
+    this.hint,
     this.onTap,
     super.key,
   });
@@ -19,6 +20,7 @@ class SettingsCard extends StatefulWidget {
 
   final List<Widget> children;
   final String? title;
+  final String? hint;
   final VoidCallback? onTap;
 
   @override
@@ -32,31 +34,45 @@ class _SettingsCardState extends State<SettingsCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final title = widget.title;
-    final card = DecoratedBox(
-      decoration: BoxDecoration(
-        color: _isPressed
-            ? theme.colorScheme.surfaceContainerLow
-            : theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      child: Padding(
-        padding: SettingsCard._padding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: SettingsCard._gap,
-          children: [
-            if (title != null)
-              Text(
-                title,
-                style: AppTextStyles.sectionLabelLarge.copyWith(
-                  color: theme.textTheme.labelSmall?.color,
-                ),
-              ),
-            ...widget.children,
-          ],
+    final hint = widget.hint;
+    final card = Column(
+      crossAxisAlignment: .start,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: _isPressed
+                ? theme.colorScheme.surfaceContainerLow
+                : theme.colorScheme.surface,
+            border: Border.all(color: theme.colorScheme.outline),
+            borderRadius: BorderRadius.circular(AppRadius.card),
+          ),
+          child: Padding(
+            padding: SettingsCard._padding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: SettingsCard._gap,
+              children: [
+                if (title != null)
+                  Text(
+                    title,
+                    style: AppTextStyles.sectionLabelLarge.copyWith(
+                      color: theme.textTheme.labelSmall?.color,
+                    ),
+                  ),
+                ...widget.children,
+              ],
+            ),
+          ),
         ),
-      ),
+        if (hint != null)
+          Padding(
+            padding: EdgeInsetsGeometry.only(
+              left: SettingsCard._padding.left,
+              right: SettingsCard._padding.right,
+            ),
+            child: Text(hint, style: AppTextStyles.small.copyWith(color: AppColors.neutral400),),
+          )
+      ],
     );
     final onTap = widget.onTap;
     if (onTap == null) {

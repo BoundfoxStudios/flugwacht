@@ -480,6 +480,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutGithub => 'Flugwacht on GitHub';
 
   @override
+  String get aboutDiscord => 'Join Flugwacht on Discord';
+
+  @override
+  String get settingsBugHint =>
+      'Use GitHub or Discord to report issues or make suggestions.';
+
+  @override
   String get settingsFaqTitle => 'Frequently asked questions';
 
   @override

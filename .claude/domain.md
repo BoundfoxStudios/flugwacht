@@ -43,6 +43,12 @@ arrive?" – a feature that does not serve it does not belong in the app.
   and private flights are often missing entirely. "Route unknown" is a
   regular state, never an error – saving such a flight stays possible, it
   just gets no arrival estimate.
+- The dataset's airport column is the aircraft's whole rotation, not one leg:
+  CFG1402 reads `EDDF-GCLP-GCFV-EDDF` and actually goes to GCFV. The route is
+  the column's first and last entry, so a rotation returning home would name
+  its origin as the destination – such a row therefore counts as no usable
+  route. Which leg was booked is not derivable, and guessing it is rejected:
+  the same callsign covers every leg (#240).
 
 ## Coverage Gaps
 

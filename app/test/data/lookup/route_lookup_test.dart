@@ -147,6 +147,45 @@ void main() {
     expect(result.route.destination.icaoCode, 'KJFK');
   });
 
+  test('reports not found for a chain ending where it started', () async {
+    final requested = <String>[];
+    final lookup = RouteLookup(
+      client: _clientServing({
+        '$_base/routes/schema-01/D/DLH-all.csv':
+            '${_routeHeader}DLH500,DLH,500,DLH,EDDM-EDDF-KJFK-EDDM\n',
+        '$_base/airports/schema-01/E/ED.csv': _edAirports,
+        '$_base/airports/schema-01/K/KJ.csv': _kjAirports,
+      }, requested: requested),
+    );
+
+    expect(await lookup.lookup(const ['DLH500']), isA<RouteNotFound>());
+    expect(requested.where((url) => url.contains('/airports/')), isEmpty);
+  });
+
+  test('reports not found for a row naming one airport twice', () async {
+    final lookup = RouteLookup(
+      client: _clientServing({
+        '$_base/routes/schema-01/D/DLH-all.csv':
+            '${_routeHeader}DLH500,DLH,500,DLH,EDDF-EDDF\n',
+        '$_base/airports/schema-01/E/ED.csv': _edAirports,
+      }),
+    );
+
+    expect(await lookup.lookup(const ['DLH500']), isA<RouteNotFound>());
+  });
+
+  test('reports not found for a row naming a single airport', () async {
+    final lookup = RouteLookup(
+      client: _clientServing({
+        '$_base/routes/schema-01/D/DLH-all.csv':
+            '${_routeHeader}DLH500,DLH,500,DLH,EDDF\n',
+        '$_base/airports/schema-01/E/ED.csv': _edAirports,
+      }),
+    );
+
+    expect(await lookup.lookup(const ['DLH500']), isA<RouteNotFound>());
+  });
+
   test(
     'tries the candidates in order and keeps the first with a route',
     () async {

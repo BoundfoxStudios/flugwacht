@@ -116,13 +116,17 @@ class RouteLookup {
   }
 
   /// The airports the row flies through, or null when it carries no usable
-  /// route.
+  /// route: the column is the aircraft's whole rotation rather than one leg,
+  /// so a chain ending where it started (CFG1402 reads EDDF-GCLP-GCFV-EDDF)
+  /// names its own origin as the destination.
   List<String>? _airportCodesOf(List<String> row) {
     final airportCodes = row[4]
         .split('-')
         .where((code) => code.isNotEmpty)
         .toList();
-    return airportCodes.length < 2 ? null : airportCodes;
+    return airportCodes.length < 2 || airportCodes.first == airportCodes.last
+        ? null
+        : airportCodes;
   }
 
   /// The callsign the flight goes by where the airline markets it under a

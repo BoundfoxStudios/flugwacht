@@ -2,6 +2,7 @@ import 'package:flugwacht/data/live_activities/live_activity_service.dart';
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/map_selection.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
@@ -91,7 +92,7 @@ Future<FakeFlightRepository> pumpListScreen(
       key: _screenKey,
       child: MaterialApp.router(
         locale: locale,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         theme: buildLightTheme(),
         routerConfig: router,

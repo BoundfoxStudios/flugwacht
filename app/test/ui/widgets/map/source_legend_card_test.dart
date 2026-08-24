@@ -1,4 +1,5 @@
 import 'package:flugwacht/domain/source_id.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
@@ -16,7 +17,7 @@ Future<void> pumpLegendCard(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: switch (brightness) {
         Brightness.light => buildLightTheme(),

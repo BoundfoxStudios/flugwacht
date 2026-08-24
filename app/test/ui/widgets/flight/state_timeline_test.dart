@@ -1,4 +1,5 @@
 import 'package:flugwacht/domain/flight_state.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
@@ -15,7 +16,7 @@ Future<void> pumpTimeline(
 }) => tester.pumpWidget(
   MaterialApp(
     locale: locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     theme: switch (brightness) {
       Brightness.light => buildLightTheme(),

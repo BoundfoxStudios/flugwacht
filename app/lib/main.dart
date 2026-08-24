@@ -27,6 +27,7 @@ import 'data/settings/units_setting.dart';
 import 'data/vector_tile_source.dart';
 import 'domain/airport_timezone.dart';
 import 'domain/source_id.dart';
+import 'l10n/app_localization_delegates.dart';
 import 'l10n/app_localizations.g.dart';
 import 'ui/app_router.dart';
 import 'ui/theme/app_theme.dart';
@@ -142,7 +143,7 @@ class FlugwachtApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp.router(
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     theme: buildLightTheme(),
     darkTheme: buildDarkTheme(),

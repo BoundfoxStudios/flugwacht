@@ -1,3 +1,4 @@
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_empty_state.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -13,7 +14,7 @@ Future<void> pumpEmptyState(
 }) => tester.pumpWidget(
   MaterialApp(
     locale: locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     theme: buildLightTheme(),
     home: Scaffold(body: ListEmptyState(onAddFlight: onAddFlight ?? () {})),

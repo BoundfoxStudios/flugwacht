@@ -3,6 +3,7 @@ import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
 import 'package:flugwacht/domain/flight_notification.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/notifications_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -35,7 +36,7 @@ pumpNotificationsScreen(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
       home: NotificationsScreen(

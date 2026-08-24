@@ -10,6 +10,7 @@ import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/units.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/list_sections.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -123,7 +124,7 @@ Future<List<int>> pumpFlightSheet(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: switch (brightness) {
         Brightness.light => buildLightTheme(),

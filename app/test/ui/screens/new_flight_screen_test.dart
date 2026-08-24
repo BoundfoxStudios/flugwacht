@@ -12,6 +12,7 @@ import 'package:flugwacht/domain/day_time.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_notification.dart';
 import 'package:flugwacht/domain/flight_route.dart';
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/new_flight_preview_card.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
@@ -81,7 +82,7 @@ Future<FlightRepository> pumpNewFlightScreen(
   await tester.pumpWidget(
     MaterialApp.router(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme().copyWith(platform: platform),
       routerConfig: router,

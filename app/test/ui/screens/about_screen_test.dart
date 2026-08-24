@@ -1,3 +1,4 @@
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/about_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -17,7 +18,7 @@ Future<FakeUrlLauncher> pumpAboutScreen(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
       home: AboutScreen(

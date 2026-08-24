@@ -1,3 +1,4 @@
+import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/faq_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
@@ -12,7 +13,7 @@ Future<void> pumpFaqScreen(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
       home: const FaqScreen(),

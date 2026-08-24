@@ -123,6 +123,20 @@ that line.
   output, so a file the hosting does not serve fails too. The root
   `linkinator.config.json` keeps a local run identical to CI.
 
+## Localization
+
+The app builds its Material surface on `material_ui`, whose
+`MaterialLocalizations` is a different type from the one
+`package:flutter/material.dart` still carries. `flutter_localizations` serves
+the legacy type, so the generated `AppLocalizations.localizationsDelegates`
+never satisfies a `material_ui` widget: English survives on the built-in
+`DefaultMaterialLocalizations`, every other locale asserts. What the app and
+the widget tests pass instead is `appLocalizationDelegates`
+(`app/lib/l10n/app_localization_delegates.dart`), which pairs the generated
+delegate with `material_ui`'s own `GlobalMaterialLocalizations.delegates`, a
+list that already carries the Cupertino and Widgets delegates. `gen_l10n` has
+no option to emit that, so the generated list stays wrong and unused.
+
 ## Callsigns
 
 A flight number is not the string an aircraft transmits, and the two are kept

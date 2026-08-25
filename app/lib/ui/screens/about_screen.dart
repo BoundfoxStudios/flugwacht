@@ -17,7 +17,10 @@ import '../widgets/chrome/settings_card.dart';
 const _boundfoxUrl = 'https://boundfoxstudios.com';
 const _repositoryUrl = 'https://github.com/BoundfoxStudios/flugwacht';
 const _discordUrl = 'https://discord.gg/tHqNzMT';
+const _openStreetMapUrl = 'https://www.openstreetmap.org/copyright';
 const _appStoreId = '6801012878';
+
+Future<void> _openUrl(String url) => launchUrl(Uri.parse(url));
 
 /// What the app is built on and who built it: the identity, the credits the
 /// data and the icons carry, and the way into the package licenses.
@@ -110,8 +113,6 @@ class AboutScreen extends StatelessWidget {
     applicationVersion: packageInfo.version,
   );
 
-  Future<void> _openUrl(String url) => launchUrl(Uri.parse(url));
-
   Future<void> _openStoreListing() async {
     try {
       await ReviewEtiquette.showStoreListing(appStoreId: _appStoreId);
@@ -159,15 +160,16 @@ class _CreditsCard extends StatelessWidget {
     return SettingsCard(
       title: localizations.aboutSourcesSectionTitle,
       children: [
-        Text(
-          localizations.aboutSources(
-            selectableSourceIds
-                .map((sourceId) => sourceId.licenseLabel)
-                .join(', '),
+        for (final sourceId in selectableSourceIds)
+          _AboutRow(
+            label: sourceId.licenseLabel,
+            onTap: () => unawaited(_openUrl(sourceId.websiteUrl)),
           ),
-          style: style,
+        Text(localizations.aboutSources, style: style),
+        _AboutRow(
+          label: localizations.aboutMapAttribution,
+          onTap: () => unawaited(_openUrl(_openStreetMapUrl)),
         ),
-        Text(localizations.aboutMapAttribution, style: style),
         Text(localizations.aboutIconCredit, style: style),
       ],
     );

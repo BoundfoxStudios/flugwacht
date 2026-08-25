@@ -470,16 +470,11 @@
     }
   },
   "aboutSourcesSectionTitle": "Data & map",
-  "aboutSources": "Flight data: {sources} — free for private use, community networks without warranty about availability or freshness.",
+  "aboutSources": "Community networks, free for private use, without warranty about availability or freshness.",
   "@aboutSources": {
-    "description": "Credits the sources the app offers; the list carries each source's license.",
-    "placeholders": {
-      "sources": {
-        "type": "String"
-      }
-    }
+    "description": "Says what the flight data sources credited above the sentence are. The sources name themselves in their own rows, so the sentence carries no names."
   },
-  "aboutMapAttribution": "Map © OpenStreetMap contributors.",
+  "aboutMapAttribution": "Map © OpenStreetMap contributors",
   "aboutIconCredit": "Icons: Font Awesome Pro",
   "aboutLicenses": "Open-source licenses",
   "aboutRateApp": "Rate Flugwacht",

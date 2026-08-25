@@ -15,7 +15,8 @@ import 'live_activity_arm_row.dart';
 import 'state_timeline.dart';
 
 /// The cell of an airborne flight: mini map with its state badge, the title
-/// line, the arrival and the compact state timeline.
+/// line, the arrival, when the flight was first seen airborne and the compact
+/// state timeline.
 class FlightHeroCell extends StatefulWidget {
   const FlightHeroCell({
     required this.flight,
@@ -98,6 +99,11 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
       state: state,
       now: widget.now,
     );
+    final airborneSince = airborneSinceLabel(
+      context,
+      flight.tracking.firstAirborneAt,
+      widget.now,
+    );
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -179,6 +185,17 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
                     if (arrival != null) ...[
                       const SizedBox(height: FlightHeroCell._blockGap),
                       _ArrivalRow(arrival: arrival, colors: colors),
+                    ],
+                    if (airborneSince != null) ...[
+                      const SizedBox(height: FlightHeroCell._blockGap),
+                      Text(
+                        airborneSince,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.accessory.copyWith(
+                          color: colors.arrivalDetail,
+                        ),
+                      ),
                     ],
                     const SizedBox(height: FlightHeroCell._blockGap),
                     StateTimeline(

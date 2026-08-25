@@ -367,6 +367,27 @@
       }
     }
   },
+  "flightAirborneSince": "Airborne since {time}",
+  "@flightAirborneSince": {
+    "description": "Names the first moment the app saw the flight off the ground, on a flight that has been up since today. That fix is not the takeoff, which may have happened earlier and unwatched, so the wording claims a lower bound rather than a departure time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "flightAirborneSinceDay": "Airborne since {day} {time}",
+  "@flightAirborneSinceDay": {
+    "description": "The same as flightAirborneSince for a flight that has been up since an earlier day, which the bare clock time would read as today. The day is \"yesterday\" or a date.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "flightRowWaitingForSignal": "waiting for signal",
   "flightRowToday": "today",
   "flightRowYesterday": "yesterday",

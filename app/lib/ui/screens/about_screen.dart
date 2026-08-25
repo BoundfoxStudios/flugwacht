@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:review_etiquette/review_etiquette.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_icons.dart';
@@ -16,6 +17,7 @@ import '../widgets/chrome/settings_card.dart';
 const _boundfoxUrl = 'https://boundfoxstudios.com';
 const _repositoryUrl = 'https://github.com/BoundfoxStudios/flugwacht';
 const _discordUrl = 'https://discord.gg/tHqNzMT';
+const _appStoreId = '6801012878';
 
 /// What the app is built on and who built it: the identity, the credits the
 /// data and the icons carry, and the way into the package licenses.
@@ -52,6 +54,18 @@ class AboutScreen extends StatelessWidget {
                 _AboutRow(
                   label: localizations.aboutLicenses,
                   onTap: () => _openLicenses(context),
+                ),
+              ],
+            ),
+            SettingsCard(
+              children: [
+                _AboutRow(
+                  label: localizations.aboutRateApp,
+                  leading: const FaIcon(
+                    AppIcons.star,
+                    size: _AboutRow.leadingSize,
+                  ),
+                  onTap: () => unawaited(_openStoreListing()),
                 ),
               ],
             ),
@@ -97,6 +111,16 @@ class AboutScreen extends StatelessWidget {
   );
 
   Future<void> _openUrl(String url) => launchUrl(Uri.parse(url));
+
+  Future<void> _openStoreListing() async {
+    try {
+      await ReviewEtiquette(
+        appVersion: packageInfo.version,
+      ).openStoreListing(appStoreId: _appStoreId);
+    } on ReviewEtiquetteException {
+      // A store page that stays closed leaves nothing sensible to show.
+    }
+  }
 }
 
 class _IdentityCard extends StatelessWidget {

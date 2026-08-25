@@ -870,6 +870,12 @@ abstract class AppLocalizations {
   /// **'Open-source licenses'**
   String get aboutLicenses;
 
+  /// No description provided for @aboutRateApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Flugwacht'**
+  String get aboutRateApp;
+
   /// No description provided for @aboutBoundfox.
   ///
   /// In en, this message translates to:

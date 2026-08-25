@@ -480,6 +480,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get aboutLicenses => 'Open-Source-Lizenzen';
 
   @override
+  String get aboutRateApp => 'Bewerte Flugwacht';
+
+  @override
   String get aboutBoundfox => 'Ein Projekt von Boundfox Studios';
 
   @override

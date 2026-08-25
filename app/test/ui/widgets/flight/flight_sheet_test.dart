@@ -496,7 +496,7 @@ void main() {
     await openSheet(tester);
 
     expect(
-      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
+      find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
       findsOneWidget,
     );
   });
@@ -553,9 +553,9 @@ void main() {
       await tester.tap(linkTapTarget().first);
       await tester.pumpAndSettle();
 
-      expect(sourceSetting.activeId.value, SourceId.adsbfi);
+      expect(sourceSetting.activeId.value, SourceId.adsblol);
       expect(
-        find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
+        find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
         findsOneWidget,
       );
     });
@@ -589,11 +589,11 @@ void main() {
     await pumpFlightSheet(tester, sourceSetting: sourceSetting);
     await openSheet(tester);
 
-    await sourceSetting.select(SourceId.adsbfi);
+    await sourceSetting.select(SourceId.adsblol);
     await tester.pump();
 
     expect(
-      find.text('Source: adsb.fi · © OpenStreetMap · © OpenMapTiles'),
+      find.text('Source: adsb.lol · © OpenStreetMap · © OpenMapTiles'),
       findsOneWidget,
     );
   });

@@ -15,34 +15,34 @@ void main() {
     return setting;
   }
 
-  test('starts on adsb.lol when nothing was stored', () async {
+  test('starts on adsb.fi when nothing was stored', () async {
     final setting = await loadWith(const {});
 
-    expect(setting.activeId.value, SourceId.adsblol);
+    expect(setting.activeId.value, SourceId.adsbfi);
   });
 
   test('restores the source a previous run selected', () async {
     SharedPreferencesAsyncPlatform.instance =
         InMemorySharedPreferencesAsync.empty();
     final previousRun = await SourceSetting.load();
-    await previousRun.select(SourceId.adsbfi);
+    await previousRun.select(SourceId.adsblol);
     previousRun.dispose();
 
     final setting = await SourceSetting.load();
     addTearDown(setting.dispose);
 
+    expect(setting.activeId.value, SourceId.adsblol);
+  });
+
+  test('falls back to adsb.fi for a stored source it does not know', () async {
+    final setting = await loadWith(const {'active_source_id': 'flightradar'});
+
     expect(setting.activeId.value, SourceId.adsbfi);
   });
 
-  test('falls back to adsb.lol for a stored source it does not know', () async {
-    final setting = await loadWith(const {'active_source_id': 'flightradar'});
-
-    expect(setting.activeId.value, SourceId.adsblol);
-  });
-
-  test('falls back to adsb.lol for a stored source that is hidden', () async {
+  test('falls back to adsb.fi for a stored source that is hidden', () async {
     final setting = await loadWith(const {'active_source_id': 'airplanes'});
 
-    expect(setting.activeId.value, SourceId.adsblol);
+    expect(setting.activeId.value, SourceId.adsbfi);
   });
 }

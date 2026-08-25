@@ -50,8 +50,8 @@ void main() {
     expect(find.text('adsb.lol'), findsOneWidget);
     expect(find.text('adsb.fi'), findsOneWidget);
     expect(find.text('airplanes.live'), findsNothing);
-    expect(isSelected(tester, 'adsb.lol'), isTrue);
-    expect(isSelected(tester, 'adsb.fi'), isFalse);
+    expect(isSelected(tester, 'adsb.fi'), isTrue);
+    expect(isSelected(tester, 'adsb.lol'), isFalse);
   });
 
   testWidgets('selecting another source persists it and marks its row', (
@@ -59,12 +59,12 @@ void main() {
   ) async {
     final settings = await pumpMoreScreen(tester);
 
-    await tester.tap(find.text('adsb.fi'));
+    await tester.tap(find.text('adsb.lol'));
     await tester.pumpAndSettle();
 
-    expect(settings.source.activeId.value, SourceId.adsbfi);
-    expect(isSelected(tester, 'adsb.fi'), isTrue);
-    expect(isSelected(tester, 'adsb.lol'), isFalse);
+    expect(settings.source.activeId.value, SourceId.adsblol);
+    expect(isSelected(tester, 'adsb.lol'), isTrue);
+    expect(isSelected(tester, 'adsb.fi'), isFalse);
   });
 
   testWidgets('switches the units the app displays', (tester) async {

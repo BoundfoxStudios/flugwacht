@@ -114,9 +114,7 @@ class AboutScreen extends StatelessWidget {
 
   Future<void> _openStoreListing() async {
     try {
-      await ReviewEtiquette(
-        appVersion: packageInfo.version,
-      ).openStoreListing(appStoreId: _appStoreId);
+      await ReviewEtiquette.showStoreListing(appStoreId: _appStoreId);
     } on ReviewEtiquetteException {
       // A store page that stays closed leaves nothing sensible to show.
     }

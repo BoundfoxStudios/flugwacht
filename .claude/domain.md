@@ -92,6 +92,9 @@ user's time. No route, no estimate.
   coverage; the switcher exists for manual comparison.
 - Trail points belong to the flight, not the source, and each carries its
   source ID – the trail survives switching and can be colored per source.
+- A switch takes effect at once: the poll cadence a flight was running at
+  belongs to the source it asked, so choosing another one makes every flight
+  due immediately instead of waiting out the former source's interval.
 - Rate limit: 1 request per second per source.
 - Attribution is visible: the active source is named, plus © OpenStreetMap
   (and © OpenMapTiles while the reduced style renders). The sources are free

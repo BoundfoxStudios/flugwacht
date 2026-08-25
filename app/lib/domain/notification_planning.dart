@@ -53,13 +53,13 @@ NotificationPlan planNotifications({
   bool isDue(FlightNotification kind) =>
       isEnabled(kind) && !markers.isDelivered(kind);
 
-  final hasLanded = _isOnGroundAfterFlying(tracking);
+  final hasLanded = isOnGroundAfterFlying(tracking);
   final events = [
     if (!previousTracking.hasBeenAirborne &&
         tracking.hasBeenAirborne &&
         isDue(FlightNotification.departed))
       FlightNotification.departed,
-    if (!_isOnGroundAfterFlying(previousTracking) &&
+    if (!isOnGroundAfterFlying(previousTracking) &&
         hasLanded &&
         isDue(FlightNotification.landed))
       FlightNotification.landed,
@@ -109,9 +109,6 @@ ArrivingSoonSchedule _planSchedule({
       ? const KeepArrivingSoonSchedule()
       : SetArrivingSoonSchedule(remindAt);
 }
-
-bool _isOnGroundAfterFlying(FlightTracking tracking) =>
-    tracking.hasBeenAirborne && tracking.lastKnownOnGround == true;
 
 /// The estimate a viewer would see as live; a frozen one carries the arrival of
 /// a position that stopped coming in and must not trigger anything.

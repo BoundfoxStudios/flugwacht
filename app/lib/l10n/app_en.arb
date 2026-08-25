@@ -294,7 +294,7 @@
   "@mapSheetTryAnotherSource": {
     "description": "Link in the sheet of a flight without signal that switches to the next source."
   },
-  "flightArrivalLabel": "Approx. arrival, your time",
+  "flightArrivalLabel": "Arrival, your time",
   "flightArrivalTimeFormat": "h:mm a",
   "@flightArrivalTimeFormat": {
     "description": "DateFormat pattern for the estimated arrival, localized per language."
@@ -460,6 +460,7 @@
   "aboutMapAttribution": "Map © OpenStreetMap contributors.",
   "aboutIconCredit": "Icons: Font Awesome Pro",
   "aboutLicenses": "Open-source licenses",
+  "aboutRateApp": "Rate Flugwacht",
   "aboutBoundfox": "A project by Boundfox Studios",
   "aboutGithub": "Flugwacht on GitHub",
   "aboutDiscord": "Join Flugwacht on Discord",

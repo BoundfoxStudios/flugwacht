@@ -591,7 +591,7 @@ abstract class AppLocalizations {
   /// No description provided for @flightArrivalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Approx. arrival, your time'**
+  /// **'Arrival, your time'**
   String get flightArrivalLabel;
 
   /// DateFormat pattern for the estimated arrival, localized per language.
@@ -869,6 +869,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open-source licenses'**
   String get aboutLicenses;
+
+  /// No description provided for @aboutRateApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Flugwacht'**
+  String get aboutRateApp;
 
   /// No description provided for @aboutBoundfox.
   ///

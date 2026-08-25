@@ -95,6 +95,7 @@ void main() {
   testWidgets('opens the repository from the github row', (tester) async {
     final launcher = await pumpAboutScreen(tester);
 
+    await tester.ensureVisible(find.text('Flugwacht on GitHub'));
     await tester.tap(find.text('Flugwacht on GitHub'));
     await tester.pumpAndSettle();
 
@@ -104,10 +105,34 @@ void main() {
   testWidgets('opens the discord invite from its row', (tester) async {
     final launcher = await pumpAboutScreen(tester);
 
+    await tester.ensureVisible(find.text('Join Flugwacht on Discord'));
     await tester.tap(find.text('Join Flugwacht on Discord'));
     await tester.pumpAndSettle();
 
     expect(launcher.launched, ['https://discord.gg/tHqNzMT']);
+  });
+
+  testWidgets('asks the store for its page and swallows a refusal', (
+    tester,
+  ) async {
+    final storeRequests = <Object?>[];
+    // Answering null makes pigeon raise its channel error, which is the
+    // ReviewEtiquetteException path the row is expected to swallow.
+    tester.binding.defaultBinaryMessenger.setMockMessageHandler(
+      'dev.flutter.pigeon.review_etiquette.ReviewEtiquetteHostApi.openStoreListing',
+      (message) async {
+        storeRequests.add(message);
+        return null;
+      },
+    );
+    await pumpAboutScreen(tester);
+
+    await tester.ensureVisible(find.text('Rate Flugwacht'));
+    await tester.tap(find.text('Rate Flugwacht'));
+    await tester.pumpAndSettle();
+
+    expect(storeRequests, hasLength(1));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('renders the german copy', (tester) async {
@@ -115,6 +140,7 @@ void main() {
 
     expect(find.text('Ein Projekt von Boundfox Studios'), findsOneWidget);
     expect(find.text('Open-Source-Lizenzen'), findsOneWidget);
+    expect(find.text('Bewerte Flugwacht'), findsOneWidget);
     expect(find.text('Flugwacht auf GitHub'), findsOneWidget);
     expect(find.text('Tritt der Discord Community bei'), findsOneWidget);
   });

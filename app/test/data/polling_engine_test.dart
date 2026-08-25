@@ -41,6 +41,7 @@ void main() {
     bool hasBeenAirborne = false,
     FlightRoute? route,
     bool isArmed = false,
+    bool? lastKnownOnGround,
   }) => Flight(
     id: id,
     lookupKind: lookupKind,
@@ -53,6 +54,7 @@ void main() {
     tracking: FlightTracking(
       latestPosition: latestPosition,
       hasBeenAirborne: hasBeenAirborne,
+      lastKnownOnGround: lastKnownOnGround,
     ),
     liveActivityArmed: isArmed,
   );
@@ -131,6 +133,7 @@ void main() {
     FakeSourceAdapter adapter,
     FakeNotificationService notifications,
     FakeLiveActivityService liveActivities,
+    List<void> landedReports,
   })
   startEngine(
     FakeAsync async,
@@ -141,6 +144,7 @@ void main() {
     final adapter = FakeSourceAdapter();
     final notifications = createTestNotificationService();
     final liveActivities = FakeLiveActivityService();
+    final landedReports = <void>[];
     final engine = PollingEngine(
       repository: repository,
       adapters: {SourceId.adsblol: adapter},
@@ -148,6 +152,7 @@ void main() {
       airlineDirectory: createTestAirlineDirectory(),
       notifier: notifierFor(async, repository, notifications),
       liveActivities: liveActivitiesFor(async, repository, liveActivities),
+      onFlightLanded: () async => landedReports.add(null),
       clock: () => noon.add(async.elapsed),
     )..start();
     repository.emit(flights);
@@ -157,6 +162,7 @@ void main() {
       adapter: adapter,
       notifications: notifications,
       liveActivities: liveActivities,
+      landedReports: landedReports,
     );
   }
 
@@ -561,6 +567,74 @@ void main() {
       async.elapse(const Duration(minutes: 5));
 
       expect(started.adapter.hexAddressRequests, hasLength(1));
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  test('reports the landing when a fix puts the flight on the ground', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(
+          hexAddress: '3c64c6',
+          expectedCallsign: 'DLH400',
+          latestPosition: positionAt(noon),
+          hasBeenAirborne: true,
+        ),
+      ]);
+      started.adapter.results['3c64c6'] = successWith(
+        fixWith(callsign: 'DLH400', positionAtTimestamp: noon, onGround: true),
+      );
+
+      async.flushMicrotasks();
+
+      expect(started.landedReports, hasLength(1));
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  test('does not report a landing on the ground before takeoff', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(
+          hexAddress: '3c64c6',
+          expectedCallsign: 'DLH400',
+          latestPosition: positionAt(noon, onGround: true),
+        ),
+      ]);
+      started.adapter.results['3c64c6'] = successWith(
+        fixWith(callsign: 'DLH400', positionAtTimestamp: noon, onGround: true),
+      );
+
+      async.flushMicrotasks();
+
+      expect(started.landedReports, isEmpty);
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  test('does not report a landing while the flight is airborne', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(
+          hexAddress: '3c64c6',
+          expectedCallsign: 'DLH400',
+          latestPosition: positionAt(noon),
+          hasBeenAirborne: true,
+        ),
+      ]);
+      started.adapter.results['3c64c6'] = successWith(
+        fixWith(callsign: 'DLH400', positionAtTimestamp: noon),
+      );
+
+      async.flushMicrotasks();
+
+      expect(started.landedReports, isEmpty);
 
       started.engine.stop();
       started.repository.dispose();
@@ -982,6 +1056,7 @@ void main() {
           repository,
           FakeLiveActivityService(),
         ),
+        onFlightLanded: () async {},
         clock: () => noon.add(async.elapsed),
       )..start();
       repository.emit(flights);

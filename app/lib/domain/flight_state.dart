@@ -23,7 +23,7 @@ FlightState resolveFlightState(Flight flight, DateTime now) {
   if (!window.contains(now)) {
     return seenPosition == null ? FlightState.missed : FlightState.ended;
   }
-  if (tracking.hasBeenAirborne && tracking.lastKnownOnGround == true) {
+  if (isOnGroundAfterFlying(tracking)) {
     return FlightState.ended;
   }
   if (seenPosition == null) {
@@ -34,6 +34,9 @@ FlightState resolveFlightState(Flight flight, DateTime now) {
       : FlightState.noSignal;
 }
 
+bool isOnGroundAfterFlying(FlightTracking tracking) =>
+    tracking.hasBeenAirborne && tracking.lastKnownOnGround == true;
+
 bool hasFlightExpired(Flight flight, DateTime now) =>
     !now.isBefore(_expiryReference(flight).add(pastFlightRetention));
 
@@ -42,8 +45,7 @@ DateTime _expiryReference(Flight flight) {
   final tracking = flight.tracking;
   final latestPosition = tracking.latestPosition;
   if (latestPosition != null &&
-      tracking.hasBeenAirborne &&
-      tracking.lastKnownOnGround == true &&
+      isOnGroundAfterFlying(tracking) &&
       window.contains(latestPosition.timestamp)) {
     return latestPosition.timestamp;
   }

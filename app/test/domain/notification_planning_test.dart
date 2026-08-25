@@ -202,14 +202,16 @@ void main() {
   group('arriving soon', () {
     /// Frankfurt to Munich is roughly 300 km, so 720 kn leaves about a quarter
     /// of an hour and 180 kn leaves about an hour.
+    Flight approaching() => _flight(
+      tracking: FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 720),
+        hasBeenAirborne: true,
+      ),
+    );
+
     test('fires as soon as a fresh estimate is within half an hour', () {
       final plan = _plan(
-        flight: _flight(
-          tracking: FlightTracking(
-            latestPosition: _position(groundSpeedKnots: 720),
-            hasBeenAirborne: true,
-          ),
-        ),
+        flight: approaching(),
         previousTracking: const FlightTracking(hasBeenAirborne: true),
         pendingArrivingSoonAt: _now.add(const Duration(minutes: 20)),
       );
@@ -220,26 +222,16 @@ void main() {
 
     test('stays quiet for a flight first seen inside the window', () {
       final plan = _plan(
-        flight: _flight(
-          tracking: FlightTracking(
-            latestPosition: _position(groundSpeedKnots: 720),
-            hasBeenAirborne: true,
-          ),
-        ),
+        flight: approaching(),
         previousTracking: const FlightTracking(hasBeenAirborne: true),
       );
 
       expect(plan.events, isEmpty);
     });
 
-    test('schedules no reminder for a flight first seen inside it', () {
+    test('schedules no reminder for a flight first seen inside the window', () {
       final plan = _plan(
-        flight: _flight(
-          tracking: FlightTracking(
-            latestPosition: _position(groundSpeedKnots: 720),
-            hasBeenAirborne: true,
-          ),
-        ),
+        flight: approaching(),
         previousTracking: const FlightTracking(hasBeenAirborne: true),
       );
 

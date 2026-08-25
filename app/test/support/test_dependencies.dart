@@ -118,9 +118,10 @@ class FakeNotificationService implements NotificationService {
   final scheduled = <(FlightNotification, int, DateTime)>[];
   final cancelled = <(FlightNotification, int)>[];
 
-  /// What the user would find on the notification shade. The real service
-  /// cancels a delivered notification just as readily as a pending one, so
-  /// anything taken back leaves here too.
+  /// What [show] put in front of the user and [cancel] has not taken back, the
+  /// way the real service treats a delivered notification. A reminder the
+  /// system delivers on its own never reaches here, because nothing in a test
+  /// stands in for the system's clock.
   final visible = <(FlightNotification, int)>{};
   final scheduledReminders = <(int, DateTime)>[];
   final cancelledReminders = <int>[];
@@ -509,13 +510,12 @@ class FakeFlightRepository implements FlightRepository {
   }
 
   @override
-  Future<void> setArrivingSoonSchedule(int flightId, DateTime? at) async {
-    if (at == null) {
-      arrivingSoonSchedules.remove(flightId);
-    } else {
+  Future<void> setArrivingSoonSchedule(int flightId, DateTime at) async =>
       arrivingSoonSchedules[flightId] = at;
-    }
-  }
+
+  @override
+  Future<bool> claimArrivingSoonSchedule(int flightId) async =>
+      arrivingSoonSchedules.remove(flightId) != null;
 
   @override
   Future<void> setLiveActivityArmed(

@@ -71,14 +71,16 @@ NotificationPlan planNotifications({
       remaining != null &&
       !remaining.isNegative &&
       remaining <= arrivingSoonLeadTime;
-  // The reminder the app handed to the system is its own record of having seen
-  // the flight from beyond the lead time. Without one the arrival was already
-  // inside the window when the app first learned of it, and a heads-up would
-  // announce nothing that is still ahead (#305).
-  final wasSeenBeforeTheWindow = pendingArrivingSoonAt != null;
+  // The heads-up marks the crossing into the window, not the state of being
+  // inside it, and the reminder handed to the system is the app's only record
+  // of having watched that crossing. A flight without one was already inside
+  // the window whenever the app last had something to say about it, so there
+  // is no half hour left to announce (#305). The same silence is deliberate
+  // for a switch turned on this late: an announcement of thirty minutes would
+  // name a time that is not true.
   if (!hasLanded &&
       isArrivingSoon &&
-      wasSeenBeforeTheWindow &&
+      pendingArrivingSoonAt != null &&
       isDue(FlightNotification.arrivingSoon)) {
     events.add(FlightNotification.arrivingSoon);
   }

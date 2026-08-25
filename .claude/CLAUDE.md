@@ -261,9 +261,11 @@ supported Android version.
   another notification by accident. Inside one slot it is the opposite on
   purpose: a kind's immediate notification and the reminder pre-scheduled under
   the same id are meant to replace each other, and `cancel` takes a delivered
-  notification off the shade just as readily as a pending one. That is why
-  `FlightNotifier` applies the schedule before it delivers the events —
-  cancelling afterwards wiped the arrival notification it had just shown (#305).
+  notification off the shade just as readily as a pending one. Two rules follow,
+  both of them #305: `FlightNotifier` settles the schedule before it delivers
+  any event, and it cancels only what `claimArrivingSoonSchedule` confirms was
+  still pending, so a poll working from an older copy of the flight cannot take
+  a notification another poll has already delivered.
 - The card is ended through Android's `timeoutAfter` rather than a scheduled
   dismissal, which Android does not have. `presenceOf` reads
   `getActiveNotifications`: Android never ends a card on its own, so a missing

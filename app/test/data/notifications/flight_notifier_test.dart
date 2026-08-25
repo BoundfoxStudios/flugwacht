@@ -147,10 +147,7 @@ void main() {
       ),
     );
 
-    expect(
-      service.shown,
-      isNot(contains((FlightNotification.arrivingSoon, 7))),
-    );
+    expect(service.shown, [(FlightNotification.departed, 7)]);
   });
 
   test('leaves the arrival on the shade when it takes over', () async {
@@ -173,6 +170,30 @@ void main() {
         hasBeenAirborne: true,
       ),
     );
+
+    expect(service.visible, contains((FlightNotification.arrivingSoon, 7)));
+  });
+
+  test('keeps the arrival when a later poll carries an older flight', () async {
+    final cruising = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 180),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(_flight, cruising);
+    final crossed = _flight.copyWith(
+      tracking: cruising,
+      notifications: NotificationMarkers(
+        departedAt: _now,
+        arrivingSoonScheduledFor: service.scheduled.single.$3,
+      ),
+    );
+    final approaching = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 720),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(crossed, approaching);
+
+    await notifier.trackingChanged(crossed, approaching);
 
     expect(service.visible, contains((FlightNotification.arrivingSoon, 7)));
   });
@@ -200,7 +221,6 @@ void main() {
 
     expect(service.shown, contains((FlightNotification.landed, 7)));
     expect(service.cancelled, [(FlightNotification.arrivingSoon, 7)]);
-    expect(service.visible, contains((FlightNotification.landed, 7)));
   });
 
   test('shows nothing twice when a poll carries an older flight', () async {

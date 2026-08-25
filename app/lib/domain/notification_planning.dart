@@ -67,9 +67,18 @@ NotificationPlan planNotifications({
 
   final estimate = _freshEstimateOf(flight, now);
   final remaining = estimate?.arrivesAt.difference(now);
-  if (!hasLanded &&
+  final isArrivingSoon =
       remaining != null &&
-      remaining <= arrivingSoonLeadTime &&
+      !remaining.isNegative &&
+      remaining <= arrivingSoonLeadTime;
+  // The reminder the app handed to the system is its own record of having seen
+  // the flight from beyond the lead time. Without one the arrival was already
+  // inside the window when the app first learned of it, and a heads-up would
+  // announce nothing that is still ahead (#305).
+  final wasSeenBeforeTheWindow = pendingArrivingSoonAt != null;
+  if (!hasLanded &&
+      isArrivingSoon &&
+      wasSeenBeforeTheWindow &&
       isDue(FlightNotification.arrivingSoon)) {
     events.add(FlightNotification.arrivingSoon);
   }

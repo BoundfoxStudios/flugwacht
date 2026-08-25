@@ -218,6 +218,52 @@ void main() {
       expect(plan.schedule, isA<CancelArrivingSoonSchedule>());
     });
 
+    test('stays quiet for a flight first seen inside the window', () {
+      final plan = _plan(
+        flight: _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(groundSpeedKnots: 720),
+            hasBeenAirborne: true,
+          ),
+        ),
+        previousTracking: const FlightTracking(hasBeenAirborne: true),
+      );
+
+      expect(plan.events, isEmpty);
+    });
+
+    test('schedules no reminder for a flight first seen inside it', () {
+      final plan = _plan(
+        flight: _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(groundSpeedKnots: 720),
+            hasBeenAirborne: true,
+          ),
+        ),
+        previousTracking: const FlightTracking(hasBeenAirborne: true),
+      );
+
+      expect(plan.schedule, isA<KeepArrivingSoonSchedule>());
+    });
+
+    test('stays quiet once the estimated arrival has passed', () {
+      final plan = _plan(
+        flight: _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(
+              groundSpeedKnots: 2000,
+              timestamp: _now.subtract(const Duration(minutes: 10)),
+            ),
+            hasBeenAirborne: true,
+          ),
+        ),
+        previousTracking: const FlightTracking(hasBeenAirborne: true),
+        pendingArrivingSoonAt: _now.subtract(const Duration(minutes: 35)),
+      );
+
+      expect(plan.events, isEmpty);
+    });
+
     test('stays quiet while the estimate is further out', () {
       final plan = _plan(
         flight: _flight(

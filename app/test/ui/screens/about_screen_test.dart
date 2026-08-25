@@ -61,10 +61,9 @@ void main() {
   ) async {
     await pumpAboutScreen(tester);
 
-    final sources = textContaining(tester, 'ODbL');
-    expect(sources, contains('adsb.lol (ODbL)'));
-    expect(sources, contains('adsb.fi'));
-    expect(sources, isNot(contains('airplanes.live')));
+    expect(find.text('adsb.lol (ODbL)'), findsOneWidget);
+    expect(find.text('adsb.fi'), findsOneWidget);
+    expect(find.textContaining('airplanes.live'), findsNothing);
   });
 
   testWidgets('attributes the map and the icons', (tester) async {
@@ -72,6 +71,37 @@ void main() {
 
     expect(find.textContaining('OpenStreetMap'), findsOneWidget);
     expect(find.textContaining('Font Awesome Pro'), findsOneWidget);
+  });
+
+  testWidgets('opens the site of a source from its credit', (tester) async {
+    final launcher = await pumpAboutScreen(tester);
+
+    await tester.tap(find.text('adsb.lol (ODbL)'));
+    await tester.pumpAndSettle();
+
+    expect(launcher.launched, ['https://adsb.lol']);
+  });
+
+  /// adsb.fi answers under opendata.adsb.fi, so its credit is the one that
+  /// would go to the API host if the rows ever took the polled URL.
+  testWidgets('leads to the source project rather than the host it polls', (
+    tester,
+  ) async {
+    final launcher = await pumpAboutScreen(tester);
+
+    await tester.tap(find.text('adsb.fi'));
+    await tester.pumpAndSettle();
+
+    expect(launcher.launched, ['https://adsb.fi']);
+  });
+
+  testWidgets('opens the map copyright page from its credit', (tester) async {
+    final launcher = await pumpAboutScreen(tester);
+
+    await tester.tap(find.text('Map © OpenStreetMap contributors'));
+    await tester.pumpAndSettle();
+
+    expect(launcher.launched, ['https://www.openstreetmap.org/copyright']);
   });
 
   testWidgets('opens the license page from its row', (tester) async {
@@ -86,6 +116,7 @@ void main() {
   testWidgets('opens the boundfox site from the branding row', (tester) async {
     final launcher = await pumpAboutScreen(tester);
 
+    await tester.ensureVisible(find.text('A project by Boundfox Studios'));
     await tester.tap(find.text('A project by Boundfox Studios'));
     await tester.pumpAndSettle();
 
@@ -143,5 +174,7 @@ void main() {
     expect(find.text('Bewerte Flugwacht'), findsOneWidget);
     expect(find.text('Flugwacht auf GitHub'), findsOneWidget);
     expect(find.text('Tritt der Discord Community bei'), findsOneWidget);
+    expect(find.text('Karte © OpenStreetMap-Mitwirkende'), findsOneWidget);
+    expect(find.textContaining('ohne Gewähr'), findsOneWidget);
   });
 }

@@ -470,12 +470,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutSourcesSectionTitle => 'Data & map';
 
   @override
-  String aboutSources(String sources) {
-    return 'Flight data: $sources — free for private use, community networks without warranty about availability or freshness.';
-  }
+  String get aboutSources =>
+      'Community networks, free for private use, without warranty about availability or freshness.';
 
   @override
-  String get aboutMapAttribution => 'Map © OpenStreetMap contributors.';
+  String get aboutMapAttribution => 'Map © OpenStreetMap contributors';
 
   @override
   String get aboutIconCredit => 'Icons: Font Awesome Pro';

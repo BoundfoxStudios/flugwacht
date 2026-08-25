@@ -26,4 +26,12 @@ extension SourceIdLabel on SourceId {
     SourceId.adsblol => '$label (ODbL)',
     SourceId.adsbfi || SourceId.airplanes => label,
   };
+
+  /// The project's own site, which a credit leads to. It is not the host the
+  /// app polls: adsb.fi answers under opendata.adsb.fi.
+  String get websiteUrl => switch (this) {
+    SourceId.adsblol => 'https://adsb.lol',
+    SourceId.adsbfi => 'https://adsb.fi',
+    SourceId.airplanes => 'https://airplanes.live',
+  };
 }

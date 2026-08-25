@@ -469,12 +469,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get aboutSourcesSectionTitle => 'Daten & Karte';
 
   @override
-  String aboutSources(String sources) {
-    return 'Flugdaten: $sources — frei für privaten Gebrauch, Community-Netze ohne Gewähr auf Verfügbarkeit oder Aktualität.';
-  }
+  String get aboutSources =>
+      'Community-Netze, frei für privaten Gebrauch, ohne Gewähr auf Verfügbarkeit oder Aktualität.';
 
   @override
-  String get aboutMapAttribution => 'Karte © OpenStreetMap-Mitwirkende.';
+  String get aboutMapAttribution => 'Karte © OpenStreetMap-Mitwirkende';
 
   @override
   String get aboutIconCredit => 'Icons: Font Awesome Pro';

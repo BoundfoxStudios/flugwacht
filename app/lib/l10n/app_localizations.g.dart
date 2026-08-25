@@ -852,16 +852,16 @@ abstract class AppLocalizations {
   /// **'Data & map'**
   String get aboutSourcesSectionTitle;
 
-  /// Credits the sources the app offers; the list carries each source's license.
+  /// Says what the flight data sources credited above the sentence are. The sources name themselves in their own rows, so the sentence carries no names.
   ///
   /// In en, this message translates to:
-  /// **'Flight data: {sources} — free for private use, community networks without warranty about availability or freshness.'**
-  String aboutSources(String sources);
+  /// **'Community networks, free for private use, without warranty about availability or freshness.'**
+  String get aboutSources;
 
   /// No description provided for @aboutMapAttribution.
   ///
   /// In en, this message translates to:
-  /// **'Map © OpenStreetMap contributors.'**
+  /// **'Map © OpenStreetMap contributors'**
   String get aboutMapAttribution;
 
   /// No description provided for @aboutIconCredit.

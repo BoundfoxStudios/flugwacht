@@ -379,6 +379,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get flightRowLanded => 'gelandet ✓';
 
   @override
+  String get flightRowProbablyLanded => 'wahrscheinlich gelandet';
+
+  @override
   String get flightRowMissed => 'verpasst';
 
   @override

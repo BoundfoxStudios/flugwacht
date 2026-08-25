@@ -171,7 +171,10 @@ class FlightRow extends StatelessWidget {
   String _accessory(AppLocalizations localizations, BuildContext context) =>
       switch (state) {
         FlightState.planned => _departureDate(context, localizations),
-        FlightState.ended => localizations.flightRowLanded,
+        FlightState.ended =>
+          landingTimeOf(flight.tracking) == null
+              ? localizations.flightRowProbablyLanded
+              : localizations.flightRowLanded,
         FlightState.missed => localizations.flightRowMissed,
         FlightState.waiting => _waitingAccessory(localizations, context),
         FlightState.live ||

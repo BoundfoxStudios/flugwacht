@@ -1,3 +1,4 @@
+import 'arrival_estimate.dart';
 import 'flight.dart';
 import 'flight_day_window.dart';
 
@@ -29,13 +30,36 @@ FlightState resolveFlightState(Flight flight, DateTime now) {
   if (seenPosition == null) {
     return FlightState.waiting;
   }
-  return now.difference(seenPosition.timestamp) <= maximumLivePositionAge
-      ? FlightState.live
+  if (now.difference(seenPosition.timestamp) <= maximumLivePositionAge) {
+    return FlightState.live;
+  }
+  final probableLandingAt = probableLandingOf(flight);
+  return probableLandingAt != null && !now.isBefore(probableLandingAt)
+      ? FlightState.ended
       : FlightState.noSignal;
 }
 
 bool isOnGroundAfterFlying(FlightTracking tracking) =>
     tracking.hasBeenAirborne && tracking.lastKnownOnGround == true;
+
+/// When the app saw the aircraft on the ground after it had flown, which is
+/// the only landing it can witness. An ended flight without one is down by
+/// inference rather than by observation.
+DateTime? landingTimeOf(FlightTracking tracking) =>
+    isOnGroundAfterFlying(tracking) ? tracking.latestPosition?.timestamp : null;
+
+/// The arrival the flight's last fix pointed at, from which a flight nobody
+/// watched land counts as down.
+///
+/// A landing only shows up as a fix from the ground, and that fix exists for
+/// the few minutes the aircraft still transmits while it rolls. The app polls
+/// in the foreground alone and the sources keep no history to ask afterwards,
+/// so a flight that lands while nobody watches would otherwise sit without
+/// signal until its flight day runs out (#307). The estimate is frozen on the
+/// last fix, so the moment stands still while the clock walks past it.
+DateTime? probableLandingOf(Flight flight) => flight.tracking.hasBeenAirborne
+    ? arrivalEstimateOf(flight)?.arrivesAt
+    : null;
 
 bool hasFlightExpired(Flight flight, DateTime now) =>
     !now.isBefore(_expiryReference(flight).add(pastFlightRetention));

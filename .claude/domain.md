@@ -75,6 +75,18 @@ is never presented as an error UI.
 - Approved deviation from the original concept: a landing ends a flight early
   (ever airborne + last known on ground → ended) instead of waiting for the
   window end.
+- A landing the app did not witness ends the flight too: without signal, past
+  the arrival its last fix pointed at, an airborne flight is ended (#307). The
+  app polls in the foreground only and the sources answer for the present
+  alone, so the few minutes an aircraft still transmits while it rolls are
+  gone for good once they pass unwatched. Both endings are the same state and
+  are told apart by the landing timestamp, which only the witnessed one has;
+  without it every surface says "probably landed" rather than naming a time.
+- An ended flight is normally not polled, with one exception: a landing the
+  app only inferred keeps being asked for two hours past that arrival. A fix
+  from the ground turns the inference into a witnessed landing, an airborne
+  one takes it back. The bound is what keeps the next day's leg of the same
+  callsign, which the 48 h window still covers, out of the answer.
 
 ## Arrival Estimate
 
@@ -82,7 +94,14 @@ Remaining great-circle distance to the destination divided by ground speed.
 It is deliberately rough (no approach procedures, holding, or taxi time), so
 it is labeled vaguely ("Ankunft ca.", "~14:32" on stale data) and never
 pretends minute precision. Shown in the destination's local time and the
-user's time. No route, no estimate.
+user's time. No route, no estimate – and with no estimate there is no inferred
+landing either, so such a flight stays without signal until its window ends.
+
+The estimate is anchored on the fix, not the clock, which is what lets it
+outlive the signal. A fix that repeats a moment the flight already stores
+therefore never replaces the stored one: readsb answers with bare coordinates
+once the fresh fields age out, and taking that would drop the ground speed the
+estimate is built on right before the aircraft disappears.
 
 ## Sources
 

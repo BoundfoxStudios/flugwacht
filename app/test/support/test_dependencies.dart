@@ -117,6 +117,12 @@ class FakeNotificationService implements NotificationService {
   final shown = <(FlightNotification, int)>[];
   final scheduled = <(FlightNotification, int, DateTime)>[];
   final cancelled = <(FlightNotification, int)>[];
+
+  /// What [show] put in front of the user and [cancel] has not taken back, the
+  /// way the real service treats a delivered notification. A reminder the
+  /// system delivers on its own never reaches here, because nothing in a test
+  /// stands in for the system's clock.
+  final visible = <(FlightNotification, int)>{};
   final scheduledReminders = <(int, DateTime)>[];
   final cancelledReminders = <int>[];
   final _tappedFlights = StreamController<int>.broadcast();
@@ -145,7 +151,10 @@ class FakeNotificationService implements NotificationService {
     required int flightId,
     required String title,
     required String body,
-  }) async => shown.add((kind, flightId));
+  }) async {
+    shown.add((kind, flightId));
+    visible.add((kind, flightId));
+  }
 
   @override
   Future<void> schedule(
@@ -157,8 +166,10 @@ class FakeNotificationService implements NotificationService {
   }) async => scheduled.add((kind, flightId, at));
 
   @override
-  Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
-      cancelled.add((kind, flightId));
+  Future<void> cancel(FlightNotification kind, {required int flightId}) async {
+    cancelled.add((kind, flightId));
+    visible.remove((kind, flightId));
+  }
 
   @override
   Future<void> scheduleLiveActivityReminder({
@@ -499,13 +510,12 @@ class FakeFlightRepository implements FlightRepository {
   }
 
   @override
-  Future<void> setArrivingSoonSchedule(int flightId, DateTime? at) async {
-    if (at == null) {
-      arrivingSoonSchedules.remove(flightId);
-    } else {
+  Future<void> setArrivingSoonSchedule(int flightId, DateTime at) async =>
       arrivingSoonSchedules[flightId] = at;
-    }
-  }
+
+  @override
+  Future<bool> claimArrivingSoonSchedule(int flightId) async =>
+      arrivingSoonSchedules.remove(flightId) != null;
 
   @override
   Future<void> setLiveActivityArmed(

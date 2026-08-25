@@ -67,9 +67,20 @@ NotificationPlan planNotifications({
 
   final estimate = _freshEstimateOf(flight, now);
   final remaining = estimate?.arrivesAt.difference(now);
-  if (!hasLanded &&
+  final isArrivingSoon =
       remaining != null &&
-      remaining <= arrivingSoonLeadTime &&
+      !remaining.isNegative &&
+      remaining <= arrivingSoonLeadTime;
+  // The heads-up marks the crossing into the window, not the state of being
+  // inside it, and the reminder handed to the system is the app's only record
+  // of having watched that crossing. A flight without one was already inside
+  // the window whenever the app last had something to say about it, so there
+  // is no half hour left to announce (#305). The same silence is deliberate
+  // for a switch turned on this late: an announcement of thirty minutes would
+  // name a time that is not true.
+  if (!hasLanded &&
+      isArrivingSoon &&
+      pendingArrivingSoonAt != null &&
       isDue(FlightNotification.arrivingSoon)) {
     events.add(FlightNotification.arrivingSoon);
   }

@@ -171,14 +171,31 @@ class FlightRepository {
 
   /// Remembers when the system is due to deliver a flight's arrival reminder,
   /// so a later run still knows about a reminder it did not schedule itself.
-  Future<void> setArrivingSoonSchedule(int flightId, DateTime? at) async {
+  Future<void> setArrivingSoonSchedule(int flightId, DateTime at) async {
     await (_database.update(
       _database.flights,
     )..where((row) => row.id.equals(flightId))).write(
       FlightsCompanion(
-        arrivingSoonScheduledFor: Value(at?.millisecondsSinceEpoch),
+        arrivingSoonScheduledFor: Value(at.millisecondsSinceEpoch),
       ),
     );
+  }
+
+  /// Takes a flight's pending arrival reminder off the record and reports
+  /// whether this call is the one that had it. Checked in the same statement
+  /// that clears it, because the reminder shares its slot with the notification
+  /// that replaces it: a caller working from an older copy of the flight would
+  /// otherwise cancel a notification that has already been delivered.
+  Future<bool> claimArrivingSoonSchedule(int flightId) async {
+    final update = _database.update(_database.flights)
+      ..where(
+        (row) =>
+            row.id.equals(flightId) & row.arrivingSoonScheduledFor.isNotNull(),
+      );
+    final rows = await update.write(
+      const FlightsCompanion(arrivingSoonScheduledFor: Value(null)),
+    );
+    return rows > 0;
   }
 
   /// Writes off the reminders whose moment has passed: the system delivered

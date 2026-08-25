@@ -202,20 +202,58 @@ void main() {
   group('arriving soon', () {
     /// Frankfurt to Munich is roughly 300 km, so 720 kn leaves about a quarter
     /// of an hour and 180 kn leaves about an hour.
+    Flight approaching() => _flight(
+      tracking: FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 720),
+        hasBeenAirborne: true,
+      ),
+    );
+
     test('fires as soon as a fresh estimate is within half an hour', () {
       final plan = _plan(
-        flight: _flight(
-          tracking: FlightTracking(
-            latestPosition: _position(groundSpeedKnots: 720),
-            hasBeenAirborne: true,
-          ),
-        ),
+        flight: approaching(),
         previousTracking: const FlightTracking(hasBeenAirborne: true),
         pendingArrivingSoonAt: _now.add(const Duration(minutes: 20)),
       );
 
       expect(plan.events, contains(FlightNotification.arrivingSoon));
       expect(plan.schedule, isA<CancelArrivingSoonSchedule>());
+    });
+
+    test('stays quiet for a flight first seen inside the window', () {
+      final plan = _plan(
+        flight: approaching(),
+        previousTracking: const FlightTracking(hasBeenAirborne: true),
+      );
+
+      expect(plan.events, isEmpty);
+    });
+
+    test('schedules no reminder for a flight first seen inside the window', () {
+      final plan = _plan(
+        flight: approaching(),
+        previousTracking: const FlightTracking(hasBeenAirborne: true),
+      );
+
+      expect(plan.schedule, isA<KeepArrivingSoonSchedule>());
+    });
+
+    test('stays quiet once the estimated arrival has passed', () {
+      final plan = _plan(
+        flight: _flight(
+          tracking: FlightTracking(
+            latestPosition: _position(
+              groundSpeedKnots: 2000,
+              timestamp: _now.subtract(const Duration(minutes: 10)),
+            ),
+            hasBeenAirborne: true,
+          ),
+        ),
+        previousTracking: const FlightTracking(hasBeenAirborne: true),
+        pendingArrivingSoonAt: _now.subtract(const Duration(minutes: 35)),
+      );
+
+      expect(plan.events, isEmpty);
     });
 
     test('stays quiet while the estimate is further out', () {

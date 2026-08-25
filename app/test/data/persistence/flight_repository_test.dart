@@ -315,10 +315,21 @@ void main() {
       final flight = await addFlight();
       await repository.setArrivingSoonSchedule(flight.id, scheduledFor);
 
-      await repository.setArrivingSoonSchedule(flight.id, null);
+      final isClaimed = await repository.claimArrivingSoonSchedule(flight.id);
 
       final stored = (await repository.watchFlights().first).single;
+      expect(isClaimed, isTrue);
       expect(stored.notifications.arrivingSoonScheduledFor, isNull);
+    });
+
+    test('grants a reminder to the first claim only', () async {
+      final flight = await addFlight();
+      await repository.setArrivingSoonSchedule(flight.id, scheduledFor);
+      await repository.claimArrivingSoonSchedule(flight.id);
+
+      final isClaimed = await repository.claimArrivingSoonSchedule(flight.id);
+
+      expect(isClaimed, isFalse);
     });
 
     test('counts a reminder whose moment has passed as delivered', () async {

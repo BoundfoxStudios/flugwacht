@@ -138,6 +138,66 @@ void main() {
     expect(at.isAfter(_now), isTrue);
   });
 
+  test('shows no arrival for a flight first seen inside the window', () async {
+    await notifier.trackingChanged(
+      _flight,
+      FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 720),
+        hasBeenAirborne: true,
+      ),
+    );
+
+    expect(service.shown, [(FlightNotification.departed, 7)]);
+  });
+
+  test('leaves the arrival on the shade when it takes over', () async {
+    final cruising = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 180),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(_flight, cruising);
+
+    await notifier.trackingChanged(
+      _flight.copyWith(
+        tracking: cruising,
+        notifications: NotificationMarkers(
+          departedAt: _now,
+          arrivingSoonScheduledFor: service.scheduled.single.$3,
+        ),
+      ),
+      FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 720),
+        hasBeenAirborne: true,
+      ),
+    );
+
+    expect(service.visible, contains((FlightNotification.arrivingSoon, 7)));
+  });
+
+  test('keeps the arrival when a later poll carries an older flight', () async {
+    final cruising = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 180),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(_flight, cruising);
+    final crossed = _flight.copyWith(
+      tracking: cruising,
+      notifications: NotificationMarkers(
+        departedAt: _now,
+        arrivingSoonScheduledFor: service.scheduled.single.$3,
+      ),
+    );
+    final approaching = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 720),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(crossed, approaching);
+
+    await notifier.trackingChanged(crossed, approaching);
+
+    expect(service.visible, contains((FlightNotification.arrivingSoon, 7)));
+  });
+
   test('takes the reminder back when the flight lands', () async {
     final airborne = FlightTracking(
       latestPosition: _position(groundSpeedKnots: 180),

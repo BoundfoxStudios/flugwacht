@@ -44,10 +44,13 @@ class FlightNotifier {
       isEnabled: _setting.isEnabled,
       now: clock(),
     );
+    // A cancel cannot tell a delivered notification from a pending one, and the
+    // reminder shares its slot with the notification that replaces it, so the
+    // schedule is settled before anything is put in front of the user.
+    await _applySchedule(plan.schedule, updated);
     for (final kind in plan.events) {
       await _deliver(kind, updated);
     }
-    await _applySchedule(plan.schedule, updated);
   }
 
   /// Takes the reminders of flights that are gone off the system's hands —
@@ -101,11 +104,12 @@ class FlightNotifier {
       case KeepArrivingSoonSchedule():
         return;
       case CancelArrivingSoonSchedule():
-        await _repository.setArrivingSoonSchedule(flight.id, null);
-        await _service.cancel(
-          FlightNotification.arrivingSoon,
-          flightId: flight.id,
-        );
+        if (await _repository.claimArrivingSoonSchedule(flight.id)) {
+          await _service.cancel(
+            FlightNotification.arrivingSoon,
+            flightId: flight.id,
+          );
+        }
       case SetArrivingSoonSchedule(:final at):
         await _repository.setArrivingSoonSchedule(flight.id, at);
         final text = _copy(FlightNotification.arrivingSoon, flight);

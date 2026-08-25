@@ -159,7 +159,7 @@ class PollingEngine with WidgetsBindingObserver {
         hasStateChanged = true;
       }
       _lastStates[flight.id] = state;
-      if (!isPollable(state)) {
+      if (!isPollable(flight, state, now)) {
         _lastPollStarts.remove(flight.id);
         continue;
       }
@@ -298,8 +298,8 @@ class PollingEngine with WidgetsBindingObserver {
         if (adoptedIdentity != null) {
           await _writeIdentity(flight, adoptedIdentity);
         }
-        // Once landed the flight is no longer pollable, so no later fix can
-        // reach this line and report the same landing twice.
+        // A witnessed landing takes the flight out of the poll for good, so no
+        // later fix can reach this line and report the same landing twice.
         if (isOnGroundAfterFlying(tracking)) {
           await _onFlightLanded();
         }

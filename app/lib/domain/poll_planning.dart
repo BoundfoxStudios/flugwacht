@@ -17,10 +17,29 @@ const preDepartureSearchInterval = Duration(minutes: 5);
 
 const originContactRadiusKilometers = 25.0;
 
-bool isPollable(FlightState state) => switch (state) {
-  FlightState.waiting || FlightState.live || FlightState.noSignal => true,
-  FlightState.planned || FlightState.ended || FlightState.missed => false,
-};
+/// How long a flight the app only believes to be down is still asked for,
+/// counted from the arrival it was believed to reach. Wide enough for a
+/// coverage gap to close and disprove the belief, narrow enough that the next
+/// day's leg under the same callsign cannot be mistaken for this one.
+const probableLandingFollowUp = Duration(hours: 2);
+
+bool isPollable(Flight flight, FlightState state, DateTime now) =>
+    switch (state) {
+      FlightState.waiting || FlightState.live || FlightState.noSignal => true,
+      FlightState.ended => _followsUpProbableLanding(flight, now),
+      FlightState.planned || FlightState.missed => false,
+    };
+
+/// A landing nobody saw is worth asking after for a while: the aircraft may
+/// still report itself from the ground, which turns the belief into a fact,
+/// or from the air, which takes it back.
+bool _followsUpProbableLanding(Flight flight, DateTime now) {
+  final probableLandingAt = probableLandingOf(flight);
+  return landingTimeOf(flight.tracking) == null &&
+      probableLandingAt != null &&
+      now.isBefore(probableLandingAt.add(probableLandingFollowUp)) &&
+      FlightDayWindow.forDepartureDate(flight.departureDate).contains(now);
+}
 
 Duration pollInterval(Flight flight, FlightState state, DateTime now) {
   if (awaitsDepartureContact(flight, now)) {

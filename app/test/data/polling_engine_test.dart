@@ -60,13 +60,17 @@ void main() {
     liveActivityArmed: isArmed,
   );
 
-  FixPosition positionAt(DateTime timestamp, {bool? onGround = false}) =>
-      FixPosition(
-        latitude: 49.875687,
-        longitude: 7.888834,
-        timestamp: timestamp,
-        onGround: onGround,
-      );
+  FixPosition positionAt(
+    DateTime timestamp, {
+    bool? onGround = false,
+    double? groundSpeedKnots,
+  }) => FixPosition(
+    latitude: 49.875687,
+    longitude: 7.888834,
+    timestamp: timestamp,
+    onGround: onGround,
+    groundSpeedKnots: groundSpeedKnots,
+  );
 
   const originAtTheFix = RouteAirport(
     icaoCode: 'EDDF',
@@ -85,6 +89,19 @@ void main() {
       latitude: 40.639447,
       longitude: -73.779317,
     ),
+  );
+
+  /// The mirror of [routeFromTheFix]: a flight standing at this fix is over
+  /// its destination, so the arrival it points at is the fix itself.
+  const routeToTheFix = FlightRoute(
+    origin: RouteAirport(
+      icaoCode: 'KJFK',
+      iataCode: 'JFK',
+      name: 'John F Kennedy',
+      latitude: 40.639447,
+      longitude: -73.779317,
+    ),
+    destination: originAtTheFix,
   );
 
   Fix fixWith({
@@ -568,6 +585,31 @@ void main() {
       async.elapse(const Duration(minutes: 5));
 
       expect(started.adapter.hexAddressRequests, hasLength(1));
+
+      started.engine.stop();
+      started.repository.dispose();
+    });
+  });
+
+  /// The one chance left to turn a landing the app only inferred into one it
+  /// saw, or to take the inference back.
+  test('keeps asking about a landing it did not see', () {
+    fakeAsync((async) {
+      final started = startEngine(async, [
+        flightWith(
+          hexAddress: '3c64c6',
+          expectedCallsign: 'DLH400',
+          route: routeToTheFix,
+          hasBeenAirborne: true,
+          latestPosition: positionAt(
+            noon.subtract(const Duration(minutes: 30)),
+            groundSpeedKnots: 400,
+          ),
+        ),
+      ]);
+      async.elapse(const Duration(minutes: 30));
+
+      expect(started.adapter.hexAddressRequests.length, greaterThan(1));
 
       started.engine.stop();
       started.repository.dispose();

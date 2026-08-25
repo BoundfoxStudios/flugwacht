@@ -899,10 +899,10 @@ packages:
     dependency: "direct main"
     description:
       name: review_etiquette
-      sha256: "017fbc5c9436f542f215ceef263bea8647d8a90533d1ef5c19bb5524cac6c462"
+      sha256: "3d96cbb665a7955ca937d05025640b970398adf4546f3e2b559d9653ab872bb2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0"
+    version: "1.0.0"
   sembast:
     dependency: transitive
     description:

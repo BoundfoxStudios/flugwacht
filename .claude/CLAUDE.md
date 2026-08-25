@@ -258,7 +258,12 @@ supported Android version.
   wall clock.
 - Every notification slot a flight can occupy is handed out by
   `notification_ids.dart`, cards included, so nothing can cancel or replace
-  another notification by accident.
+  another notification by accident. Inside one slot it is the opposite on
+  purpose: a kind's immediate notification and the reminder pre-scheduled under
+  the same id are meant to replace each other, and `cancel` takes a delivered
+  notification off the shade just as readily as a pending one. That is why
+  `FlightNotifier` applies the schedule before it delivers the events —
+  cancelling afterwards wiped the arrival notification it had just shown (#305).
 - The card is ended through Android's `timeoutAfter` rather than a scheduled
   dismissal, which Android does not have. `presenceOf` reads
   `getActiveNotifications`: Android never ends a card on its own, so a missing

@@ -149,6 +149,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newFlightPreviewSearching => 'Looking for the route';
 
   @override
+  String get newFlightPreviewChooseLeg => 'Which leg is yours?';
+
+  @override
+  String get newFlightPreviewChooseLegHint =>
+      'The airline files the whole rotation under this number.';
+
+  @override
   String newFlightPreviewCallsign(String callsign) {
     return 'Callsign: $callsign';
   }

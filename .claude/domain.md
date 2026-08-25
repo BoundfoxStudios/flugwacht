@@ -43,6 +43,16 @@ arrive?" – a feature that does not serve it does not belong in the app.
   and private flights are often missing entirely. "Route unknown" is a
   regular state, never an error – saving such a flight stays possible, it
   just gets no arrival estimate.
+- The dataset's airport column is the aircraft's whole rotation, not one leg:
+  CFG1402 reads `EDDF-GCLP-GCFV-EDDF` and actually goes to GCFV. The route is
+  the column's first and last entry, so a rotation returning home would name
+  its origin as the destination. Which leg was booked is not derivable from
+  the data – the same callsign covers every leg – so the app offers the
+  chain's consecutive legs and takes the answer from the only source that
+  knows it, the user. Until a leg is picked the flight has no route. A chain
+  that does not return home keeps its first and last entry, and a repeated
+  airport collapses into one, which leaves DLH8985 (`EGTE-EGTE-EGTE`) with a
+  single airport and no route (#240, #300).
 
 ## Coverage Gaps
 

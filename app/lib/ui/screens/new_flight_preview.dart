@@ -24,6 +24,15 @@ class FlightPreviewFound extends FlightPreviewState {
   final FlightRoute route;
 }
 
+/// The standing data named a rotation rather than one leg, so the flight has
+/// no route until the user says which of the legs is theirs.
+class FlightPreviewLegChoice extends FlightPreviewState {
+  const FlightPreviewLegChoice({required this.callsign, required this.legs});
+
+  final String callsign;
+  final List<FlightRoute> legs;
+}
+
 class FlightPreviewRouteUnknown extends FlightPreviewState {
   const FlightPreviewRouteUnknown();
 }
@@ -99,8 +108,22 @@ class NewFlightPreview {
         callsign: callsign,
         route: route,
       ),
+      RouteLegsFound(:final callsign, :final legs) => FlightPreviewLegChoice(
+        callsign: callsign,
+        legs: legs,
+      ),
       RouteNotFound() ||
       RouteLookupFailure() => const FlightPreviewRouteUnknown(),
     };
+  }
+
+  /// Takes the leg the user picked out of a rotation, which is the only source
+  /// that knows it.
+  void chooseLeg(FlightRoute leg) {
+    final choice = state.value;
+    if (choice is! FlightPreviewLegChoice) {
+      return;
+    }
+    state.value = FlightPreviewFound(callsign: choice.callsign, route: leg);
   }
 }

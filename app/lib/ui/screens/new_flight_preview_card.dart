@@ -4,16 +4,19 @@ import '../../domain/flight_route.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
+import '../widgets/controls/app_radio_row.dart';
 import 'new_flight_preview.dart';
 
 class NewFlightPreviewCard extends StatelessWidget {
   const NewFlightPreviewCard({
     required this.state,
+    required this.onLegChosen,
     this.airlineName,
     super.key,
   });
 
   final FlightPreviewState state;
+  final ValueChanged<FlightRoute> onLegChosen;
   final String? airlineName;
 
   @override
@@ -34,6 +37,11 @@ class NewFlightPreviewCard extends StatelessWidget {
           callsign: callsign,
           route: route,
           airlineName: airlineName,
+          colors: colors,
+        ),
+        FlightPreviewLegChoice(:final legs) => _LegChoiceContent(
+          legs: legs,
+          onLegChosen: onLegChosen,
           colors: colors,
         ),
         FlightPreviewSearching() => _SearchingContent(colors: colors),
@@ -70,6 +78,47 @@ class _SearchingContent extends StatelessWidget {
       ),
     ],
   );
+}
+
+class _LegChoiceContent extends StatelessWidget {
+  const _LegChoiceContent({
+    required this.legs,
+    required this.onLegChosen,
+    required this.colors,
+  });
+
+  final List<FlightRoute> legs;
+  final ValueChanged<FlightRoute> onLegChosen;
+  final _PreviewCardColors colors;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          localizations.newFlightPreviewChooseLeg,
+          style: AppTextStyles.sectionLabelMedium.copyWith(color: colors.label),
+        ),
+        const SizedBox(height: AppSpacing.grid),
+        Text(
+          localizations.newFlightPreviewChooseLegHint,
+          style: AppTextStyles.secondary.copyWith(color: colors.subtitle),
+        ),
+        const SizedBox(height: AppSpacing.grid),
+        for (final leg in legs)
+          AppRadioRow(
+            label: localizations.newFlightPreviewRoute(
+              leg.origin.name,
+              leg.destination.name,
+            ),
+            isSelected: false,
+            onSelected: () => onLegChosen(leg),
+          ),
+      ],
+    );
+  }
 }
 
 class _FoundContent extends StatelessWidget {

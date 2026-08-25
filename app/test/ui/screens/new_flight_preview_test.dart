@@ -27,6 +27,23 @@ const _route = FlightRoute(
   ),
 );
 
+const _secondLeg = FlightRoute(
+  origin: RouteAirport(
+    icaoCode: 'KJFK',
+    iataCode: 'JFK',
+    name: 'John F Kennedy Airport',
+    latitude: 40.639447,
+    longitude: -73.779317,
+  ),
+  destination: RouteAirport(
+    icaoCode: 'EDDF',
+    iataCode: 'FRA',
+    name: 'Frankfurt Airport',
+    latitude: 50.026402,
+    longitude: 8.543130,
+  ),
+);
+
 void main() {
   late NewFlightForm form;
   late FakeRouteLookup routeLookup;
@@ -100,6 +117,64 @@ void main() {
         ..flushMicrotasks();
 
       expect(preview.state.value, isA<FlightPreviewRouteUnknown>());
+      disposePreview();
+    });
+  });
+
+  test('offers the legs of a rotation instead of a route', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.result = const RouteLegsFound('DLH400', [_route, _secondLeg]);
+
+      enterFlightNumber('LH 400');
+      async
+        ..elapse(const Duration(milliseconds: 400))
+        ..flushMicrotasks();
+
+      expect(
+        preview.state.value,
+        isA<FlightPreviewLegChoice>()
+            .having((state) => state.callsign, 'callsign', 'DLH400')
+            .having((state) => state.legs, 'legs', [_route, _secondLeg]),
+      );
+      disposePreview();
+    });
+  });
+
+  test('takes the leg the user picked as the route', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.result = const RouteLegsFound('DLH400', [_route, _secondLeg]);
+
+      enterFlightNumber('LH 400');
+      async
+        ..elapse(const Duration(milliseconds: 400))
+        ..flushMicrotasks();
+      preview.chooseLeg(_secondLeg);
+
+      expect(
+        preview.state.value,
+        isA<FlightPreviewFound>()
+            .having((state) => state.callsign, 'callsign', 'DLH400')
+            .having((state) => state.route, 'route', _secondLeg),
+      );
+      disposePreview();
+    });
+  });
+
+  test('drops a picked leg once the flight number changes', () {
+    fakeAsync((async) {
+      createPreview();
+      routeLookup.result = const RouteLegsFound('DLH400', [_route, _secondLeg]);
+
+      enterFlightNumber('LH 400');
+      async
+        ..elapse(const Duration(milliseconds: 400))
+        ..flushMicrotasks();
+      preview.chooseLeg(_secondLeg);
+      enterFlightNumber('LH 401');
+
+      expect(preview.state.value, isA<FlightPreviewSearching>());
       disposePreview();
     });
   });

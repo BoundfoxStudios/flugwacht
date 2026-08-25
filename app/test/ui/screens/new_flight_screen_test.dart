@@ -25,25 +25,48 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../support/test_dependencies.dart';
 
-const _route = FlightRoute(
+const _frankfurt = RouteAirport(
+  icaoCode: 'EDDF',
+  iataCode: 'FRA',
+  name: 'Frankfurt am Main',
+  latitude: 50.026402,
+  longitude: 8.543130,
+);
+const _newYork = RouteAirport(
+  icaoCode: 'KJFK',
+  iataCode: 'JFK',
+  name: 'New York JFK',
+  latitude: 40.639447,
+  longitude: -73.779317,
+);
+const _route = FlightRoute(origin: _frankfurt, destination: _newYork);
+const _rotationLegs = [
+  _route,
+  FlightRoute(origin: _newYork, destination: _frankfurt),
+];
+
+/// The names the standing data really carries, which are far longer than the
+/// stand-ins above.
+const _longNamedLeg = FlightRoute(
   origin: RouteAirport(
     icaoCode: 'EDDF',
     iataCode: 'FRA',
-    name: 'Frankfurt am Main',
+    name: 'Frankfurt-am-Main International Airport',
     latitude: 50.026402,
     longitude: 8.543130,
   ),
   destination: RouteAirport(
-    icaoCode: 'KJFK',
-    iataCode: 'JFK',
-    name: 'New York JFK',
-    latitude: 40.639447,
-    longitude: -73.779317,
+    icaoCode: 'GCFV',
+    iataCode: 'FUE',
+    name: 'Fuerteventura Airport',
+    latitude: 28.452717,
+    longitude: -13.863800,
   ),
 );
 
 Future<FlightRepository> pumpNewFlightScreen(
   WidgetTester tester, {
+  Size size = const Size(800, 1600),
   Locale locale = const Locale('en'),
   TargetPlatform platform = TargetPlatform.android,
   RouteLookup? routeLookup,
@@ -52,7 +75,7 @@ Future<FlightRepository> pumpNewFlightScreen(
   LiveActivityService? liveActivityService,
   LiveActivitySetting? liveActivitySetting,
 }) async {
-  tester.view.physicalSize = const Size(800, 1600);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final repository = createTestRepository();
@@ -601,6 +624,64 @@ void main() {
       flight.departureTimeInterpretation,
       DepartureTimeInterpretation.originLocal,
     );
+  });
+
+  testWidgets('saves the leg the user picked out of a rotation', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup(
+        const RouteLegsFound('DLH400', _rotationLegs),
+      ),
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await settleRouteLookup(tester);
+    await tester.tap(find.text('New York JFK \u2192 Frankfurt am Main'));
+    await tester.pumpAndSettle();
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(flight.route?.origin.icaoCode, 'KJFK');
+    expect(flight.route?.destination.icaoCode, 'EDDF');
+    expect(flight.expectedCallsign, 'DLH400');
+  });
+
+  testWidgets('wraps a long leg instead of overflowing its row', (
+    tester,
+  ) async {
+    await pumpNewFlightScreen(
+      tester,
+      size: const Size(375, 812),
+      routeLookup: FakeRouteLookup(
+        const RouteLegsFound('DLH400', [_longNamedLeg]),
+      ),
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await settleRouteLookup(tester);
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('saves a rotation without a route while no leg is picked', (
+    tester,
+  ) async {
+    final repository = await pumpNewFlightScreen(
+      tester,
+      routeLookup: FakeRouteLookup(
+        const RouteLegsFound('DLH400', _rotationLegs),
+      ),
+    );
+
+    await enterLookupValue(tester, 'LH 400');
+    await settleRouteLookup(tester);
+    await submit(tester);
+
+    final flight = await savedFlight(tester, repository);
+    expect(flight.route, isNull);
+    expect(flight.expectedCallsign, 'DLH400');
   });
 
   testWidgets('saves without a route and falls back to the first candidate', (

@@ -61,6 +61,8 @@
   "newFlightPreviewFound": "Found",
   "newFlightPreviewRouteUnknown": "Route unknown",
   "newFlightPreviewSearching": "Looking for the route",
+  "newFlightPreviewChooseLeg": "Which leg is yours?",
+  "newFlightPreviewChooseLegHint": "The airline files the whole rotation under this number.",
   "newFlightPreviewCallsign": "Callsign: {callsign}",
   "@newFlightPreviewCallsign": {
     "placeholders": {

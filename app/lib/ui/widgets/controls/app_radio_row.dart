@@ -3,8 +3,9 @@ import 'package:material_ui/material_ui.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_tokens.dart';
 
-/// One option of a settings radio list, tall enough to be a comfortable hit
-/// target even though the ring itself is small.
+/// One option of a radio list, tall enough to be a comfortable hit target even
+/// though the ring itself is small. A label too long for one line wraps and
+/// grows the row past that height.
 class AppRadioRow extends StatelessWidget {
   const AppRadioRow({
     required this.label,
@@ -38,8 +39,8 @@ class AppRadioRow extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onSelected,
-        child: SizedBox(
-          height: _rowHeight,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: _rowHeight),
           child: Row(
             spacing: _gap,
             children: [
@@ -63,12 +64,14 @@ class AppRadioRow extends StatelessWidget {
                       )
                     : null,
               ),
-              Text(
-                label,
-                style: AppTextStyles.body.copyWith(
-                  color: isSelected
-                      ? colorScheme.onSurface
-                      : colorScheme.onSurfaceVariant,
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.body.copyWith(
+                    color: isSelected
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],

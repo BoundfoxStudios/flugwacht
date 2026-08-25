@@ -49,6 +49,8 @@
   "newFlightPreviewFound": "Gefunden",
   "newFlightPreviewRouteUnknown": "Route unbekannt",
   "newFlightPreviewSearching": "Suche die Route",
+  "newFlightPreviewChooseLeg": "Welcher Abschnitt ist Deiner?",
+  "newFlightPreviewChooseLegHint": "Die Airline meldet unter dieser Nummer den ganzen Umlauf.",
   "newFlightPreviewCallsign": "Funk: {callsign}",
   "newFlightPreviewRoute": "{origin} → {destination}",
   "newFlightPreviewRouteWithAirline": "{origin} → {destination} · {airline}",

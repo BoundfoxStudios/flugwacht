@@ -26,6 +26,7 @@ class PollingEngine with WidgetsBindingObserver {
     required this._airlineDirectory,
     required this._notifier,
     required this._liveActivities,
+    required this._onFlightLanded,
     this.clock = DateTime.now,
   });
 
@@ -40,6 +41,7 @@ class PollingEngine with WidgetsBindingObserver {
   final AirlineDirectory _airlineDirectory;
   final FlightNotifier _notifier;
   final FlightLiveActivities _liveActivities;
+  final Future<void> Function() _onFlightLanded;
   final DateTime Function() clock;
 
   final _lastPollStarts = <int, DateTime>{};
@@ -279,6 +281,11 @@ class PollingEngine with WidgetsBindingObserver {
         await _appendTrailPoint(flight, trailPosition, sourceId);
         if (adoptedIdentity != null) {
           await _writeIdentity(flight, adoptedIdentity);
+        }
+        // Once landed the flight is no longer pollable, so no later fix can
+        // reach this line and report the same landing twice.
+        if (isOnGroundAfterFlying(tracking)) {
+          await _onFlightLanded();
         }
     }
   }

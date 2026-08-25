@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:review_etiquette/review_etiquette.dart';
 
 import 'data/adapters/readsb_source_adapter.dart';
 import 'data/font_licenses.dart';
@@ -91,6 +92,11 @@ Future<void> main() async {
       setting: liveActivitySetting,
       copy: (flight) => flightLiveActivityReminderText(localizations, flight),
     ),
+    // Debug builds defeat both gates so the prompt can be tried repeatedly.
+    onFlightLanded: () => ReviewEtiquette(
+      appVersion: kDebugMode ? 'debug-${DateTime.now()}' : packageInfo.version,
+      cooldown: kDebugMode ? Duration.zero : const Duration(days: 120),
+    ).requestReview(),
   ).start();
   runApp(
     FlugwachtApp(

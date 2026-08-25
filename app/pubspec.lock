@@ -898,9 +898,10 @@ packages:
   review_etiquette:
     dependency: "direct main"
     description:
-      path: "../../review_etiquette"
-      relative: true
-    source: path
+      name: review_etiquette
+      sha256: "017fbc5c9436f542f215ceef263bea8647d8a90533d1ef5c19bb5524cac6c462"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
   sembast:
     dependency: transitive

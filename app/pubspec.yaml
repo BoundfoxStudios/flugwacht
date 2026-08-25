@@ -60,9 +60,7 @@ dependencies:
   vector_tile_renderer: ^6.1.0
   flutter_local_notifications: ^22.3.0
   url_launcher: ^6.3.2
-  # Local checkout until the package is published on pub.dev (#293)
-  review_etiquette:
-    path: ../../review_etiquette
+  review_etiquette: ^0.1.0
   csv: ^8.0.0
   # Upstream main until a release carries the ActivityKit relevance score and
   # updates the card through ActivityContent (#238); 2.5.1 has neither.

@@ -895,6 +895,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  review_etiquette:
+    dependency: "direct main"
+    description:
+      path: "../../review_etiquette"
+      relative: true
+    source: path
+    version: "0.1.0"
   sembast:
     dependency: transitive
     description:

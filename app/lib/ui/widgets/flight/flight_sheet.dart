@@ -55,6 +55,8 @@ class FlightSheet extends StatefulWidget {
   static const _openGap = 8.0;
   static const _timeHeight = 0.95;
   static const _arrivalGap = 12.0;
+  static const _arrivalLabelHeight = 15 / 13;
+  static const _arrivalDetailHeight = 18 / 15;
   static const _dataRowGap = 8.0;
   static const _dataRowPadding = 10.0;
   static const _dataLabelGap = 1.0;
@@ -470,19 +472,26 @@ class _ArrivalRow extends StatelessWidget {
         ),
       ),
       Flexible(
+        // A column reports the baseline of its first child, and the row aligns
+        // the time with that. Turning the column upside down makes the detail
+        // the first child while it still renders below the label, so the block
+        // ends on the baseline of the time instead of hanging past it.
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          verticalDirection: VerticalDirection.up,
           children: [
-            Text(
-              arrival.label,
-              style: AppTextStyles.secondary.copyWith(
-                color: colors.arrivalLabel,
-              ),
-            ),
             Text(
               arrival.detail,
               style: AppTextStyles.bodyEmphasis.copyWith(
                 color: colors.arrivalValue,
+                height: FlightSheet._arrivalDetailHeight,
+              ),
+            ),
+            Text(
+              arrival.label,
+              style: AppTextStyles.secondary.copyWith(
+                color: colors.arrivalLabel,
+                height: FlightSheet._arrivalLabelHeight,
               ),
             ),
           ],

@@ -591,7 +591,7 @@ abstract class AppLocalizations {
   /// No description provided for @flightArrivalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Approx. arrival, your time'**
+  /// **'Arrival, your time'**
   String get flightArrivalLabel;
 
   /// DateFormat pattern for the estimated arrival, localized per language.

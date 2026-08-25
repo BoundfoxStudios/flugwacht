@@ -88,7 +88,7 @@
   "mapSheetSpeedValueKnots": "{value} kt",
   "mapSheetSource": "Quelle: {source} · {attribution}",
   "mapSheetTryAnotherSource": "Andere Quelle probieren",
-  "flightArrivalLabel": "Ankunft ca. bei dir",
+  "flightArrivalLabel": "Ankunft bei dir",
   "flightArrivalTimeFormat": "HH:mm",
   "flightArrivalFrozenTime": "~{time}",
   "flightArrivalRemainingMinutes": "noch {minutes} Min",

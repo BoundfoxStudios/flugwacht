@@ -294,7 +294,7 @@
   "@mapSheetTryAnotherSource": {
     "description": "Link in the sheet of a flight without signal that switches to the next source."
   },
-  "flightArrivalLabel": "Approx. arrival, your time",
+  "flightArrivalLabel": "Arrival, your time",
   "flightArrivalTimeFormat": "h:mm a",
   "@flightArrivalTimeFormat": {
     "description": "DateFormat pattern for the estimated arrival, localized per language."

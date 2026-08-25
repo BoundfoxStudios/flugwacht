@@ -228,10 +228,7 @@ void main() {
       find.text(DateFormat('h:mm a', 'en').format(arrival.toLocal())),
       findsOneWidget,
     );
-    expect(
-      find.text('Approx. arrival, your time · 4 h 51 min left'),
-      findsOneWidget,
-    );
+    expect(find.text('Arrival, your time · 4 h 51 min left'), findsOneWidget);
   });
 
   testWidgets('freezes the arrival of a flight without signal', (tester) async {
@@ -248,7 +245,7 @@ void main() {
       find.text('~${DateFormat('HH:mm', 'de').format(arrival.toLocal())}'),
       findsOneWidget,
     );
-    expect(find.text('Ankunft ca. bei dir · Stand: vor 3 s'), findsOneWidget);
+    expect(find.text('Ankunft bei dir · Stand: vor 3 s'), findsOneWidget);
   });
 
   testWidgets('fills the live badge and leaves it without a border', (

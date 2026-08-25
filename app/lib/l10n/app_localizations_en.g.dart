@@ -309,7 +309,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapSheetTryAnotherSource => 'Try another source';
 
   @override
-  String get flightArrivalLabel => 'Approx. arrival, your time';
+  String get flightArrivalLabel => 'Arrival, your time';
 
   @override
   String get flightArrivalTimeFormat => 'h:mm a';

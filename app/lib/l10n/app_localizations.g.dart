@@ -642,6 +642,18 @@ abstract class AppLocalizations {
   /// **'{label} · {detail}'**
   String flightArrivalSummary(String label, String detail);
 
+  /// Names the first moment the app saw the flight off the ground, on a flight that has been up since today. That fix is not the takeoff, which may have happened earlier and unwatched, so the wording claims a lower bound rather than a departure time.
+  ///
+  /// In en, this message translates to:
+  /// **'Airborne since {time}'**
+  String flightAirborneSince(String time);
+
+  /// The same as flightAirborneSince for a flight that has been up since an earlier day, which the bare clock time would read as today. The day is "yesterday" or a date.
+  ///
+  /// In en, this message translates to:
+  /// **'Airborne since {day} {time}'**
+  String flightAirborneSinceDay(String day, String time);
+
   /// No description provided for @flightRowWaitingForSignal.
   ///
   /// In en, this message translates to:

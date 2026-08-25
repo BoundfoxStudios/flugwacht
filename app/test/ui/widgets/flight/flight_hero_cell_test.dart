@@ -44,10 +44,23 @@ const _route = FlightRoute(
 final _positionTime = DateTime.utc(2026, 8, 12, 12);
 final _now = _positionTime.add(const Duration(seconds: 3));
 
+/// The same moment on the device's clock, so a test that names a calendar day
+/// says the day the widget computes rather than the one UTC happens to be on.
+final _localNow = _now.toLocal();
+
+DateTime _localDay(int dayOffset, int hour, int minute) => DateTime(
+  _localNow.year,
+  _localNow.month,
+  _localNow.day + dayOffset,
+  hour,
+  minute,
+);
+
 Flight flight({
   String? note = 'Anna & Ben',
   FlightRoute? route = _route,
   double? speedKnots,
+  DateTime? firstAirborneAt,
 }) => Flight(
   id: 1,
   lookupKind: FlightLookupKind.flightNumber,
@@ -64,6 +77,7 @@ Flight flight({
       groundSpeedKnots: speedKnots,
     ),
     hasBeenAirborne: true,
+    firstAirborneAt: firstAirborneAt,
   ),
 );
 
@@ -76,6 +90,7 @@ Future<void> pumpHeroCell(
   Locale locale = const Locale('en'),
   Brightness brightness = Brightness.light,
   double width = _cellWidth,
+  DateTime? now,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -96,7 +111,7 @@ Future<void> pumpHeroCell(
                 flight: cell ?? flight(),
                 state: state,
                 trail: trail,
-                now: _now,
+                now: now ?? _now,
                 onTap: onTap,
                 mapStyleSetting: await createTestMapStyleSetting(),
                 tileSources: testTileSources(),
@@ -246,6 +261,70 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Ankunft bei dir · Stand: vor 3 s'), findsOneWidget);
+  });
+
+  testWidgets('names the time the flight was first seen off the ground', (
+    tester,
+  ) async {
+    await pumpHeroCell(
+      tester,
+      cell: flight(firstAirborneAt: _localDay(0, 10, 0).toUtc()),
+      now: _localNow,
+    );
+
+    expect(find.text('Airborne since 10:00 AM'), findsOneWidget);
+  });
+
+  testWidgets('leaves out the airborne line while the app has not seen the '
+      'flight off the ground', (tester) async {
+    await pumpHeroCell(tester);
+
+    expect(find.textContaining('Airborne since'), findsNothing);
+  });
+
+  testWidgets('names yesterday on a flight that has been up since then', (
+    tester,
+  ) async {
+    await pumpHeroCell(
+      tester,
+      cell: flight(firstAirborneAt: _localDay(-1, 23, 10).toUtc()),
+      locale: const Locale('de'),
+      now: _localNow,
+    );
+
+    expect(find.text('In der Luft seit gestern 23:10'), findsOneWidget);
+  });
+
+  testWidgets('dates an airborne moment from an earlier day', (tester) async {
+    final airborne = _localDay(-2, 8, 5);
+    await pumpHeroCell(
+      tester,
+      cell: flight(firstAirborneAt: airborne.toUtc()),
+      now: _localNow,
+      width: _wideCellWidth,
+    );
+
+    final day = DateFormat('EEE, MMM d', 'en').format(airborne);
+    expect(find.text('Airborne since $day 8:05 AM'), findsOneWidget);
+  });
+
+  testWidgets('leaves the airborne line unfrozen beside a frozen arrival', (
+    tester,
+  ) async {
+    await pumpHeroCell(
+      tester,
+      state: FlightState.noSignal,
+      cell: flight(
+        speedKnots: 473,
+        firstAirborneAt: _localDay(0, 10, 0).toUtc(),
+      ),
+      locale: const Locale('de'),
+      now: _localNow,
+      width: _wideCellWidth,
+    );
+
+    expect(find.text('In der Luft seit 10:00'), findsOneWidget);
+    expect(find.textContaining('~'), findsOneWidget);
   });
 
   testWidgets('fills the live badge and leaves it without a border', (

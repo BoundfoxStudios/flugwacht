@@ -97,6 +97,8 @@
   "flightArrivalAsOf": "Stand: {age}",
   "flightArrivalLocalTime": "Ortszeit {city} · {time}",
   "flightArrivalSummary": "{label} · {detail}",
+  "flightAirborneSince": "In der Luft seit {time}",
+  "flightAirborneSinceDay": "In der Luft seit {day} {time}",
   "flightRowWaitingForSignal": "wartet auf Signal",
   "flightRowToday": "heute",
   "flightRowYesterday": "gestern",

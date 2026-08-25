@@ -103,6 +103,25 @@ therefore never replaces the stored one: readsb answers with bare coordinates
 once the fresh fields age out, and taking that would drop the ground speed the
 estimate is built on right before the aircraft disappears.
 
+## Airborne Time
+
+The first fix that reports a flight off the ground is latched once and never
+moved. It is not the takeoff: the app polls in the foreground only, so the app
+being closed over the departure pushes the value later by an unbounded amount,
+and a flight added mid-air anchors at roughly the moment it was added. The hero
+cell therefore says "in der Luft seit", a lower bound that stays true in every
+one of those cases, and never names a departure or start time. It carries no
+`~` either, which marks an estimate recomputed against an aging fix; this value
+is latched and reads the same with or without signal. Without the value the
+line is left out, which is also what a fix without altitude (MLAT only, no
+ground flag) leaves behind.
+
+The line names the day whenever the moment is not today's. A flight keeps its
+cell until its window ends two days past the departure date, and a routeless
+one has no estimate and therefore no inferred landing, so it sits there without
+signal that whole time; a bare clock time would read as this morning when it is
+a day and a half old.
+
 ## Sources
 
 - Exactly one active source, chosen by the user – no merging, no parallel

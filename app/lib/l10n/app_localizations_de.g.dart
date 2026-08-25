@@ -349,6 +349,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String flightAirborneSince(String time) {
+    return 'In der Luft seit $time';
+  }
+
+  @override
+  String flightAirborneSinceDay(String day, String time) {
+    return 'In der Luft seit $day $time';
+  }
+
+  @override
   String get flightRowWaitingForSignal => 'wartet auf Signal';
 
   @override

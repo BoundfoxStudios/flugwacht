@@ -4,11 +4,13 @@ import 'package:intl/intl.dart';
 import '../../../data/notifications/flight_notifier.dart';
 import '../../../domain/airport_timezone.dart';
 import '../../../domain/arrival_estimate.dart';
+import '../../../domain/calendar_date.dart';
 import '../../../domain/day_time.dart';
 import '../../../domain/flight.dart';
 import '../../../domain/flight_notification.dart';
 import '../../../domain/flight_route.dart';
 import '../../../domain/flight_state.dart';
+import '../../../domain/relative_day.dart';
 import '../../../domain/remaining_time.dart';
 import '../../../domain/signal_age.dart';
 import '../../../domain/unit_conversion.dart';
@@ -127,6 +129,43 @@ ArrivalDisplay? arrivalDisplayOf(
       formatTime(context, pattern, localArrival),
     ),
   );
+}
+
+/// When the app first saw the flight off the ground, on the viewer's clock, or
+/// nothing while it has not seen it airborne yet. The fix is the first one that
+/// reported the flight off the ground, not the takeoff, so the copy only claims
+/// the flight has been up since then. A flight keeps its cell until its window
+/// ends, so a moment from an earlier day names that day: the bare time would
+/// read as today's.
+String? airborneSinceLabel(
+  BuildContext context,
+  DateTime? firstAirborneAt,
+  DateTime now,
+) {
+  if (firstAirborneAt == null) {
+    return null;
+  }
+  final localizations = AppLocalizations.of(context);
+  final airborne = firstAirborneAt.toLocal();
+  final time = formatTime(
+    context,
+    localizations.flightArrivalTimeFormat,
+    airborne,
+  );
+  return switch (relativeDayOf(
+    CalendarDate(airborne.year, airborne.month, airborne.day),
+    now,
+  )) {
+    RelativeDay.today => localizations.flightAirborneSince(time),
+    RelativeDay.yesterday => localizations.flightAirborneSinceDay(
+      localizations.flightRowYesterday,
+      time,
+    ),
+    RelativeDay.earlier => localizations.flightAirborneSinceDay(
+      formatTime(context, localizations.listPlannedDateFormat, airborne),
+      time,
+    ),
+  };
 }
 
 /// The altitude in the unit the settings ask for, or nothing while the flight

@@ -2,6 +2,7 @@ import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_day_window.dart';
+import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,12 +30,48 @@ void main() {
   DateTime afterWindowStart(Duration offset) =>
       window.start.add(offset).toUtc();
 
-  Flight flightWith(FlightTracking tracking) => Flight(
+  Flight flightWith(FlightTracking tracking, {FlightRoute? route}) => Flight(
     id: 1,
     lookupKind: FlightLookupKind.flightNumber,
     lookupValue: 'LH433',
     departureDate: departureDate,
+    route: route,
     tracking: tracking,
+  );
+
+  const homeRoute = FlightRoute(
+    origin: RouteAirport(
+      icaoCode: 'LEPA',
+      iataCode: 'PMI',
+      name: 'Palma de Mallorca',
+      latitude: 39.5517,
+      longitude: 2.73881,
+    ),
+    destination: RouteAirport(
+      icaoCode: 'EDDF',
+      iataCode: 'FRA',
+      name: 'Frankfurt am Main',
+      latitude: 50.0379,
+      longitude: 8.5622,
+    ),
+  );
+
+  /// A last fix on the way to Frankfurt at cruise speed: fifty kilometres out
+  /// it points at an arrival minutes away, six hundred at one an hour off.
+  FlightTracking headingHome(
+    DateTime at, {
+    double longitude = 7.888834,
+    bool hasBeenAirborne = true,
+    bool? onGround = false,
+  }) => FlightTracking(
+    hasBeenAirborne: hasBeenAirborne,
+    latestPosition: FixPosition(
+      latitude: 49.875687,
+      longitude: longitude,
+      timestamp: at,
+      onGround: onGround,
+      groundSpeedKnots: 400,
+    ),
   );
 
   test('is planned before the window starts', () {
@@ -86,6 +123,48 @@ void main() {
       ),
     ]);
     expect(resolveFlightState(flightWith(tracking), now), FlightState.noSignal);
+  });
+
+  test('ends a silent flight past the arrival its last fix pointed at', () {
+    final now = window.start.add(const Duration(hours: 5));
+    final flight = flightWith(
+      headingHome(now.subtract(const Duration(hours: 1)).toUtc()),
+      route: homeRoute,
+    );
+    expect(resolveFlightState(flight, now), FlightState.ended);
+  });
+
+  test('stays without signal while that arrival is still ahead', () {
+    final now = window.start.add(const Duration(hours: 5));
+    final flight = flightWith(
+      headingHome(
+        now.subtract(const Duration(minutes: 20)).toUtc(),
+        longitude: 0,
+      ),
+      route: homeRoute,
+    );
+    expect(resolveFlightState(flight, now), FlightState.noSignal);
+  });
+
+  test('stays without signal for a flight with no arrival to point at', () {
+    final now = window.start.add(const Duration(hours: 5));
+    final flight = flightWith(
+      headingHome(now.subtract(const Duration(hours: 1)).toUtc()),
+    );
+    expect(resolveFlightState(flight, now), FlightState.noSignal);
+  });
+
+  test('ends nothing that was never seen off the ground', () {
+    final now = window.start.add(const Duration(hours: 5));
+    final flight = flightWith(
+      headingHome(
+        now.subtract(const Duration(hours: 1)).toUtc(),
+        hasBeenAirborne: false,
+        onGround: null,
+      ),
+      route: homeRoute,
+    );
+    expect(resolveFlightState(flight, now), FlightState.noSignal);
   });
 
   test('counts a position timestamped in the future as fresh', () {

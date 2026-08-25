@@ -105,6 +105,7 @@
   "flightRowDepartureTimeFormat": "HH:mm",
   "flightRowDepartureTimeWithLocal": "ab {deviceTime} · {localTime} Ortszeit",
   "flightRowLanded": "gelandet ✓",
+  "flightRowProbablyLanded": "wahrscheinlich gelandet",
   "flightRowMissed": "verpasst",
   "settingsTitle": "Einstellungen",
   "settingsSourceSectionTitle": "Datenquelle",

@@ -13,7 +13,11 @@ void main() {
   DateTime afterWindowStart(Duration offset) =>
       window.start.add(offset).toUtc();
 
-  Fix positionFix(DateTime timestamp, {bool? onGround}) => Fix(
+  Fix positionFix(
+    DateTime timestamp, {
+    bool? onGround,
+    double? groundSpeedKnots,
+  }) => Fix(
     hexAddress: '3c64c6',
     sourceId: SourceId.adsblol,
     position: FixPosition(
@@ -21,6 +25,7 @@ void main() {
       longitude: 7.888834,
       timestamp: timestamp,
       onGround: onGround,
+      groundSpeedKnots: groundSpeedKnots,
     ),
   );
 
@@ -90,6 +95,34 @@ void main() {
       afterWindowStart(const Duration(hours: 3)),
     );
     expect(withoutGroundState.lastKnownOnGround, isTrue);
+  });
+
+  /// readsb answers with the bare coordinates of the position it already gave
+  /// once the fresh fields age out, and the flight would lose the speed its
+  /// arrival estimate needs.
+  test('keeps the richer position when a fix repeats its moment', () {
+    final at = afterWindowStart(const Duration(hours: 2));
+    final airborne = const FlightTracking().withFix(
+      positionFix(at, onGround: false, groundSpeedKnots: 430),
+      window,
+    );
+
+    final repeated = airborne.withFix(positionFix(at), window);
+
+    expect(repeated.latestPosition!.groundSpeedKnots, 430);
+  });
+
+  test('still records the ground state a repeated moment reports', () {
+    final at = afterWindowStart(const Duration(hours: 2));
+    final airborne = const FlightTracking().withFix(
+      positionFix(at, onGround: false, groundSpeedKnots: 430),
+      window,
+    );
+
+    final landed = airborne.withFix(positionFix(at, onGround: true), window);
+
+    expect(landed.lastKnownOnGround, isTrue);
+    expect(landed.latestPosition!.groundSpeedKnots, 430);
   });
 
   test('records the moment of the first airborne fix', () {

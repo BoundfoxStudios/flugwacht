@@ -102,14 +102,26 @@ struct FlightCard {
     phase == .ended ? nil : estimatedArrivalAt
   }
 
-  /// The estimate ran out without the app seeing the aircraft on the ground.
-  /// It can only see that while it runs, so the card says what it honestly
-  /// knows rather than counting to a moment that has passed.
+  /// The flight is down without the app ever seeing the aircraft on the
+  /// ground. The app says so through the phase it sends; the clock repeats it
+  /// for a card redrawing itself past the arrival its last update carried,
+  /// where the app has not run since and the phase is as old as the numbers
+  /// beside it.
   var hasProbablyLanded: Bool {
-    guard phase == .live || phase == .noSignal, let estimatedArrivalAt else {
+    guard landing == nil else {
       return false
     }
-    return estimatedArrivalAt <= Date.now
+    switch phase {
+    case .ended:
+      return true
+    case .live, .noSignal:
+      guard let estimatedArrivalAt else {
+        return false
+      }
+      return estimatedArrivalAt <= Date.now
+    case .planned, .waiting, .missed:
+      return false
+    }
   }
 
   /// Whether the arrival time is a guess the app could not confirm.

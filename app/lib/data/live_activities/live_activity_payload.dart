@@ -42,7 +42,7 @@ Map<String, dynamic> liveActivityPayloadOf(Flight flight, DateTime now) {
     'departureAt': _epochOf(departureInstantOf(flight)),
     'estimatedArrivalAt': _epochOf(arrivalEstimateOf(flight)?.arrivesAt),
     'firstAirborneAt': _epochOf(tracking.firstAirborneAt),
-    'landedAt': _epochOf(_landingOf(tracking)),
+    'landedAt': _epochOf(landingTimeOf(tracking)),
   };
 }
 
@@ -83,8 +83,3 @@ DateTime? _staleTarget(Flight flight) {
   }
   return departureInstantOf(flight)?.add(liveActivityStaleGrace);
 }
-
-DateTime? _landingOf(FlightTracking tracking) =>
-    tracking.hasBeenAirborne && tracking.lastKnownOnGround == true
-    ? tracking.latestPosition?.timestamp
-    : null;

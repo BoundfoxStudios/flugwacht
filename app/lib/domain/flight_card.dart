@@ -27,9 +27,9 @@ class FlightCard {
   final String designator;
   final FlightState state;
 
-  /// The estimate ran out without the app seeing the aircraft on the ground.
-  /// It can only see that while it runs, so the card says what it honestly
-  /// knows rather than counting towards a moment that has passed.
+  /// The flight is down without the app ever seeing the aircraft on the
+  /// ground, so the card names the landing without claiming to have watched
+  /// it.
   final bool hasProbablyLanded;
 
   final String? note;
@@ -61,14 +61,11 @@ FlightCard flightCardOf(Flight flight, DateTime now) {
   final arrivesAt = arrivalEstimateOf(flight)?.arrivesAt;
   final departsAt = departureInstantOf(flight);
   final isDown = state == FlightState.ended;
-  final hasProbablyLanded =
-      (state == FlightState.live || state == FlightState.noSignal) &&
-      arrivesAt != null &&
-      !arrivesAt.isAfter(now);
+  final landedAt = isDown ? landingTimeOf(flight.tracking) : null;
   return FlightCard(
     designator: flight.lookupValue,
     state: state,
-    hasProbablyLanded: hasProbablyLanded,
+    hasProbablyLanded: _hasProbablyLanded(state, landedAt, arrivesAt, now),
     note: flight.note,
     route: route == null
         ? null
@@ -79,7 +76,7 @@ FlightCard flightCardOf(Flight flight, DateTime now) {
           ),
     countdown: _countdownOf(state, arrivesAt, departsAt, now),
     arrivesAt: isDown ? null : arrivesAt,
-    landedAt: isDown ? _landingOf(flight.tracking) : null,
+    landedAt: landedAt,
     // A flight that is down has flown all of its way, and has no estimate left
     // to measure it against.
     progressPercent: isDown
@@ -125,7 +122,19 @@ int? _progressPercentOf(
   return (flown * 100 / total).round().clamp(0, 100);
 }
 
-DateTime? _landingOf(FlightTracking tracking) =>
-    tracking.hasBeenAirborne && tracking.lastKnownOnGround == true
-    ? tracking.latestPosition?.timestamp
-    : null;
+/// The app's own inference, plus the clock repeating it for a card that
+/// redraws itself past the arrival its last update carried — there the app has
+/// not run since and its state is as old as the numbers beside it.
+bool _hasProbablyLanded(
+  FlightState state,
+  DateTime? landedAt,
+  DateTime? arrivesAt,
+  DateTime now,
+) =>
+    landedAt == null &&
+    switch (state) {
+      FlightState.ended => true,
+      FlightState.live ||
+      FlightState.noSignal => arrivesAt != null && !arrivesAt.isAfter(now),
+      FlightState.planned || FlightState.waiting || FlightState.missed => false,
+    };

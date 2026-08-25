@@ -380,6 +380,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flightRowLanded => 'landed ✓';
 
   @override
+  String get flightRowProbablyLanded => 'probably landed';
+
+  @override
   String get flightRowMissed => 'missed';
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flugwacht/domain/calendar_date.dart';
 import 'package:flugwacht/domain/day_time.dart';
+import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
@@ -62,6 +63,7 @@ Flight flight({
   DayTime? time,
   DepartureTimeInterpretation interpretation =
       DepartureTimeInterpretation.device,
+  FlightTracking tracking = const FlightTracking(),
 }) => Flight(
   id: 1,
   lookupKind: FlightLookupKind.flightNumber,
@@ -71,6 +73,20 @@ Flight flight({
   departureTimeInterpretation: interpretation,
   note: note,
   route: route,
+  tracking: tracking,
+);
+
+/// The app saw the aircraft on the ground after it had flown, which is what
+/// tells a landed row from one the app only inferred.
+FlightTracking witnessedLanding() => FlightTracking(
+  hasBeenAirborne: true,
+  lastKnownOnGround: true,
+  latestPosition: FixPosition(
+    latitude: 39.5517,
+    longitude: 2.73881,
+    timestamp: DateTime(2026, 8, 15, 17),
+    onGround: true,
+  ),
 );
 
 Future<void> pumpRow(
@@ -228,13 +244,26 @@ void main() {
   testWidgets('grays a landed flight and drops the state from the subtitle', (
     tester,
   ) async {
-    await pumpRow(tester, state: FlightState.ended);
+    await pumpRow(
+      tester,
+      state: FlightState.ended,
+      row: flight(tracking: witnessedLanding()),
+    );
 
     expect(find.text('STR → PMI · today'), findsOneWidget);
     expect(find.text('landed ✓'), findsOneWidget);
     expect(colorOf(tester, 'EW594'), AppColors.neutral400);
     expect(colorOf(tester, 'STR → PMI · today'), AppColors.neutral400);
     expect(colorOf(tester, 'landed ✓'), AppColors.neutral400);
+  });
+
+  testWidgets('marks a landing the app did not see as probable', (
+    tester,
+  ) async {
+    await pumpRow(tester, state: FlightState.ended, width: _wideRowWidth);
+
+    expect(find.text('probably landed'), findsOneWidget);
+    expect(find.text('landed ✓'), findsNothing);
   });
 
   testWidgets('names yesterday as the departure day of a past row', (
@@ -345,11 +374,20 @@ void main() {
     await pumpRow(
       tester,
       state: FlightState.ended,
+      row: flight(tracking: witnessedLanding()),
       locale: const Locale('de'),
       now: DateTime(2026, 8, 16, 2),
     );
     expect(find.text('gelandet ✓'), findsOneWidget);
     expect(find.text('STR → PMI · gestern'), findsOneWidget);
+
+    await pumpRow(
+      tester,
+      state: FlightState.ended,
+      locale: const Locale('de'),
+      width: _wideRowWidth,
+    );
+    expect(find.text('wahrscheinlich gelandet'), findsOneWidget);
 
     await pumpRow(
       tester,

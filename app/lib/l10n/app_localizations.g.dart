@@ -690,6 +690,12 @@ abstract class AppLocalizations {
   /// **'landed ✓'**
   String get flightRowLanded;
 
+  /// No description provided for @flightRowProbablyLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'probably landed'**
+  String get flightRowProbablyLanded;
+
   /// No description provided for @flightRowMissed.
   ///
   /// In en, this message translates to:

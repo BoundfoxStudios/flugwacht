@@ -131,10 +131,11 @@ void main() {
   });
 
   group('probably landed', () {
-    test('says so once the estimate ran out with the flight still up', () {
+    test('says so once the app gave the flight up without seeing it land', () {
       final overdue = flight(
         withRoute: route,
         tracking: FlightTracking(
+          hasBeenAirborne: true,
           firstAirborneAt: onFlightDay.subtract(const Duration(hours: 8)),
           latestPosition: approaching(
             at: onFlightDay.subtract(const Duration(minutes: 20)),
@@ -145,9 +146,10 @@ void main() {
 
       final card = flightCardOf(overdue, onFlightDay);
 
-      expect(card.state, FlightState.noSignal);
+      expect(card.state, FlightState.ended);
       expect(card.hasProbablyLanded, isTrue);
       expect(card.countdown, isNull);
+      expect(card.landedAt, isNull);
     });
 
     test('says so while the signal is still fresh but the estimate is not', () {
@@ -293,9 +295,11 @@ void main() {
     final stale = flight(
       withRoute: route,
       tracking: FlightTracking(
+        hasBeenAirborne: true,
         firstAirborneAt: onFlightDay.subtract(const Duration(hours: 7)),
         latestPosition: approaching(
           at: onFlightDay.subtract(const Duration(minutes: 20)),
+          longitude: -70,
         ),
       ),
     );

@@ -25,6 +25,7 @@ void main() {
     String? expectedCallsign,
     FixPosition? latestPosition,
     bool hasBeenAirborne = false,
+    bool? lastKnownOnGround,
   }) => Flight(
     id: 1,
     lookupKind: lookupKind,
@@ -38,6 +39,7 @@ void main() {
     tracking: FlightTracking(
       latestPosition: latestPosition,
       hasBeenAirborne: hasBeenAirborne,
+      lastKnownOnGround: lastKnownOnGround,
     ),
   );
 
@@ -73,11 +75,13 @@ void main() {
     bool? onGround = false,
     double latitude = 49.875687,
     double longitude = 7.888834,
+    double? groundSpeedKnots,
   }) => FixPosition(
     latitude: latitude,
     longitude: longitude,
     timestamp: timestamp,
     onGround: onGround,
+    groundSpeedKnots: groundSpeedKnots,
   );
 
   Fix fixWith({
@@ -116,12 +120,71 @@ void main() {
 
   group('poll cadence', () {
     test('polls only the states that can still produce a fix', () {
-      expect(isPollable(FlightState.waiting), isTrue);
-      expect(isPollable(FlightState.live), isTrue);
-      expect(isPollable(FlightState.noSignal), isTrue);
-      expect(isPollable(FlightState.planned), isFalse);
-      expect(isPollable(FlightState.ended), isFalse);
-      expect(isPollable(FlightState.missed), isFalse);
+      final flight = flightWith();
+      expect(isPollable(flight, FlightState.waiting, airborneAt), isTrue);
+      expect(isPollable(flight, FlightState.live, airborneAt), isTrue);
+      expect(isPollable(flight, FlightState.noSignal, airborneAt), isTrue);
+      expect(isPollable(flight, FlightState.planned, airborneAt), isFalse);
+      expect(isPollable(flight, FlightState.ended, airborneAt), isFalse);
+      expect(isPollable(flight, FlightState.missed, airborneAt), isFalse);
+    });
+
+    test('keeps asking after a landing it did not see', () {
+      final givenUp = flightWith(
+        route: routeFrom(taoyuan),
+        hasBeenAirborne: true,
+        latestPosition: positionAt(airborneAt, groundSpeedKnots: 400),
+      );
+
+      expect(
+        isPollable(
+          givenUp,
+          FlightState.ended,
+          airborneAt.add(const Duration(hours: 1)),
+        ),
+        isTrue,
+      );
+    });
+
+    test('stops asking once the follow-up on that landing has run out', () {
+      final givenUp = flightWith(
+        route: routeFrom(taoyuan),
+        hasBeenAirborne: true,
+        latestPosition: positionAt(airborneAt, groundSpeedKnots: 400),
+      );
+
+      expect(
+        isPollable(
+          givenUp,
+          FlightState.ended,
+          airborneAt.add(const Duration(hours: 3)),
+        ),
+        isFalse,
+      );
+    });
+
+    /// The ground fix that proved the landing can be followed by one that says
+    /// nothing about the ground, which leaves the flight an estimate again.
+    test('stops asking once it has seen the flight on the ground', () {
+      final landed = flightWith(
+        route: routeFrom(taoyuan),
+        hasBeenAirborne: true,
+        lastKnownOnGround: true,
+        latestPosition: positionAt(
+          airborneAt,
+          onGround: null,
+          groundSpeedKnots: 400,
+        ),
+      );
+
+      expect(
+        isPollable(
+          landed,
+          FlightState.ended,
+          airborneAt.add(const Duration(hours: 1)),
+        ),
+        isFalse,
+      );
     });
 
     test('polls a live flight every five seconds', () {

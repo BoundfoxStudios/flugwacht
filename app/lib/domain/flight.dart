@@ -110,8 +110,16 @@ class FlightTracking {
     if (position == null || position.timestamp.isBefore(window.start)) {
       return this;
     }
+    // readsb drops a position's altitude and velocity once it ages out and
+    // keeps the bare coordinates under lastPosition. That answer names the
+    // moment the flight already stands at, so taking it as the latest position
+    // would trade the fix the arrival estimate is built on for a poorer copy
+    // of itself. What it says about the ground still counts.
+    final latest = latestPosition;
+    final isNewer =
+        latest == null || position.timestamp.isAfter(latest.timestamp);
     return FlightTracking(
-      latestPosition: position,
+      latestPosition: isNewer ? position : latest,
       hasBeenAirborne: hasBeenAirborne || position.onGround == false,
       lastKnownOnGround: position.onGround ?? lastKnownOnGround,
       firstAirborneAt:

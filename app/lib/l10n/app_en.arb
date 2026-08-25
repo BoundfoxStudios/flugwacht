@@ -405,6 +405,7 @@
     }
   },
   "flightRowLanded": "landed ✓",
+  "flightRowProbablyLanded": "probably landed",
   "flightRowMissed": "missed",
   "settingsTitle": "Settings",
   "settingsSourceSectionTitle": "Data source",

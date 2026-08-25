@@ -44,10 +44,13 @@ class FlightNotifier {
       isEnabled: _setting.isEnabled,
       now: clock(),
     );
+    // The reminder shares its slot with the notification that replaces it, and
+    // a cancel takes a delivered notification off the shade just as readily as
+    // a pending one — so the pending reminder goes first, never afterwards.
+    await _applySchedule(plan.schedule, updated);
     for (final kind in plan.events) {
       await _deliver(kind, updated);
     }
-    await _applySchedule(plan.schedule, updated);
   }
 
   /// Takes the reminders of flights that are gone off the system's hands —

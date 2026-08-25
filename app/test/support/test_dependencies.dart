@@ -117,6 +117,11 @@ class FakeNotificationService implements NotificationService {
   final shown = <(FlightNotification, int)>[];
   final scheduled = <(FlightNotification, int, DateTime)>[];
   final cancelled = <(FlightNotification, int)>[];
+
+  /// What the user would find on the notification shade. The real service
+  /// cancels a delivered notification just as readily as a pending one, so
+  /// anything taken back leaves here too.
+  final visible = <(FlightNotification, int)>{};
   final scheduledReminders = <(int, DateTime)>[];
   final cancelledReminders = <int>[];
   final _tappedFlights = StreamController<int>.broadcast();
@@ -145,7 +150,10 @@ class FakeNotificationService implements NotificationService {
     required int flightId,
     required String title,
     required String body,
-  }) async => shown.add((kind, flightId));
+  }) async {
+    shown.add((kind, flightId));
+    visible.add((kind, flightId));
+  }
 
   @override
   Future<void> schedule(
@@ -157,8 +165,10 @@ class FakeNotificationService implements NotificationService {
   }) async => scheduled.add((kind, flightId, at));
 
   @override
-  Future<void> cancel(FlightNotification kind, {required int flightId}) async =>
-      cancelled.add((kind, flightId));
+  Future<void> cancel(FlightNotification kind, {required int flightId}) async {
+    cancelled.add((kind, flightId));
+    visible.remove((kind, flightId));
+  }
 
   @override
   Future<void> scheduleLiveActivityReminder({

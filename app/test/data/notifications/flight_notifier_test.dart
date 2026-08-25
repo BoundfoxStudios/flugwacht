@@ -138,6 +138,45 @@ void main() {
     expect(at.isAfter(_now), isTrue);
   });
 
+  test('shows no arrival for a flight first seen inside the window', () async {
+    await notifier.trackingChanged(
+      _flight,
+      FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 720),
+        hasBeenAirborne: true,
+      ),
+    );
+
+    expect(
+      service.shown,
+      isNot(contains((FlightNotification.arrivingSoon, 7))),
+    );
+  });
+
+  test('leaves the arrival on the shade when it takes over', () async {
+    final cruising = FlightTracking(
+      latestPosition: _position(groundSpeedKnots: 180),
+      hasBeenAirborne: true,
+    );
+    await notifier.trackingChanged(_flight, cruising);
+
+    await notifier.trackingChanged(
+      _flight.copyWith(
+        tracking: cruising,
+        notifications: NotificationMarkers(
+          departedAt: _now,
+          arrivingSoonScheduledFor: service.scheduled.single.$3,
+        ),
+      ),
+      FlightTracking(
+        latestPosition: _position(groundSpeedKnots: 720),
+        hasBeenAirborne: true,
+      ),
+    );
+
+    expect(service.visible, contains((FlightNotification.arrivingSoon, 7)));
+  });
+
   test('takes the reminder back when the flight lands', () async {
     final airborne = FlightTracking(
       latestPosition: _position(groundSpeedKnots: 180),
@@ -161,6 +200,7 @@ void main() {
 
     expect(service.shown, contains((FlightNotification.landed, 7)));
     expect(service.cancelled, [(FlightNotification.arrivingSoon, 7)]);
+    expect(service.visible, contains((FlightNotification.landed, 7)));
   });
 
   test('shows nothing twice when a poll carries an older flight', () async {

@@ -20,6 +20,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:signals/signals.dart';
 
 import '../support/test_dependencies.dart';
 
@@ -148,7 +149,7 @@ void main() {
     final engine = PollingEngine(
       repository: repository,
       adapters: {SourceId.adsblol: adapter},
-      activeSourceId: () => SourceId.adsblol,
+      activeSourceId: signal(SourceId.adsblol),
       airlineDirectory: createTestAirlineDirectory(),
       notifier: notifierFor(async, repository, notifications),
       liveActivities: liveActivitiesFor(async, repository, liveActivities),
@@ -1024,7 +1025,7 @@ void main() {
   group('active source', () {
     ({PollingEngine engine, FakeFlightRepository repository}) startEngineOn(
       FakeAsync async,
-      SourceId Function() activeSourceId,
+      Signal<SourceId> activeSourceId,
       List<String> requestedUrls, {
       List<Flight> flights = const [],
     }) {
@@ -1066,10 +1067,10 @@ void main() {
     test('polls through the adapter of the source that is active', () {
       fakeAsync((async) {
         final requestedUrls = <String>[];
-        var activeSourceId = SourceId.adsblol;
+        final activeSourceId = signal(SourceId.adsblol);
         final started = startEngineOn(
           async,
-          () => activeSourceId,
+          activeSourceId,
           requestedUrls,
           flights: [
             flightWith(
@@ -1082,7 +1083,7 @@ void main() {
         async.flushMicrotasks();
         expect(requestedUrls.single, 'https://api.adsb.lol/v2/hex/3c64c6');
 
-        activeSourceId = SourceId.adsbfi;
+        activeSourceId.value = SourceId.adsbfi;
         async.elapse(const Duration(seconds: 5));
 
         expect(
@@ -1093,6 +1094,41 @@ void main() {
 
         started.engine.stop();
         started.repository.dispose();
+        activeSourceId.dispose();
+      });
+    });
+
+    /// The search cadence of a flight nobody has found yet runs a minute wide,
+    /// which is the wait switching the source is meant to skip.
+    test('searches with a newly chosen source without waiting out the old', () {
+      fakeAsync((async) {
+        final requestedUrls = <String>[];
+        final activeSourceId = signal(SourceId.adsblol);
+        final started = startEngineOn(
+          async,
+          activeSourceId,
+          requestedUrls,
+          flights: [flightWith()],
+        );
+        async
+          ..flushMicrotasks()
+          ..elapse(const Duration(seconds: 30));
+        expect(requestedUrls, hasLength(1));
+
+        activeSourceId.value = SourceId.adsbfi;
+        async.flushMicrotasks();
+        activeSourceId.value = SourceId.adsblol;
+        async.flushMicrotasks();
+
+        expect(requestedUrls, [
+          'https://api.adsb.lol/v2/callsign/DLH400',
+          'https://opendata.adsb.fi/api/v2/callsign/DLH400',
+          'https://api.adsb.lol/v2/callsign/DLH400',
+        ]);
+
+        started.engine.stop();
+        started.repository.dispose();
+        activeSourceId.dispose();
       });
     });
 
@@ -1101,7 +1137,7 @@ void main() {
         final requestedUrls = <String>[];
         final started = startEngineOn(
           async,
-          () => SourceId.adsblol,
+          signal(SourceId.adsblol),
           requestedUrls,
           flights: [
             flightWith(

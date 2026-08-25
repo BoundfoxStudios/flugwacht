@@ -493,7 +493,7 @@ void main() {
     await pumpMapScreen(tester, flights: [_airborneFlight(1)]);
 
     expect(
-      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.lol'),
+      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.fi'),
       findsOneWidget,
     );
   });
@@ -506,7 +506,7 @@ void main() {
     );
 
     expect(
-      find.text('© OpenStreetMap · © OpenMapTiles · Daten: adsb.lol'),
+      find.text('© OpenStreetMap · © OpenMapTiles · Daten: adsb.fi'),
       findsOneWidget,
     );
   });
@@ -586,11 +586,11 @@ void main() {
       sourceSetting: sourceSetting,
     );
 
-    await sourceSetting.select(SourceId.adsbfi);
+    await sourceSetting.select(SourceId.adsblol);
     await tester.pump();
 
     expect(
-      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.fi'),
+      find.text('© OpenStreetMap · © OpenMapTiles · Data: adsb.lol'),
       findsOneWidget,
     );
   });
@@ -638,7 +638,7 @@ void main() {
     await tester.tap(mapButtonWith(AppIcons.layerGroup));
     await tester.pump();
 
-    expect(find.text('© OpenStreetMap · Data: adsb.lol'), findsOneWidget);
+    expect(find.text('© OpenStreetMap · Data: adsb.fi'), findsOneWidget);
   });
 
   testWidgets('frames the selected flight again when re-centering', (

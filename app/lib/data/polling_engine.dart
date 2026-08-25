@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:signals/signals.dart';
 
 import '../domain/fix.dart';
 import '../domain/flight.dart';
@@ -37,7 +38,7 @@ class PollingEngine with WidgetsBindingObserver {
   /// One adapter per source, so each keeps its own rate limit.
   final Map<SourceId, SourceAdapter> _adapters;
 
-  final SourceId Function() _activeSourceId;
+  final ReadonlySignal<SourceId> _activeSourceId;
   final AirlineDirectory _airlineDirectory;
   final FlightNotifier _notifier;
   final FlightLiveActivities _liveActivities;
@@ -50,11 +51,13 @@ class PollingEngine with WidgetsBindingObserver {
   var _flights = const <Flight>[];
   var _wantsPolling = false;
   StreamSubscription<List<Flight>>? _subscription;
+  void Function()? _activeSourceWatch;
   Timer? _scheduler;
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
     _subscription = _repository.watchFlights().listen(_onFlights);
+    _activeSourceWatch = _activeSourceId.subscribe((_) => _onSourceSwitched());
     _resumePolling();
   }
 
@@ -64,6 +67,19 @@ class PollingEngine with WidgetsBindingObserver {
     _stopScheduler();
     unawaited(_subscription?.cancel());
     _subscription = null;
+    _activeSourceWatch?.call();
+    _activeSourceWatch = null;
+  }
+
+  /// The interval a flight was last asked at belongs to the source it asked,
+  /// so a switch makes every flight due at once instead of letting the former
+  /// source's cadence run out first. The subscription fires on the way in as
+  /// well, where nothing polls yet.
+  void _onSourceSwitched() {
+    _lastPollStarts.clear();
+    if (_isPolling) {
+      _pollDueFlights();
+    }
   }
 
   @override
@@ -169,7 +185,7 @@ class PollingEngine with WidgetsBindingObserver {
   Future<void> _pollFlight(Flight flight) async {
     _runningLookups.add(flight.id);
     try {
-      final adapter = _adapters[_activeSourceId()]!;
+      final adapter = _adapters[_activeSourceId.value]!;
       final window = FlightDayWindow.forDepartureDate(flight.departureDate);
       switch (planPollQuery(flight, _callsignCandidates(flight))) {
         case HexAddressPollQuery(:final hexAddress):

@@ -76,7 +76,7 @@ Future<void> main() async {
       for (final sourceId in SourceId.values)
         sourceId: ReadsbSourceAdapter(sourceId: sourceId, client: client),
     },
-    activeSourceId: () => sourceSetting.activeId.value,
+    activeSourceId: sourceSetting.activeId,
     airlineDirectory: airlineDirectory,
     notifier: FlightNotifier(
       repository: flightRepository,

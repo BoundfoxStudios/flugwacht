@@ -17,7 +17,7 @@ enum FlugwachtColor {
   }
 }
 
-/// Bebas Neue carries the numerals, Barlow the words — the same split the app
+/// Bebas Neue carries the numerals, Barlow the words – the same split the app
 /// uses. Both ship inside this target; SwiftUI falls back to the system face
 /// if a name ever stops matching.
 enum FlugwachtFont {

@@ -22,7 +22,7 @@ void initializeAirportTimezones() {
 /// not carry the zone its coordinates fall into.
 ///
 /// The full database variant is the one that carries every zone the coordinate
-/// lookup can name — the reduced variants drop the linked zones and would lose
+/// lookup can name – the reduced variants drop the linked zones and would lose
 /// destinations like Amsterdam or Oslo.
 TZDateTime? airportLocalTime(RouteAirport airport, DateTime instant) {
   initializeAirportTimezones();

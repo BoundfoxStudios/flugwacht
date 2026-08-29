@@ -4,7 +4,7 @@ import 'package:signals/signals.dart';
 import '../../domain/units.dart';
 
 /// The units the app displays, remembered across launches; a display choice
-/// only — estimates and thresholds keep working on the raw values.
+/// only – estimates and thresholds keep working on the raw values.
 class UnitsSetting {
   UnitsSetting._(this._preferences, Units units) : units = signal(units);
 

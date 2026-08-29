@@ -113,7 +113,7 @@ class _ListScreenState extends State<ListScreen> {
             content: Text(localizations.listFlightDeleted(flight.lookupValue)),
             duration: const Duration(seconds: 6),
             // A snackbar with an action persists by default, but here the
-            // timeout is what commits the delete — it must keep running.
+            // timeout is what commits the delete – it must keep running.
             persist: false,
             action: SnackBarAction(
               label: localizations.listUndoDelete,
@@ -270,7 +270,7 @@ class _ListHeader extends StatelessWidget {
 ///
 /// The panel is stacked behind the whole `Dismissible` rather than handed to
 /// its `background`, because that one is clipped to the strip the card has
-/// already left — the card's rounded trailing corners would cut two notches of
+/// already left – the card's rounded trailing corners would cut two notches of
 /// scaffold into the seam. Painting the panel behind the card fills them, which
 /// in turn needs an opaque card: the planned row is only a dashed outline.
 class _SwipeToDelete extends StatefulWidget {
@@ -299,7 +299,7 @@ class _SwipeToDelete extends StatefulWidget {
 }
 
 class _SwipeToDeleteState extends State<_SwipeToDelete> {
-  /// Keeps the panel out of the tree — and out of the semantics — while the row
+  /// Keeps the panel out of the tree – and out of the semantics – while the row
   /// rests on top of it.
   var _swiping = false;
 

@@ -1,6 +1,6 @@
 ---
 name: flutter-conventions
-description: Use during Flutter/Dart development — widgets, state, tests, pub. Contains this project's Flutter conventions.
+description: Use during Flutter/Dart development – widgets, state, tests, pub. Contains this project's Flutter conventions.
 ---
 
 # Flutter Conventions
@@ -19,7 +19,7 @@ Condensed from the official Flutter AI rules:
 
 ## Project decisions
 
-- State management: `signals` — do not introduce other state packages or
+- State management: `signals` – do not introduce other state packages or
   hand-rolled `ChangeNotifier`/stream solutions
 - Persistence: `drift` (SQLite); HTTP via `http` behind a source-adapter
   interface
@@ -27,7 +27,7 @@ Condensed from the official Flutter AI rules:
   (`lib/l10n`, English is the template language, German the second)
 - English code, zero comments by default, no abbreviations in identifiers
 - Tests cover only the app's own behavior (domain logic, edge cases, error
-  paths) — never framework behavior
+  paths) – never framework behavior
 - Write Dart code token-efficiently without reproducing `dart format` line
-  breaking by hand — the tool owns formatting. When the change is complete,
+  breaking by hand – the tool owns formatting. When the change is complete,
   run `dart format .` once in `app/` (CI checks it)

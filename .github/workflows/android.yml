@@ -46,7 +46,7 @@ jobs:
           working-directory: app
       # key.properties is parsed as Java properties: backslashes, leading
       # whitespace, and non-ISO-8859-1 characters in the passwords would be
-      # silently mangled — keep the secrets plain ASCII without backslashes
+      # silently mangled – keep the secrets plain ASCII without backslashes
       - name: Write signing config
         run: |
           printf '%s' "$ANDROID_KEYSTORE" | base64 -d > android/upload-keystore.jks

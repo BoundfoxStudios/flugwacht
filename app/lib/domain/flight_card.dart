@@ -123,7 +123,7 @@ int? _progressPercentOf(
 }
 
 /// The app's own inference, plus the clock repeating it for a card that
-/// redraws itself past the arrival its last update carried — there the app has
+/// redraws itself past the arrival its last update carried – there the app has
 /// not run since and its state is as old as the numbers beside it.
 bool _hasProbablyLanded(
   FlightState state,

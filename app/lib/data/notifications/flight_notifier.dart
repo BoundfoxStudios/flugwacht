@@ -53,7 +53,7 @@ class FlightNotifier {
     }
   }
 
-  /// Takes the reminders of flights that are gone off the system's hands —
+  /// Takes the reminders of flights that are gone off the system's hands –
   /// unconditionally, because their rows, and with them everything the app
   /// knew about their reminders, are already deleted.
   Future<void> flightsRemoved(Iterable<int> flightIds) async {

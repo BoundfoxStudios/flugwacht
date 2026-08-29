@@ -8,7 +8,7 @@ import 'package:vector_map_tiles/vector_map_tiles.dart';
 /// Where the reduced style takes its vector tiles from. OpenFreeMap uploads a
 /// new planet run every week and serves it under a URL of its own, so the tile
 /// template is read from the TileJSON instead of being a constant. Until it
-/// arrives — and if it never does, offline — the map renders without tiles.
+/// arrives – and if it never does, offline – the map renders without tiles.
 class VectorTileSource {
   VectorTileSource({required this.client});
 
@@ -71,7 +71,7 @@ class VectorTileSource {
   static const _defaultMaximumZoom = 14;
 }
 
-/// The tile template of one planet run and the zoom range it covers — beyond
+/// The tile template of one planet run and the zoom range it covers – beyond
 /// its maximum zoom the map scales the last tiles up rather than asking for
 /// more.
 @immutable

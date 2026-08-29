@@ -24,7 +24,7 @@ void main() {
   });
 
   /// flutter_local_notifications carries these receivers but declares neither
-  /// in its own manifest. Losing them costs no build error — the scheduled
+  /// in its own manifest. Losing them costs no build error – the scheduled
   /// notification just never shows.
   test(
     'declares the receivers a scheduled notification is delivered through',
@@ -49,7 +49,7 @@ void main() {
 
   /// The release build shrinks resources, and nothing but a Dart string names
   /// the status bar icon. Once the shrinker drops it, the plugin's icon
-  /// validation fails and the app stops starting — in release only.
+  /// validation fails and the app stops starting – in release only.
   test('keeps the status bar icon from the resource shrinker', () {
     final keepRules = File(
       'android/app/src/main/res/raw/keep.xml',

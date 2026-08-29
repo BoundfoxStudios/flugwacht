@@ -5,7 +5,7 @@ import '../../../l10n/app_localizations.g.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_tokens.dart';
 
-/// Opens the date picker the platform is at home with — the Material dialog on
+/// Opens the date picker the platform is at home with – the Material dialog on
 /// Android, the wheel in a sheet on iOS.
 Future<DateTime?> showDepartureDatePicker({
   required BuildContext context,

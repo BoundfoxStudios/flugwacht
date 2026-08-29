@@ -355,7 +355,7 @@ PackageInfo testPackageInfo({
 );
 
 /// Tiles from stub providers under a stand-in package name, so no widget test
-/// loads a tile over the network — and none writes into a platform directory
+/// loads a tile over the network – and none writes into a platform directory
 /// the test binding does not have.
 MapTileSources testTileSources({
   String userAgentPackageName = 'com.boundfoxstudios.apps.flugwacht',
@@ -380,7 +380,7 @@ class FakeLiveActivityService implements LiveActivityService {
   final ends = <LiveActivityEnd>[];
   var running = const <String>[];
 
-  /// What the system answers about a card it does not list: that it is over —
+  /// What the system answers about a card it does not list: that it is over –
   /// unless the test stands in for one that has not loaded its activities yet
   /// and answers nothing at all.
   var presenceOfUnlistedCard = LiveActivityPresence.finished;

@@ -22,7 +22,7 @@ abstract interface class NotificationService {
   /// hear it.
   Stream<int> get tappedFlights;
 
-  /// The flight whose notification started the app, if one did — a tap the app
+  /// The flight whose notification started the app, if one did – a tap the app
   /// was not yet running to receive.
   int? get launchFlightId;
 
@@ -42,7 +42,7 @@ abstract interface class NotificationService {
   });
 
   /// Hands a notification to the system, which delivers it even while the app
-  /// is closed — roughly at that moment, never to the second.
+  /// is closed – roughly at that moment, never to the second.
   Future<void> schedule(
     FlightNotification kind, {
     required int flightId,
@@ -54,7 +54,7 @@ abstract interface class NotificationService {
   Future<void> cancel(FlightNotification kind, {required int flightId});
 
   /// Hands the system the offer to start a flight's Live Activity on its
-  /// flight day — the app's own offer, not one of the flight's moments.
+  /// flight day – the app's own offer, not one of the flight's moments.
   Future<void> scheduleLiveActivityReminder({
     required int flightId,
     required String title,
@@ -82,8 +82,8 @@ class LocalNotificationService implements NotificationService {
   static const _hasAskedKey = 'notification_permission_requested';
 
   /// Initializes the plugin, creates the Android channel and reads what the
-  /// system currently allows. A device that fails any of that — a dropped icon
-  /// resource, a broken notification stack — costs the user the notifications
+  /// system currently allows. A device that fails any of that – a dropped icon
+  /// resource, a broken notification stack – costs the user the notifications
   /// and gets an [UnavailableNotificationService], never a stalled app.
   static Future<NotificationService> start({
     required String channelName,
@@ -280,7 +280,7 @@ class LocalNotificationService implements NotificationService {
 }
 
 /// Stands in on a device whose notification setup failed, so everything above
-/// keeps the service it depends on — and gets nothing but silence from it.
+/// keeps the service it depends on – and gets nothing but silence from it.
 class UnavailableNotificationService implements NotificationService {
   UnavailableNotificationService()
     : permission = signal(NotificationPermission.unavailable);

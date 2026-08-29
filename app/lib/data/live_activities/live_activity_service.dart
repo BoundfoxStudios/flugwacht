@@ -15,7 +15,7 @@ import 'live_activity_url.dart';
 const liveActivityAppGroupId = 'group.com.boundfoxstudios.apps.flugwacht';
 
 /// What the device does with Live Activities: [unsupported] is the platform's
-/// answer, [disabled] the user's — they can switch the app's activities off in
+/// answer, [disabled] the user's – they can switch the app's activities off in
 /// the system settings.
 enum LiveActivityAvailability { unsupported, disabled, enabled }
 
@@ -31,7 +31,7 @@ abstract interface class LiveActivityService {
   /// The flights whose card the user tapped.
   Stream<int> get tappedFlights;
 
-  /// The flight whose card started the app, if one did — a tap the app was not
+  /// The flight whose card started the app, if one did – a tap the app was not
   /// yet running to receive.
   Future<int?> takeLaunchFlight();
 
@@ -52,7 +52,7 @@ abstract interface class LiveActivityService {
     required DateTime now,
   });
 
-  /// Takes the card away — at [dismissAt] when the user should still get to
+  /// Takes the card away – at [dismissAt] when the user should still get to
   /// look at it, right away otherwise.
   Future<void> end(String activityId, {DateTime? dismissAt});
 
@@ -153,7 +153,7 @@ class PluginLiveActivityService implements LiveActivityService {
 
   /// Asked per id on purpose: `getAllActivitiesIds` answers in ActivityKit's
   /// own identifiers, while the plugin hashes ours into the activity's
-  /// attributes — the two never compare equal. `getActivityState` is the one
+  /// attributes – the two never compare equal. `getActivityState` is the one
   /// call that takes the id the app started the card with.
   @override
   Future<LiveActivityPresence> presenceOf(String activityId) async =>

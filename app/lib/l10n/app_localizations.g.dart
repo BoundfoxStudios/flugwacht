@@ -227,7 +227,7 @@ abstract class AppLocalizations {
   /// No description provided for @listEmptyBody.
   ///
   /// In en, this message translates to:
-  /// **'Add a flight — Flugwacht tracks it automatically on its flight day and shows you when it arrives.'**
+  /// **'Add a flight – Flugwacht tracks it automatically on its flight day and shows you when it arrives.'**
   String get listEmptyBody;
 
   /// No description provided for @listEmptyCta.
@@ -627,7 +627,7 @@ abstract class AppLocalizations {
   /// Explains a coverage gap; the age comes from the signal age copy.
   ///
   /// In en, this message translates to:
-  /// **'Last signal {age}. Over oceans there are often no receivers for 1–2 hours — the trail will come back.'**
+  /// **'Last signal {age}. Over oceans there are often no receivers for 1–2 hours – the trail will come back.'**
   String mapSheetNoSignalInfo(String age);
 
   /// Explains what a flight without a first signal is being searched for.
@@ -819,7 +819,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSourceExplainer.
   ///
   /// In en, this message translates to:
-  /// **'All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.'**
+  /// **'All sources deliver the same values – they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.'**
   String get settingsSourceExplainer;
 
   /// No description provided for @settingsUnitsSectionTitle.
@@ -1047,7 +1047,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqOtherServicesAnswer.
   ///
   /// In en, this message translates to:
-  /// **'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up — no schedule-based guesses. That is why there are gaps wherever nobody is listening.'**
+  /// **'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up: no schedule-based guesses. That is why there are gaps wherever nobody is listening.'**
   String get faqOtherServicesAnswer;
 
   /// No description provided for @faqArrivalAccuracyQuestion.
@@ -1143,7 +1143,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqDataOriginAnswer.
   ///
   /// In en, this message translates to:
-  /// **'Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed — which is why it is free, and why it comes without a guarantee.'**
+  /// **'Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed – which is why it is free, and why it comes without a guarantee.'**
   String get faqDataOriginAnswer;
 
   /// No description provided for @faqAccountQuestion.

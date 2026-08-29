@@ -1396,7 +1396,7 @@ void main() {
       });
     });
 
-    /// A flight falling silent is written nowhere — its last position just
+    /// A flight falling silent is written nowhere – its last position just
     /// grows old. Without a look at the clock the card keeps saying "live".
     test('tells the card when a flight falls silent', () {
       fakeAsync((async) {

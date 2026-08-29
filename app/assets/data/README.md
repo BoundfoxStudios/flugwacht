@@ -4,7 +4,7 @@
 
 A byte-identical copy of
 [`vradarserver/standing-data`](https://github.com/vradarserver/standing-data),
-`airlines/schema-01/airlines.csv` on branch `main`, licensed CC0 1.0 — the
+`airlines/schema-01/airlines.csv` on branch `main`, licensed CC0 1.0 – the
 UTF-8 byte order mark upstream writes is part of the copy.
 
 `AirlineDirectory` reads the file from the asset bundle and answers the

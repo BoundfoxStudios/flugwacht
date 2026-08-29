@@ -455,10 +455,7 @@ void main() {
     await openSheet(tester);
 
     expect(
-      find.text(
-        'The trail only grows while Flugwacht is open. '
-        'It keeps growing as soon as you are back.',
-      ),
+      find.text('The trail only grows while Flugwacht is open'),
       findsOneWidget,
     );
   });
@@ -469,10 +466,7 @@ void main() {
     await openSheet(tester);
 
     expect(
-      find.text(
-        'Die Spur wächst nur, solange Flugwacht offen ist. '
-        'Sobald du zurück bist, wächst sie weiter.',
-      ),
+      find.text('Die Spur wächst nur, solange Flugwacht offen ist'),
       findsOneWidget,
     );
   });

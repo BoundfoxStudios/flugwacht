@@ -260,7 +260,7 @@
       }
     }
   },
-  "mapSheetForegroundHint": "The trail only grows while Flugwacht is open. It keeps growing as soon as you are back.",
+  "mapSheetForegroundHint": "The trail only grows while Flugwacht is open",
   "@mapSheetForegroundHint": {
     "description": "Repeats the foreground-only limit on the flight the map is following. Worded as a fact and not a warning, because the limit is documented behaviour rather than a fault; the FAQ carries the long version."
   },

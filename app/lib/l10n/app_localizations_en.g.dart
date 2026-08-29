@@ -331,7 +331,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapSheetForegroundHint =>
-      'The trail only grows while Flugwacht is open. It keeps growing as soon as you are back.';
+      'The trail only grows while Flugwacht is open';
 
   @override
   String mapSheetAltitudeValue(String value) {

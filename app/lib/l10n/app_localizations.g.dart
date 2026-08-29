@@ -639,7 +639,7 @@ abstract class AppLocalizations {
   /// Repeats the foreground-only limit on the flight the map is following. Worded as a fact and not a warning, because the limit is documented behaviour rather than a fault; the FAQ carries the long version.
   ///
   /// In en, this message translates to:
-  /// **'The trail only grows while Flugwacht is open. It keeps growing as soon as you are back.'**
+  /// **'The trail only grows while Flugwacht is open'**
   String get mapSheetForegroundHint;
 
   /// No description provided for @mapSheetAltitudeValue.

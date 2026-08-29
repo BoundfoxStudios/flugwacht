@@ -96,7 +96,7 @@
   "mapSheetSignalHoursMinutes": "vor {hours} Std {minutes} Min",
   "mapSheetNoSignalInfo": "Letztes Signal {age}. \u00dcber Ozeanen gibt es oft 1\u20132 Stunden keine Empf\u00e4nger \u2014 die Spur kommt wieder.",
   "mapSheetWaitingInfo": "Sucht nach {identity}. Oft fehlen ein bis zwei Stunden lang Empfänger, die Spur beginnt, sobald einer das Flugzeug sieht.",
-  "mapSheetForegroundHint": "Die Spur wächst nur, solange Flugwacht offen ist. Sobald du zurück bist, wächst sie weiter.",
+  "mapSheetForegroundHint": "Die Spur wächst nur, solange Flugwacht offen ist",
   "mapSheetAltitudeValue": "{value} m",
   "mapSheetSpeedValue": "{value} km/h",
   "mapSheetAltitudeValueFeet": "{value} ft",

@@ -331,7 +331,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mapSheetForegroundHint =>
-      'Die Spur wächst nur, solange Flugwacht offen ist. Sobald du zurück bist, wächst sie weiter.';
+      'Die Spur wächst nur, solange Flugwacht offen ist';
 
   @override
   String mapSheetAltitudeValue(String value) {

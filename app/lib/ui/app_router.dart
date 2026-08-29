@@ -48,7 +48,6 @@ GoRouter createAppRouter({
   final mapSelection = MapSelection();
   final router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    // The introduction owns the first start; every later one opens the map.
     initialLocation: onboardingSetting.wasSeen ? '/map' : '/onboarding',
     routes: [
       StatefulShellRoute.indexedStack(

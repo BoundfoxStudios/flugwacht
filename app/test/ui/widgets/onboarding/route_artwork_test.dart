@@ -69,6 +69,24 @@ void main() {
     );
   });
 
+  testWidgets('survives a box with no room for the route', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildDarkTheme(),
+        home: Scaffold(
+          body: Center(
+            child: SizedBox.fromSize(
+              size: Size.zero,
+              child: const RouteArtwork(state: RouteArtworkState.live),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('paints the route in both themes', (tester) async {
     for (final brightness in Brightness.values) {
       final pixels = await renderArtwork(

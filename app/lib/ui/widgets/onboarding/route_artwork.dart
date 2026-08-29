@@ -77,6 +77,11 @@ class _RouteScenePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // A box without room carries no route, and asking a degenerate path for
+    // its metrics throws.
+    if (size.isEmpty) {
+      return;
+    }
     final origin = _pointOf(_origin, size);
     final destination = _pointOf(_destination, size);
     final route = Path()

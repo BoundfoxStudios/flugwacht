@@ -331,15 +331,15 @@
           <context context-type="linenumber">2</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="screenshots.map" datatype="html">
-        <source>Map &amp; arrival</source>
+      <trans-unit id="screenshots.today" datatype="html">
+        <source>Today&apos;s flights</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
           <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="screenshots.today" datatype="html">
-        <source>Today&apos;s flights</source>
+      <trans-unit id="screenshots.newFlight" datatype="html">
+        <source>Add a flight</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/website/src/app/screenshots/screenshots.ts</context>
           <context context-type="linenumber">19</context>

@@ -330,6 +330,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get mapSheetForegroundHint =>
+      'The trail only grows while Flugwacht is open';
+
+  @override
   String mapSheetAltitudeValue(String value) {
     return '$value m';
   }
@@ -610,6 +614,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get faqTrailGapsAnswer =>
       'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.';
+
+  @override
+  String get faqAppClosedQuestion =>
+      'Why does the trail stop when I leave the app?';
+
+  @override
+  String get faqAppClosedAnswer =>
+      'Flugwacht asks the source for new positions only while the app is open. Leave it and the trail stands still; come back and it grows again from where the aircraft is now, with a gap for the time in between. In return, nothing runs in the background.';
 
   @override
   String get faqFlightsDisappearQuestion =>

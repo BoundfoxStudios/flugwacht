@@ -54,6 +54,7 @@ class FlightSheet extends StatefulWidget {
   static const _peekGap = 6.0;
   static const _openGap = 8.0;
   static const _timeHeight = 0.95;
+  static const _hintHeight = 1.5;
   static const _arrivalGap = 12.0;
   static const _arrivalLabelHeight = 15 / 13;
   static const _arrivalDetailHeight = 18 / 15;
@@ -360,6 +361,19 @@ class _FlightPage extends StatelessWidget {
           if (entry.state == FlightState.waiting) ...[
             SizedBox(height: gap),
             _WaitingInfoBox(flight: entry.flight),
+          ],
+          // Bare text rather than a SheetInfoBox: the panel means something
+          // about this flight is off, and the foreground limit is how the app
+          // works.
+          if (entry.state == FlightState.live) ...[
+            SizedBox(height: gap),
+            Text(
+              localizations.mapSheetForegroundHint,
+              style: AppTextStyles.secondary.copyWith(
+                color: colors.hint,
+                height: FlightSheet._hintHeight,
+              ),
+            ),
           ],
           SizedBox(height: gap),
           LiveActivityArmRow(
@@ -726,4 +740,6 @@ enum _SheetColors {
   Color get arrivalLabel => route;
 
   Color get arrivalValue => dataValue;
+
+  Color get hint => route;
 }

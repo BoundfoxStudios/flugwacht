@@ -260,6 +260,10 @@
       }
     }
   },
+  "mapSheetForegroundHint": "The trail only grows while Flugwacht is open",
+  "@mapSheetForegroundHint": {
+    "description": "Repeats the foreground-only limit on the flight the map is following. Worded as a fact and not a warning, because the limit is documented behaviour rather than a fault; the FAQ carries the long version."
+  },
   "mapSheetAltitudeValue": "{value} m",
   "@mapSheetAltitudeValue": {
     "placeholders": {
@@ -511,6 +515,8 @@
   "faqFlightNotFoundAnswer": "A flight only shows up once a receiver hears it: not before takeoff, and not in regions without coverage. Check the flight number the way the airline writes it (LH400, not DLH400), or search by registration or hex address. Trying another source is worth it, too.",
   "faqTrailGapsQuestion": "Why does the trail have gaps?",
   "faqTrailGapsAnswer": "ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.",
+  "faqAppClosedQuestion": "Why does the trail stop when I leave the app?",
+  "faqAppClosedAnswer": "Flugwacht asks the source for new positions only while the app is open. Leave it and the trail stands still; come back and it grows again from where the aircraft is now, with a gap for the time in between. In return, nothing runs in the background.",
   "faqFlightsDisappearQuestion": "Why do flights disappear after landing?",
   "faqFlightsDisappearAnswer": "Flights clear themselves 24 hours after landing. That keeps the list to what is still ahead of you.",
   "faqLateNotificationQuestion": "Why does a notification sometimes arrive late?",

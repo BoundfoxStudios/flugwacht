@@ -21,6 +21,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabMore => 'More';
 
   @override
+  String get onboardingPurposeTitle => 'What Flugwacht\ndoes';
+
+  @override
+  String get onboardingPurposeBullet1 => 'Live flight tracking on the map.';
+
+  @override
+  String get onboardingPurposeBullet2 =>
+      'Private by design – everything stays on your device.';
+
+  @override
+  String get onboardingPurposeBullet3 =>
+      'Free data sources: adsb.fi & adsb.lol';
+
+  @override
+  String get onboardingPurposeBullet4 => 'No ads, no premium features.';
+
+  @override
+  String get onboardingLimitsTitle => 'What Flugwacht\ncannot do';
+
+  @override
+  String get onboardingLimitsBullet1 =>
+      'No tracking in the background – the map runs only while the app is open. In return, everything happens on your device.';
+
+  @override
+  String get onboardingLimitsBullet2 =>
+      'If the landing time is known, a notification still arrives before the landing.';
+
+  @override
+  String get onboardingLimitsBullet3 =>
+      'Made for looking up where a flight is right now, not for gapless tracking.';
+
+  @override
+  String get onboardingOpenSourceTitle => 'Open and\nopen source';
+
+  @override
+  String get onboardingOpenSourceBullet1 =>
+      'The complete code is public on GitHub.';
+
+  @override
+  String get onboardingOpenSourceBullet2 =>
+      'Suggestions and bugs: write to us on Discord or open an issue on GitHub.';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingStart => 'Get started';
+
+  @override
+  String onboardingPageLabel(String page, String total) {
+    return 'Page $page of $total';
+  }
+
+  @override
   String get listTitle => 'Flights';
 
   @override

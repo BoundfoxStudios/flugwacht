@@ -137,6 +137,22 @@ delegate with `material_ui`'s own `GlobalMaterialLocalizations.delegates`, a
 list that already carries the Cupertino and Widgets delegates. `gen_l10n` has
 no option to emit that, so the generated list stays wrong and unused.
 
+## First start
+
+The introduction is a route, not an overlay. `main.dart` resolves its flag
+before `runApp`, so `createAppRouter` picks `initialLocation` from it. A
+`redirect` was deliberately not taken: it runs on every navigation, needs a
+self-exclusion guard, and would fight the `router.go('/map')` of the
+tapped-notification listeners – while a first run has no flight, hence no
+notification and no card that could escape the introduction anyway. Being the
+`initialLocation` also means the screen has nothing to pop, so it hands over
+with `go`.
+
+Its two illustrations are painted (`route_artwork.dart`), never the real map,
+which would need tiles, a flight and a network the first start has none of.
+The scene borrows the map's own `aircraftSilhouette` path and dash lengths and
+tells its live and resting states apart by shifting every line one step dimmer.
+
 ## Callsigns
 
 A flight number is not the string an aircraft transmits, and the two are kept

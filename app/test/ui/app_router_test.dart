@@ -6,6 +6,7 @@ import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/screens/new_flight_screen.dart';
 import 'package:flugwacht/ui/screens/notifications_screen.dart';
+import 'package:flugwacht/ui/screens/onboarding_screen.dart';
 import 'package:flugwacht/ui/widgets/chrome/app_tab_bar.dart';
 import 'package:flugwacht/ui/widgets/controls/app_primary_button.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,8 +15,11 @@ import 'package:material_ui/material_ui.dart';
 
 import '../support/test_dependencies.dart';
 
-Future<GoRouter> pumpApp(WidgetTester tester) async {
-  final router = await createTestAppRouter();
+Future<GoRouter> pumpApp(
+  WidgetTester tester, {
+  bool showsOnboarding = false,
+}) async {
+  final router = await createTestAppRouter(showsOnboarding: showsOnboarding);
   await tester.pumpWidget(FlugwachtApp(router: router));
   await tester.pumpAndSettle();
   return router;
@@ -150,5 +154,28 @@ void main() {
 
     expect(find.byType(ListScreen), findsOneWidget);
     expect(find.byType(AppTabBar), findsOneWidget);
+  });
+
+  testWidgets('a first run opens the introduction ahead of the app', (
+    tester,
+  ) async {
+    final router = await pumpApp(tester, showsOnboarding: true);
+
+    expect(find.byType(OnboardingScreen), findsOneWidget);
+    expect(find.byType(AppTabBar), findsNothing);
+    expect(router.state.uri.toString(), '/onboarding');
+  });
+
+  testWidgets('the introduction hands the app over to the map', (tester) async {
+    final router = await pumpApp(tester, showsOnboarding: true);
+
+    for (var page = 0; page < 3; page++) {
+      await tester.tap(find.byType(AppPrimaryButton));
+      await tester.pumpAndSettle();
+    }
+
+    expect(find.byType(MapScreen), findsOneWidget);
+    expect(find.byType(AppTabBar), findsOneWidget);
+    expect(router.state.uri.toString(), '/map');
   });
 }

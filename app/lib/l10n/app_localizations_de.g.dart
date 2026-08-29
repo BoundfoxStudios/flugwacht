@@ -21,6 +21,61 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tabMore => 'Mehr';
 
   @override
+  String get onboardingPurposeTitle => 'Das macht\nFlugwacht';
+
+  @override
+  String get onboardingPurposeBullet1 => 'Live-Flugverfolgung auf der Karte.';
+
+  @override
+  String get onboardingPurposeBullet2 =>
+      'Private by design – alles bleibt auf deinem Gerät.';
+
+  @override
+  String get onboardingPurposeBullet3 =>
+      'Kostenfreie Datenquellen: adsb.fi & adsb.lol';
+
+  @override
+  String get onboardingPurposeBullet4 =>
+      'Keine Werbung, keine Premium-Features.';
+
+  @override
+  String get onboardingLimitsTitle => 'Das kann\nFlugwacht nicht';
+
+  @override
+  String get onboardingLimitsBullet1 =>
+      'Keine Verfolgung im Hintergrund – die Karte läuft nur, solange die App offen ist. Dafür passiert alles auf deinem Gerät.';
+
+  @override
+  String get onboardingLimitsBullet2 =>
+      'Ist die Landezeit bekannt, kommt trotzdem eine Benachrichtigung vor der Landung.';
+
+  @override
+  String get onboardingLimitsBullet3 =>
+      'Gedacht zum Reinschauen, wo der Flug gerade ist – nicht für lückenloses Tracking.';
+
+  @override
+  String get onboardingOpenSourceTitle => 'Offen und\nOpen Source';
+
+  @override
+  String get onboardingOpenSourceBullet1 =>
+      'Der komplette Code liegt öffentlich auf GitHub.';
+
+  @override
+  String get onboardingOpenSourceBullet2 =>
+      'Vorschläge und Fehler: schreib uns auf Discord oder öffne ein Issue auf GitHub.';
+
+  @override
+  String get onboardingNext => 'Weiter';
+
+  @override
+  String get onboardingStart => 'Jetzt starten';
+
+  @override
+  String onboardingPageLabel(String page, String total) {
+    return 'Seite $page von $total';
+  }
+
+  @override
   String get listTitle => 'Flüge';
 
   @override

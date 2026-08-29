@@ -4,6 +4,32 @@
   "tabMap": "Map",
   "tabList": "Flights",
   "tabMore": "More",
+  "onboardingPurposeTitle": "What Flugwacht\ndoes",
+  "onboardingPurposeBullet1": "Live flight tracking on the map.",
+  "onboardingPurposeBullet2": "Private by design – everything stays on your device.",
+  "onboardingPurposeBullet3": "Free data sources: adsb.fi & adsb.lol",
+  "onboardingPurposeBullet4": "No ads, no premium features.",
+  "onboardingLimitsTitle": "What Flugwacht\ncannot do",
+  "onboardingLimitsBullet1": "No tracking in the background – the map runs only while the app is open. In return, everything happens on your device.",
+  "onboardingLimitsBullet2": "If the landing time is known, a notification still arrives before the landing.",
+  "onboardingLimitsBullet3": "Made for looking up where a flight is right now, not for gapless tracking.",
+  "onboardingOpenSourceTitle": "Open and\nopen source",
+  "onboardingOpenSourceBullet1": "The complete code is public on GitHub.",
+  "onboardingOpenSourceBullet2": "Suggestions and bugs: write to us on Discord or open an issue on GitHub.",
+  "onboardingNext": "Next",
+  "onboardingStart": "Get started",
+  "onboardingPageLabel": "Page {page} of {total}",
+  "@onboardingPageLabel": {
+    "description": "Screen-reader label of a page dot in the introduction, which jumps to its page.",
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "listTitle": "Flights",
   "listHeaderDateFormat": "EEE, MMMM d",
   "@listHeaderDateFormat": {

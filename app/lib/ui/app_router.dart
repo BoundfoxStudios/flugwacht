@@ -12,6 +12,7 @@ import '../data/persistence/flight_repository.dart';
 import '../data/settings/live_activity_setting.dart';
 import '../data/settings/map_style_setting.dart';
 import '../data/settings/notification_setting.dart';
+import '../data/settings/onboarding_setting.dart';
 import '../data/settings/screen_awake_setting.dart';
 import '../data/settings/source_setting.dart';
 import '../data/settings/units_setting.dart';
@@ -24,6 +25,7 @@ import 'screens/map_screen.dart';
 import 'screens/more_screen.dart';
 import 'screens/new_flight_screen.dart';
 import 'screens/notifications_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'widgets/map/map_visuals.dart';
 
 GoRouter createAppRouter({
@@ -38,6 +40,7 @@ GoRouter createAppRouter({
   required LiveActivityService liveActivityService,
   required LiveActivitySetting liveActivitySetting,
   required ScreenAwakeSetting screenAwakeSetting,
+  required OnboardingSetting onboardingSetting,
   required MapTileSources tileSources,
   required PackageInfo packageInfo,
 }) {
@@ -45,7 +48,8 @@ GoRouter createAppRouter({
   final mapSelection = MapSelection();
   final router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/map',
+    // The introduction owns the first start; every later one opens the map.
+    initialLocation: onboardingSetting.wasSeen ? '/map' : '/onboarding',
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -133,6 +137,14 @@ GoRouter createAppRouter({
           ),
         ),
       ),
+      GoRoute(
+        path: '/onboarding',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => OnboardingScreen(
+          onDone: () =>
+              unawaited(_finishOnboarding(context, onboardingSetting)),
+        ),
+      ),
     ],
   );
   // A notification and a Live Activity card are both about one flight, and
@@ -159,4 +171,15 @@ GoRouter createAppRouter({
     }),
   );
   return router;
+}
+
+/// The introduction has nothing to pop back to, so it hands the app over to
+/// the map the way a normal start would open it.
+Future<void> _finishOnboarding(
+  BuildContext context,
+  OnboardingSetting setting,
+) async {
+  final router = GoRouter.of(context);
+  await setting.remember();
+  router.go('/map');
 }

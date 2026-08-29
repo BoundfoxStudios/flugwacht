@@ -122,6 +122,96 @@ abstract class AppLocalizations {
   /// **'More'**
   String get tabMore;
 
+  /// No description provided for @onboardingPurposeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What Flugwacht\ndoes'**
+  String get onboardingPurposeTitle;
+
+  /// No description provided for @onboardingPurposeBullet1.
+  ///
+  /// In en, this message translates to:
+  /// **'Live flight tracking on the map.'**
+  String get onboardingPurposeBullet1;
+
+  /// No description provided for @onboardingPurposeBullet2.
+  ///
+  /// In en, this message translates to:
+  /// **'Private by design – everything stays on your device.'**
+  String get onboardingPurposeBullet2;
+
+  /// No description provided for @onboardingPurposeBullet3.
+  ///
+  /// In en, this message translates to:
+  /// **'Free data sources: adsb.fi & adsb.lol'**
+  String get onboardingPurposeBullet3;
+
+  /// No description provided for @onboardingPurposeBullet4.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads, no premium features.'**
+  String get onboardingPurposeBullet4;
+
+  /// No description provided for @onboardingLimitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What Flugwacht\ncannot do'**
+  String get onboardingLimitsTitle;
+
+  /// No description provided for @onboardingLimitsBullet1.
+  ///
+  /// In en, this message translates to:
+  /// **'No tracking in the background – the map runs only while the app is open. In return, everything happens on your device.'**
+  String get onboardingLimitsBullet1;
+
+  /// No description provided for @onboardingLimitsBullet2.
+  ///
+  /// In en, this message translates to:
+  /// **'If the landing time is known, a notification still arrives before the landing.'**
+  String get onboardingLimitsBullet2;
+
+  /// No description provided for @onboardingLimitsBullet3.
+  ///
+  /// In en, this message translates to:
+  /// **'Made for looking up where a flight is right now, not for gapless tracking.'**
+  String get onboardingLimitsBullet3;
+
+  /// No description provided for @onboardingOpenSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open and\nopen source'**
+  String get onboardingOpenSourceTitle;
+
+  /// No description provided for @onboardingOpenSourceBullet1.
+  ///
+  /// In en, this message translates to:
+  /// **'The complete code is public on GitHub.'**
+  String get onboardingOpenSourceBullet1;
+
+  /// No description provided for @onboardingOpenSourceBullet2.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions and bugs: write to us on Discord or open an issue on GitHub.'**
+  String get onboardingOpenSourceBullet2;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get onboardingStart;
+
+  /// Screen-reader label of a page dot in the introduction, which jumps to its page.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {total}'**
+  String onboardingPageLabel(String page, String total);
+
   /// No description provided for @listTitle.
   ///
   /// In en, this message translates to:

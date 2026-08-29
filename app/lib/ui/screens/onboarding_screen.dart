@@ -103,54 +103,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       artwork: const RouteArtwork(state: RouteArtworkState.live),
       title: localizations.onboardingPurposeTitle,
       bullets: [
-        OnboardingBullet(
-          localizations.onboardingPurposeBullet1,
-          OnboardingTone.promise,
-        ),
-        OnboardingBullet(
-          localizations.onboardingPurposeBullet2,
-          OnboardingTone.promise,
-        ),
-        OnboardingBullet(
-          localizations.onboardingPurposeBullet3,
-          OnboardingTone.promise,
-        ),
-        OnboardingBullet(
-          localizations.onboardingPurposeBullet4,
-          OnboardingTone.promise,
-        ),
+        OnboardingBullet.promise(localizations.onboardingPurposeBullet1),
+        OnboardingBullet.promise(localizations.onboardingPurposeBullet2),
+        OnboardingBullet.promise(localizations.onboardingPurposeBullet3),
+        OnboardingBullet.promise(localizations.onboardingPurposeBullet4),
       ],
     ),
     OnboardingPage(
       artwork: const RouteArtwork(state: RouteArtworkState.resting),
       title: localizations.onboardingLimitsTitle,
       bullets: [
-        OnboardingBullet(
-          localizations.onboardingLimitsBullet1,
-          OnboardingTone.limit,
-        ),
-        OnboardingBullet(
-          localizations.onboardingLimitsBullet2,
-          OnboardingTone.promise,
-        ),
-        OnboardingBullet(
-          localizations.onboardingLimitsBullet3,
-          OnboardingTone.limit,
-        ),
+        OnboardingBullet.limit(localizations.onboardingLimitsBullet1),
+        OnboardingBullet.promise(localizations.onboardingLimitsBullet2),
+        OnboardingBullet.limit(localizations.onboardingLimitsBullet3),
       ],
     ),
     OnboardingPage(
       artwork: const _BrandGlyphs(),
       title: localizations.onboardingOpenSourceTitle,
       bullets: [
-        OnboardingBullet(
-          localizations.onboardingOpenSourceBullet1,
-          OnboardingTone.promise,
-        ),
-        OnboardingBullet(
-          localizations.onboardingOpenSourceBullet2,
-          OnboardingTone.promise,
-        ),
+        OnboardingBullet.promise(localizations.onboardingOpenSourceBullet1),
+        OnboardingBullet.promise(localizations.onboardingOpenSourceBullet2),
       ],
     ),
   ];
@@ -193,7 +166,10 @@ class _Pager extends StatelessWidget {
   static const _activeDotWidth = 20.0;
 
   /// Half the gap the design puts between two dots, so each dot carries its
-  /// own share and the row still spaces them the designed distance apart.
+  /// own share and the row still spaces them the designed distance apart. That
+  /// leaves a slot narrower than the 44 px a target should be – three of those
+  /// do not fit into the row the design draws – so the slots at least sit flush
+  /// against each other and a miss lands on the nearest dot instead of nowhere.
   static const _dotGap = AppSpacing.grid;
   static const _hitHeight = 44.0;
   static const _duration = Duration(milliseconds: 200);

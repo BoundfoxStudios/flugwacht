@@ -3,16 +3,16 @@ import 'package:material_ui/material_ui.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 
-/// What the dash in front of a point says about it: yellow for something the
-/// app does, grey for something it deliberately does not.
-enum OnboardingTone { promise, limit }
-
+/// A point of the introduction. The dash in front of it is yellow for
+/// something the app does and grey for something it deliberately does not.
 @immutable
 class OnboardingBullet {
-  const OnboardingBullet(this.text, this.tone);
+  const OnboardingBullet.promise(this.text) : _isPromise = true;
+
+  const OnboardingBullet.limit(this.text) : _isPromise = false;
 
   final String text;
-  final OnboardingTone tone;
+  final bool _isPromise;
 }
 
 /// One page of the introduction: the illustration band, the heading and the
@@ -105,10 +105,7 @@ class _BulletRow extends StatelessWidget {
           child: Text(
             '–',
             style: AppTextStyles.body.copyWith(
-              color: switch (bullet.tone) {
-                OnboardingTone.promise => AppColors.amber,
-                OnboardingTone.limit => limitDash,
-              },
+              color: bullet._isPromise ? AppColors.amber : limitDash,
             ),
           ),
         ),

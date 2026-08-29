@@ -36,6 +36,7 @@ const _questions = [
   'Why does the trail only start when I add the flight?',
   'Why can I not find my flight?',
   'Why does the trail have gaps?',
+  'Why does the trail stop when I leave the app?',
   'Why do flights disappear after landing?',
   'Why does a notification sometimes arrive late?',
   'Where does the data come from?',

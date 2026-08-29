@@ -330,6 +330,10 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mapSheetForegroundHint =>
+      'Die Spur wächst nur, solange Flugwacht offen ist. Sobald du zurück bist, wächst sie weiter.';
+
+  @override
   String mapSheetAltitudeValue(String value) {
     return '$value m';
   }
@@ -610,6 +614,14 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get faqTrailGapsAnswer =>
       'ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter.';
+
+  @override
+  String get faqAppClosedQuestion =>
+      'Warum hört die Spur auf, wenn ich die App verlasse?';
+
+  @override
+  String get faqAppClosedAnswer =>
+      'Flugwacht fragt die Quelle nur nach neuen Positionen, solange die App offen ist. Verlässt du sie, steht die Spur still; kommst du zurück, wächst sie ab der aktuellen Position weiter, mit einer Lücke für die Zeit dazwischen. Dafür läuft nichts im Hintergrund.';
 
   @override
   String get faqFlightsDisappearQuestion =>

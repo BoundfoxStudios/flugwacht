@@ -61,6 +61,10 @@ class FaqScreen extends StatelessWidget {
       answer: localizations.faqTrailGapsAnswer,
     ),
     (
+      question: localizations.faqAppClosedQuestion,
+      answer: localizations.faqAppClosedAnswer,
+    ),
+    (
       question: localizations.faqFlightsDisappearQuestion,
       answer: localizations.faqFlightsDisappearAnswer,
     ),

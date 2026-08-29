@@ -438,13 +438,78 @@ void main() {
     expect(find.textContaining('Searching for'), findsNothing);
   });
 
-  testWidgets('explains nothing while the signal is live', (tester) async {
+  testWidgets('keeps the gap explanations off a live flight', (tester) async {
     await pumpFlightSheet(tester);
 
     await openSheet(tester);
 
     expect(find.textContaining('the trail will come back'), findsNothing);
     expect(find.textContaining('Searching for'), findsNothing);
+  });
+
+  testWidgets('states the foreground limit on an open live flight', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester);
+
+    await openSheet(tester);
+
+    expect(
+      find.text(
+        'The trail only grows while Flugwacht is open. '
+        'It keeps growing as soon as you are back.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('states the foreground limit in German', (tester) async {
+    await pumpFlightSheet(tester, locale: const Locale('de'));
+
+    await openSheet(tester);
+
+    expect(
+      find.text(
+        'Die Spur wächst nur, solange Flugwacht offen ist. '
+        'Sobald du zurück bist, wächst sie weiter.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('keeps the foreground limit out of the peek', (tester) async {
+    await pumpFlightSheet(tester);
+
+    expect(
+      find.textContaining('only grows while Flugwacht is open'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('leaves a missing signal its own explanation', (tester) async {
+    await pumpFlightSheet(tester, entry: _entry(state: FlightState.noSignal));
+
+    await openSheet(tester);
+
+    expect(find.textContaining('the trail will come back'), findsOneWidget);
+    expect(
+      find.textContaining('only grows while Flugwacht is open'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('says nothing about a trail that has not started', (
+    tester,
+  ) async {
+    await pumpFlightSheet(tester, entry: _waitingEntry());
+
+    await openSheet(tester);
+
+    expect(find.textContaining('Searching for'), findsOneWidget);
+    expect(
+      find.textContaining('only grows while Flugwacht is open'),
+      findsNothing,
+    );
   });
 
   testWidgets('dashes the signal of a flight without a position', (

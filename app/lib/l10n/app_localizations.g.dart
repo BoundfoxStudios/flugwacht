@@ -636,6 +636,12 @@ abstract class AppLocalizations {
   /// **'Searching for {identity}. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft.'**
   String mapSheetWaitingInfo(String identity);
 
+  /// Repeats the foreground-only limit on the flight the map is following. Worded as a fact and not a warning, because the limit is documented behaviour rather than a fault; the FAQ carries the long version.
+  ///
+  /// In en, this message translates to:
+  /// **'The trail only grows while Flugwacht is open. It keeps growing as soon as you are back.'**
+  String get mapSheetForegroundHint;
+
   /// No description provided for @mapSheetAltitudeValue.
   ///
   /// In en, this message translates to:
@@ -1091,6 +1097,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.'**
   String get faqTrailGapsAnswer;
+
+  /// No description provided for @faqAppClosedQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Why does the trail stop when I leave the app?'**
+  String get faqAppClosedQuestion;
+
+  /// No description provided for @faqAppClosedAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Flugwacht asks the source for new positions only while the app is open. Leave it and the trail stands still; come back and it grows again from where the aircraft is now, with a gap for the time in between. In return, nothing runs in the background.'**
+  String get faqAppClosedAnswer;
 
   /// No description provided for @faqFlightsDisappearQuestion.
   ///

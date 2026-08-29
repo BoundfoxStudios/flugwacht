@@ -25,6 +25,7 @@ import 'data/screen_awake_service.dart';
 import 'data/settings/live_activity_setting.dart';
 import 'data/settings/map_style_setting.dart';
 import 'data/settings/notification_setting.dart';
+import 'data/settings/onboarding_setting.dart';
 import 'data/settings/screen_awake_setting.dart';
 import 'data/settings/source_setting.dart';
 import 'data/settings/units_setting.dart';
@@ -52,6 +53,7 @@ Future<void> main() async {
   final notificationSetting = await NotificationSetting.load();
   final liveActivitySetting = await LiveActivitySetting.load();
   final screenAwakeSetting = await ScreenAwakeSetting.load();
+  final onboardingSetting = await OnboardingSetting.load();
   final packageInfo = await PackageInfo.fromPlatform();
   final localizations = await AppLocalizations.delegate.load(
     basicLocaleListResolution(
@@ -120,6 +122,7 @@ Future<void> main() async {
         liveActivityService: liveActivityService,
         liveActivitySetting: liveActivitySetting,
         screenAwakeSetting: screenAwakeSetting,
+        onboardingSetting: onboardingSetting,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,

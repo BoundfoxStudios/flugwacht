@@ -16,6 +16,7 @@ import 'package:flugwacht/data/screen_awake_service.dart';
 import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/map_style_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
+import 'package:flugwacht/data/settings/onboarding_setting.dart';
 import 'package:flugwacht/data/settings/screen_awake_setting.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
@@ -111,6 +112,18 @@ Future<ScreenAwakeSetting> createTestScreenAwakeSetting() async {
   final setting = await ScreenAwakeSetting.load();
   addTearDown(setting.dispose);
   return setting;
+}
+
+/// An introduction flag on an empty in-memory store; already seen by default,
+/// so a test only opts into the first run when that is what it is about.
+Future<OnboardingSetting> createTestOnboardingSetting({
+  bool wasSeen = true,
+}) async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.withData({
+        if (wasSeen) 'onboarding_seen': true,
+      });
+  return OnboardingSetting.load();
 }
 
 /// A service that records what the app asked of it instead of talking to the
@@ -311,6 +324,7 @@ FakeLiveActivityService createTestLiveActivityService() {
 Future<GoRouter> createTestAppRouter({
   FlightRepository? flightRepository,
   NotificationService? notificationService,
+  bool showsOnboarding = false,
 }) async => createAppRouter(
   flightRepository: flightRepository ?? createTestRepository(),
   airlineDirectory: createTestAirlineDirectory(),
@@ -323,6 +337,9 @@ Future<GoRouter> createTestAppRouter({
   liveActivityService: createTestLiveActivityService(),
   liveActivitySetting: await createTestLiveActivitySetting(),
   screenAwakeSetting: await createTestScreenAwakeSetting(),
+  onboardingSetting: await createTestOnboardingSetting(
+    wasSeen: !showsOnboarding,
+  ),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );

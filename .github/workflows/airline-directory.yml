@@ -97,7 +97,7 @@ jobs:
           - Change: $added added, $removed removed lines
           - Rewritten by the workflow on $(date -u '+%Y-%m-%d %H:%M UTC')
 
-          Opened by the \`Airline Directory\` workflow, which compares the vendored file with upstream once a day. While this pull request waits for review, a further upstream change force-pushes \`$REFRESH_BRANCH\` and rewrites this description instead of opening a second pull request — diff and numbers above always describe the current upstream state.
+          Opened by the \`Airline Directory\` workflow, which compares the vendored file with upstream once a day. While this pull request waits for review, a further upstream change force-pushes \`$REFRESH_BRANCH\` and rewrites this description instead of opening a second pull request – diff and numbers above always describe the current upstream state.
 
           The verification is \`checks\`: the tests in \`app/test/data/airline_directory_test.dart\` read the bundled file itself, so a lost \`LH\` row, a reordered airline or a low-cost-carrier code without an airline turns the suite red instead of quietly degrading the callsign lookup.
           BODY

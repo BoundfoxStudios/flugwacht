@@ -191,7 +191,7 @@ void main() {
     });
 
     /// An update only clears a key the map carries as null, and a create would
-    /// throw on one — so a fact that stops applying has to arrive as a value
+    /// throw on one – so a fact that stops applying has to arrive as a value
     /// the card can read as "none", or its last value stays on the Lock Screen.
     test('carries every key on every payload', () {
       final complete = liveActivityPayloadOf(

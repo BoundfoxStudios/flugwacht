@@ -73,7 +73,7 @@ class AirlineDirectory {
         ];
 
   /// The standing data lists a number stripped, while an aircraft transmits it
-  /// padded — a query built from the stripped form alone never reaches it.
+  /// padded – a query built from the stripped form alone never reaches it.
   Iterable<String> _numberForms(FlightNumber flightNumber) sync* {
     yield flightNumber.number;
     if (flightNumber.wireNumber != flightNumber.number) {

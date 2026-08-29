@@ -56,7 +56,7 @@ CI needs no `.env`: a variable that already exists in the environment takes
 precedence over `.env`, so a plain `npm ci` with the token exported as a secret
 works unchanged.
 
-Only installs need the token — `npm start` and `npm run build` never talk to the
+Only installs need the token – `npm start` and `npm run build` never talk to the
 registry. Without it, `npm ci` fails with `npm error code E401` on the
 `@fortawesome` packages. A warm npm cache can mask this locally, so a cold
 install is the honest check.

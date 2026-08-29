@@ -7,7 +7,7 @@ import 'flight_state.dart';
 /// its card away.
 const landedActivityGrace = Duration(minutes: 30);
 
-/// How far ahead of the scheduled departure the flight-day reminder fires —
+/// How far ahead of the scheduled departure the flight-day reminder fires –
 /// early enough to start the activity before boarding.
 const _reminderLeadTime = Duration(hours: 2);
 
@@ -120,7 +120,7 @@ LiveActivityReminderSchedule planLiveActivityReminder({
 
 /// The moment the activity could first start: shortly before the departure the
 /// user entered, or the start of the flight day when they entered none. Never
-/// earlier than the flight day — a night flight's lead time reaches into the
+/// earlier than the flight day – a night flight's lead time reaches into the
 /// day before, where no activity can exist yet.
 DateTime _reminderMoment(Flight flight) {
   final windowStart = FlightDayWindow.forDepartureDate(

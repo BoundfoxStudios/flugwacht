@@ -261,7 +261,7 @@ void main() {
   /// still running, so a reconcile can arrive between minting a card's id and
   /// the system confirming it.
   test('starts one card when a reconcile lands mid-start', () async {
-    // A clock that moves, so two starts would mint two ids — a frozen one
+    // A clock that moves, so two starts would mint two ids – a frozen one
     // makes them identical and hides the second card.
     var readings = 0;
     final ticking = FlightLiveActivities(

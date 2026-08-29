@@ -8,8 +8,8 @@ String? normalizedRegistration(String input) {
   return _registrationPattern.hasMatch(registration) ? registration : null;
 }
 
-/// The icao 24 bit address as it is stored — lower case, matching the `hex`
-/// field of the readsb sources — or null when the input is no hex address.
+/// The icao 24 bit address as it is stored – lower case, matching the `hex`
+/// field of the readsb sources – or null when the input is no hex address.
 String? normalizedHexAddress(String input) {
   final hexAddress = input.trim().toLowerCase();
   return _hexAddressPattern.hasMatch(hexAddress) ? hexAddress : null;

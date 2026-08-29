@@ -8,7 +8,7 @@ import 'flight_route.dart';
 enum FlightLookupKind { flightNumber, registration, hexAddress }
 
 /// Which clock the entered departure time belongs to: the origin airport's
-/// local time — what the ticket says — or the device's own time.
+/// local time – what the ticket says – or the device's own time.
 enum DepartureTimeInterpretation { originLocal, device }
 
 class Flight {

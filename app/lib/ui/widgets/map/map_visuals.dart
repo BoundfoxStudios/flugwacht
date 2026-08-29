@@ -17,7 +17,7 @@ import '../../../l10n/app_localizations.g.dart';
 import '../../theme/app_tokens.dart';
 import '../../theme/reduced_map_theme.dart';
 
-/// Zoom for a flight whose points are one spot on the globe — a flight without
+/// Zoom for a flight whose points are one spot on the globe – a flight without
 /// a route, or one whose trail has not moved away from it yet.
 const flightRegionalZoom = 6.0;
 
@@ -53,7 +53,7 @@ CameraFit? cameraFitFor(List<LatLng> points, {required EdgeInsets padding}) {
 }
 
 /// Where the map takes its tiles from and how the app identifies itself while
-/// asking for them — the OSM tile usage policy expects the real bundle ID.
+/// asking for them – the OSM tile usage policy expects the real bundle ID.
 class MapTileSources {
   const MapTileSources({
     required this.userAgentPackageName,

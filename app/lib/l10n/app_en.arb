@@ -27,7 +27,7 @@
   "@listEmptyHeadline": {
     "description": "Empty state headline; the line break is part of the design."
   },
-  "listEmptyBody": "Add a flight — Flugwacht tracks it automatically on its flight day and shows you when it arrives.",
+  "listEmptyBody": "Add a flight – Flugwacht tracks it automatically on its flight day and shows you when it arrives.",
   "listEmptyCta": "Add flight",
   "newFlightTitle": "New flight",
   "newFlightCancel": "Cancel",
@@ -242,7 +242,7 @@
       }
     }
   },
-  "mapSheetNoSignalInfo": "Last signal {age}. Over oceans there are often no receivers for 1\u20132 hours \u2014 the trail will come back.",
+  "mapSheetNoSignalInfo": "Last signal {age}. Over oceans there are often no receivers for 1\u20132 hours \u2013 the trail will come back.",
   "@mapSheetNoSignalInfo": {
     "description": "Explains a coverage gap; the age comes from the signal age copy.",
     "placeholders": {
@@ -448,7 +448,7 @@
   "flightRowMissed": "missed",
   "settingsTitle": "Settings",
   "settingsSourceSectionTitle": "Data source",
-  "settingsSourceExplainer": "All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.",
+  "settingsSourceExplainer": "All sources deliver the same values – they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.",
   "settingsUnitsSectionTitle": "Units",
   "settingsUnitsMetric": "Metric (m, km/h)",
   "settingsUnitsAviation": "Aviation (ft, kt)",
@@ -506,7 +506,7 @@
   "settingsFaqTitle": "Frequently asked questions",
   "faqTitle": "Frequently asked questions",
   "faqOtherServicesQuestion": "Why does the data differ from FlightRadar24 and others?",
-  "faqOtherServicesAnswer": "Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up — no schedule-based guesses. That is why there are gaps wherever nobody is listening.",
+  "faqOtherServicesAnswer": "Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up: no schedule-based guesses. That is why there are gaps wherever nobody is listening.",
   "faqArrivalAccuracyQuestion": "Why is the arrival time sometimes inaccurate?",
   "faqArrivalAccuracyAnswer": "It is the remaining distance divided by the current ground speed. Holding patterns, approach routing, taxi time and the wind on the last leg are not in it. It sharpens the closer the aircraft gets, and a “~” marks an estimate built on an aged position.",
   "faqTrailStartQuestion": "Why does the trail only start when I add the flight?",
@@ -522,7 +522,7 @@
   "faqLateNotificationQuestion": "Why does a notification sometimes arrive late?",
   "faqLateNotificationAnswer": "The operating system decides when an app may run in the background. In battery saver mode, or when you rarely open the app, the message can arrive a few minutes late.",
   "faqDataOriginQuestion": "Where does the data come from?",
-  "faqDataOriginAnswer": "Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed — which is why it is free, and why it comes without a guarantee.",
+  "faqDataOriginAnswer": "Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed – which is why it is free, and why it comes without a guarantee.",
   "faqAccountQuestion": "Do I need an account?",
   "faqAccountAnswer": "No. No account, no server, no sign-up. Flights and settings stay on the device; the only things leaving it are the queries to the selected source and the map tiles.",
   "notificationDepartedBody": "The flight has taken off.",

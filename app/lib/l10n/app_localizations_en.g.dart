@@ -80,7 +80,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listEmptyBody =>
-      'Add a flight — Flugwacht tracks it automatically on its flight day and shows you when it arrives.';
+      'Add a flight – Flugwacht tracks it automatically on its flight day and shows you when it arrives.';
 
   @override
   String get listEmptyCta => 'Add flight';
@@ -321,7 +321,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String mapSheetNoSignalInfo(String age) {
-    return 'Last signal $age. Over oceans there are often no receivers for 1–2 hours — the trail will come back.';
+    return 'Last signal $age. Over oceans there are often no receivers for 1–2 hours – the trail will come back.';
   }
 
   @override
@@ -456,7 +456,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSourceExplainer =>
-      'All sources deliver the same values — they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.';
+      'All sources deliver the same values – they only differ in who is receiving your aircraft right now. Switching pays off when there are gaps; the trail carries on.';
 
   @override
   String get settingsUnitsSectionTitle => 'Units';
@@ -583,7 +583,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqOtherServicesAnswer =>
-      'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up — no schedule-based guesses. That is why there are gaps wherever nobody is listening.';
+      'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up: no schedule-based guesses. That is why there are gaps wherever nobody is listening.';
 
   @override
   String get faqArrivalAccuracyQuestion =>
@@ -644,7 +644,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqDataOriginAnswer =>
-      'Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed — which is why it is free, and why it comes without a guarantee.';
+      'Volunteers run ADS-B receivers and share what they hear in open networks such as adsb.lol and adsb.fi. No airline, no official feed – which is why it is free, and why it comes without a guarantee.';
 
   @override
   String get faqAccountQuestion => 'Do I need an account?';

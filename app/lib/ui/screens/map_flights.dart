@@ -9,8 +9,8 @@ import '../map_selection.dart';
 import 'flight_list.dart';
 import 'list_sections.dart';
 
-/// The flights the map can show — those with a position, i.e. live or without
-/// signal — together with the selection that markers, trail and camera follow.
+/// The flights the map can show – those with a position, i.e. live or without
+/// signal – together with the selection that markers, trail and camera follow.
 class MapFlights {
   MapFlights({
     required FlightRepository repository,

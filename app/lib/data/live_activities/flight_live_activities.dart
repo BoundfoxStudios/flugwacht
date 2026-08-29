@@ -39,7 +39,7 @@ class FlightLiveActivities {
   /// Passes run one after another, never interleaved. A reconcile that lands
   /// while a card is still being created asks the system about an activity
   /// that does not exist yet, forgets it, and the next pass starts a second
-  /// one — the app open inside the flight-day window does exactly that.
+  /// one – the app open inside the flight-day window does exactly that.
   Future<void> _passes = Future<void>.value();
 
   Future<void> refreshAvailability() => _inTurn(_service.refreshAvailability);
@@ -66,7 +66,7 @@ class FlightLiveActivities {
     }
   }
 
-  /// Takes the cards of flights that are gone off the Lock Screen — their rows,
+  /// Takes the cards of flights that are gone off the Lock Screen – their rows,
   /// and with them everything the app knew about their activities, are already
   /// deleted.
   Future<void> flightsRemoved(Iterable<Flight> flights) => _inTurn(() async {
@@ -81,12 +81,12 @@ class FlightLiveActivities {
     }
   });
 
-  /// Clears away the cards the system has ended on its own — it caps how long
+  /// Clears away the cards the system has ended on its own – it caps how long
   /// one runs, and the app only learns that by asking.
   ///
   /// An ended card stays on the Lock Screen for hours, so forgetting it is not
   /// enough: the flight's next card would join it instead of replacing it. A
-  /// system that does not answer at all leaves the card alone — a card that is
+  /// system that does not answer at all leaves the card alone – a card that is
   /// really gone comes back under the same id on the next put.
   Future<void> reconcile(List<Flight> flights) => _inTurn(() async {
     for (final flight in flights) {

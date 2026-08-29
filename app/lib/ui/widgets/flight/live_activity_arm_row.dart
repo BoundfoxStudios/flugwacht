@@ -29,7 +29,7 @@ class LiveActivityArmRow extends StatelessWidget {
   final ValueChanged<bool> onToggled;
 
   /// Sets the switch off from what a list cell shows above it, and goes with
-  /// the switch — a device without activities is left no gap or hairline.
+  /// the switch – a device without activities is left no gap or hairline.
   final Widget? separator;
 
   @override

@@ -1,4 +1,4 @@
-# Flugwacht — Project Rules
+# Flugwacht – Project Rules
 
 ## Reference Files
 
@@ -22,20 +22,20 @@
   `main`. All work happens on a `feature/` or `fix/` branch and goes through a
   pull request against `main`.
 - PRs are merged only after Manuel's approval (PR approval or comment); never
-  merge without it. Merge method: plain merge commit — no rebase, no squash.
+  merge without it. Merge method: plain merge commit – no rebase, no squash.
   The merge commit is the only commit that does not follow conventional
   commits; every regular commit does (keeps a later release-please adoption
   possible).
 - Planning and tracking happen through GitHub issues and milestones; commits
   reference their issue.
-- Never append commits to a PR that is already under review — Manuel merges
+- Never append commits to a PR that is already under review – Manuel merges
   quickly, and late pushes get orphaned by the branch auto-delete. New changes
   get their own small PR.
 
 ## Repository Layout
 
-- Monorepo: the Flutter app lives in `app/` — run all Flutter/Dart commands
-  there, and the marketing site in `website/` — run all npm/Angular commands
+- Monorepo: the Flutter app lives in `app/` – run all Flutter/Dart commands
+  there, and the marketing site in `website/` – run all npm/Angular commands
   there. A `backend/` (later expansion stage) may join them.
 - The logo masters live in `app/assets/logo/` because Flutter only bundles
   assets from inside the package; the app renders them with `flutter_svg`.
@@ -191,7 +191,7 @@ stays a git one. What else is not obvious from the code:
 
 - The extension's folder is a synchronized group: files dropped into it join
   the target automatically, resources included. That is why Bebas Neue and
-  Barlow sit there a second time — the extension has its own bundle and cannot
+  Barlow sit there a second time – the extension has its own bundle and cannot
   reach the Flutter assets.
 - **`Embed Foundation Extensions` must run before Flutter's `Thin Binary`
   script phase.** Xcode appends new embed phases at the end, which makes every
@@ -204,10 +204,10 @@ stays a git one. What else is not obvious from the code:
   the App Group under `"<attributes.id>_<key>"`, and the extension reads it
   from there through `context.attributes`.
 - Every payload carries every key. The plugin only clears a key that arrives
-  as an explicit null, and a create would throw on one — so a fact that stops
+  as an explicit null, and a create would throw on one – so a fact that stops
   applying is sent as an empty string or a zero timestamp, never omitted.
 - `getAllActivitiesIds()` does **not** answer in the ids the app starts cards
-  with — it returns ActivityKit's own. Use `getActivityState(activityId)`,
+  with – it returns ActivityKit's own. Use `getActivityState(activityId)`,
   which matches the custom id.
 - Only the documented self-updating views keep running while the app is
   closed: `Text(timerInterval:)` and `ProgressView(timerInterval:)`. They do
@@ -310,7 +310,7 @@ silent missing card rather than a crash.
 ## Credentials
 
 - The repo will become public. Never commit credentials, tokens, or license
-  keys — not in config files and not in the history. Anything that needs
+  keys – not in config files and not in the history. Anything that needs
   credentials (e.g. the Font Awesome Pro setup) is configured outside the repo
   (environment variables, host configuration) and only documented in the repo
   as placeholders/instructions.

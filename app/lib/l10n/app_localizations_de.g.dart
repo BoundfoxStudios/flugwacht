@@ -81,7 +81,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get listEmptyBody =>
-      'Trag einen Flug ein — Flugwacht verfolgt ihn am Flugtag automatisch und zeigt dir, wann er ankommt.';
+      'Trag einen Flug ein – Flugwacht verfolgt ihn am Flugtag automatisch und zeigt dir, wann er ankommt.';
 
   @override
   String get listEmptyCta => 'Flug eintragen';
@@ -321,7 +321,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String mapSheetNoSignalInfo(String age) {
-    return 'Letztes Signal $age. Über Ozeanen gibt es oft 1–2 Stunden keine Empfänger — die Spur kommt wieder.';
+    return 'Letztes Signal $age. Über Ozeanen gibt es oft 1–2 Stunden keine Empfänger – die Spur kommt wieder.';
   }
 
   @override
@@ -456,7 +456,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSourceExplainer =>
-      'Alle Quellen liefern dieselben Werte — sie unterscheiden sich nur darin, wer deinen Flieger gerade empfängt. Bei Lücken lohnt das Umschalten; die Spur läuft dabei weiter.';
+      'Alle Quellen liefern dieselben Werte – sie unterscheiden sich nur darin, wer deinen Flieger gerade empfängt. Bei Lücken lohnt das Umschalten; die Spur läuft dabei weiter.';
 
   @override
   String get settingsUnitsSectionTitle => 'Einheiten';
@@ -500,7 +500,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsNotificationsDelivery =>
-      'Gestartet und Gelandet erreichen dich nur, solange Flugwacht offen ist. Ankunft bald kommt auch bei geschlossener App — ungefähr zum richtigen Zeitpunkt.';
+      'Gestartet und Gelandet erreichen dich nur, solange Flugwacht offen ist. Ankunft bald kommt auch bei geschlossener App – ungefähr zum richtigen Zeitpunkt.';
 
   @override
   String get settingsNotificationsDenied =>
@@ -508,7 +508,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsNotificationsUnavailable =>
-      'Auf diesem Gerät ließen sich Mitteilungen nicht einrichten — die Schalter oben bleiben ohne Wirkung.';
+      'Auf diesem Gerät ließen sich Mitteilungen nicht einrichten – die Schalter oben bleiben ohne Wirkung.';
 
   @override
   String get notificationOfferTitle => 'Mitteilungen einschalten?';
@@ -583,7 +583,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get faqOtherServicesAnswer =>
-      'Solche Dienste mischen ADS-B mit MLAT, Satellitenempfang und Flugplandaten der Airlines. Flugwacht zeigt nur, was Community-Empfänger tatsächlich hören — keine Schätzungen aus Flugplänen. Dafür bleiben Lücken, wo niemand mithört.';
+      'Solche Dienste mischen ADS-B mit MLAT, Satellitenempfang und Flugplandaten der Airlines. Flugwacht zeigt nur, was Community-Empfänger tatsächlich hören: keine Schätzungen aus Flugplänen. Dafür bleiben Lücken, wo niemand mithört.';
 
   @override
   String get faqArrivalAccuracyQuestion =>
@@ -644,7 +644,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get faqDataOriginAnswer =>
-      'Freiwillige betreiben ADS-B-Empfänger und teilen in offenen Netzwerken wie adsb.lol und adsb.fi, was sie hören. Keine Airline, kein offizieller Feed — deshalb ist es kostenlos, und deshalb gibt es keine Gewähr.';
+      'Freiwillige betreiben ADS-B-Empfänger und teilen in offenen Netzwerken wie adsb.lol und adsb.fi, was sie hören. Keine Airline, kein offizieller Feed – deshalb ist es kostenlos, und deshalb gibt es keine Gewähr.';
 
   @override
   String get faqAccountQuestion => 'Brauche ich ein Konto?';

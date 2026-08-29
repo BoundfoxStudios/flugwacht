@@ -43,7 +43,7 @@ class FlightList {
   late final Timer _ticker;
 
   /// Takes the flight out of the list without deleting it, so an undo can put
-  /// it back untouched — deleting and re-inserting would cost it its id and
+  /// it back untouched – deleting and re-inserting would cost it its id and
   /// with it the trail that hangs off it.
   void holdDeletion(int flightId) =>
       _heldForDeletion.value = {..._heldForDeletion.value, flightId};

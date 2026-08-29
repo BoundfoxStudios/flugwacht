@@ -16,7 +16,7 @@ class SceneDelegate: FlutterSceneDelegate {
 ///
 /// A tapped Live Activity card reaches a running app through the plugin's own
 /// scene callback, but a cold start delivers its url before Dart is listening
-/// — and before the plugin exists at all. The scene delegate parks it here and
+/// – and before the plugin exists at all. The scene delegate parks it here and
 /// Dart picks it up once it is ready.
 enum LaunchUrl {
   private static let lock = NSLock()

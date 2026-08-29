@@ -7,7 +7,7 @@ import 'app_tokens.dart';
 
 /// The reduced style of the design board, built from the app tokens instead of
 /// a bundled style file: land as the ground, water a shade off it, country
-/// borders barely there — no labels, no roads, no buildings.
+/// borders barely there – no labels, no roads, no buildings.
 Theme reducedMapTheme(Brightness brightness) => switch (brightness) {
   Brightness.light => _lightTheme,
   Brightness.dark => _darkTheme,

@@ -29,7 +29,7 @@ void main() {
     expect(find.text('No flight\non the list yet'), findsOneWidget);
     expect(
       find.text(
-        'Add a flight — Flugwacht tracks it automatically on its flight '
+        'Add a flight – Flugwacht tracks it automatically on its flight '
         'day and shows you when it arrives.',
       ),
       findsOneWidget,

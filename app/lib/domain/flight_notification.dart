@@ -2,7 +2,7 @@
 enum FlightNotification { departed, arrivingSoon, landed }
 
 /// When each notification of a flight went out, so none of them ever goes out
-/// twice — and when the system is due to deliver the arrival reminder it was
+/// twice – and when the system is due to deliver the arrival reminder it was
 /// handed, which outlives the run that scheduled it.
 class NotificationMarkers {
   const NotificationMarkers({

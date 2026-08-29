@@ -20,7 +20,7 @@ android {
 
     compileOptions {
         // flutter_local_notifications schedules on java.time, which Android
-        // only carries from API 26 on — desugaring backports it to minSdk 24
+        // only carries from API 26 on – desugaring backports it to minSdk 24
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

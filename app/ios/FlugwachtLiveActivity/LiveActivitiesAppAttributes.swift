@@ -3,7 +3,7 @@ import Foundation
 
 /// The contract of the `live_activities` plugin: it requests every activity as
 /// `Activity<LiveActivitiesAppAttributes>`, so the name and shape have to match
-/// its own declaration exactly. The payload itself does not travel in here — it
+/// its own declaration exactly. The payload itself does not travel in here – it
 /// goes through the App Group, keyed by this id.
 struct LiveActivitiesAppAttributes: ActivityAttributes, Identifiable {
   public typealias LiveDeliveryData = ContentState

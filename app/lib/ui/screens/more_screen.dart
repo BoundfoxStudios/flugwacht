@@ -4,12 +4,14 @@ import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../app_icons.dart';
+import '../../data/settings/screen_awake_setting.dart';
 import '../../data/settings/source_setting.dart';
 import '../../data/settings/units_setting.dart';
 import '../../l10n/app_localizations.g.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/chrome/settings_card.dart';
+import 'settings_display_section.dart';
 import 'settings_source_section.dart';
 import 'settings_units_section.dart';
 
@@ -17,6 +19,7 @@ class MoreScreen extends StatelessWidget {
   const MoreScreen({
     required this.sourceSetting,
     required this.unitsSetting,
+    required this.screenAwakeSetting,
     required this.packageInfo,
     super.key,
   });
@@ -25,6 +28,7 @@ class MoreScreen extends StatelessWidget {
 
   final SourceSetting sourceSetting;
   final UnitsSetting unitsSetting;
+  final ScreenAwakeSetting screenAwakeSetting;
   final PackageInfo packageInfo;
 
   @override
@@ -49,6 +53,9 @@ class MoreScreen extends StatelessWidget {
                   children: [
                     SettingsSourceSection(sourceSetting: sourceSetting),
                     SettingsUnitsSection(unitsSetting: unitsSetting),
+                    SettingsDisplaySection(
+                      screenAwakeSetting: screenAwakeSetting,
+                    ),
                     _LinkCard(
                       title: localizations.settingsNotificationsTitle,
                       route: '/more/notifications',

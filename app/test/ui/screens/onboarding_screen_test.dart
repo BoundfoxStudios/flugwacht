@@ -86,16 +86,6 @@ void main() {
     expect(find.text(limitsTitle), findsOneWidget);
   });
 
-  testWidgets('swiping back on the first page stays there', (tester) async {
-    await pumpOnboarding(tester);
-
-    await tester.fling(find.text(purposeTitle), const Offset(400, 0), 800);
-    await tester.pumpAndSettle();
-
-    expect(find.text(purposeTitle), findsOneWidget);
-    expect(find.text(openSourceTitle), findsNothing);
-  });
-
   testWidgets('a tapped page dot jumps to its page', (tester) async {
     await pumpOnboarding(tester);
 

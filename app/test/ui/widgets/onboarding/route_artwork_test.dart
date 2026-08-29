@@ -10,24 +10,32 @@ const _artworkKey = ValueKey('artwork');
 const _artworkSize = Size(320, 280);
 const _sampleStep = 2;
 
+ThemeData themeOf(Brightness brightness) => switch (brightness) {
+  Brightness.light => buildLightTheme(),
+  Brightness.dark => buildDarkTheme(),
+};
+
 Future<RenderedPixels> renderArtwork(
   WidgetTester tester,
   RouteArtworkState state, {
   Brightness brightness = Brightness.dark,
 }) async {
+  final theme = themeOf(brightness);
   await tester.pumpWidget(
     MaterialApp(
-      theme: switch (brightness) {
-        Brightness.light => buildLightTheme(),
-        Brightness.dark => buildDarkTheme(),
-      },
+      theme: theme,
       home: Scaffold(
         body: Center(
           child: RepaintBoundary(
             key: _artworkKey,
-            child: SizedBox.fromSize(
-              size: _artworkSize,
-              child: RouteArtwork(state: state),
+            child: ColoredBox(
+              // The band the page paints the scene onto; sampling against the
+              // scaffold instead would count a line that no one can see.
+              color: theme.colorScheme.surface,
+              child: SizedBox.fromSize(
+                size: _artworkSize,
+                child: RouteArtwork(state: state),
+              ),
             ),
           ),
         ),
@@ -38,13 +46,12 @@ Future<RenderedPixels> renderArtwork(
   return renderedPixels(tester, _artworkKey);
 }
 
-/// How much of the scene is painted in the accent, sampled across the whole
-/// band. Only the solid fills match exactly; a ring fades into its ground.
-int accentCoverage(RenderedPixels pixels) {
+/// How many samples across the band differ from the given colour.
+int coverageOf(RenderedPixels pixels, Color color) {
   var covered = 0;
   for (var y = 0.0; y < _artworkSize.height; y += _sampleStep) {
     for (var x = 0.0; x < _artworkSize.width; x += _sampleStep) {
-      if (pixels.matches(Offset(x, y), AppColors.amber)) {
+      if (pixels.matches(Offset(x, y), color)) {
         covered++;
       }
     }
@@ -56,17 +63,41 @@ void main() {
   testWidgets('marks the live position in the accent colour', (tester) async {
     final pixels = await renderArtwork(tester, RouteArtworkState.live);
 
-    expect(accentCoverage(pixels), greaterThan(0));
+    expect(coverageOf(pixels, AppColors.amber), greaterThan(0));
   });
 
   testWidgets('keeps the accent out of the resting scene', (tester) async {
     final pixels = await renderArtwork(tester, RouteArtworkState.resting);
 
     expect(
-      accentCoverage(pixels),
+      coverageOf(pixels, AppColors.amber),
       0,
       reason: 'yellow is what tells a live flight from one at rest',
     );
+  });
+
+  testWidgets('stays visible on its band in both themes and states', (
+    tester,
+  ) async {
+    for (final brightness in Brightness.values) {
+      final band = themeOf(brightness).colorScheme.surface;
+      for (final state in RouteArtworkState.values) {
+        final pixels = await renderArtwork(
+          tester,
+          state,
+          brightness: brightness,
+        );
+        final samples =
+            (_artworkSize.width / _sampleStep) *
+            (_artworkSize.height / _sampleStep);
+
+        expect(
+          coverageOf(pixels, band),
+          lessThan(samples),
+          reason: '$state vanishes into the $brightness band',
+        );
+      }
+    }
   });
 
   testWidgets('survives a box with no room for the route', (tester) async {
@@ -85,30 +116,5 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('paints the route in both themes', (tester) async {
-    for (final brightness in Brightness.values) {
-      final pixels = await renderArtwork(
-        tester,
-        RouteArtworkState.resting,
-        brightness: brightness,
-      );
-      final ground = switch (brightness) {
-        Brightness.light => AppColors.neutral50,
-        Brightness.dark => AppColors.neutral900,
-      };
-
-      var painted = 0;
-      for (var x = 0.0; x < _artworkSize.width; x += _sampleStep) {
-        for (var y = 0.0; y < _artworkSize.height; y += _sampleStep) {
-          if (!pixels.matches(Offset(x, y), ground)) {
-            painted++;
-          }
-        }
-      }
-
-      expect(painted, greaterThan(0), reason: '$brightness leaves the scene');
-    }
   });
 }

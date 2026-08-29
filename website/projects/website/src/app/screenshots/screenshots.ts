@@ -11,12 +11,12 @@ export class Screenshots {
 
   protected readonly screens = [
     {
-      image: `/images/screens/hero-${this.locale}.webp`,
-      caption: $localize`:@@screenshots.map:Map & arrival`,
-    },
-    {
       image: `/images/screens/flights-${this.locale}.webp`,
       caption: $localize`:@@screenshots.today:Today's flights`,
+    },
+    {
+      image: `/images/screens/new-flight-${this.locale}.webp`,
+      caption: $localize`:@@screenshots.newFlight:Add a flight`,
     },
     {
       image: `/images/screens/settings-${this.locale}.webp`,

@@ -190,13 +190,13 @@
         <source>A look at the app.</source>
         <target>Ein Blick in die App.</target>
       </trans-unit>
-      <trans-unit id="screenshots.map" datatype="html">
-        <source>Map &amp; arrival</source>
-        <target>Karte &amp; Ankunft</target>
-      </trans-unit>
       <trans-unit id="screenshots.today" datatype="html">
         <source>Today&apos;s flights</source>
         <target>Deine Flüge heute</target>
+      </trans-unit>
+      <trans-unit id="screenshots.newFlight" datatype="html">
+        <source>Add a flight</source>
+        <target>Flug eintragen</target>
       </trans-unit>
       <trans-unit id="screenshots.settings" datatype="html">
         <source>Settings</source>

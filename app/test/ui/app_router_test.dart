@@ -96,6 +96,8 @@ void main() {
 
     await tester.tap(find.text('More'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Notifications'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Notifications'));
     await tester.pumpAndSettle();
 

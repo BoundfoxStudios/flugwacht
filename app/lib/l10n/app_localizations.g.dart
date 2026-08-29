@@ -750,6 +750,24 @@ abstract class AppLocalizations {
   /// **'Aviation (ft, kt)'**
   String get settingsUnitsAviation;
 
+  /// No description provided for @settingsDisplaySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display'**
+  String get settingsDisplaySectionTitle;
+
+  /// No description provided for @settingsKeepScreenOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the screen on'**
+  String get settingsKeepScreenOn;
+
+  /// No description provided for @settingsKeepScreenOnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'While Flugwacht is open the screen no longer turns itself off; that costs battery. As soon as you leave the app, your system setting takes over again.'**
+  String get settingsKeepScreenOnHint;
+
   /// No description provided for @settingsNotificationsTitle.
   ///
   /// In en, this message translates to:

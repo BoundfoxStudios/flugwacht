@@ -1,3 +1,4 @@
+import 'package:flugwacht/data/settings/screen_awake_setting.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
 import 'package:flugwacht/domain/source_id.dart';
@@ -7,18 +8,23 @@ import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/screens/more_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/controls/app_radio_row.dart';
+import 'package:flugwacht/ui/widgets/controls/app_switch_row.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../support/test_dependencies.dart';
 
-Future<({SourceSetting source, UnitsSetting units})> pumpMoreScreen(
+Future<
+  ({SourceSetting source, UnitsSetting units, ScreenAwakeSetting screenAwake})
+>
+pumpMoreScreen(
   WidgetTester tester, {
   String version = '1.4.2',
   Locale locale = const Locale('en'),
 }) async {
   final sourceSetting = await createTestSourceSetting();
   final unitsSetting = await createTestUnitsSetting();
+  final screenAwakeSetting = await createTestScreenAwakeSetting();
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -28,12 +34,17 @@ Future<({SourceSetting source, UnitsSetting units})> pumpMoreScreen(
       home: MoreScreen(
         sourceSetting: sourceSetting,
         unitsSetting: unitsSetting,
+        screenAwakeSetting: screenAwakeSetting,
         packageInfo: testPackageInfo(version: version),
       ),
     ),
   );
   await tester.pumpAndSettle();
-  return (source: sourceSetting, units: unitsSetting);
+  return (
+    source: sourceSetting,
+    units: unitsSetting,
+    screenAwake: screenAwakeSetting,
+  );
 }
 
 bool isSelected(WidgetTester tester, String label) => tester
@@ -74,6 +85,25 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(settings.units.units.value, Units.aviation);
+  });
+
+  testWidgets('turns keeping the screen on into the setting and the row', (
+    tester,
+  ) async {
+    final settings = await pumpMoreScreen(tester);
+
+    await tester.tap(find.text('Keep the screen on'));
+    await tester.pumpAndSettle();
+
+    expect(settings.screenAwake.keepsScreenAwake.value, isTrue);
+    expect(
+      tester
+          .widget<AppSwitchRow>(
+            find.widgetWithText(AppSwitchRow, 'Keep the screen on'),
+          )
+          .isEnabled,
+      isTrue,
+    );
   });
 
   testWidgets('leaves the notification switches to their own page', (

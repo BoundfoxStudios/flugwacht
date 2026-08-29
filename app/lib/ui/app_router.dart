@@ -12,6 +12,7 @@ import '../data/persistence/flight_repository.dart';
 import '../data/settings/live_activity_setting.dart';
 import '../data/settings/map_style_setting.dart';
 import '../data/settings/notification_setting.dart';
+import '../data/settings/screen_awake_setting.dart';
 import '../data/settings/source_setting.dart';
 import '../data/settings/units_setting.dart';
 import 'app_shell.dart';
@@ -36,6 +37,7 @@ GoRouter createAppRouter({
   required NotificationService notificationService,
   required LiveActivityService liveActivityService,
   required LiveActivitySetting liveActivitySetting,
+  required ScreenAwakeSetting screenAwakeSetting,
   required MapTileSources tileSources,
   required PackageInfo packageInfo,
 }) {
@@ -86,6 +88,7 @@ GoRouter createAppRouter({
                 builder: (context, state) => MoreScreen(
                   sourceSetting: sourceSetting,
                   unitsSetting: unitsSetting,
+                  screenAwakeSetting: screenAwakeSetting,
                   packageInfo: packageInfo,
                 ),
                 routes: [

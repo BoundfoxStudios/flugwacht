@@ -414,6 +414,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsUnitsAviation => 'Luftfahrt (ft, kt)';
 
   @override
+  String get settingsDisplaySectionTitle => 'Anzeige';
+
+  @override
+  String get settingsKeepScreenOn => 'Bildschirm anlassen';
+
+  @override
+  String get settingsKeepScreenOnHint =>
+      'Solange Flugwacht offen ist, schaltet sich der Bildschirm nicht mehr ab; das kostet Akku. Sobald du die App verlässt, gilt wieder deine Systemeinstellung.';
+
+  @override
   String get settingsNotificationsTitle => 'Mitteilungen';
 
   @override

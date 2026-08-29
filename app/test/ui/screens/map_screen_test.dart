@@ -194,6 +194,7 @@ Future<FakeFlightRepository> pumpApp(
         liveActivityService:
             liveActivityService ?? createTestLiveActivityService(),
         liveActivitySetting: await createTestLiveActivitySetting(),
+        screenAwakeSetting: await createTestScreenAwakeSetting(),
         tileSources: testTileSources(),
         packageInfo: testPackageInfo(),
       ),

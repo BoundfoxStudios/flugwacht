@@ -415,6 +415,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsUnitsAviation => 'Aviation (ft, kt)';
 
   @override
+  String get settingsDisplaySectionTitle => 'Display';
+
+  @override
+  String get settingsKeepScreenOn => 'Keep the screen on';
+
+  @override
+  String get settingsKeepScreenOnHint =>
+      'While Flugwacht is open the screen no longer turns itself off; that costs battery. As soon as you leave the app, your system setting takes over again.';
+
+  @override
   String get settingsNotificationsTitle => 'Notifications';
 
   @override

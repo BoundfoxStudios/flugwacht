@@ -20,9 +20,12 @@ import 'data/notifications/notification_service.dart';
 import 'data/persistence/database.dart';
 import 'data/persistence/flight_repository.dart';
 import 'data/polling_engine.dart';
+import 'data/screen_awake_keeper.dart';
+import 'data/screen_awake_service.dart';
 import 'data/settings/live_activity_setting.dart';
 import 'data/settings/map_style_setting.dart';
 import 'data/settings/notification_setting.dart';
+import 'data/settings/screen_awake_setting.dart';
 import 'data/settings/source_setting.dart';
 import 'data/settings/units_setting.dart';
 import 'data/vector_tile_source.dart';
@@ -48,6 +51,7 @@ Future<void> main() async {
   final unitsSetting = await UnitsSetting.load();
   final notificationSetting = await NotificationSetting.load();
   final liveActivitySetting = await LiveActivitySetting.load();
+  final screenAwakeSetting = await ScreenAwakeSetting.load();
   final packageInfo = await PackageInfo.fromPlatform();
   final localizations = await AppLocalizations.delegate.load(
     basicLocaleListResolution(
@@ -98,6 +102,10 @@ Future<void> main() async {
       cooldown: kDebugMode ? Duration.zero : const Duration(days: 120),
     ).requestReview(),
   ).start();
+  ScreenAwakeKeeper(
+    service: WakelockScreenAwakeService(),
+    keepsScreenAwake: screenAwakeSetting.keepsScreenAwake,
+  ).start();
   runApp(
     FlugwachtApp(
       router: createAppRouter(
@@ -111,6 +119,7 @@ Future<void> main() async {
         notificationService: notificationService,
         liveActivityService: liveActivityService,
         liveActivitySetting: liveActivitySetting,
+        screenAwakeSetting: screenAwakeSetting,
         tileSources: MapTileSources(
           userAgentPackageName: packageInfo.packageName,
           vectorTileProviders: vectorTileSource.providers,

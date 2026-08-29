@@ -12,9 +12,11 @@ import 'package:flugwacht/data/lookup/route_lookup.dart';
 import 'package:flugwacht/data/notifications/notification_service.dart';
 import 'package:flugwacht/data/persistence/database.dart';
 import 'package:flugwacht/data/persistence/flight_repository.dart';
+import 'package:flugwacht/data/screen_awake_service.dart';
 import 'package:flugwacht/data/settings/live_activity_setting.dart';
 import 'package:flugwacht/data/settings/map_style_setting.dart';
 import 'package:flugwacht/data/settings/notification_setting.dart';
+import 'package:flugwacht/data/settings/screen_awake_setting.dart';
 import 'package:flugwacht/data/settings/source_setting.dart';
 import 'package:flugwacht/data/settings/units_setting.dart';
 import 'package:flugwacht/data/vector_tile_source.dart';
@@ -100,6 +102,27 @@ Future<LiveActivitySetting> createTestLiveActivitySetting() async {
   final setting = await LiveActivitySetting.load();
   addTearDown(setting.dispose);
   return setting;
+}
+
+/// A setting on an empty in-memory store, so no test sees what another stored.
+Future<ScreenAwakeSetting> createTestScreenAwakeSetting() async {
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.empty();
+  final setting = await ScreenAwakeSetting.load();
+  addTearDown(setting.dispose);
+  return setting;
+}
+
+/// A service that records what the app asked of it instead of talking to the
+/// platform, so no test touches the wakelock plugin.
+class FakeScreenAwakeService implements ScreenAwakeService {
+  var keepsScreenAwake = false;
+
+  @override
+  Future<void> keepAwake() async => keepsScreenAwake = true;
+
+  @override
+  Future<void> allowSleep() async => keepsScreenAwake = false;
 }
 
 /// A service that records what the app asked of it instead of talking to the
@@ -299,6 +322,7 @@ Future<GoRouter> createTestAppRouter({
   notificationService: notificationService ?? createTestNotificationService(),
   liveActivityService: createTestLiveActivityService(),
   liveActivitySetting: await createTestLiveActivitySetting(),
+  screenAwakeSetting: await createTestScreenAwakeSetting(),
   tileSources: testTileSources(),
   packageInfo: testPackageInfo(),
 );

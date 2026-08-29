@@ -206,12 +206,6 @@ abstract class AppLocalizations {
   /// **'Get started'**
   String get onboardingStart;
 
-  /// Screen-reader label of a page dot in the introduction, which jumps to its page.
-  ///
-  /// In en, this message translates to:
-  /// **'Page {page} of {total}'**
-  String onboardingPageLabel(String page, String total);
-
   /// No description provided for @listTitle.
   ///
   /// In en, this message translates to:

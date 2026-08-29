@@ -18,18 +18,6 @@
   "onboardingOpenSourceBullet2": "Suggestions and bugs: write to us on Discord or open an issue on GitHub.",
   "onboardingNext": "Next",
   "onboardingStart": "Get started",
-  "onboardingPageLabel": "Page {page} of {total}",
-  "@onboardingPageLabel": {
-    "description": "Screen-reader label of a page dot in the introduction, which jumps to its page.",
-    "placeholders": {
-      "page": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
   "listTitle": "Flights",
   "listHeaderDateFormat": "EEE, MMMM d",
   "@listHeaderDateFormat": {

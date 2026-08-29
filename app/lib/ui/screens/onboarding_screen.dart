@@ -31,6 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _topGap = AppSpacing.screenPadding;
   static const _horizontalPadding = 28.0;
   static const _bottomPadding = 32.0;
+  static const _footerGap = AppSpacing.screenPadding;
   static const _pageDuration = Duration(milliseconds: 200);
 
   final _controller = PageController();
@@ -67,12 +68,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 _bottomPadding,
               ),
               child: Column(
+                spacing: _footerGap,
                 children: [
-                  _Pager(
-                    count: pages.length,
-                    activeIndex: _index,
-                    onSelected: _goToPage,
-                  ),
+                  _Pager(count: pages.length, activeIndex: _index),
                   AppPrimaryButton(
                     label: isLastPage
                         ? localizations.onboardingStart
@@ -152,70 +150,39 @@ class _BrandGlyphs extends StatelessWidget {
   );
 }
 
-/// Which page of the introduction is showing, and a way to jump to another.
-/// The active page widens into a bar instead of only changing colour, so the
-/// position reads without relying on the accent alone.
+/// Which page of the introduction is showing. The active page widens into a
+/// bar instead of only changing colour, so the position reads without relying
+/// on the accent alone.
 class _Pager extends StatelessWidget {
-  const _Pager({
-    required this.count,
-    required this.activeIndex,
-    required this.onSelected,
-  });
+  const _Pager({required this.count, required this.activeIndex});
 
   static const _dotSize = 8.0;
   static const _activeDotWidth = 20.0;
-
-  /// Half the gap the design puts between two dots, so each dot carries its
-  /// own share and the row still spaces them the designed distance apart. That
-  /// leaves a slot narrower than the 44 px a target should be – three of those
-  /// do not fit into the row the design draws – so the slots at least sit flush
-  /// against each other and a miss lands on the nearest dot instead of nowhere.
-  static const _dotGap = AppSpacing.grid;
-  static const _hitHeight = 44.0;
+  static const _dotGap = AppSpacing.grid * 2;
   static const _duration = Duration(milliseconds: 200);
 
   final int count;
   final int activeIndex;
-  final ValueChanged<int> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
     final inactiveColor = switch (Theme.of(context).brightness) {
       Brightness.light => AppColors.neutral300,
       Brightness.dark => AppColors.neutral600,
     };
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: _dotGap,
       children: [
         for (var index = 0; index < count; index++)
-          Semantics(
-            button: true,
-            selected: index == activeIndex,
-            label: localizations.onboardingPageLabel('${index + 1}', '$count'),
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => onSelected(index),
-              child: SizedBox(
-                height: _hitHeight,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: _dotGap),
-                  child: Center(
-                    child: AnimatedContainer(
-                      duration: _duration,
-                      curve: Curves.easeInOut,
-                      width: index == activeIndex ? _activeDotWidth : _dotSize,
-                      height: _dotSize,
-                      decoration: BoxDecoration(
-                        color: index == activeIndex
-                            ? AppColors.amber
-                            : inactiveColor,
-                        borderRadius: BorderRadius.circular(_dotSize / 2),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+          AnimatedContainer(
+            duration: _duration,
+            curve: Curves.easeInOut,
+            width: index == activeIndex ? _activeDotWidth : _dotSize,
+            height: _dotSize,
+            decoration: BoxDecoration(
+              color: index == activeIndex ? AppColors.amber : inactiveColor,
+              borderRadius: BorderRadius.circular(_dotSize / 2),
             ),
           ),
       ],

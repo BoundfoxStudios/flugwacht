@@ -86,26 +86,17 @@ void main() {
     expect(find.text(limitsTitle), findsOneWidget);
   });
 
-  testWidgets('a tapped page dot jumps to its page', (tester) async {
-    await pumpOnboarding(tester);
-
-    await tester.tap(find.bySemanticsLabel('Page 3 of 3'));
-    await tester.pumpAndSettle();
-
-    expect(find.text(openSourceTitle), findsOneWidget);
-  });
-
   testWidgets('the dot of the current page is the wider one', (tester) async {
     await pumpOnboarding(tester);
 
-    Size dotSize(int page) => tester.getSize(
-      find.descendant(
-        of: find.bySemanticsLabel('Page $page of 3'),
-        matching: find.byType(AnimatedContainer),
-      ),
-    );
+    Size dotSize(int page) =>
+        tester.getSize(find.byType(AnimatedContainer).at(page - 1));
 
     expect(dotSize(1).width, greaterThan(dotSize(2).width));
+
+    await tapButton(tester);
+
+    expect(dotSize(2).width, greaterThan(dotSize(1).width));
   });
 
   testWidgets('each of the three pages carries its own artwork', (

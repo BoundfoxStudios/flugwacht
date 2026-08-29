@@ -70,11 +70,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingStart => 'Get started';
 
   @override
-  String onboardingPageLabel(String page, String total) {
-    return 'Page $page of $total';
-  }
-
-  @override
   String get listTitle => 'Flights';
 
   @override

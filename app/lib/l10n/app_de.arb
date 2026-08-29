@@ -18,7 +18,6 @@
   "onboardingOpenSourceBullet2": "Vorschläge und Fehler: schreib uns auf Discord oder öffne ein Issue auf GitHub.",
   "onboardingNext": "Weiter",
   "onboardingStart": "Jetzt starten",
-  "onboardingPageLabel": "Seite {page} von {total}",
   "listTitle": "Flüge",
   "listHeaderDateFormat": "ccc, d. MMMM",
   "listEmptyHeadline": "Noch kein Flug\nauf der Liste",

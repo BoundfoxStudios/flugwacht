@@ -87,13 +87,16 @@ void main() {
   });
 
   group('trail rendering', () {
-    TrailPoint pointAt(double latitude, {required SourceId sourceId}) =>
-        TrailPoint(
-          timestamp: DateTime.utc(2026, 8, 12, 11),
-          latitude: latitude,
-          longitude: 2,
-          sourceId: sourceId,
-        );
+    TrailPoint pointAt(
+      double latitude, {
+      required SourceId sourceId,
+      int minute = 0,
+    }) => TrailPoint(
+      timestamp: DateTime.utc(2026, 8, 12, 11, minute),
+      latitude: latitude,
+      longitude: 2,
+      sourceId: sourceId,
+    );
 
     List<Polyline<Object>> trailPolylines(List<TrailPoint> trail) =>
         flightPolylines(
@@ -147,6 +150,73 @@ void main() {
         pointAt(48.8, sourceId: SourceId.adsbfi),
       ]);
 
+      expect(polylines.last.points.last, const LatLng(48.5, -20));
+    });
+
+    test('splits the trail at a gap longer than the live threshold', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.9, sourceId: SourceId.adsblol, minute: 5),
+        pointAt(48.7, sourceId: SourceId.adsblol, minute: 30),
+        pointAt(48.6, sourceId: SourceId.adsblol, minute: 35),
+      ]);
+
+      expect(polylines, hasLength(3));
+      expect(
+        polylines.map((polyline) => polyline.color),
+        everyElement(MapColors.light.trail),
+      );
+      expect(polylines[0].points, const [LatLng(49, 2), LatLng(48.9, 2)]);
+      expect(polylines[0].pattern, const StrokePattern.solid());
+      expect(polylines[1].points, const [LatLng(48.9, 2), LatLng(48.7, 2)]);
+      expect(
+        polylines[1].pattern,
+        const StrokePattern.dotted(spacingFactor: 2.5),
+      );
+      expect(polylines[2].points, const [
+        LatLng(48.7, 2),
+        LatLng(48.6, 2),
+        LatLng(48.5, -20),
+      ]);
+      expect(polylines[2].pattern, const StrokePattern.solid());
+    });
+
+    test('keeps a gap of exactly the threshold in one line', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(
+          48.8,
+          sourceId: SourceId.adsblol,
+          minute: maximumLivePositionAge.inMinutes,
+        ),
+      ]);
+
+      expect(polylines.single.points, const [
+        LatLng(49, 2),
+        LatLng(48.8, 2),
+        LatLng(48.5, -20),
+      ]);
+    });
+
+    test('keeps a gap connector neutral in a source comparison', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.9, sourceId: SourceId.adsblol, minute: 5),
+        pointAt(48.7, sourceId: SourceId.adsbfi, minute: 30),
+        pointAt(48.6, sourceId: SourceId.adsbfi, minute: 35),
+      ]);
+
+      expect(polylines.map((polyline) => polyline.color), [
+        MapColors.light.trailOf(SourceId.adsblol),
+        MapColors.light.trail,
+        MapColors.light.trailOf(SourceId.adsbfi),
+      ]);
+      expect(
+        polylines[1].pattern,
+        const StrokePattern.dotted(spacingFactor: 2.5),
+      );
+      expect(polylines[1].points, const [LatLng(48.9, 2), LatLng(48.7, 2)]);
+      expect(polylines.first.points, isNot(contains(const LatLng(48.5, -20))));
       expect(polylines.last.points.last, const LatLng(48.5, -20));
     });
   });

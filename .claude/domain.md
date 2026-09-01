@@ -61,6 +61,14 @@ regions the trail breaks off, often for 1–2 hours, and comes back on its own;
 this hits all three sources alike. A gap is the regular "no signal" state and
 is never presented as an error UI.
 
+On both maps a gap is the stretch between two consecutive trail points more
+than 15 minutes apart, the same threshold that turns live into no signal,
+deliberately coupled so the trail breaks exactly where the badge said "no
+signal". It is drawn as a straight dotted connector in the trail's own color,
+neutral even in a source comparison, since nobody heard the aircraft there. An
+ongoing gap is not drawn: the last trail point and the marker are the same fix,
+and the marker's no-signal grey already says it (#328).
+
 ## State Machine
 
 - planned → waiting → live ⇄ no signal → ended | missed. The state is derived

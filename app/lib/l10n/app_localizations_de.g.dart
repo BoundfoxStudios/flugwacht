@@ -613,7 +613,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get faqTrailGapsAnswer =>
-      'ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter.';
+      'ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter, das Stück dazwischen ist gepunktet.';
 
   @override
   String get faqAppClosedQuestion =>

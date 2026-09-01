@@ -172,7 +172,7 @@
   "faqFlightNotFoundQuestion": "Warum finde ich meinen Flug nicht?",
   "faqFlightNotFoundAnswer": "Ein Flug taucht erst auf, wenn ihn ein Empfänger hört: nicht vor dem Start und nicht in Regionen ohne Abdeckung. Prüfe die Flugnummer so, wie die Airline sie schreibt (LH400, nicht DLH400), oder suche über Registrierung oder Hex-Adresse. Auch eine andere Quelle zu probieren lohnt sich.",
   "faqTrailGapsQuestion": "Warum hat die Spur Lücken?",
-  "faqTrailGapsAnswer": "ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter.",
+  "faqTrailGapsAnswer": "ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter, das Stück dazwischen ist gepunktet.",
   "faqAppClosedQuestion": "Warum hört die Spur auf, wenn ich die App verlasse?",
   "faqAppClosedAnswer": "Flugwacht fragt die Quelle nur nach neuen Positionen, solange die App offen ist. Verlässt du sie, steht die Spur still; kommst du zurück, wächst sie ab der aktuellen Position weiter, mit einer Lücke für die Zeit dazwischen. Dafür läuft nichts im Hintergrund.",
   "faqFlightsDisappearQuestion": "Warum verschwinden Flüge nach der Landung?",

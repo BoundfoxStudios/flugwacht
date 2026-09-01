@@ -136,8 +136,8 @@ Set<SourceId> trailSourceIds(List<TrailPoint> trail) => {
 bool comparesSources(List<TrailPoint> trail) =>
     trailSourceIds(trail).length > 1;
 
-/// The flown trail up to the aircraft and the dashed leg towards the
-/// destination.
+/// The flown trail up to the aircraft, dotted across a coverage gap, and the
+/// dashed leg towards the destination.
 List<Polyline<Object>> flightPolylines({
   required MapColors colors,
   required FlightState state,
@@ -149,22 +149,12 @@ List<Polyline<Object>> flightPolylines({
   required List<double> plannedLegDash,
 }) => [
   if (trail.isNotEmpty)
-    if (comparesSources(trail))
-      ..._sourceSegments(
-        colors: colors,
-        trail: trail,
-        aircraft: aircraft,
-        width: trailWidth,
-      )
-    else
-      Polyline(
-        points: [
-          for (final point in trail) LatLng(point.latitude, point.longitude),
-          aircraft,
-        ],
-        color: colors.trail,
-        strokeWidth: trailWidth,
-      ),
+    ..._trailPolylines(
+      colors: colors,
+      trail: trail,
+      aircraft: aircraft,
+      width: trailWidth,
+    ),
   if (route != null)
     Polyline(
       points: [
@@ -179,14 +169,82 @@ List<Polyline<Object>> flightPolylines({
     ),
 ];
 
-/// One line per run of points from the same source; neighbours share their
-/// boundary point so the trail stays gapless, and the aircraft extends the
-/// last run.
-List<Polyline<Object>> _sourceSegments({
+const _coverageGapDotSpacingFactor = 2.5;
+
+List<Polyline<Object>> _trailPolylines({
   required MapColors colors,
   required List<TrailPoint> trail,
   required LatLng aircraft,
   required double width,
+}) {
+  final runs = _coverageRuns(trail);
+  final perSource = comparesSources(trail);
+  final polylines = <Polyline<Object>>[];
+  for (final (index, run) in runs.indexed) {
+    if (index > 0) {
+      final previous = runs[index - 1].last;
+      polylines.add(
+        Polyline(
+          points: [
+            LatLng(previous.latitude, previous.longitude),
+            LatLng(run.first.latitude, run.first.longitude),
+          ],
+          color: colors.trail,
+          strokeWidth: width,
+          pattern: const StrokePattern.dotted(
+            spacingFactor: _coverageGapDotSpacingFactor,
+          ),
+        ),
+      );
+    }
+    final runAircraft = index == runs.length - 1 ? aircraft : null;
+    if (perSource) {
+      polylines.addAll(
+        _sourceSegments(
+          colors: colors,
+          trail: run,
+          aircraft: runAircraft,
+          width: width,
+        ),
+      );
+    } else {
+      polylines.add(
+        Polyline(
+          points: [
+            for (final point in run) LatLng(point.latitude, point.longitude),
+            ?runAircraft,
+          ],
+          color: colors.trail,
+          strokeWidth: width,
+        ),
+      );
+    }
+  }
+  return polylines;
+}
+
+List<List<TrailPoint>> _coverageRuns(List<TrailPoint> trail) {
+  final runs = [
+    [trail.first],
+  ];
+  for (final point in trail.skip(1)) {
+    if (point.timestamp.difference(runs.last.last.timestamp) >
+        maximumLivePositionAge) {
+      runs.add([]);
+    }
+    runs.last.add(point);
+  }
+  return runs;
+}
+
+/// One line per run of points from the same source; neighbours share their
+/// boundary point so the trail stays gapless, and the aircraft, when given,
+/// extends the last run.
+List<Polyline<Object>> _sourceSegments({
+  required MapColors colors,
+  required List<TrailPoint> trail,
+  required double width,
+  LatLng? aircraft,
 }) {
   final segments = <Polyline<Object>>[];
   var sourceId = trail.first.sourceId;
@@ -205,11 +263,10 @@ List<Polyline<Object>> _sourceSegments({
     }
     points.add(LatLng(point.latitude, point.longitude));
   }
-  points.add(aircraft);
   return [
     ...segments,
     Polyline(
-      points: points,
+      points: [...points, ?aircraft],
       color: colors.trailOf(sourceId),
       strokeWidth: width,
     ),

@@ -1095,7 +1095,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqTrailGapsAnswer.
   ///
   /// In en, this message translates to:
-  /// **'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.'**
+  /// **'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards, with the stretch in between dotted.'**
   String get faqTrailGapsAnswer;
 
   /// No description provided for @faqAppClosedQuestion.

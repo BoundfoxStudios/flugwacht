@@ -34,7 +34,9 @@ never-do list, not a token dump.
   English is the base/template language, German the second, in the informal
   "Du" form. The device language selects the locale, English is the fallback.
 - Deliberately vague labels for the arrival estimate ("Ankunft ca.",
-  "~14:32" on stale data) – never fake precision.
+  "~14:32" on stale data) – never fake precision. An estimated position on
+  the map is a hollow outline with a dot at the last heard fix and a dotted
+  stem between them, and carries no "~" or text of its own.
 - Never an em-dash (—); a dash is always the en-dash (–).
 - Copy reads like a person wrote it: plain, direct wording without the
   phrasing patterns typical of AI-generated text.

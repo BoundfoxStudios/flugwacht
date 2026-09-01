@@ -10,6 +10,7 @@ import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/state_timeline.dart';
+import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
@@ -138,6 +139,12 @@ BoxDecoration badgeDecoration(WidgetTester tester, String label) =>
             .decoration!
         as BoxDecoration;
 
+AircraftMarkerPainter aircraftPainter(WidgetTester tester) => tester
+    .widgetList<CustomPaint>(find.byType(CustomPaint))
+    .map((paint) => paint.painter)
+    .whereType<AircraftMarkerPainter>()
+    .single;
+
 double pressDip(WidgetTester tester) => tester
     .widget<Transform>(
       find
@@ -261,6 +268,34 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Ankunft bei dir · Stand: vor 3 s'), findsOneWidget);
+  });
+
+  testWidgets('outlines the estimate on the mini map without signal', (
+    tester,
+  ) async {
+    await pumpHeroCell(
+      tester,
+      state: FlightState.noSignal,
+      cell: flight(speedKnots: 473),
+      now: _positionTime.add(const Duration(minutes: 42)),
+      width: _wideCellWidth,
+    );
+
+    expect(aircraftPainter(tester).isEstimated, isTrue);
+    expect(find.byType(LastHeardDot), findsOneWidget);
+  });
+
+  testWidgets('keeps the filled marker while the flight is live', (
+    tester,
+  ) async {
+    await pumpHeroCell(
+      tester,
+      cell: flight(speedKnots: 473),
+      width: _wideCellWidth,
+    );
+
+    expect(aircraftPainter(tester).isEstimated, isFalse);
+    expect(find.byType(LastHeardDot), findsNothing);
   });
 
   testWidgets('names the time the flight was first seen off the ground', (

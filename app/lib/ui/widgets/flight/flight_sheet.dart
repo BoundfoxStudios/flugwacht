@@ -7,6 +7,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../../data/live_activities/live_activity_service.dart';
 import '../../../data/settings/source_setting.dart';
 import '../../../data/settings/units_setting.dart';
+import '../../../domain/estimated_position.dart';
 import '../../../domain/flight.dart';
 import '../../../domain/flight_state.dart';
 import '../../../domain/map_style.dart';
@@ -356,7 +357,10 @@ class _FlightPage extends StatelessWidget {
           ),
           if (entry.state == FlightState.noSignal && signalAge != null) ...[
             SizedBox(height: gap),
-            NoSignalInfoBox(age: signalAge),
+            NoSignalInfoBox(
+              age: signalAge,
+              estimatedTowards: _estimatedTowards,
+            ),
           ],
           if (entry.state == FlightState.waiting) ...[
             SizedBox(height: gap),
@@ -411,6 +415,13 @@ class _FlightPage extends StatelessWidget {
       ],
     );
   }
+
+  /// Where the map's outline heads for, named the way the arrival names it.
+  String? get _estimatedTowards => switch (entry.flight.route?.destination) {
+    final destination? when estimatedPositionOf(entry.flight, now) != null =>
+      destination.location ?? destination.name,
+    _ => null,
+  };
 
   bool get _offersAnotherSource => switch (entry.state) {
     FlightState.noSignal || FlightState.waiting => true,

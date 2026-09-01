@@ -398,6 +398,54 @@ void main() {
     );
   });
 
+  testWidgets('explains the estimated position towards the destination', (
+    tester,
+  ) async {
+    await pumpFlightSheet(
+      tester,
+      entry: _entry(
+        state: FlightState.noSignal,
+        positionTime: _now.subtract(const Duration(minutes: 42)),
+      ),
+    );
+
+    await openSheet(tester);
+
+    expect(find.textContaining('towards New York'), findsOneWidget);
+    expect(find.textContaining('Last signal 42 min ago.'), findsOneWidget);
+  });
+
+  testWidgets('explains a plain gap without a route', (tester) async {
+    await pumpFlightSheet(
+      tester,
+      entry: _entry(
+        state: FlightState.noSignal,
+        route: null,
+        positionTime: _now.subtract(const Duration(minutes: 42)),
+      ),
+    );
+
+    await openSheet(tester);
+
+    expect(find.textContaining('Over oceans'), findsOneWidget);
+    expect(find.textContaining('outline'), findsNothing);
+  });
+
+  testWidgets('explains the estimate in german', (tester) async {
+    await pumpFlightSheet(
+      tester,
+      locale: const Locale('de'),
+      entry: _entry(
+        state: FlightState.noSignal,
+        positionTime: _now.subtract(const Duration(hours: 2, minutes: 5)),
+      ),
+    );
+
+    await openSheet(tester);
+
+    expect(find.textContaining('Richtung New York'), findsOneWidget);
+  });
+
   testWidgets('tells a waiting flight what it searches for', (tester) async {
     await pumpFlightSheet(tester, entry: _waitingEntry());
 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flugwacht/data/settings/map_style_setting.dart';
+import 'package:flugwacht/domain/estimated_position.dart';
 import 'package:flugwacht/domain/fix.dart';
 import 'package:flugwacht/domain/flight_route.dart';
 import 'package:flugwacht/domain/flight_state.dart';
@@ -11,6 +12,7 @@ import 'package:flugwacht/l10n/app_localization_delegates.dart';
 import 'package:flugwacht/l10n/app_localizations.g.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/theme/app_tokens.dart';
+import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flugwacht/ui/widgets/map/mini_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -23,6 +25,23 @@ const _mapKey = ValueKey('map');
 const _mapSize = Size(300, 150);
 const _mapCenter = Offset(150, 75);
 const _ringRadius = 14.0;
+
+const _frankfurtToNewYork = FlightRoute(
+  origin: RouteAirport(
+    icaoCode: 'EDDF',
+    iataCode: 'FRA',
+    name: 'Frankfurt am Main',
+    latitude: 50.026402,
+    longitude: 8.543130,
+  ),
+  destination: RouteAirport(
+    icaoCode: 'KJFK',
+    iataCode: 'JFK',
+    name: 'New York JFK',
+    latitude: 40.639447,
+    longitude: -73.779317,
+  ),
+);
 
 FixPosition position({double latitude = 48.5, double longitude = -20}) =>
     FixPosition(
@@ -45,6 +64,7 @@ Future<void> pumpMiniMap(
   FlightState state = FlightState.live,
   FlightRoute? route,
   List<TrailPoint> trail = const [],
+  EstimatedPosition? estimatedPosition,
   Brightness brightness = Brightness.light,
   bool withVectorTiles = false,
   MapStyleSetting? mapStyleSetting,
@@ -69,6 +89,7 @@ Future<void> pumpMiniMap(
                 route: route,
                 trail: trail,
                 state: state,
+                estimatedPosition: estimatedPosition,
                 mapStyleSetting: styleSetting,
                 tileSources: testTileSources(withVectorTiles: withVectorTiles),
               ),
@@ -84,6 +105,12 @@ Future<void> pumpMiniMap(
     await tester.pump(const Duration(seconds: 3));
   }
 }
+
+AircraftMarkerPainter aircraftPainter(WidgetTester tester) => tester
+    .widgetList<CustomPaint>(find.byType(CustomPaint))
+    .map((paint) => paint.painter)
+    .whereType<AircraftMarkerPainter>()
+    .single;
 
 /// The amber of a live aircraft, tolerant of the contour anti-aliasing that
 /// blends into the pixel at its centre.
@@ -145,6 +172,26 @@ void main() {
 
     expect(live, 0);
     expect(noSignal, 0);
+  });
+
+  testWidgets('outlines an estimated position beside the last heard dot', (
+    tester,
+  ) async {
+    await pumpMiniMap(
+      tester,
+      at: position(),
+      state: FlightState.noSignal,
+      route: _frankfurtToNewYork,
+      estimatedPosition: const EstimatedPosition(
+        latitude: 47,
+        longitude: -30,
+        trackDegrees: 250,
+      ),
+    );
+
+    expect(aircraftPainter(tester).isEstimated, isTrue);
+    expect(find.byType(LastHeardDot), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('follows a route-less flight when its position moves', (

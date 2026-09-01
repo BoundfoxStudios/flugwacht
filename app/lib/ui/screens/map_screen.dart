@@ -12,6 +12,8 @@ import '../../data/persistence/flight_repository.dart';
 import '../../data/settings/map_style_setting.dart';
 import '../../data/settings/source_setting.dart';
 import '../../data/settings/units_setting.dart';
+import '../../domain/estimated_position.dart';
+import '../../domain/fix.dart';
 import '../../domain/flight_state.dart';
 import '../../domain/map_style.dart';
 import '../../domain/source_id.dart';
@@ -66,6 +68,7 @@ class MapScreen extends StatefulWidget {
   static const _markerSize = 68.0;
   static const _silhouetteScale = 0.62;
   static const _airportDotRadius = 5.0;
+  static const _lastHeardDotRadius = 3.0;
   static const _trailWidth = 2.5;
   static const _comparedTrailWidth = 3.0;
   static const _plannedLegWidth = 2.0;
@@ -152,8 +155,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           final entries = _mapFlights.flights.value;
           final selected = _mapFlights.selected.value;
           final trail = _mapFlights.trail.value;
+          final now = _mapFlights.now.value;
           final route = selected?.flight.route;
           final position = selected?.flight.tracking.latestPosition;
+          final estimate = selected == null
+              ? null
+              : estimatedPositionOf(selected.flight, now);
           final showsSourceComparison = comparesSources(trail);
           final mapStyle = widget.mapStyleSetting.style.value;
           return Stack(
@@ -182,6 +189,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         route: route,
                         trail: trail,
                         aircraft: LatLng(position.latitude, position.longitude),
+                        estimatedAircraft: estimate == null
+                            ? null
+                            : LatLng(estimate.latitude, estimate.longitude),
                         trailWidth: showsSourceComparison
                             ? MapScreen._comparedTrailWidth
                             : MapScreen._trailWidth,
@@ -212,6 +222,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         colors,
                         entries,
                         selected?.flight.id,
+                        now,
                       ),
                     ),
                   ),
@@ -313,30 +324,60 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     MapColors colors,
     List<FlightListEntry> entries,
     int? selectedId,
+    DateTime now,
   ) => [
     for (final entry in entries)
       if (entry.flight.tracking.latestPosition case final position?)
-        Marker(
-          point: LatLng(position.latitude, position.longitude),
-          width: MapScreen._markerSize,
-          height: MapScreen._markerSize,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => _mapFlights.selectedId.value = entry.flight.id,
-            child: CustomPaint(
-              painter: AircraftMarkerPainter(
-                colors: colors,
-                state: entry.state,
-                trackDegrees: position.trackDegrees ?? 0,
-                silhouetteScale: MapScreen._silhouetteScale,
-                rings: entry.flight.id == selectedId
-                    ? _selectionRings(entry.state)
-                    : const [],
-              ),
+        ..._flightMarkers(
+          colors: colors,
+          entry: entry,
+          position: position,
+          estimate: estimatedPositionOf(entry.flight, now),
+          isSelected: entry.flight.id == selectedId,
+        ),
+  ];
+
+  /// The dot at the last heard fix goes under the tappable aircraft, which
+  /// sits at the estimate while there is one.
+  List<Marker> _flightMarkers({
+    required MapColors colors,
+    required FlightListEntry entry,
+    required FixPosition position,
+    required EstimatedPosition? estimate,
+    required bool isSelected,
+  }) {
+    final fix = LatLng(position.latitude, position.longitude);
+    return [
+      if (estimate != null)
+        lastHeardMarker(
+          colors: colors,
+          point: fix,
+          radius: MapScreen._lastHeardDotRadius,
+        ),
+      Marker(
+        point: estimate == null
+            ? fix
+            : LatLng(estimate.latitude, estimate.longitude),
+        width: MapScreen._markerSize,
+        height: MapScreen._markerSize,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => _mapFlights.selectedId.value = entry.flight.id,
+          child: CustomPaint(
+            painter: AircraftMarkerPainter(
+              colors: colors,
+              state: entry.state,
+              trackDegrees:
+                  estimate?.trackDegrees ?? position.trackDegrees ?? 0,
+              silhouetteScale: MapScreen._silhouetteScale,
+              rings: isSelected ? _selectionRings(entry.state) : const [],
+              isEstimated: estimate != null,
             ),
           ),
         ),
-  ];
+      ),
+    ];
+  }
 
   List<AircraftRing> _selectionRings(FlightState state) {
     if (state == FlightState.noSignal) {

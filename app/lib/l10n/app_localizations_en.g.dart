@@ -325,6 +325,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String mapSheetNoSignalEstimateInfo(String age, String destination) {
+    return 'Last signal $age. The outline estimates where the aircraft would be by now at its last speed towards $destination. Over oceans there are often no receivers for 1–2 hours – the trail will come back.';
+  }
+
+  @override
   String mapSheetWaitingInfo(String identity) {
     return 'Searching for $identity. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft.';
   }
@@ -583,7 +588,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqOtherServicesAnswer =>
-      'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up: no schedule-based guesses. That is why there are gaps wherever nobody is listening.';
+      'Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht shows what community receivers actually pick up: no schedule-based guesses. When the signal drops, the app only carries the position forward at the last speed towards the destination and shows the aircraft as an outline. That is why there are gaps wherever nobody is listening.';
 
   @override
   String get faqArrivalAccuracyQuestion =>
@@ -613,7 +618,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqTrailGapsAnswer =>
-      'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards, with the stretch in between dotted.';
+      'ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards, with the stretch in between dotted. With a known route, an outline meanwhile shows roughly where the aircraft would be at its last speed.';
 
   @override
   String get faqAppClosedQuestion =>

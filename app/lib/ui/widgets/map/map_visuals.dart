@@ -136,8 +136,8 @@ Set<SourceId> trailSourceIds(List<TrailPoint> trail) => {
 bool comparesSources(List<TrailPoint> trail) =>
     trailSourceIds(trail).length > 1;
 
-/// The flown trail up to the aircraft, dotted across a coverage gap, and the
-/// dashed leg towards the destination.
+/// The flown trail up to the aircraft, dotted across a coverage gap, a dotted
+/// stem to the estimated position, and the dashed leg towards the destination.
 List<Polyline<Object>> flightPolylines({
   required MapColors colors,
   required FlightState state,
@@ -147,6 +147,7 @@ List<Polyline<Object>> flightPolylines({
   required double trailWidth,
   required double plannedLegWidth,
   required List<double> plannedLegDash,
+  LatLng? estimatedAircraft,
 }) => [
   if (trail.isNotEmpty)
     ..._trailPolylines(
@@ -155,10 +156,19 @@ List<Polyline<Object>> flightPolylines({
       aircraft: aircraft,
       width: trailWidth,
     ),
+  if (estimatedAircraft != null)
+    Polyline(
+      points: [aircraft, estimatedAircraft],
+      color: colors.trail,
+      strokeWidth: trailWidth,
+      pattern: const StrokePattern.dotted(
+        spacingFactor: _coverageGapDotSpacingFactor,
+      ),
+    ),
   if (route != null)
     Polyline(
       points: [
-        aircraft,
+        estimatedAircraft ?? aircraft,
         LatLng(route.destination.latitude, route.destination.longitude),
       ],
       color: state == FlightState.noSignal
@@ -315,6 +325,30 @@ const _airportMarkerWidth = 96.0;
 const _airportMarkerHeight = 24.0;
 const _airportLabelOffset = 8.0;
 
+Marker lastHeardMarker({
+  required MapColors colors,
+  required LatLng point,
+  required double radius,
+}) => Marker(
+  point: point,
+  width: radius * 2,
+  height: radius * 2,
+  child: LastHeardDot(color: colors.noSignalContour),
+);
+
+/// The last heard fix of a flight whose aircraft symbol has moved on to an
+/// estimate.
+class LastHeardDot extends StatelessWidget {
+  const LastHeardDot({required this.color, super.key});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
+}
+
 /// Inverts and hue-rotates the raster tiles so the light OSM style carries the
 /// dark theme until the reduced style of M11 replaces it.
 const _darkTileFilter = ColorFilter.matrix(<double>[
@@ -438,10 +472,14 @@ class AircraftMarkerPainter extends CustomPainter {
     required this.silhouetteScale,
     this.rings = const [],
     this.contourWidth = 1.4,
+    this.isEstimated = false,
   });
 
   static const _viewBoxSize = 48.0;
   static const _ringDash = 4.0;
+
+  /// Without a fill the contour alone has to hold the shape together.
+  static const _estimatedContourWidth = 2.0;
 
   final MapColors colors;
   final FlightState state;
@@ -449,6 +487,7 @@ class AircraftMarkerPainter extends CustomPainter {
   final double silhouetteScale;
   final List<AircraftRing> rings;
   final double contourWidth;
+  final bool isEstimated;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -462,17 +501,22 @@ class AircraftMarkerPainter extends CustomPainter {
       ..translate(center.dx, center.dy)
       ..rotate(trackDegrees * pi / 180)
       ..scale(silhouetteScale)
-      ..translate(-_viewBoxSize / 2, -_viewBoxSize / 2)
-      ..drawPath(
+      ..translate(-_viewBoxSize / 2, -_viewBoxSize / 2);
+    if (!isEstimated) {
+      canvas.drawPath(
         aircraftSilhouette,
         Paint()..color = isNoSignal ? colors.noSignalFill : colors.aircraftFill,
-      )
+      );
+    }
+    canvas
       ..drawPath(
         aircraftSilhouette,
         Paint()
-          ..color = isNoSignal ? colors.noSignalContour : colors.aircraftContour
+          ..color = isEstimated || isNoSignal
+              ? colors.noSignalContour
+              : colors.aircraftContour
           ..style = PaintingStyle.stroke
-          ..strokeWidth = contourWidth,
+          ..strokeWidth = isEstimated ? _estimatedContourWidth : contourWidth,
       )
       ..restore();
   }
@@ -511,6 +555,7 @@ class AircraftMarkerPainter extends CustomPainter {
       oldDelegate.trackDegrees != trackDegrees ||
       oldDelegate.silhouetteScale != silhouetteScale ||
       oldDelegate.contourWidth != contourWidth ||
+      oldDelegate.isEstimated != isEstimated ||
       !listEquals(oldDelegate.rings, rings);
 }
 

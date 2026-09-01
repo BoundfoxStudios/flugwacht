@@ -325,6 +325,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String mapSheetNoSignalEstimateInfo(String age, String destination) {
+    return 'Letztes Signal $age. Der Umriss schätzt, wo das Flugzeug mit dem letzten Tempo Richtung $destination jetzt wäre. Über Ozeanen gibt es oft 1–2 Stunden keine Empfänger – die Spur kommt wieder.';
+  }
+
+  @override
   String mapSheetWaitingInfo(String identity) {
     return 'Sucht nach $identity. Oft fehlen ein bis zwei Stunden lang Empfänger, die Spur beginnt, sobald einer das Flugzeug sieht.';
   }
@@ -583,7 +588,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get faqOtherServicesAnswer =>
-      'Solche Dienste mischen ADS-B mit MLAT, Satellitenempfang und Flugplandaten der Airlines. Flugwacht zeigt nur, was Community-Empfänger tatsächlich hören: keine Schätzungen aus Flugplänen. Dafür bleiben Lücken, wo niemand mithört.';
+      'Solche Dienste mischen ADS-B mit MLAT, Satellitenempfang und Flugplandaten der Airlines. Flugwacht zeigt, was Community-Empfänger tatsächlich hören: keine Schätzungen aus Flugplänen. Reißt das Signal ab, rechnet die App nur mit dem letzten Tempo Richtung Ziel weiter und zeigt das Flugzeug als Umriss. Dafür bleiben Lücken, wo niemand mithört.';
 
   @override
   String get faqArrivalAccuracyQuestion =>
@@ -613,7 +618,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get faqTrailGapsAnswer =>
-      'ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter, das Stück dazwischen ist gepunktet.';
+      'ADS-B braucht einen Empfänger am Boden in Reichweite. Über Ozeanen, Wüsten und Polarrouten gibt es oft ein bis zwei Stunden lang keinen. Die Spur pausiert dann und geht danach weiter, das Stück dazwischen ist gepunktet. Ist die Route bekannt, zeigt solange ein Umriss, wo das Flugzeug mit dem letzten Tempo etwa wäre.';
 
   @override
   String get faqAppClosedQuestion =>

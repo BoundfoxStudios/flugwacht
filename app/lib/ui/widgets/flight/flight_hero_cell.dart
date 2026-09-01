@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../data/settings/map_style_setting.dart';
+import '../../../domain/estimated_position.dart';
 import '../../../domain/flight.dart';
 import '../../../domain/flight_state.dart';
 import '../../../domain/trail_point.dart';
@@ -136,6 +137,10 @@ class _FlightHeroCellState extends State<FlightHeroCell> {
                         route: route,
                         trail: widget.trail,
                         state: state,
+                        estimatedPosition: estimatedPositionOf(
+                          flight,
+                          widget.now,
+                        ),
                         mapStyleSetting: widget.mapStyleSetting,
                         tileSources: widget.tileSources,
                       ),

@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/settings/map_style_setting.dart';
+import '../../../domain/estimated_position.dart';
 import '../../../domain/fix.dart';
 import '../../../domain/flight_route.dart';
 import '../../../domain/flight_state.dart';
@@ -15,7 +16,8 @@ import '../../theme/app_tokens.dart';
 import 'map_visuals.dart';
 
 /// The non-interactive map of the list hero: flown trail, planned leg, the
-/// route's airports and the aircraft at its latest position.
+/// route's airports and the aircraft at its latest position, or outlined at
+/// its estimate while the signal is gone.
 class MiniMap extends StatefulWidget {
   const MiniMap({
     required this.position,
@@ -25,12 +27,14 @@ class MiniMap extends StatefulWidget {
     required this.mapStyleSetting,
     required this.tileSources,
     super.key,
+    this.estimatedPosition,
   });
 
   static const _fitPadding = EdgeInsets.all(28);
   static const _markerSize = 40.0;
   static const _silhouetteScale = 0.5;
   static const _airportDotRadius = 4.0;
+  static const _lastHeardDotRadius = 2.5;
   static const _trailWidth = 2.2;
   static const _plannedLegWidth = 1.8;
   static const _plannedLegDash = [6.0, 5.0];
@@ -39,6 +43,7 @@ class MiniMap extends StatefulWidget {
   final FlightRoute? route;
   final List<TrailPoint> trail;
   final FlightState state;
+  final EstimatedPosition? estimatedPosition;
   final MapStyleSetting mapStyleSetting;
 
   final MapTileSources tileSources;
@@ -85,6 +90,10 @@ class _MiniMapState extends State<MiniMap> {
       widget.position.longitude,
     );
     final route = widget.route;
+    final estimate = widget.estimatedPosition;
+    final estimatedAircraft = estimate == null
+        ? null
+        : LatLng(estimate.latitude, estimate.longitude);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -122,9 +131,17 @@ class _MiniMapState extends State<MiniMap> {
                   trailWidth: MiniMap._trailWidth,
                   plannedLegWidth: MiniMap._plannedLegWidth,
                   plannedLegDash: MiniMap._plannedLegDash,
+                  estimatedAircraft: estimatedAircraft,
                 ),
               ),
-              MarkerLayer(markers: _markers(colors, route, aircraft)),
+              MarkerLayer(
+                markers: _markers(
+                  colors: colors,
+                  route: route,
+                  aircraft: aircraft,
+                  estimate: estimate,
+                ),
+              ),
             ],
           ),
         ),
@@ -153,25 +170,36 @@ class _MiniMapState extends State<MiniMap> {
     trail: map.trail,
   );
 
-  List<Marker> _markers(
-    MapColors colors,
-    FlightRoute? route,
-    LatLng aircraft,
-  ) => [
+  List<Marker> _markers({
+    required MapColors colors,
+    required FlightRoute? route,
+    required LatLng aircraft,
+    required EstimatedPosition? estimate,
+  }) => [
     if (route != null) ...[
       _airportMarker(colors, route.origin),
       _airportMarker(colors, route.destination),
     ],
+    if (estimate != null)
+      lastHeardMarker(
+        colors: colors,
+        point: aircraft,
+        radius: MiniMap._lastHeardDotRadius,
+      ),
     Marker(
-      point: aircraft,
+      point: estimate == null
+          ? aircraft
+          : LatLng(estimate.latitude, estimate.longitude),
       width: MiniMap._markerSize,
       height: MiniMap._markerSize,
       child: CustomPaint(
         painter: AircraftMarkerPainter(
           colors: colors,
           state: widget.state,
-          trackDegrees: widget.position.trackDegrees ?? 0,
+          trackDegrees:
+              estimate?.trackDegrees ?? widget.position.trackDegrees ?? 0,
           silhouetteScale: MiniMap._silhouetteScale,
+          isEstimated: estimate != null,
         ),
       ),
     ),

@@ -23,6 +23,7 @@ import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:material_ui/material_ui.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 
@@ -72,6 +73,7 @@ Flight _airborneFlight(
   Duration positionAge = Duration.zero,
   double latitude = 48.5,
   double longitude = -20,
+  double? speedKnots,
 }) => Flight(
   id: id,
   lookupKind: FlightLookupKind.flightNumber,
@@ -83,6 +85,7 @@ Flight _airborneFlight(
       latitude: latitude,
       longitude: longitude,
       timestamp: _now.subtract(positionAge),
+      groundSpeedKnots: speedKnots,
     ),
     hasBeenAirborne: true,
   ),
@@ -105,6 +108,7 @@ Future<FakeFlightRepository> pumpMapScreen(
   Brightness brightness = Brightness.light,
   bool withVectorTiles = false,
   MapStyleSetting? mapStyleSetting,
+  DateTime Function()? clock,
 }) async {
   final repository = FakeFlightRepository();
   addTearDown(repository.dispose);
@@ -126,7 +130,7 @@ Future<FakeFlightRepository> pumpMapScreen(
         selection: mapSelection,
         sourceSetting: setting,
         unitsSetting: await createTestUnitsSetting(),
-        clock: () => _now,
+        clock: clock ?? () => _now,
         mapStyleSetting: styleSetting,
         liveActivityService: createTestLiveActivityService(),
         tileSources: testTileSources(withVectorTiles: withVectorTiles),
@@ -243,6 +247,20 @@ List<Polyline<Object>> polylines(WidgetTester tester) {
   return [for (final layer in layers) ...layer.polylines];
 }
 
+/// Where the one aircraft marker sits, read off the layer rather than the
+/// screen, so it does not depend on the camera.
+LatLng aircraftMarkerPoint(WidgetTester tester) => tester
+    .widgetList<MarkerLayer>(find.byType(MarkerLayer))
+    .expand((layer) => layer.markers)
+    .singleWhere(
+      (marker) => switch (marker.child) {
+        GestureDetector(child: CustomPaint(painter: AircraftMarkerPainter())) =>
+          true,
+        _ => false,
+      },
+    )
+    .point;
+
 void main() {
   testWidgets('marks every flight that has a position', (tester) async {
     await pumpMapScreen(
@@ -314,6 +332,67 @@ void main() {
     await tester.pump(const Duration(milliseconds: 800));
 
     expect(aircraftMarkers(tester).single.rings, isNot(atRest));
+  });
+
+  group('estimated position', () {
+    Flight flightWithoutSignal({FlightRoute? route = _frankfurtToNewYork}) =>
+        _airborneFlight(
+          1,
+          route: route,
+          positionAge: const Duration(hours: 1),
+          speedKnots: 470,
+        );
+
+    testWidgets('outlines the estimate of a flight without signal', (
+      tester,
+    ) async {
+      await pumpMapScreen(tester, flights: [flightWithoutSignal()]);
+      await settleCamera(tester);
+
+      final marker = aircraftMarkers(tester).single;
+      expect(marker.isEstimated, isTrue);
+      expect(marker.rings, hasLength(1));
+      expect(find.byType(LastHeardDot), findsOneWidget);
+    });
+
+    testWidgets('keeps the filled marker without a route', (tester) async {
+      await pumpMapScreen(tester, flights: [flightWithoutSignal(route: null)]);
+
+      expect(aircraftMarkers(tester).single.isEstimated, isFalse);
+      expect(find.byType(LastHeardDot), findsNothing);
+    });
+
+    testWidgets('starts the planned leg at the estimate', (tester) async {
+      await pumpMapScreen(tester, flights: [flightWithoutSignal()]);
+
+      final lines = polylines(tester);
+      final stem = lines.singleWhere(
+        (line) =>
+            line.pattern == const StrokePattern.dotted(spacingFactor: 2.5),
+      );
+      final plannedLeg = lines.singleWhere(
+        (line) => line.pattern == StrokePattern.dashed(segments: const [7, 6]),
+      );
+      expect(plannedLeg.points.first, stem.points.last);
+      expect(plannedLeg.points.first, isNot(const LatLng(48.5, -20)));
+    });
+
+    testWidgets('moves the estimate with the minute clock', (tester) async {
+      var current = _now;
+      await pumpMapScreen(
+        tester,
+        flights: [flightWithoutSignal()],
+        clock: () => current,
+      );
+      final before = aircraftMarkerPoint(tester);
+
+      current = _now.add(const Duration(minutes: 1));
+      await tester.pump(const Duration(minutes: 1));
+
+      final after = aircraftMarkerPoint(tester);
+      expect(after, isNot(before));
+      expect(after.longitude, lessThan(before.longitude));
+    });
   });
 
   testWidgets('stays a bare map while no flight has a position', (

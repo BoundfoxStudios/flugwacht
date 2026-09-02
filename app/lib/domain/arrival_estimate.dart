@@ -3,7 +3,7 @@ import 'dart:math';
 import 'flight.dart';
 import 'unit_conversion.dart';
 
-const _earthRadiusKilometers = 6371.0;
+const earthRadiusKilometers = 6371.0;
 const _minimumGroundSpeedKnots = 50.0;
 
 class ArrivalEstimate {
@@ -49,14 +49,14 @@ double greatCircleDistanceKilometers(
   double endLatitude,
   double endLongitude,
 ) {
-  final latitudeDelta = _radians(endLatitude - startLatitude);
-  final longitudeDelta = _radians(endLongitude - startLongitude);
+  final latitudeDelta = radians(endLatitude - startLatitude);
+  final longitudeDelta = radians(endLongitude - startLongitude);
   final haversine =
       pow(sin(latitudeDelta / 2), 2) +
-      cos(_radians(startLatitude)) *
-          cos(_radians(endLatitude)) *
+      cos(radians(startLatitude)) *
+          cos(radians(endLatitude)) *
           pow(sin(longitudeDelta / 2), 2);
-  return 2 * _earthRadiusKilometers * asin(min(1, sqrt(haversine)));
+  return 2 * earthRadiusKilometers * asin(min(1, sqrt(haversine)));
 }
 
-double _radians(double degrees) => degrees * pi / 180;
+double radians(double degrees) => degrees * pi / 180;

@@ -136,8 +136,8 @@ Set<SourceId> trailSourceIds(List<TrailPoint> trail) => {
 bool comparesSources(List<TrailPoint> trail) =>
     trailSourceIds(trail).length > 1;
 
-/// The flown trail up to the aircraft and the dashed leg towards the
-/// destination.
+/// The flown trail up to the aircraft, dotted across a coverage gap, a dotted
+/// stem to the estimated position, and the dashed leg towards the destination.
 List<Polyline<Object>> flightPolylines({
   required MapColors colors,
   required FlightState state,
@@ -147,28 +147,28 @@ List<Polyline<Object>> flightPolylines({
   required double trailWidth,
   required double plannedLegWidth,
   required List<double> plannedLegDash,
+  LatLng? estimatedAircraft,
 }) => [
   if (trail.isNotEmpty)
-    if (comparesSources(trail))
-      ..._sourceSegments(
-        colors: colors,
-        trail: trail,
-        aircraft: aircraft,
-        width: trailWidth,
-      )
-    else
-      Polyline(
-        points: [
-          for (final point in trail) LatLng(point.latitude, point.longitude),
-          aircraft,
-        ],
-        color: colors.trail,
-        strokeWidth: trailWidth,
+    ..._trailPolylines(
+      colors: colors,
+      trail: trail,
+      aircraft: aircraft,
+      width: trailWidth,
+    ),
+  if (estimatedAircraft != null)
+    Polyline(
+      points: [aircraft, estimatedAircraft],
+      color: colors.trail,
+      strokeWidth: trailWidth,
+      pattern: const StrokePattern.dotted(
+        spacingFactor: _coverageGapDotSpacingFactor,
       ),
+    ),
   if (route != null)
     Polyline(
       points: [
-        aircraft,
+        estimatedAircraft ?? aircraft,
         LatLng(route.destination.latitude, route.destination.longitude),
       ],
       color: state == FlightState.noSignal
@@ -179,14 +179,82 @@ List<Polyline<Object>> flightPolylines({
     ),
 ];
 
-/// One line per run of points from the same source; neighbours share their
-/// boundary point so the trail stays gapless, and the aircraft extends the
-/// last run.
-List<Polyline<Object>> _sourceSegments({
+const _coverageGapDotSpacingFactor = 2.5;
+
+List<Polyline<Object>> _trailPolylines({
   required MapColors colors,
   required List<TrailPoint> trail,
   required LatLng aircraft,
   required double width,
+}) {
+  final runs = _coverageRuns(trail);
+  final perSource = comparesSources(trail);
+  final polylines = <Polyline<Object>>[];
+  for (final (index, run) in runs.indexed) {
+    if (index > 0) {
+      final previous = runs[index - 1].last;
+      polylines.add(
+        Polyline(
+          points: [
+            LatLng(previous.latitude, previous.longitude),
+            LatLng(run.first.latitude, run.first.longitude),
+          ],
+          color: colors.trail,
+          strokeWidth: width,
+          pattern: const StrokePattern.dotted(
+            spacingFactor: _coverageGapDotSpacingFactor,
+          ),
+        ),
+      );
+    }
+    final runAircraft = index == runs.length - 1 ? aircraft : null;
+    if (perSource) {
+      polylines.addAll(
+        _sourceSegments(
+          colors: colors,
+          trail: run,
+          aircraft: runAircraft,
+          width: width,
+        ),
+      );
+    } else {
+      polylines.add(
+        Polyline(
+          points: [
+            for (final point in run) LatLng(point.latitude, point.longitude),
+            ?runAircraft,
+          ],
+          color: colors.trail,
+          strokeWidth: width,
+        ),
+      );
+    }
+  }
+  return polylines;
+}
+
+List<List<TrailPoint>> _coverageRuns(List<TrailPoint> trail) {
+  final runs = [
+    [trail.first],
+  ];
+  for (final point in trail.skip(1)) {
+    if (point.timestamp.difference(runs.last.last.timestamp) >
+        maximumLivePositionAge) {
+      runs.add([]);
+    }
+    runs.last.add(point);
+  }
+  return runs;
+}
+
+/// One line per run of points from the same source; neighbours share their
+/// boundary point so the trail stays gapless, and the aircraft, when given,
+/// extends the last run.
+List<Polyline<Object>> _sourceSegments({
+  required MapColors colors,
+  required List<TrailPoint> trail,
+  required double width,
+  LatLng? aircraft,
 }) {
   final segments = <Polyline<Object>>[];
   var sourceId = trail.first.sourceId;
@@ -205,11 +273,10 @@ List<Polyline<Object>> _sourceSegments({
     }
     points.add(LatLng(point.latitude, point.longitude));
   }
-  points.add(aircraft);
   return [
     ...segments,
     Polyline(
-      points: points,
+      points: [...points, ?aircraft],
       color: colors.trailOf(sourceId),
       strokeWidth: width,
     ),
@@ -257,6 +324,30 @@ Marker airportMarker({
 const _airportMarkerWidth = 96.0;
 const _airportMarkerHeight = 24.0;
 const _airportLabelOffset = 8.0;
+
+Marker lastHeardMarker({
+  required MapColors colors,
+  required LatLng point,
+  required double radius,
+}) => Marker(
+  point: point,
+  width: radius * 2,
+  height: radius * 2,
+  child: LastHeardDot(color: colors.noSignalContour),
+);
+
+/// The last heard fix of a flight whose aircraft symbol has moved on to an
+/// estimate.
+class LastHeardDot extends StatelessWidget {
+  const LastHeardDot({required this.color, super.key});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
+}
 
 /// Inverts and hue-rotates the raster tiles so the light OSM style carries the
 /// dark theme until the reduced style of M11 replaces it.
@@ -381,10 +472,14 @@ class AircraftMarkerPainter extends CustomPainter {
     required this.silhouetteScale,
     this.rings = const [],
     this.contourWidth = 1.4,
+    this.isEstimated = false,
   });
 
   static const _viewBoxSize = 48.0;
   static const _ringDash = 4.0;
+
+  /// Without a fill the contour alone has to hold the shape together.
+  static const _estimatedContourWidth = 2.0;
 
   final MapColors colors;
   final FlightState state;
@@ -392,6 +487,7 @@ class AircraftMarkerPainter extends CustomPainter {
   final double silhouetteScale;
   final List<AircraftRing> rings;
   final double contourWidth;
+  final bool isEstimated;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -405,17 +501,22 @@ class AircraftMarkerPainter extends CustomPainter {
       ..translate(center.dx, center.dy)
       ..rotate(trackDegrees * pi / 180)
       ..scale(silhouetteScale)
-      ..translate(-_viewBoxSize / 2, -_viewBoxSize / 2)
-      ..drawPath(
+      ..translate(-_viewBoxSize / 2, -_viewBoxSize / 2);
+    if (!isEstimated) {
+      canvas.drawPath(
         aircraftSilhouette,
         Paint()..color = isNoSignal ? colors.noSignalFill : colors.aircraftFill,
-      )
+      );
+    }
+    canvas
       ..drawPath(
         aircraftSilhouette,
         Paint()
-          ..color = isNoSignal ? colors.noSignalContour : colors.aircraftContour
+          ..color = isEstimated || isNoSignal
+              ? colors.noSignalContour
+              : colors.aircraftContour
           ..style = PaintingStyle.stroke
-          ..strokeWidth = contourWidth,
+          ..strokeWidth = isEstimated ? _estimatedContourWidth : contourWidth,
       )
       ..restore();
   }
@@ -454,6 +555,7 @@ class AircraftMarkerPainter extends CustomPainter {
       oldDelegate.trackDegrees != trackDegrees ||
       oldDelegate.silhouetteScale != silhouetteScale ||
       oldDelegate.contourWidth != contourWidth ||
+      oldDelegate.isEstimated != isEstimated ||
       !listEquals(oldDelegate.rings, rings);
 }
 

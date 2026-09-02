@@ -42,6 +42,9 @@ class MapFlights {
 
   final trail = signal<List<TrailPoint>>(const []);
 
+  /// The list's minute clock, so markers and states move together.
+  ReadonlySignal<DateTime> get now => _flightList.now;
+
   var _knownIds = const <int>[];
   StreamSubscription<List<TrailPoint>>? _trailSubscription;
   late final EffectCleanup _stopReconcilingSelection;

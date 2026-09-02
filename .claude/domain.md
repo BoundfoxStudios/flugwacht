@@ -61,6 +61,16 @@ regions the trail breaks off, often for 1–2 hours, and comes back on its own;
 this hits all three sources alike. A gap is the regular "no signal" state and
 is never presented as an error UI.
 
+On both maps a gap is the stretch between two consecutive trail points more
+than 15 minutes apart, the same threshold that turns live into no signal,
+deliberately coupled so the trail breaks exactly where the badge said "no
+signal". It is drawn as a straight dotted connector in the trail's own color,
+neutral even in a source comparison, since nobody heard the aircraft there. An
+ongoing gap is not drawn as a gap: without an estimated position the last trail
+point and the marker are the same fix, and the marker's no-signal grey already
+says it (#328); with one, the dotted stem to the outline stands in for it (see
+Estimated Position).
+
 ## State Machine
 
 - planned → waiting → live ⇄ no signal → ended | missed. The state is derived
@@ -102,6 +112,33 @@ outlive the signal. A fix that repeats a moment the flight already stores
 therefore never replaces the stored one: readsb answers with bare coordinates
 once the fresh fields age out, and taking that would drop the ground speed the
 estimate is built on right before the aircraft disappears.
+
+## Estimated Position
+
+The arrival estimate read in space: from the last fix along the great circle
+to the destination, at the ground speed of that fix, so the point reaches the
+destination exactly at the estimated arrival, which is the moment the state
+flips to ended. It exists only while the flight has no signal, was seen
+airborne and has an arrival estimate – never live, never without a route,
+never on the ground or below the speed floor.
+
+Both maps draw it the same way: a hollow outline at the estimate (on the full
+map it carries the tap and the selection ring), a small dot at the last heard
+fix, a dotted stem between the two, and the planned leg starting from the
+outline. Nothing on the map says it is an estimate; the open sheet explains it
+and names the destination. The point moves on the list's minute clock and is
+no focus point: a point that moves every minute must not steer the camera, and
+the fit's padding covers the poleward bulge of the great circle between the
+fix and the destination, which are both focus points already.
+
+The estimate feeds nothing: it is never a trail point, never the stored
+position, and never an input to the arrival estimate, the flight state, poll
+planning, notifications or the Lock Screen and Android card.
+
+Rejected: dead reckoning along the transmitted track. After two hours it
+contradicts the arrival time on the same screen by hundreds of kilometers,
+needs a nullable track and a horizon of its own, and is not to be reintroduced
+(#329).
 
 ## Airborne Time
 

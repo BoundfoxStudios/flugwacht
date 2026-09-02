@@ -5,6 +5,7 @@ import 'package:flugwacht/domain/map_style.dart';
 import 'package:flugwacht/domain/source_id.dart';
 import 'package:flugwacht/domain/trail_point.dart';
 import 'package:flugwacht/l10n/app_localizations_en.g.dart';
+import 'package:flugwacht/ui/theme/app_tokens.dart';
 import 'package:flugwacht/ui/theme/reduced_map_theme.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -14,6 +15,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 
+import '../../../support/rendered_pixels.dart';
 import '../../../support/test_dependencies.dart';
 
 const _route = FlightRoute(
@@ -87,25 +89,32 @@ void main() {
   });
 
   group('trail rendering', () {
-    TrailPoint pointAt(double latitude, {required SourceId sourceId}) =>
-        TrailPoint(
-          timestamp: DateTime.utc(2026, 8, 12, 11),
-          latitude: latitude,
-          longitude: 2,
-          sourceId: sourceId,
-        );
+    TrailPoint pointAt(
+      double latitude, {
+      required SourceId sourceId,
+      int minute = 0,
+    }) => TrailPoint(
+      timestamp: DateTime.utc(2026, 8, 12, 11, minute),
+      latitude: latitude,
+      longitude: 2,
+      sourceId: sourceId,
+    );
 
-    List<Polyline<Object>> trailPolylines(List<TrailPoint> trail) =>
-        flightPolylines(
-          colors: MapColors.light,
-          state: FlightState.live,
-          route: null,
-          trail: trail,
-          aircraft: const LatLng(48.5, -20),
-          trailWidth: 2.5,
-          plannedLegWidth: 2,
-          plannedLegDash: const [7, 6],
-        );
+    List<Polyline<Object>> trailPolylines(
+      List<TrailPoint> trail, {
+      FlightRoute? route,
+      LatLng? estimatedAircraft,
+    }) => flightPolylines(
+      colors: MapColors.light,
+      state: FlightState.live,
+      route: route,
+      trail: trail,
+      aircraft: const LatLng(48.5, -20),
+      estimatedAircraft: estimatedAircraft,
+      trailWidth: 2.5,
+      plannedLegWidth: 2,
+      plannedLegDash: const [7, 6],
+    );
 
     test('draws one line up to the aircraft while one source delivers', () {
       final polylines = trailPolylines([
@@ -148,6 +157,187 @@ void main() {
       ]);
 
       expect(polylines.last.points.last, const LatLng(48.5, -20));
+    });
+
+    test('splits the trail at a gap longer than the live threshold', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.9, sourceId: SourceId.adsblol, minute: 5),
+        pointAt(48.7, sourceId: SourceId.adsblol, minute: 30),
+        pointAt(48.6, sourceId: SourceId.adsblol, minute: 35),
+      ]);
+
+      expect(polylines, hasLength(3));
+      expect(
+        polylines.map((polyline) => polyline.color),
+        everyElement(MapColors.light.trail),
+      );
+      expect(polylines[0].points, const [LatLng(49, 2), LatLng(48.9, 2)]);
+      expect(polylines[0].pattern, const StrokePattern.solid());
+      expect(polylines[1].points, const [LatLng(48.9, 2), LatLng(48.7, 2)]);
+      expect(
+        polylines[1].pattern,
+        const StrokePattern.dotted(spacingFactor: 2.5),
+      );
+      expect(polylines[2].points, const [
+        LatLng(48.7, 2),
+        LatLng(48.6, 2),
+        LatLng(48.5, -20),
+      ]);
+      expect(polylines[2].pattern, const StrokePattern.solid());
+    });
+
+    test('keeps a gap of exactly the threshold in one line', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(
+          48.8,
+          sourceId: SourceId.adsblol,
+          minute: maximumLivePositionAge.inMinutes,
+        ),
+      ]);
+
+      expect(polylines.single.points, const [
+        LatLng(49, 2),
+        LatLng(48.8, 2),
+        LatLng(48.5, -20),
+      ]);
+    });
+
+    test('keeps a gap connector neutral in a source comparison', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+        pointAt(48.9, sourceId: SourceId.adsblol, minute: 5),
+        pointAt(48.7, sourceId: SourceId.adsbfi, minute: 30),
+        pointAt(48.6, sourceId: SourceId.adsbfi, minute: 35),
+      ]);
+
+      expect(polylines.map((polyline) => polyline.color), [
+        MapColors.light.trailOf(SourceId.adsblol),
+        MapColors.light.trail,
+        MapColors.light.trailOf(SourceId.adsbfi),
+      ]);
+      expect(
+        polylines[1].pattern,
+        const StrokePattern.dotted(spacingFactor: 2.5),
+      );
+      expect(polylines[1].points, const [LatLng(48.9, 2), LatLng(48.7, 2)]);
+      expect(polylines.first.points, isNot(contains(const LatLng(48.5, -20))));
+      expect(polylines.last.points.last, const LatLng(48.5, -20));
+    });
+
+    test('starts the planned leg at the aircraft without an estimate', () {
+      final polylines = trailPolylines([
+        pointAt(49, sourceId: SourceId.adsblol),
+      ], route: _route);
+
+      expect(polylines, hasLength(2));
+      expect(polylines[0].points.last, const LatLng(48.5, -20));
+      expect(polylines[1].points, const [
+        LatLng(48.5, -20),
+        LatLng(40.639447, -73.779317),
+      ]);
+      expect(
+        polylines[1].pattern,
+        StrokePattern.dashed(segments: const [7, 6]),
+      );
+    });
+
+    test('dots a stem to the estimate and starts the planned leg there', () {
+      final polylines = trailPolylines(
+        [pointAt(49, sourceId: SourceId.adsblol)],
+        route: _route,
+        estimatedAircraft: const LatLng(47, -30),
+      );
+
+      expect(polylines, hasLength(3));
+      expect(polylines[0].points.last, const LatLng(48.5, -20));
+      expect(polylines[0].pattern, const StrokePattern.solid());
+      expect(polylines[1].points, const [LatLng(48.5, -20), LatLng(47, -30)]);
+      expect(polylines[1].color, MapColors.light.trail);
+      expect(
+        polylines[1].pattern,
+        const StrokePattern.dotted(spacingFactor: 2.5),
+      );
+      expect(polylines[2].points, const [
+        LatLng(47, -30),
+        LatLng(40.639447, -73.779317),
+      ]);
+      expect(
+        polylines[2].pattern,
+        StrokePattern.dashed(segments: const [7, 6]),
+      );
+    });
+  });
+
+  group('aircraft marker', () {
+    const markerKey = ValueKey('aircraft-marker');
+    const markerSize = Size(40, 40);
+    const markerCenter = Offset(20, 20);
+
+    Future<RenderedPixels> renderMarker(
+      WidgetTester tester, {
+      required bool isEstimated,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: RepaintBoundary(
+                key: markerKey,
+                child: SizedBox.fromSize(
+                  size: markerSize,
+                  child: ColoredBox(
+                    color: AppColors.white,
+                    child: CustomPaint(
+                      painter: AircraftMarkerPainter(
+                        colors: MapColors.light,
+                        state: FlightState.noSignal,
+                        trackDegrees: 0,
+                        silhouetteScale: 0.5,
+                        isEstimated: isEstimated,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      return renderedPixels(tester, markerKey);
+    }
+
+    testWidgets('fills the silhouette of a flight without signal', (
+      tester,
+    ) async {
+      final color = (await renderMarker(
+        tester,
+        isEstimated: false,
+      )).at(markerCenter);
+
+      expect(color.r, lessThan(0.9), reason: 'darker than the map ground');
+      expect(
+        (color.r - color.b).abs(),
+        lessThan(0.05),
+        reason: 'grey is neutral',
+      );
+    });
+
+    testWidgets('outlines an estimated aircraft', (tester) async {
+      final pixels = await renderMarker(tester, isEstimated: true);
+
+      expect(
+        pixels.at(markerCenter).r,
+        greaterThan(0.95),
+        reason: 'the map ground shows through the silhouette',
+      );
+      expect(
+        [for (var x = 15.0; x <= 25; x++) pixels.at(Offset(x, 20)).r],
+        anyElement(lessThan(0.8)),
+        reason: 'the contour crosses the row',
+      );
     });
   });
 

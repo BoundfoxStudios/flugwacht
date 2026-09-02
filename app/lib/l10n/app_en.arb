@@ -251,6 +251,18 @@
       }
     }
   },
+  "mapSheetNoSignalEstimateInfo": "Last signal {age}. The outline estimates where the aircraft would be by now at its last speed towards {destination}. Over oceans there are often no receivers for 1\u20132 hours \u2013 the trail will come back.",
+  "@mapSheetNoSignalEstimateInfo": {
+    "description": "Explains a coverage gap while the map shows an estimated position; the age comes from the signal age copy, the destination is the route's city or airport name.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
   "mapSheetWaitingInfo": "Searching for {identity}. Receivers are often missing for one to two hours, the trail starts as soon as one sees the aircraft.",
   "@mapSheetWaitingInfo": {
     "description": "Explains what a flight without a first signal is being searched for.",
@@ -506,7 +518,7 @@
   "settingsFaqTitle": "Frequently asked questions",
   "faqTitle": "Frequently asked questions",
   "faqOtherServicesQuestion": "Why does the data differ from FlightRadar24 and others?",
-  "faqOtherServicesAnswer": "Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht only shows what community receivers actually pick up: no schedule-based guesses. That is why there are gaps wherever nobody is listening.",
+  "faqOtherServicesAnswer": "Those services blend ADS-B with MLAT, satellite reception and airline schedule data. Flugwacht shows what community receivers actually pick up: no schedule-based guesses. When the signal drops, the app only carries the position forward at the last speed towards the destination and shows the aircraft as an outline. That is why there are gaps wherever nobody is listening.",
   "faqArrivalAccuracyQuestion": "Why is the arrival time sometimes inaccurate?",
   "faqArrivalAccuracyAnswer": "It is the remaining distance divided by the current ground speed. Holding patterns, approach routing, taxi time and the wind on the last leg are not in it. It sharpens the closer the aircraft gets, and a “~” marks an estimate built on an aged position.",
   "faqTrailStartQuestion": "Why does the trail only start when I add the flight?",
@@ -514,7 +526,7 @@
   "faqFlightNotFoundQuestion": "Why can I not find my flight?",
   "faqFlightNotFoundAnswer": "A flight only shows up once a receiver hears it: not before takeoff, and not in regions without coverage. Check the flight number the way the airline writes it (LH400, not DLH400), or search by registration or hex address. Trying another source is worth it, too.",
   "faqTrailGapsQuestion": "Why does the trail have gaps?",
-  "faqTrailGapsAnswer": "ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards.",
+  "faqTrailGapsAnswer": "ADS-B needs a ground receiver in range. Over oceans, deserts and polar routes there often is none for one to two hours. The trail pauses and picks up again afterwards, with the stretch in between dotted. With a known route, an outline meanwhile shows roughly where the aircraft would be at its last speed.",
   "faqAppClosedQuestion": "Why does the trail stop when I leave the app?",
   "faqAppClosedAnswer": "Flugwacht asks the source for new positions only while the app is open. Leave it and the trail stands still; come back and it grows again from where the aircraft is now, with a gap for the time in between. In return, nothing runs in the background.",
   "faqFlightsDisappearQuestion": "Why do flights disappear after landing?",

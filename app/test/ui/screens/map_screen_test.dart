@@ -18,6 +18,7 @@ import 'package:flugwacht/ui/screens/map_screen.dart';
 import 'package:flugwacht/ui/theme/app_theme.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_hero_cell.dart';
 import 'package:flugwacht/ui/widgets/flight/flight_sheet.dart';
+import 'package:flugwacht/ui/widgets/flight/state_timeline.dart';
 import 'package:flugwacht/ui/widgets/map/map_button.dart';
 import 'package:flugwacht/ui/widgets/map/map_visuals.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -656,6 +657,21 @@ void main() {
       await tester.pump();
 
       expect(find.text('TRAIL BY SOURCE'), findsNothing);
+    });
+
+    testWidgets('opens the sheet on the first swipe while the legend shows', (
+      tester,
+    ) async {
+      await pumpMapScreen(
+        tester,
+        flights: [_airborneFlight(1)],
+        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+      );
+
+      await tester.drag(find.byType(FlightSheet), const Offset(0, -160));
+      await tester.pump();
+
+      expect(find.byType(StateTimeline), findsOneWidget);
     });
   });
 

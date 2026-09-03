@@ -75,6 +75,7 @@ class MapScreen extends StatefulWidget {
   static const _plannedLegDash = [7.0, 6.0];
   static const _buttonTopInset = 7.0;
   static const _buttonRightInset = 14.0;
+  static const _sheetKey = ValueKey('sheet');
 
   final FlightRepository flightRepository;
   final MapSelection selection;
@@ -268,6 +269,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
                 ),
               Positioned(
+                // Keyed so the legend joining or leaving the stack does not
+                // recreate the sheet, which would reset it to closed (#336).
+                key: MapScreen._sheetKey,
                 left: 0,
                 right: 0,
                 bottom: 0,

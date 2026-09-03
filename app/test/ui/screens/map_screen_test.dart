@@ -417,6 +417,60 @@ void main() {
     expect(sheet.entries[sheet.selectedIndex].flight.id, 1);
   });
 
+  testWidgets('closes the sheet once its flight left the map', (tester) async {
+    final attribution = find.text(
+      '© OpenStreetMap · © OpenMapTiles · Data: adsb.fi',
+    );
+    final repository = await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+    );
+    await tester.drag(find.byType(FlightSheet), const Offset(0, -160));
+    await tester.pump();
+    expect(attribution, findsNothing);
+
+    repository.emit([]);
+    await tester.pump();
+
+    expect(attribution, findsOneWidget);
+
+    repository.emit([_airborneFlight(1)]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byType(StateTimeline), findsNothing);
+    expect(attribution, findsOneWidget);
+  });
+
+  testWidgets('keeps the sheet closed when a pull ends after its flight left', (
+    tester,
+  ) async {
+    final attribution = find.text(
+      '© OpenStreetMap · © OpenMapTiles · Data: adsb.fi',
+    );
+    final repository = await pumpMapScreen(
+      tester,
+      flights: [_airborneFlight(1)],
+    );
+    final pull = await tester.startGesture(
+      tester.getCenter(find.byType(FlightSheet)),
+    );
+    await pull.moveBy(const Offset(0, -40));
+    await pull.moveBy(const Offset(0, -120));
+    repository.emit([]);
+    await tester.idle();
+    await pull.up();
+    await tester.pump();
+
+    expect(attribution, findsOneWidget);
+
+    repository.emit([_airborneFlight(1)]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byType(StateTimeline), findsNothing);
+  });
+
   testWidgets('selects the flight whose marker was tapped', (tester) async {
     final repository = await pumpMapScreen(
       tester,
@@ -659,20 +713,30 @@ void main() {
       expect(find.text('TRAIL BY SOURCE'), findsNothing);
     });
 
-    testWidgets('opens the sheet on the first swipe while the legend shows', (
-      tester,
-    ) async {
-      await pumpMapScreen(
-        tester,
-        flights: [_airborneFlight(1)],
-        trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
-      );
+    testWidgets(
+      'snaps the sheet open on the first swipe while the legend shows',
+      (tester) async {
+        await pumpMapScreen(
+          tester,
+          flights: [_airborneFlight(1)],
+          trail: trailFrom([SourceId.adsblol, SourceId.adsbfi]),
+        );
+        final peekHeight = tester.getSize(find.byType(FlightSheet)).height;
 
-      await tester.drag(find.byType(FlightSheet), const Offset(0, -160));
-      await tester.pump();
+        await tester.drag(find.byType(FlightSheet), const Offset(0, -160));
+        await tester.pump();
 
-      expect(find.byType(StateTimeline), findsOneWidget);
-    });
+        expect(find.byType(StateTimeline), findsOneWidget);
+        expect(tester.getSize(find.byType(FlightSheet)).height, peekHeight);
+
+        await tester.pump(const Duration(milliseconds: 200));
+
+        expect(
+          tester.getSize(find.byType(FlightSheet)).height,
+          greaterThan(peekHeight),
+        );
+      },
+    );
   });
 
   testWidgets('attributes the source it was switched to', (tester) async {

@@ -110,7 +110,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   );
   late final EffectCleanup _stopFramingSelection;
   late final EffectCleanup _stopPinging;
-  var _isSheetOpen = false;
+  late final EffectCleanup _stopClosingSheet;
+  final _isSheetOpen = signal(false);
   LatLng? _cameraStartCenter;
   LatLng? _cameraTargetCenter;
   double _cameraStartZoom = MapScreen._defaultZoom;
@@ -134,15 +135,22 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         _pingController.stop();
       }
     });
+    _stopClosingSheet = effect(() {
+      if (_mapFlights.selectedId.value == null && _isSheetOpen.value) {
+        _isSheetOpen.value = false;
+      }
+    });
   }
 
   @override
   void dispose() {
     _stopFramingSelection();
     _stopPinging();
+    _stopClosingSheet();
     _cameraController.dispose();
     _pingController.dispose();
     _mapController.dispose();
+    _isSheetOpen.dispose();
     _mapFlights.dispose();
     super.dispose();
   }
@@ -157,6 +165,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           final selected = _mapFlights.selected.value;
           final trail = _mapFlights.trail.value;
           final now = _mapFlights.now.value;
+          final isSheetOpen = _isSheetOpen.value;
           final route = selected?.flight.route;
           final position = selected?.flight.tracking.latestPosition;
           final estimate = selected == null
@@ -255,7 +264,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              if (showsSourceComparison && !_isSheetOpen)
+              if (showsSourceComparison && !isSheetOpen)
                 Positioned(
                   left: AppSpacing.cardPadding,
                   top: AppSpacing.cardPadding,
@@ -270,7 +279,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 ),
               Positioned(
                 // Keyed so the legend joining or leaving the stack does not
-                // recreate the sheet, which would reset it to closed (#336).
+                // recreate the sheet and skip its snap animation (#336).
                 key: MapScreen._sheetKey,
                 left: 0,
                 right: 0,
@@ -279,7 +288,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (!_isSheetOpen)
+                    if (!isSheetOpen)
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
@@ -310,8 +319,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                 isArmed: isArmed,
                               ),
                             ),
-                        onOpenChanged: (isOpen) =>
-                            setState(() => _isSheetOpen = isOpen),
+                        isOpen: isSheetOpen,
+                        onOpenChanged: (isOpen) => _isSheetOpen.value = isOpen,
                         clock: widget.clock,
                       ),
                   ],

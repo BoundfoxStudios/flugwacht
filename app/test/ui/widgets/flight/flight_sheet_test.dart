@@ -121,6 +121,7 @@ Future<List<int>> pumpFlightSheet(
   final setting = sourceSetting ?? await createTestSourceSetting();
   final units = unitsSetting ?? await createTestUnitsSetting();
   final selections = <int>[];
+  var isOpen = false;
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -133,18 +134,22 @@ Future<List<int>> pumpFlightSheet(
       home: Scaffold(
         body: Align(
           alignment: Alignment.bottomCenter,
-          child: FlightSheet(
-            entries: entries ?? [entry ?? _entry()],
-            selectedIndex: selectedIndex,
-            onSelected: selections.add,
-            sourceSetting: setting,
-            unitsSetting: units,
-            mapStyle: MapStyle.reduced,
-            liveActivityService:
-                liveActivityService ?? createTestLiveActivityService(),
-            onLiveActivityArmed:
-                onLiveActivityArmed ?? (flight, {required isArmed}) {},
-            clock: clock ?? () => _now,
+          child: StatefulBuilder(
+            builder: (context, setState) => FlightSheet(
+              entries: entries ?? [entry ?? _entry()],
+              selectedIndex: selectedIndex,
+              onSelected: selections.add,
+              sourceSetting: setting,
+              unitsSetting: units,
+              mapStyle: MapStyle.reduced,
+              liveActivityService:
+                  liveActivityService ?? createTestLiveActivityService(),
+              onLiveActivityArmed:
+                  onLiveActivityArmed ?? (flight, {required isArmed}) {},
+              isOpen: isOpen,
+              onOpenChanged: (value) => setState(() => isOpen = value),
+              clock: clock ?? () => _now,
+            ),
           ),
         ),
       ),

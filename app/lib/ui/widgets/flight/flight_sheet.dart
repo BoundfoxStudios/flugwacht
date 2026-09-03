@@ -39,8 +39,9 @@ class FlightSheet extends StatefulWidget {
     required this.mapStyle,
     required this.liveActivityService,
     required this.onLiveActivityArmed,
+    required this.isOpen,
+    required this.onOpenChanged,
     super.key,
-    this.onOpenChanged,
     this.clock = DateTime.now,
   });
 
@@ -82,8 +83,12 @@ class FlightSheet extends StatefulWidget {
   /// credit while the sheet covers the map's own attribution.
   final MapStyle mapStyle;
 
-  /// Lets the map hide what the open sheet would cover.
-  final ValueChanged<bool>? onOpenChanged;
+  /// Whether the sheet shows its full content. The map owns it, so a lost
+  /// selection can close the sheet.
+  final bool isOpen;
+
+  /// Reports the position a pull or a tap on the grabber asks for.
+  final ValueChanged<bool> onOpenChanged;
 
   /// Reads the current time; injectable so the signal age stays testable.
   final DateTime Function() clock;
@@ -94,7 +99,6 @@ class FlightSheet extends StatefulWidget {
 
 class _FlightSheetState extends State<FlightSheet> {
   final _pages = ScrollController();
-  var _isOpen = false;
   var _isSwiping = false;
   var _dragTravel = 0.0;
   late var _now = widget.clock();
@@ -133,7 +137,7 @@ class _FlightSheetState extends State<FlightSheet> {
       Brightness.light => _SheetColors.light,
       Brightness.dark => _SheetColors.dark,
     };
-    final gap = _isOpen ? FlightSheet._openGap : FlightSheet._peekGap;
+    final gap = widget.isOpen ? FlightSheet._openGap : FlightSheet._peekGap;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -157,7 +161,7 @@ class _FlightSheetState extends State<FlightSheet> {
               AppSpacing.screenPaddingLarge,
               AppSpacing.grid * 2,
               AppSpacing.screenPaddingLarge,
-              (_isOpen ? AppSpacing.cardPadding : AppSpacing.grid * 2.5) +
+              (widget.isOpen ? AppSpacing.cardPadding : AppSpacing.grid * 2.5) +
                   MediaQuery.paddingOf(context).bottom,
             ),
             child: Column(
@@ -190,7 +194,7 @@ class _FlightSheetState extends State<FlightSheet> {
                                   child: _FlightPage(
                                     entry: entry,
                                     colors: colors,
-                                    isOpen: _isOpen,
+                                    isOpen: widget.isOpen,
                                     gap: gap,
                                     now: _now,
                                     sourceSetting: widget.sourceSetting,
@@ -261,7 +265,7 @@ class _FlightSheetState extends State<FlightSheet> {
         }
       });
 
-  void _toggle() => _setOpen(!_isOpen);
+  void _toggle() => _setOpen(!widget.isOpen);
 
   void _snap() {
     if (_dragTravel.abs() < FlightSheet._snapThreshold) {
@@ -271,11 +275,9 @@ class _FlightSheetState extends State<FlightSheet> {
   }
 
   void _setOpen(bool isOpen) {
-    if (isOpen == _isOpen) {
-      return;
+    if (isOpen != widget.isOpen) {
+      widget.onOpenChanged(isOpen);
     }
-    setState(() => _isOpen = isOpen);
-    widget.onOpenChanged?.call(isOpen);
   }
 }
 

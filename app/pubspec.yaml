@@ -62,12 +62,7 @@ dependencies:
   url_launcher: ^6.3.2
   review_etiquette: ^1.0.0
   csv: ^8.0.0
-  # Upstream main until a release carries the ActivityKit relevance score and
-  # updates the card through ActivityContent (#238); 2.5.1 has neither.
-  live_activities:
-    git:
-      url: https://github.com/istornz/flutter_live_activities.git
-      ref: b17737cd1916c2f52c7ab49cd3660571b7a961fe
+  live_activities: ^2.6.0
 
   material_ui: ^1.0.1
   cupertino_ui: ^1.0.0

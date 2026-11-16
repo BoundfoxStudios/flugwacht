@@ -184,13 +184,11 @@ picks which, and the copy is chosen the same way (see the Copy section below).
 
 The Lock Screen card lives in its own widget extension target
 (`FlugwachtLiveActivityExtension`, `app/ios/FlugwachtLiveActivity/`), driven
-from Dart through the `live_activities` plugin. The app pins upstream's
-(`istornz/flutter_live_activities`) `main` by commit in `app/pubspec.yaml`
-instead of taking the package from pub.dev: the released 2.5.1 never passes
-ActivityKit's relevance score and updates a card through the deprecated call
-that carries no `ActivityContent`, so neither the score nor the stale date can
-be renewed. `main` carries both, and until a release ships them the dependency
-stays a git one. What else is not obvious from the code:
+from Dart through the `live_activities` plugin, which must stay at 2.6.0 or
+later: 2.5.1 never passes ActivityKit's relevance score and updates a card
+through the deprecated call that carries no `ActivityContent`, so neither the
+score nor the stale date could be renewed. What else is not obvious from the
+code:
 
 - The extension's folder is a synchronized group: files dropped into it join
   the target automatically, resources included. That is why Bebas Neue and

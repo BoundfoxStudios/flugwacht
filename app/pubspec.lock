@@ -577,12 +577,11 @@ packages:
   live_activities:
     dependency: "direct main"
     description:
-      path: "."
-      ref: b17737cd1916c2f52c7ab49cd3660571b7a961fe
-      resolved-ref: b17737cd1916c2f52c7ab49cd3660571b7a961fe
-      url: "https://github.com/istornz/flutter_live_activities.git"
-    source: git
-    version: "2.5.1"
+      name: live_activities
+      sha256: c9027276d87d0c04a24174495a7f235708e5b189ef5bd86a42004d85d3c5fb28
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.0"
   logging:
     dependency: transitive
     description:
@@ -747,18 +746,18 @@ packages:
     dependency: transitive
     description:
       name: permission_handler
-      sha256: e7317eb2eb611d1bf0386b6b974be9c50449f975f19a90a7b8ea013550302b30
+      sha256: e6bcecadfe40df6b888141f23cbaf6ba6c3da49fb33f6ff887d060dd48544fbd
       url: "https://pub.dev"
     source: hosted
-    version: "13.0.1"
+    version: "13.0.2"
   permission_handler_android:
     dependency: transitive
     description:
       name: permission_handler_android
-      sha256: d7676c6fcf2f0b92537ec41476a6ead45a00b0d8bbb852395a6f9f33f49d6242
+      sha256: baf93fbf80008c240b2cf5e6d62e9495ea7727fe327444d135c44bfff9af6b6e
       url: "https://pub.dev"
     source: hosted
-    version: "14.0.0"
+    version: "14.1.1"
   permission_handler_apple:
     dependency: transitive
     description:

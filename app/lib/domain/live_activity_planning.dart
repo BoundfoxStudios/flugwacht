@@ -123,9 +123,8 @@ LiveActivityReminderSchedule planLiveActivityReminder({
 /// earlier than the flight day – a night flight's lead time reaches into the
 /// day before, where no activity can exist yet.
 DateTime _reminderMoment(Flight flight) {
-  final windowStart = FlightDayWindow.forDepartureDate(
-    flight.departureDate,
-  ).start;
+  final windowStart = FlightDayWindow.forDepartureDate(flight.departureDate)
+      .start;
   final departure = departureInstantOf(flight);
   if (departure == null) {
     return windowStart;

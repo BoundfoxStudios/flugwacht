@@ -23,19 +23,16 @@ void main() {
     return source;
   }
 
-  test(
-    'takes the tile template of the current planet run from the TileJSON',
-    () async {
-      final source = sourceReturning(jsonEncode(tileJson));
+  test('takes the tile template of the current planet run from the TileJSON', () async {
+    final source = sourceReturning(jsonEncode(tileJson));
 
-      await source.load();
+    await source.load();
 
-      expect(
-        source.endpoint.value?.urlTemplate,
-        'https://tiles.openfreemap.org/planet/20260802_080001_pt/{z}/{x}/{y}.pbf',
-      );
-    },
-  );
+    expect(
+      source.endpoint.value?.urlTemplate,
+      'https://tiles.openfreemap.org/planet/20260802_080001_pt/{z}/{x}/{y}.pbf',
+    );
+  });
 
   test(
     'takes the zoom range the tiles are served for from the TileJSON',

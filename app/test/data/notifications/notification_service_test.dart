@@ -10,9 +10,8 @@ void main() {
   late String manifest;
 
   setUpAll(() {
-    manifest = File(
-      'android/app/src/main/AndroidManifest.xml',
-    ).readAsStringSync();
+    manifest = File('android/app/src/main/AndroidManifest.xml')
+        .readAsStringSync();
   });
 
   /// The arrival reminder is scheduled inexactly on purpose (#146): an alarm to
@@ -26,34 +25,30 @@ void main() {
   /// flutter_local_notifications carries these receivers but declares neither
   /// in its own manifest. Losing them costs no build error – the scheduled
   /// notification just never shows.
-  test(
-    'declares the receivers a scheduled notification is delivered through',
-    () {
-      expect(
-        manifest,
-        contains(
-          'com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver',
-        ),
-      );
-      expect(
-        manifest,
-        contains(
-          'com.dexterous.flutterlocalnotifications.'
-          'ScheduledNotificationBootReceiver',
-        ),
-      );
-      expect(manifest, contains('android.permission.RECEIVE_BOOT_COMPLETED'));
-      expect(manifest, contains('android.intent.action.BOOT_COMPLETED'));
-    },
-  );
+  test('declares the receivers a scheduled notification is delivered through', () {
+    expect(
+      manifest,
+      contains(
+        'com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver',
+      ),
+    );
+    expect(
+      manifest,
+      contains(
+        'com.dexterous.flutterlocalnotifications.'
+        'ScheduledNotificationBootReceiver',
+      ),
+    );
+    expect(manifest, contains('android.permission.RECEIVE_BOOT_COMPLETED'));
+    expect(manifest, contains('android.intent.action.BOOT_COMPLETED'));
+  });
 
   /// The release build shrinks resources, and nothing but a Dart string names
   /// the status bar icon. Once the shrinker drops it, the plugin's icon
   /// validation fails and the app stops starting – in release only.
   test('keeps the status bar icon from the resource shrinker', () {
-    final keepRules = File(
-      'android/app/src/main/res/raw/keep.xml',
-    ).readAsStringSync();
+    final keepRules = File('android/app/src/main/res/raw/keep.xml')
+        .readAsStringSync();
 
     expect(
       keepRules,

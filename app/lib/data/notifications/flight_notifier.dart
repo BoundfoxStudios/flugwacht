@@ -9,8 +9,10 @@ typedef FlightNotificationText = ({String title, String body});
 
 /// Words a notification in the app's language; built where the localizations
 /// live, because nothing down here knows them.
-typedef FlightNotificationCopy =
-    FlightNotificationText Function(FlightNotification kind, Flight flight);
+typedef FlightNotificationCopy = FlightNotificationText Function(
+  FlightNotification kind,
+  Flight flight,
+);
 
 /// Turns what the polling engine learns about a flight into notifications:
 /// decides with [planNotifications], delivers through the service and writes

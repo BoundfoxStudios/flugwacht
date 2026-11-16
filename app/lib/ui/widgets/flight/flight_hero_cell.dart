@@ -262,9 +262,8 @@ class _ArrivalRow extends StatelessWidget {
       ),
       Expanded(
         child: Text(
-          AppLocalizations.of(
-            context,
-          ).flightArrivalSummary(arrival.label, arrival.detail),
+          AppLocalizations.of(context)
+              .flightArrivalSummary(arrival.label, arrival.detail),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.accessory.copyWith(color: colors.arrivalDetail),

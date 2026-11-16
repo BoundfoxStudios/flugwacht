@@ -247,17 +247,15 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     children: [
                       MapButton(
                         icon: AppIcons.layerGroup,
-                        semanticsLabel: AppLocalizations.of(
-                          context,
-                        ).mapStyleToggleLabel,
+                        semanticsLabel: AppLocalizations.of(context)
+                            .mapStyleToggleLabel,
                         onPressed: () =>
                             unawaited(widget.mapStyleSetting.toggle()),
                       ),
                       MapButton(
                         icon: AppIcons.locationArrow,
-                        semanticsLabel: AppLocalizations.of(
-                          context,
-                        ).mapRecenterLabel,
+                        semanticsLabel: AppLocalizations.of(context)
+                            .mapRecenterLabel,
                         onPressed: _frameSelection,
                       ),
                     ],

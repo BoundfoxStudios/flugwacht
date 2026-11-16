@@ -30,9 +30,8 @@ class MapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (background, border, foreground, shadows) = switch (Theme.of(
-      context,
-    ).brightness) {
+    final (background, border, foreground, shadows) = switch (Theme.of(context)
+        .brightness) {
       Brightness.light => (
         AppColors.white,
         AppColors.neutral200,

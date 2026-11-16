@@ -121,7 +121,10 @@ that line.
   the only way to tell whether Plesk has pulled the newest build yet.
 - The nightly linkinator run goes against the live site rather than the build
   output, so a file the hosting does not serve fails too. The root
-  `linkinator.config.json` keeps a local run identical to CI.
+  `linkinator.config.json` keeps a local run identical to CI. It skips adsb.lol,
+  whose map host has answered automated requests from CI and sandbox networks
+  with 403 since November 2026; the link itself works in a browser, and the API
+  the app queries is not affected.
 
 ## Localization
 

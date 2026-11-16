@@ -2,5 +2,6 @@
   "recurse": true,
   "retry": true,
   "retryErrors": true,
-  "timeout": 20000
+  "timeout": 20000,
+  "skip": ["^https://adsb\\.lol(/|$)"]
 }

@@ -3066,98 +3066,96 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ]);
 }
 
-typedef $$FlightsTableCreateCompanionBuilder =
-    FlightsCompanion Function({
-      Value<int> id,
-      required FlightLookupKind lookupKind,
-      required String lookupValue,
-      required String departureDate,
-      Value<int?> departureMinutesSinceMidnight,
-      required DepartureTimeInterpretation departureTimeInterpretation,
-      Value<String?> note,
-      Value<String?> hexAddress,
-      Value<String?> expectedCallsign,
-      Value<String?> originIcaoCode,
-      Value<String?> originIataCode,
-      Value<String?> originName,
-      Value<String?> originLocation,
-      Value<double?> originLatitude,
-      Value<double?> originLongitude,
-      Value<String?> destinationIcaoCode,
-      Value<String?> destinationIataCode,
-      Value<String?> destinationName,
-      Value<String?> destinationLocation,
-      Value<double?> destinationLatitude,
-      Value<double?> destinationLongitude,
-      Value<bool> hasBeenAirborne,
-      Value<bool?> lastKnownOnGround,
-      Value<int?> firstAirborneAt,
-      Value<double?> latestLatitude,
-      Value<double?> latestLongitude,
-      Value<int?> latestTimestamp,
-      Value<double?> latestBarometricAltitudeFeet,
-      Value<bool?> latestOnGround,
-      Value<double?> latestGeometricAltitudeFeet,
-      Value<double?> latestTrackDegrees,
-      Value<double?> latestTrueHeadingDegrees,
-      Value<double?> latestGroundSpeedKnots,
-      Value<double?> latestIndicatedAirspeedKnots,
-      Value<double?> latestMach,
-      Value<double?> latestVerticalRateFeetPerMinute,
-      Value<int?> departedNotifiedAt,
-      Value<int?> arrivingSoonNotifiedAt,
-      Value<int?> landedNotifiedAt,
-      Value<int?> arrivingSoonScheduledFor,
-      Value<bool> liveActivityArmed,
-      Value<String?> liveActivityId,
-      Value<int?> liveActivityReminderScheduledFor,
-    });
-typedef $$FlightsTableUpdateCompanionBuilder =
-    FlightsCompanion Function({
-      Value<int> id,
-      Value<FlightLookupKind> lookupKind,
-      Value<String> lookupValue,
-      Value<String> departureDate,
-      Value<int?> departureMinutesSinceMidnight,
-      Value<DepartureTimeInterpretation> departureTimeInterpretation,
-      Value<String?> note,
-      Value<String?> hexAddress,
-      Value<String?> expectedCallsign,
-      Value<String?> originIcaoCode,
-      Value<String?> originIataCode,
-      Value<String?> originName,
-      Value<String?> originLocation,
-      Value<double?> originLatitude,
-      Value<double?> originLongitude,
-      Value<String?> destinationIcaoCode,
-      Value<String?> destinationIataCode,
-      Value<String?> destinationName,
-      Value<String?> destinationLocation,
-      Value<double?> destinationLatitude,
-      Value<double?> destinationLongitude,
-      Value<bool> hasBeenAirborne,
-      Value<bool?> lastKnownOnGround,
-      Value<int?> firstAirborneAt,
-      Value<double?> latestLatitude,
-      Value<double?> latestLongitude,
-      Value<int?> latestTimestamp,
-      Value<double?> latestBarometricAltitudeFeet,
-      Value<bool?> latestOnGround,
-      Value<double?> latestGeometricAltitudeFeet,
-      Value<double?> latestTrackDegrees,
-      Value<double?> latestTrueHeadingDegrees,
-      Value<double?> latestGroundSpeedKnots,
-      Value<double?> latestIndicatedAirspeedKnots,
-      Value<double?> latestMach,
-      Value<double?> latestVerticalRateFeetPerMinute,
-      Value<int?> departedNotifiedAt,
-      Value<int?> arrivingSoonNotifiedAt,
-      Value<int?> landedNotifiedAt,
-      Value<int?> arrivingSoonScheduledFor,
-      Value<bool> liveActivityArmed,
-      Value<String?> liveActivityId,
-      Value<int?> liveActivityReminderScheduledFor,
-    });
+typedef $$FlightsTableCreateCompanionBuilder = FlightsCompanion Function({
+  Value<int> id,
+  required FlightLookupKind lookupKind,
+  required String lookupValue,
+  required String departureDate,
+  Value<int?> departureMinutesSinceMidnight,
+  required DepartureTimeInterpretation departureTimeInterpretation,
+  Value<String?> note,
+  Value<String?> hexAddress,
+  Value<String?> expectedCallsign,
+  Value<String?> originIcaoCode,
+  Value<String?> originIataCode,
+  Value<String?> originName,
+  Value<String?> originLocation,
+  Value<double?> originLatitude,
+  Value<double?> originLongitude,
+  Value<String?> destinationIcaoCode,
+  Value<String?> destinationIataCode,
+  Value<String?> destinationName,
+  Value<String?> destinationLocation,
+  Value<double?> destinationLatitude,
+  Value<double?> destinationLongitude,
+  Value<bool> hasBeenAirborne,
+  Value<bool?> lastKnownOnGround,
+  Value<int?> firstAirborneAt,
+  Value<double?> latestLatitude,
+  Value<double?> latestLongitude,
+  Value<int?> latestTimestamp,
+  Value<double?> latestBarometricAltitudeFeet,
+  Value<bool?> latestOnGround,
+  Value<double?> latestGeometricAltitudeFeet,
+  Value<double?> latestTrackDegrees,
+  Value<double?> latestTrueHeadingDegrees,
+  Value<double?> latestGroundSpeedKnots,
+  Value<double?> latestIndicatedAirspeedKnots,
+  Value<double?> latestMach,
+  Value<double?> latestVerticalRateFeetPerMinute,
+  Value<int?> departedNotifiedAt,
+  Value<int?> arrivingSoonNotifiedAt,
+  Value<int?> landedNotifiedAt,
+  Value<int?> arrivingSoonScheduledFor,
+  Value<bool> liveActivityArmed,
+  Value<String?> liveActivityId,
+  Value<int?> liveActivityReminderScheduledFor,
+});
+typedef $$FlightsTableUpdateCompanionBuilder = FlightsCompanion Function({
+  Value<int> id,
+  Value<FlightLookupKind> lookupKind,
+  Value<String> lookupValue,
+  Value<String> departureDate,
+  Value<int?> departureMinutesSinceMidnight,
+  Value<DepartureTimeInterpretation> departureTimeInterpretation,
+  Value<String?> note,
+  Value<String?> hexAddress,
+  Value<String?> expectedCallsign,
+  Value<String?> originIcaoCode,
+  Value<String?> originIataCode,
+  Value<String?> originName,
+  Value<String?> originLocation,
+  Value<double?> originLatitude,
+  Value<double?> originLongitude,
+  Value<String?> destinationIcaoCode,
+  Value<String?> destinationIataCode,
+  Value<String?> destinationName,
+  Value<String?> destinationLocation,
+  Value<double?> destinationLatitude,
+  Value<double?> destinationLongitude,
+  Value<bool> hasBeenAirborne,
+  Value<bool?> lastKnownOnGround,
+  Value<int?> firstAirborneAt,
+  Value<double?> latestLatitude,
+  Value<double?> latestLongitude,
+  Value<int?> latestTimestamp,
+  Value<double?> latestBarometricAltitudeFeet,
+  Value<bool?> latestOnGround,
+  Value<double?> latestGeometricAltitudeFeet,
+  Value<double?> latestTrackDegrees,
+  Value<double?> latestTrueHeadingDegrees,
+  Value<double?> latestGroundSpeedKnots,
+  Value<double?> latestIndicatedAirspeedKnots,
+  Value<double?> latestMach,
+  Value<double?> latestVerticalRateFeetPerMinute,
+  Value<int?> departedNotifiedAt,
+  Value<int?> arrivingSoonNotifiedAt,
+  Value<int?> landedNotifiedAt,
+  Value<int?> arrivingSoonScheduledFor,
+  Value<bool> liveActivityArmed,
+  Value<String?> liveActivityId,
+  Value<int?> liveActivityReminderScheduledFor,
+});
 
 final class $$FlightsTableReferences
     extends BaseReferences<_$AppDatabase, $FlightsTable, FlightRow> {
@@ -4147,7 +4145,7 @@ class $$FlightsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$FlightsTable, FlightRow>(table),
                   $$FlightsTableReferences(db, table, e),
                 ),
               )
@@ -4160,10 +4158,11 @@ class $$FlightsTableTableManager
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (trailPointsRefs)
-                    await $_getPrefetchedData<
+                    await $_getPrefetchedDataByColumns<
                       FlightRow,
                       $FlightsTable,
-                      TrailPointRow
+                      TrailPointRow,
+                      $TrailPointsTable
                     >(
                       currentTable: table,
                       referencedTable: $$FlightsTableReferences
@@ -4173,8 +4172,8 @@ class $$FlightsTableTableManager
                         table,
                         p0,
                       ).trailPointsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.flightId == item.id),
+                      currentColumn: 'id',
+                      referencedColumn: 'flight_id',
                       typedResults: items,
                     ),
                 ];
@@ -4453,7 +4452,7 @@ class $$TrailPointsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$TrailPointsTable, TrailPointRow>(table),
                   $$TrailPointsTableReferences(db, table, e),
                 ),
               )
@@ -4479,17 +4478,15 @@ class $$TrailPointsTableTableManager
                     >
                   >(state) {
                     if (flightId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.flightId,
-                                referencedTable: $$TrailPointsTableReferences
-                                    ._flightIdTable(db),
-                                referencedColumn: $$TrailPointsTableReferences
-                                    ._flightIdTable(db)
-                                    .id,
-                              )
-                              as T;
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.flightId,
+                        referencedTable: $$TrailPointsTableReferences
+                            ._flightIdTable(db),
+                        referencedColumn: $$TrailPointsTableReferences
+                            ._flightIdTable(db)
+                            .id,
+                      ) as T;
                     }
 
                     return state;

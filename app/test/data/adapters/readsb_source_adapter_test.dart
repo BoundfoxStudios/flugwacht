@@ -162,9 +162,8 @@ void main() {
     );
 
     test('treats an empty ac array as a successful empty result', () async {
-      final result = await adapterReturning(
-        emptyEnvelope,
-      ).lookupByHexAddress('3c64c6');
+      final result = await adapterReturning(emptyEnvelope)
+          .lookupByHexAddress('3c64c6');
 
       expect(result, isA<LookupSuccess>());
       expect((result as LookupSuccess).fixes, isEmpty);
@@ -278,9 +277,8 @@ void main() {
 
     for (final malformed in bodiesByCase.entries) {
       test('maps ${malformed.key} to a malformed payload', () async {
-        final result = await adapterReturning(
-          malformed.value,
-        ).lookupByHexAddress('3c64c6');
+        final result = await adapterReturning(malformed.value)
+            .lookupByHexAddress('3c64c6');
 
         expect(result, isA<LookupMalformedPayload>());
       });

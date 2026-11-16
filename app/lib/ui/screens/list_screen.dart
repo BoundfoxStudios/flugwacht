@@ -331,9 +331,8 @@ class _SwipeToDeleteState extends State<_SwipeToDelete> {
                       AppIcons.trash,
                       size: _SwipeToDelete._iconSize,
                       color: theme.colorScheme.onError,
-                      semanticLabel: AppLocalizations.of(
-                        context,
-                      ).listDeleteFlight,
+                      semanticLabel: AppLocalizations.of(context)
+                          .listDeleteFlight,
                     ),
                   ),
                 ),

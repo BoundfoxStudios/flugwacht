@@ -779,11 +779,8 @@ void main() {
       expect(applied.adoptedIdentity, isNull);
       expect(
         (apply(hexFlight(), hexQuery, [
-                  fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt),
-                ])
-                as PollFixApplied)
-            .adoptedIdentity
-            ?.callsign,
+          fixWith(callsign: 'DLH8', positionAtTimestamp: airborneAt),
+        ]) as PollFixApplied).adoptedIdentity?.callsign,
         'DLH8',
       );
     });
@@ -914,21 +911,19 @@ void main() {
       );
 
       expect(
-        (apply(flight, hexQuery, [fixWith(positionAtTimestamp: airborneAt)])
-                as PollFixApplied)
-            .trailPosition,
+        (apply(flight, hexQuery, [
+          fixWith(positionAtTimestamp: airborneAt),
+        ]) as PollFixApplied).trailPosition,
         isNull,
       );
       expect(
         (apply(flight, hexQuery, [
-                  fixWith(
-                    positionAtTimestamp: airborneAt.subtract(
-                      const Duration(minutes: 1),
-                    ),
-                  ),
-                ])
-                as PollFixApplied)
-            .trailPosition,
+          fixWith(
+            positionAtTimestamp: airborneAt.subtract(
+              const Duration(minutes: 1),
+            ),
+          ),
+        ]) as PollFixApplied).trailPosition,
         isNull,
       );
     });

@@ -8,8 +8,9 @@ import 'live_activity_service.dart';
 
 /// What the flight-day reminder says; built where the localizations live,
 /// because nothing down here knows them.
-typedef LiveActivityReminderCopy =
-    ({String title, String body}) Function(Flight flight);
+typedef LiveActivityReminderCopy = ({String title, String body}) Function(
+  Flight flight,
+);
 
 /// Turns what the app learns about its flights into Live Activities: decides
 /// with [planLiveActivityAction], talks to the system through the service and

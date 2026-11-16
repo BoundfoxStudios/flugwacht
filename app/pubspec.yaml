@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.1.0+1
 
 environment:
-  sdk: ^3.12.2
+  sdk: ^3.14.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,7 +35,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.9
+  cupertino_icons: ^2.0.0
   # Pinned by flutter_localizations; "any" resolves to that exact version
   intl: any
   # Private companion repo bundling the licensed Font Awesome Pro icons;
@@ -44,34 +44,29 @@ dependencies:
     git:
       url: https://github.com/BoundfoxStudios/font-awesome-flutter-pro.git
       ref: v1.1.0
-  flutter_map: ^8.3.1
+  flutter_map: ^8.3.2
   http: ^1.6.0
   latlong2: ^0.10.1
-  go_router: ^17.5.0
-  drift: ^2.34.3
+  go_router: ^18.1.4
+  drift: ^2.35.4
   drift_flutter: ^0.3.1
   signals: ^7.1.0
-  flutter_svg: ^2.3.0
-  timezone: ^0.11.1
+  flutter_svg: ^2.4.0
+  timezone: ^0.11.2
   lat_lng_to_timezone: ^0.2.0
-  shared_preferences: ^2.5.5
-  package_info_plus: ^10.2.1
-  vector_map_tiles: ^9.0.0-beta.11
+  shared_preferences: ^2.5.6
+  package_info_plus: ^10.2.2
+  vector_map_tiles: ^9.0.0-beta.13
   vector_tile_renderer: ^6.1.0
-  flutter_local_notifications: ^22.3.0
-  url_launcher: ^6.3.2
-  review_etiquette: ^1.0.0
+  flutter_local_notifications: ^23.0.2
+  url_launcher: ^6.3.3
+  review_etiquette: ^1.0.1
   csv: ^8.0.0
-  # Upstream main until a release carries the ActivityKit relevance score and
-  # updates the card through ActivityContent (#238); 2.5.1 has neither.
-  live_activities:
-    git:
-      url: https://github.com/istornz/flutter_live_activities.git
-      ref: b17737cd1916c2f52c7ab49cd3660571b7a961fe
+  live_activities: ^2.6.0
 
-  material_ui: ^1.0.1
-  cupertino_ui: ^1.0.0
-  wakelock_plus: ^1.7.0
+  material_ui: ^1.11.1
+  cupertino_ui: ^1.1.7
+  wakelock_plus: ^1.8.2
 
 dev_dependencies:
   flutter_test:
@@ -87,8 +82,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  drift_dev: ^2.34.5
-  build_runner: ^2.16.0
+  drift_dev: ^2.35.3
+  build_runner: ^2.17.1
   url_launcher_platform_interface: ^2.3.2
 
 # For information on the generic Dart part of this file, see the

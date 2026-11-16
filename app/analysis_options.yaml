@@ -52,7 +52,6 @@ linter:
     - avoid_double_and_int_checks
     - avoid_multiple_declarations_per_line
     - avoid_positional_boolean_parameters
-    - avoid_private_typedef_functions
     - avoid_returning_this
     - avoid_types_on_closure_parameters
     - avoid_unused_constructor_parameters
@@ -75,7 +74,6 @@ linter:
     - no_literal_bool_comparisons
     - no_runtimeType_toString
     - noop_primitive_operations
-    - one_member_abstracts
     - only_throw_errors
     - prefer_asserts_in_initializer_lists
     - prefer_constructors_over_static_methods
@@ -90,7 +88,6 @@ linter:
     - sized_box_shrink_expand
     - sort_unnamed_constructors_first
     - unawaited_futures
-    - unnecessary_await_in_return
     - unnecessary_breaks
     - unnecessary_lambdas
     - unnecessary_null_checks

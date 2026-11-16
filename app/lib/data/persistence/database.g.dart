@@ -4147,7 +4147,7 @@ class $$FlightsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$FlightsTable, FlightRow>(table),
                   $$FlightsTableReferences(db, table, e),
                 ),
               )
@@ -4160,10 +4160,11 @@ class $$FlightsTableTableManager
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (trailPointsRefs)
-                    await $_getPrefetchedData<
+                    await $_getPrefetchedDataByColumns<
                       FlightRow,
                       $FlightsTable,
-                      TrailPointRow
+                      TrailPointRow,
+                      $TrailPointsTable
                     >(
                       currentTable: table,
                       referencedTable: $$FlightsTableReferences
@@ -4173,8 +4174,8 @@ class $$FlightsTableTableManager
                         table,
                         p0,
                       ).trailPointsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.flightId == item.id),
+                      currentColumn: 'id',
+                      referencedColumn: 'flight_id',
                       typedResults: items,
                     ),
                 ];
@@ -4453,7 +4454,7 @@ class $$TrailPointsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$TrailPointsTable, TrailPointRow>(table),
                   $$TrailPointsTableReferences(db, table, e),
                 ),
               )
